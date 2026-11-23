@@ -2,7 +2,8 @@
 la IA prepara, la persona confirma en la pantalla de siempre y guarda la ruta de siempre. Va después de la segunda parte de la
 base y antes de la E12, así que cada tablero muestra solo lo que existe hasta ahí (78): sin «Gestión de formularios».
 
-Escribe diez tableros, con su teléfono, en la página «Propuesta · Acciones del asistente» de `canvas.json`:
+Escribe diez tableros, con su teléfono, en la página «Organización · Acciones del asistente» de `canvas.json`. El usuario
+los aprobó el 2026-11-23, con la baja de un rol con el verbo de Roles (v178):
 - `Asistente-Org-Acciones`: el Inicio con la tarjeta de cada acción en el hilo, debajo del texto de la IA, en todos sus estados
   (nueva, con «Revisá», reemplazada, ya no disponible con su motivo, aplicada y plegada, y sin confirmar). La tarjeta copia la de
   armar de `Asistente-Org-25`, con cada dato en su renglón (263) y el botón de quitar o dar de baja en rojo contorneado;
@@ -33,7 +34,7 @@ import sys
 sys.stdout.reconfigure(encoding="utf-8")
 PROJ = pathlib.Path(__file__).resolve().parent.parent
 COPIA = pathlib.Path(__file__).resolve().parent / "acciones_asistente_1004"
-PAGINA = {"id": "acciones-asistente", "name": "Propuesta · Acciones del asistente"}
+PAGINA = {"id": "acciones-asistente", "name": "Organización · Acciones del asistente"}
 MARCA = 'data-acc="acciones"'
 
 
@@ -578,7 +579,7 @@ def usuarios_invitar_propuesta():
     t = una_vez(t, CONV_ACTIVA, conv_activa(e[1]))
     t = t.replace("@CHAT@", f'<div class="as-hilo"><div class="as-col">{turnos_html(e[2], av)}</div></div>{pie}')
     t = t.replace("@VELO@", por_estado([dialogo_invitar(x) for x in INV_ESTADOS]).replace("@SPARK@", spark(av)))
-    return tablero("Asistente-Org-25", "Invitar usuario · propuesta del asistente, sobre el Inicio · para aprobar", CSS_COMPU, t,
+    return tablero("Asistente-Org-25", "Invitar usuario · propuesta del asistente, sobre el Inicio", CSS_COMPU, t,
                    INV_ESTADOS, 1440, 900)
 
 
@@ -630,7 +631,7 @@ def m_usuarios_invitar_propuesta():
     e = next(x for x in estados if x[0] == "Invitación con «Revisá»")
     t = t.replace("@CHAT@", f'<div class="as-tcuerpo"><div class="as-col">{turnos_html(e[2], av)}</div></div>')
     t = t.replace("@VELO@", por_estado([hoja_invitar(x, spark(av)) for x in M_INV_ESTADOS]))
-    return tablero("M-Asistente-Org", "Invitar usuario · propuesta del asistente · teléfono · para aprobar", CSS_TEL, t, M_INV_ESTADOS,
+    return tablero("M-Asistente-Org", "Invitar usuario · propuesta del asistente · teléfono", CSS_TEL, t, M_INV_ESTADOS,
                    390, 844)
 
 
@@ -673,7 +674,7 @@ def usuario_propuesta():
     franja = f'<div class="acc-av aten" role="status">{SVG_ATEN}<span>Tomás Acosta cambió desde la propuesta.</span></div>'
     estados = ["Lo que cambia", "Cambió desde la propuesta"]
     cuerpos = [contenido[:cuerpo_i] + cambia + contenido[cuerpo_i:], contenido[:cuerpo_i] + franja + cambia_ahora + contenido[cuerpo_i:]]
-    return tablero("Usuario", "Editar usuario · propuesta del asistente · /org/usuarios/:id · para aprobar", CSS_COMPU,
+    return tablero("Usuario", "Editar usuario · propuesta del asistente · /org/usuarios/:id", CSS_COMPU,
                    t.replace("@CONTENIDO@", por_estado(cuerpos)), estados, 1440, 900)
 
 
@@ -690,7 +691,7 @@ def m_usuario_propuesta():
     cambia_ahora = ('<span class="ap-gtit">Lo que cambia</span><div class="ap-grupo">' + fila("Se quita en la organización", "Recursos humanos") + "</div>")
     franja = f'<div class="acc-av aten acc-tel-av" role="status">{SVG_ATEN}<span>Tomás Acosta cambió desde la propuesta.</span></div>'
     t = t[:a] + por_estado([cambia, franja + cambia_ahora]) + t[a:]
-    return tablero("M-Usuario", "Editar usuario · propuesta del asistente · teléfono · para aprobar", CSS_TEL, t,
+    return tablero("M-Usuario", "Editar usuario · propuesta del asistente · teléfono", CSS_TEL, t,
                    ["Lo que cambia", "Cambió desde la propuesta"], 390, 844)
 
 
@@ -785,7 +786,7 @@ def rol_propuesta():
     assert ruta_crear in marco_crear
     marco_t = marco_crear.replace(ruta_crear, "Inicio / Gestión de usuarios / Roles y permisos / "
                                   + por_estado(["Crear un rol", "Crear un rol", "Crear un rol", "Ventas", "Ventas"]))
-    return tablero("Rol", "Rol · propuesta del asistente, con los permisos en áreas plegables · para aprobar", CSS_COMPU,
+    return tablero("Rol", "Rol · propuesta del asistente, con los permisos en áreas plegables", CSS_COMPU,
                    marco_t.replace("@CONTENIDO@", por_estado(cuerpos)), ROL_ESTADOS, 1440, 900)
 
 
@@ -825,7 +826,7 @@ def m_rol_propuesta():
                ed_a[:k] + franja + cambia_ahora + ed_a[k:] + permisos(VENTAS, {"Usuarios", "WhatsApp"}) + ed_b]
     # Cada estado es la pantalla entera del teléfono: el marco de la app no cambia entre una y otra
     plantilla = por_estado(cuerpos)
-    return tablero("M-Rol", "Rol · propuesta del asistente · teléfono · para aprobar", CSS_TEL, plantilla, M_ROL_ESTADOS, 390, 844)
+    return tablero("M-Rol", "Rol · propuesta del asistente · teléfono", CSS_TEL, plantilla, M_ROL_ESTADOS, 390, 844)
 
 
 # ---------------------------------------------------------------------------------------------------------------- confirmar
@@ -875,7 +876,7 @@ def confirmar_propuesta():
     borrar = roles.replace("</main>", confirmacion("¿Dar de baja el rol Ventas mayoristas?", TEXTO_BAJA_ROL, "Dar de baja", peligro=False) + "</main>", 1)
     con_personas = roles_compu("2").replace("</main>", confirmacion("¿Dar de baja el rol Ventas mayoristas?", TEXTO_BAJA_ROL.split(".")[0] + ".",
                                                                     "Dar de baja", peligro=False, apagado=MOTIVO_CON_PERSONAS) + "</main>", 1)
-    return tablero("Usuario", "Confirmar lo que propone el asistente · quitar a una persona y dar de baja un rol · para aprobar", CSS_COMPU,
+    return tablero("Usuario", "Confirmar lo que propone el asistente · quitar a una persona y dar de baja un rol", CSS_COMPU,
                    por_estado([quitar, borrar, con_personas]), CONF_ESTADOS, 1440, 900, otra="Roles")
 
 
@@ -915,26 +916,26 @@ def m_confirmar_propuesta():
     con = una_vez(m_roles("2"), '<span class="ap-raya"></span></div>',
                   hoja_confirmar("¿Dar de baja el rol Ventas mayoristas?", TEXTO_BAJA_ROL.split(".")[0] + ".", "Dar de baja", peligro=False,
                                  apagado=MOTIVO_CON_PERSONAS) + '<span class="ap-raya"></span></div>')
-    return tablero("M-Usuario", "Confirmar lo que propone el asistente · teléfono · para aprobar", CSS_TEL, por_estado([quitar, borrar, con]),
+    return tablero("M-Usuario", "Confirmar lo que propone el asistente · teléfono", CSS_TEL, por_estado([quitar, borrar, con]),
                    CONF_ESTADOS, 390, 844, otra="M-Roles")
 
 
 # ---------------------------------------------------------------------------------------------------------------- canvas.json
 TABLEROS = [
-    ("Asistente-Org-Acciones", "Inicio · las acciones del asistente, en el hilo · para aprobar", asistente_org_acciones),
+    ("Asistente-Org-Acciones", "Inicio · las acciones del asistente, en el hilo", asistente_org_acciones),
     ("Usuarios-Invitar-Propuesta", None, usuarios_invitar_propuesta),
     ("Usuario-Propuesta", None, usuario_propuesta),
     ("Rol-Propuesta", None, rol_propuesta),
     ("Confirmar-Propuesta", None, confirmar_propuesta),
 ]
 TELEFONOS = [
-    ("M-Asistente-Org-Acciones", "Inicio · las acciones del asistente · teléfono · para aprobar", m_asistente_org_acciones),
+    ("M-Asistente-Org-Acciones", "Inicio · las acciones del asistente · teléfono", m_asistente_org_acciones),
     ("M-Usuarios-Invitar-Propuesta", None, m_usuarios_invitar_propuesta),
     ("M-Usuario-Propuesta", None, m_usuario_propuesta),
     ("M-Rol-Propuesta", None, m_rol_propuesta),
     ("M-Confirmar-Propuesta", None, m_confirmar_propuesta),
 ]
-NOTA = ("Acciones del asistente (ADR 0068 y decisión 268 del back), para aprobar. Va después de la segunda parte de la base y antes de "
+NOTA = ("Acciones del asistente (ADR 0068 y decisión 268 del back), aprobadas por el usuario el 23/11. Va después de la segunda parte de la base y antes de "
         "la E12: cada tablero muestra solo lo que existe hasta acá (78), sin «Gestión de formularios».\n\n"
         "La regla: la IA prepara, la persona confirma en la pantalla de siempre y guarda la ruta de siempre. La tarjeta va en el hilo, "
         "debajo del texto de la IA, con cada dato en su renglón y «Revisá» con su motivo en lo dudoso. Su botón abre la pantalla de la "
@@ -951,7 +952,8 @@ def registrar():
     ruta = PROJ / "canvas.json"
     c = json.loads(ruta.read_text(encoding="utf-8"))
     if not any(p["id"] == PAGINA["id"] for p in c["pages"]):
-        c["pages"].insert(next(i for i, p in enumerate(c["pages"]) if p["id"] == "org") + 1, PAGINA)
+        c["pages"].insert(next(i for i, p in enumerate(c["pages"]) if p["id"] == "org") + 1, dict(PAGINA))
+    next(p for p in c["pages"] if p["id"] == PAGINA["id"])["name"] = PAGINA["name"]
     titulos = {}
     for lista in (TABLEROS, TELEFONOS):
         for nombre, titulo, _ in lista:

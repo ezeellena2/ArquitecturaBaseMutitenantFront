@@ -1410,112 +1410,112 @@
       "y": 6138
     },
     "Indice-administra.dc.html": {
-      "h": 786,
-      "is_interactive": true,
-      "page": "mapa",
-      "title": "Índice · Administra la organización · tocá Play y elegí una pantalla",
-      "w": 1440,
       "x": 7600,
-      "y": 2340
+      "y": 2340,
+      "w": 1440,
+      "h": 786,
+      "title": "Índice · Administra la organización · tocá Play y elegí una pantalla",
+      "page": "mapa",
+      "is_interactive": true
     },
     "Indice-asistente.dc.html": {
-      "h": 488,
-      "is_interactive": true,
-      "page": "mapa",
-      "title": "Índice · Le pregunta al asistente · tocá Play y elegí una pantalla",
-      "w": 1440,
       "x": 1520,
-      "y": 3326
+      "y": 3326,
+      "w": 1440,
+      "h": 579,
+      "title": "Índice · Le pregunta al asistente · tocá Play y elegí una pantalla",
+      "page": "mapa",
+      "is_interactive": true
     },
     "Indice-empresa.dc.html": {
-      "h": 416,
-      "is_interactive": true,
-      "page": "mapa",
-      "title": "Índice · Registra su empresa · tocá Play y elegí una pantalla",
-      "w": 1440,
       "x": 4560,
-      "y": 2340
+      "y": 2340,
+      "w": 1440,
+      "h": 416,
+      "title": "Índice · Registra su empresa · tocá Play y elegí una pantalla",
+      "page": "mapa",
+      "is_interactive": true
     },
     "Indice-entra.dc.html": {
-      "h": 547,
-      "is_interactive": true,
-      "page": "mapa",
-      "title": "Índice · Entra o crea su cuenta · tocá Play y elegí una pantalla",
-      "w": 1440,
       "x": 1520,
-      "y": 2340
+      "y": 2340,
+      "w": 1440,
+      "h": 547,
+      "title": "Índice · Entra o crea su cuenta · tocá Play y elegí una pantalla",
+      "page": "mapa",
+      "is_interactive": true
     },
     "Indice-equipo.dc.html": {
-      "h": 547,
-      "is_interactive": true,
-      "page": "mapa",
-      "title": "Índice · Arma su equipo · tocá Play y elegí una pantalla",
-      "w": 1440,
       "x": 6080,
-      "y": 2340
+      "y": 2340,
+      "w": 1440,
+      "h": 547,
+      "title": "Índice · Arma su equipo · tocá Play y elegí una pantalla",
+      "page": "mapa",
+      "is_interactive": true
     },
     "Indice-formularios.dc.html": {
-      "h": 2121,
-      "is_interactive": true,
-      "page": "mapa",
-      "title": "Índice · Diseña formularios · tocá Play y elegí una pantalla",
-      "w": 1440,
       "x": 3040,
-      "y": 3326
+      "y": 3326,
+      "w": 1440,
+      "h": 2121,
+      "title": "Índice · Diseña formularios · tocá Play y elegí una pantalla",
+      "page": "mapa",
+      "is_interactive": true
     },
     "Indice-llega.dc.html": {
-      "h": 547,
-      "is_interactive": true,
-      "page": "mapa",
-      "title": "Índice · Llega al sitio · tocá Play y elegí una pantalla",
-      "w": 1440,
       "x": 0,
-      "y": 2340
+      "y": 2340,
+      "w": 1440,
+      "h": 547,
+      "title": "Índice · Llega al sitio · tocá Play y elegí una pantalla",
+      "page": "mapa",
+      "is_interactive": true
     },
     "Indice-manda.dc.html": {
-      "h": 437,
-      "is_interactive": true,
-      "page": "mapa",
-      "title": "Índice · Lo que manda el sistema · tocá Play y elegí una pantalla",
-      "w": 1440,
       "x": 6080,
-      "y": 3326
+      "y": 3326,
+      "w": 1440,
+      "h": 437,
+      "title": "Índice · Lo que manda el sistema · tocá Play y elegí una pantalla",
+      "page": "mapa",
+      "is_interactive": true
     },
     "Indice-persona.dc.html": {
-      "h": 560,
-      "is_interactive": true,
-      "page": "mapa",
-      "title": "Índice · Su perfil personal · tocá Play y elegí una pantalla",
-      "w": 1440,
       "x": 3040,
-      "y": 2340
+      "y": 2340,
+      "w": 1440,
+      "h": 560,
+      "title": "Índice · Su perfil personal · tocá Play y elegí una pantalla",
+      "page": "mapa",
+      "is_interactive": true
     },
     "Indice-plataforma.dc.html": {
-      "h": 1140,
-      "is_interactive": true,
-      "page": "mapa",
-      "title": "Índice · La plataforma · tocá Play y elegí una pantalla",
-      "w": 1440,
       "x": 4560,
-      "y": 3326
+      "y": 3326,
+      "w": 1440,
+      "h": 1140,
+      "title": "Índice · La plataforma · tocá Play y elegí una pantalla",
+      "page": "mapa",
+      "is_interactive": true
     },
     "Indice-whatsapp.dc.html": {
-      "h": 1002,
-      "is_interactive": true,
-      "page": "mapa",
-      "title": "Índice · Atiende por WhatsApp · tocá Play y elegí una pantalla",
-      "w": 1440,
       "x": 0,
-      "y": 3326
+      "y": 3326,
+      "w": 1440,
+      "h": 1002,
+      "title": "Índice · Atiende por WhatsApp · tocá Play y elegí una pantalla",
+      "page": "mapa",
+      "is_interactive": true
     },
     "Indice.dc.html": {
-      "h": 1214,
-      "is_interactive": true,
-      "page": "mapa",
-      "title": "Índice general · tocá Play y elegí un área",
-      "w": 1440,
       "x": 0,
-      "y": 260
+      "y": 260,
+      "w": 1440,
+      "h": 1214,
+      "title": "Índice general · tocá Play y elegí un área",
+      "page": "mapa",
+      "is_interactive": true
     },
     "Ingreso.dc.html": {
       "h": 900,
@@ -4291,7 +4291,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "acciones-asistente",
-      "title": "Inicio · las acciones del asistente, en el hilo · para aprobar",
+      "title": "Inicio · las acciones del asistente, en el hilo",
       "w": 1440,
       "x": 700,
       "y": 0
@@ -4300,7 +4300,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "acciones-asistente",
-      "title": "Invitar usuario · propuesta del asistente, sobre el Inicio · para aprobar",
+      "title": "Invitar usuario · propuesta del asistente, sobre el Inicio",
       "w": 1440,
       "x": 2240,
       "y": 0
@@ -4309,7 +4309,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "acciones-asistente",
-      "title": "Editar usuario · propuesta del asistente · /org/usuarios/:id · para aprobar",
+      "title": "Editar usuario · propuesta del asistente · /org/usuarios/:id",
       "w": 1440,
       "x": 3780,
       "y": 0
@@ -4318,7 +4318,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "acciones-asistente",
-      "title": "Rol · propuesta del asistente, con los permisos en áreas plegables · para aprobar",
+      "title": "Rol · propuesta del asistente, con los permisos en áreas plegables",
       "w": 1440,
       "x": 5320,
       "y": 0
@@ -4327,7 +4327,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "acciones-asistente",
-      "title": "Confirmar lo que propone el asistente · quitar a una persona y dar de baja un rol · para aprobar",
+      "title": "Confirmar lo que propone el asistente · quitar a una persona y dar de baja un rol",
       "w": 1440,
       "x": 6860,
       "y": 0
@@ -4336,7 +4336,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "acciones-asistente",
-      "title": "Inicio · las acciones del asistente · teléfono · para aprobar",
+      "title": "Inicio · las acciones del asistente · teléfono",
       "w": 390,
       "x": 700,
       "y": 1000
@@ -4345,7 +4345,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "acciones-asistente",
-      "title": "Invitar usuario · propuesta del asistente · teléfono · para aprobar",
+      "title": "Invitar usuario · propuesta del asistente · teléfono",
       "w": 390,
       "x": 2240,
       "y": 1000
@@ -4354,7 +4354,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "acciones-asistente",
-      "title": "Editar usuario · propuesta del asistente · teléfono · para aprobar",
+      "title": "Editar usuario · propuesta del asistente · teléfono",
       "w": 390,
       "x": 3780,
       "y": 1000
@@ -4363,7 +4363,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "acciones-asistente",
-      "title": "Rol · propuesta del asistente · teléfono · para aprobar",
+      "title": "Rol · propuesta del asistente · teléfono",
       "w": 390,
       "x": 5320,
       "y": 1000
@@ -4372,7 +4372,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "acciones-asistente",
-      "title": "Confirmar lo que propone el asistente · teléfono · para aprobar",
+      "title": "Confirmar lo que propone el asistente · teléfono",
       "w": 390,
       "x": 6860,
       "y": 1000
@@ -4707,7 +4707,7 @@
     "acciones-asistente": {
       "color": "blue",
       "page": "acciones-asistente",
-      "text": "Acciones del asistente (ADR 0068 y decisión 268 del back), para aprobar. Va después de la segunda parte de la base y antes de la E12: cada tablero muestra solo lo que existe hasta acá (78), sin «Gestión de formularios».\n\nLa regla: la IA prepara, la persona confirma en la pantalla de siempre y guarda la ruta de siempre. La tarjeta va en el hilo, debajo del texto de la IA, con cada dato en su renglón y «Revisá» con su motivo en lo dudoso. Su botón abre la pantalla de la acción con la propuesta: el diálogo «Invitar usuario» sobre el Inicio, la ficha de la persona, el editor de roles o la confirmación de quitar o de dar de baja.\n\nQuien pide es Valeria Castro, con «Administración de personas»: no es Dueña, así que lo que no puede dar se ve apagado, con el motivo en un tooltip sobre el control (211). Los permisos de un rol van en áreas plegables (260), con lo incluido apagado y su motivo.\n\nUn rol se da de baja con el verbo de la pantalla de Roles (el usuario, 23/11): la tarjeta «Baja de rol», «Revisar y dar de baja» y, aplicada, «Rol dado de baja». La confirmación es la de Roles de hoy.",
+      "text": "Acciones del asistente (ADR 0068 y decisión 268 del back), aprobadas por el usuario el 23/11. Va después de la segunda parte de la base y antes de la E12: cada tablero muestra solo lo que existe hasta acá (78), sin «Gestión de formularios».\n\nLa regla: la IA prepara, la persona confirma en la pantalla de siempre y guarda la ruta de siempre. La tarjeta va en el hilo, debajo del texto de la IA, con cada dato en su renglón y «Revisá» con su motivo en lo dudoso. Su botón abre la pantalla de la acción con la propuesta: el diálogo «Invitar usuario» sobre el Inicio, la ficha de la persona, el editor de roles o la confirmación de quitar o de dar de baja.\n\nQuien pide es Valeria Castro, con «Administración de personas»: no es Dueña, así que lo que no puede dar se ve apagado, con el motivo en un tooltip sobre el control (211). Los permisos de un rol van en áreas plegables (260), con lo incluido apagado y su motivo.\n\nUn rol se da de baja con el verbo de la pantalla de Roles (el usuario, 23/11): la tarjeta «Baja de rol», «Revisar y dar de baja» y, aplicada, «Rol dado de baja». La confirmación es la de Roles de hoy.",
       "w": 620,
       "x": 0,
       "y": 0
@@ -5235,7 +5235,7 @@
     },
     {
       "id": "acciones-asistente",
-      "name": "Propuesta · Acciones del asistente"
+      "name": "Organización · Acciones del asistente"
     },
     {
       "id": "propuesta-whatsapp",
