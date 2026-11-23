@@ -28,7 +28,7 @@
 
 ## Lo verifica
 - `parity.test.ts` (E1)
-- `src/locales/vocabulary.test.ts` (base de la 12, E12): ninguna palabra vieja en los textos en español del núcleo y de los módulos
+- `src/locales/vocabulary.test.ts` (base de la 12, E12): ninguna palabra vieja en los textos en español del núcleo y de los módulos; ningún tuteo en español («puedes», «tú», «para ti», «Revisa tu correo», «Intenta de nuevo»: va «podés», «vos», «Revisá», «Intentá»), y ningún «tenant» en español ni en inglés
 - `text-props.test.ts` (E12): ningún texto fijo en `placeholder`, `aria-label`, `title`, `alt`, `label` y los demás props que se leen, también dentro de una expresión: van con `t()` (`react/jsx-no-literals` mira solo el texto entre etiquetas)
 
 ## Detalle

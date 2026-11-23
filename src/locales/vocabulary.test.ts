@@ -17,10 +17,37 @@ function texts(value: unknown, at: string): { at: string; text: string }[] {
   return [];
 }
 
-// Los textos en español del núcleo y de los módulos.
-const spanish = filesIn(srcDir)
-  .filter((file) => file.endsWith(".json") && /[\\/]locales[\\/]es[\\/]/.test(file))
+// Los textos de un idioma, del núcleo y de los módulos.
+const textsOf = (language: string) => filesIn(srcDir)
+  .filter((file) => file.endsWith(".json") && new RegExp(`[\\\\/]locales[\\\\/]${language}[\\\\/]`).test(file))
   .flatMap((file) => texts(JSON.parse(readFileSync(file, "utf8")), path.relative(srcDir, file).replaceAll("\\", "/")));
+const spanish = textsOf("es");
+const english = textsOf("en");
+
+// textos-y-traducciones.md: español rioplatense con voseo. Un texto que tutea se reconoce por las formas que el voseo no
+// usa: el presente de «tú» («puedes» y no «podés»), «tú», «contigo» y «para ti», los imperativos irregulares («haz»,
+// «ten», «pon») y los imperativos con el pronombre pegado («inténtalo» y no «intentalo», «asegúrate» y no «asegurate»).
+const word = (list: string) => new RegExp(`(?<!\\p{L})(?:${list})(?!\\p{L})`, "iu");
+const tuteo = word([
+  "puedes|tienes|quieres|debes|eres|necesitas|sabes|vienes|prefieres|recuerdas|piensas|encuentras|vuelves|conoces",
+  "escribes|eliges|pides|entiendes|pierdes|usas|haces|dices|tú|contigo|(?:para|a|de|en|por|sin|sobre|con)\\s+ti|haz|ten|pon",
+  "asegúrate|fíjate|acuérdate|inténtalo|revísalo|revísala|elígelo|elígela|guárdalo|guárdala|ingrésalo|ingrésala|escríbelo",
+  "confírmalo|pruébalo|cámbialo|ábrelo|cópialo|agrégalo|búscalo|complétalo|descárgalo|selecciónalo|selecciónala",
+].join("|"));
+// El imperativo regular de «tú» se escribe igual que el presente de «él» («Revisa», «Elige»), que las descripciones usan
+// («Vuelve a entrar como persona», «Crea roles»). Cuenta como tuteo solo al empezar una oración que le habla a la persona
+// («Revisa tu correo», «Elige quién te atiende») o que pide repetir («Intenta de nuevo»); el voseo lleva la tilde
+// («Revisá», «Intentá»).
+const imperatives = "Ingresa|Elige|Selecciona|Confirma|Escribe|Revisa|Intenta|Vuelve|Agrega|Busca|Completa|Guarda|Prueba|Toca|Cambia|Copia|Abre|Cierra|Recuerda|Verifica|Descarga|Carga|Sube|Acepta|Crea|Edita|Espera|Usa|Mira|Lee|Pide|Sigue|Olvida|Indica|Borra|Envía|Manda";
+const imperative = new RegExp(`^[¿¡"«]?(?:${imperatives})(?!\\p{L})`, "u");
+const toYou = word("tu|tus|te|ti|tuyo|tuya|tuyos|tuyas");
+const again = new RegExp(`^[¿¡]?(?:${imperatives})\\s+(?:de nuevo|otra vez|más tarde|nuevamente)(?!\\p{L})`, "iu");
+
+function tutea(text: string): boolean {
+  if (tuteo.test(text)) return true;
+  return text.split(/(?<=[.!?])\s+|\n/).map((sentence) => sentence.trim())
+    .some((sentence) => (imperative.test(sentence) && toYou.test(sentence)) || again.test(sentence));
+}
 
 // Base de la 12, «Las palabras» (F6): «Dar de baja» y «Reactivar», con el estado «De baja», «Dados de baja» o «Dadas de baja»;
 // «Borrar», nunca «Eliminar»; borrar la cuenta propia dice «Borrar mi cuenta», con el estado «Por borrar»; y las altas
@@ -45,5 +72,30 @@ describe("las palabras de la base de la 12", () => {
   it("no usa ninguna de las palabras viejas", () => {
     const found = spanish.flatMap(({ at, text }) => banned.filter(([pattern]) => pattern.test(text)).map(([, why]) => `${at}: «${text}» (${why})`));
     expect(found).toEqual([]);
+  });
+});
+
+describe("el voseo y la Organización", () => {
+  it("reconoce el tuteo sin confundirlo con el voseo ni con una descripción", () => {
+    for (const text of ["¿Puedes revisar esto?", "Si tienes una cuenta, ingresá.", "Lo elegiste tú.", "Es para ti", "Haz clic acá",
+      "Asegúrate de guardar", "Inténtalo de nuevo", "Revisa tu correo.", "Te mandamos un código. Ingresa el código que te llegó.",
+      "Intenta de nuevo", "Elige quién te atiende", "No se pudo. Vuelve a intentarlo más tarde, por favor te pedimos."]) {
+      expect(tutea(text), text).toBe(true);
+    }
+    for (const text of ["¿Podés revisar esto?", "Revisá tu correo.", "Intentá de nuevo", "Asegurate de guardar", "Intentalo de nuevo",
+      "Vuelve a entrar como persona y en sus organizaciones.", "Sigue en la organización.", "Crea roles y los asigna.", "Activa",
+      "Prueba hasta {{date}}", "Espera aprobación", "Dale el rol a otra persona.", "Te mandamos un código a {{destination}}.",
+      "Lo ve el Dueño.", "La lista completa", "Diez", "Contenido"]) {
+      expect(tutea(text), text).toBe(false);
+    }
+  });
+
+  it("habla de vos en todos los textos en español", () => {
+    expect(spanish.filter(({ text }) => tutea(text)).map(({ at, text }) => `${at}: «${text}»`)).toEqual([]);
+  });
+
+  it("nunca dice «tenant»: se dice «Organización»", () => {
+    expect(english.length).toBeGreaterThan(500);
+    expect([...spanish, ...english].filter(({ text }) => /tenant/i.test(text)).map(({ at, text }) => `${at}: «${text}»`)).toEqual([]);
   });
 });
