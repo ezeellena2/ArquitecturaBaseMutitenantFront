@@ -1,5 +1,0 @@
-{
-  "extends": "../../tsconfig.app.json",
-  "compilerOptions": { "paths": { "@/*": ["../../src/*"] }, "tsBuildInfoFile": null, "incremental": false },
-  "include": ["at320-types.ts"]
-}

@@ -428,3 +428,6 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Salidas locales: capturas, corridas y copias de trabajo (no se versionan)
+.local/
