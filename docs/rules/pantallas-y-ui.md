@@ -54,7 +54,7 @@
 - `theme-tokens.test.ts` (E0): los tokens, y que las medidas estén en `rem`
 - `DetailGrid.test.tsx` (E5): la grilla en la compu y el rótulo encima del valor en el teléfono, con axe
 - `FilterBar.test.tsx` (E1), `SegmentedControl.test.tsx` (E1) y `AdminPanel.test.tsx` (E3): los filtros con «Limpiar», las dos vistas y el segundo panel
-- `harness.test.ts` (E11): solo `src/shared/ui/Page.tsx` importa `shared/ui/tabs`
+- `harness.test.ts` (E11): solo `src/shared/ui/Page.tsx` importa `shared/ui/tabs`; `ui-usage.test.ts` (E12): nunca `alert`, `confirm` ni `prompt` del navegador, y fuera de `shared/ui` ni Radix, vaul o cmdk, ni `createPortal`, ni `<table>`, `<select>`, `<dialog>` o un `role="dialog"` a mano (la excepción, con su motivo, está en el test)
 
 ## Detalle
 [frontend.md §4, "UI y pantallas"](../architecture/frontend.md#ui-y-pantallas) · [tema.md](../architecture/tema.md) · [responsive](responsive.md) · tableros `Criterio-Marco`, `Criterio-Botones`, `Criterio-Formularios`, `Criterio-Tablas`, `Criterio-Dialogos`, `Criterio-Menus`, `Criterio-Avisos` y `Criterio-Decisiones`.

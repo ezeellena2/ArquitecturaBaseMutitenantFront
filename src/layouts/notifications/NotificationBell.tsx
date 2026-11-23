@@ -1,4 +1,3 @@
-import { Popover } from "radix-ui";
 import { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AuthContext } from "react-oidc-context";
@@ -7,6 +6,7 @@ import { countOf } from "@/shared/format/countOf";
 import { useFormat } from "@/shared/format/useFormat";
 import { cn } from "@/shared/lib/utils";
 import { NumberText } from "@/shared/ui/format/NumberText";
+import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover";
 import { BellIcon } from "./icons";
 import { NotificationList } from "./NotificationList";
 import { notificationsPath } from "./paths";
@@ -38,11 +38,11 @@ function BellMenu() {
   // Abierta en la pantalla donde se abrió: al pasar a otra (tocar un aviso, volver atrás), se cierra sola.
   const [openOn, setOpenOn] = useState<string | null>(null);
 
-  return <Popover.Root open={openOn === pathname} onOpenChange={(open) => {
+  return <Popover open={openOn === pathname} onOpenChange={(open) => {
     setOpenOn(open ? pathname : null);
     if (open) notifications.refresh();
   }}>
-    <Popover.Trigger asChild>
+    <PopoverTrigger asChild>
       <button type="button" aria-label={label}
         className="relative inline-flex size-9.5 shrink-0 items-center justify-center rounded-[0.25rem] text-[var(--t2)] hover:bg-[var(--lado-hover)] hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-[var(--foco)] data-[state=open]:bg-[var(--lado-hover)] data-[state=open]:text-[var(--t1)]">
         <BellIcon className="size-5" />
@@ -50,19 +50,17 @@ function BellMenu() {
           <NumberText value={unread} />
         </span> : null}
       </button>
-    </Popover.Trigger>
-    <Popover.Portal>
-      {/* `.cmp-lista`: 420 de ancho, a 8 de la campana, con el borde y la sombra de un desplegable. */}
-      <Popover.Content aria-label={t("title")} align="end" sideOffset={6} collisionPadding={16}
-        className="z-50 flex max-h-(--radix-popover-content-available-height) w-105 max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-[0.25rem] border border-[var(--borde)] bg-[var(--superficie)] text-[var(--t1)] shadow-[var(--sombra-menu)]">
-        <div className="flex shrink-0 items-center justify-between border-b border-[var(--borde)] px-4 py-3 text-[0.9375rem] font-bold">
-          {t("title")}
-          {unread > 0 ? <span className="text-[0.8125rem] font-medium text-[var(--t3)]"><NumberText value={unread} /></span> : null}
-        </div>
-        <NotificationList variant="menu" notifications={notifications} onOpen={() => setOpenOn(null)} />
-      </Popover.Content>
-    </Popover.Portal>
-  </Popover.Root>;
+    </PopoverTrigger>
+    {/* `.cmp-lista`: 420 de ancho, a 8 de la campana, con el borde y la sombra de un desplegable. */}
+    <PopoverContent aria-label={t("title")} align="end" sideOffset={6} collisionPadding={16}
+      className="flex max-h-(--radix-popover-content-available-height) w-105 max-w-[calc(100vw-2rem)] flex-col overflow-hidden">
+      <div className="flex shrink-0 items-center justify-between border-b border-[var(--borde)] px-4 py-3 text-[0.9375rem] font-bold">
+        {t("title")}
+        {unread > 0 ? <span className="text-[0.8125rem] font-medium text-[var(--t3)]"><NumberText value={unread} /></span> : null}
+      </div>
+      <NotificationList variant="menu" notifications={notifications} onOpen={() => setOpenOn(null)} />
+    </PopoverContent>
+  </Popover>;
 }
 
 /**
