@@ -29,6 +29,7 @@
 ## Lo verifica
 - `parity.test.ts` (E1)
 - `src/locales/vocabulary.test.ts` (base de la 12, E12): ninguna palabra vieja en los textos en español del núcleo y de los módulos
+- `text-props.test.ts` (E12): ningún texto fijo en `placeholder`, `aria-label`, `title`, `alt`, `label` y los demás props que se leen, también dentro de una expresión: van con `t()` (`react/jsx-no-literals` mira solo el texto entre etiquetas)
 
 ## Detalle
 [frontend.md §4, "Idioma y cultura"](../architecture/frontend.md#idioma-y-cultura) · [datos de referencia del back](../../../ArquitecturaBaseMutitenant/docs/architecture/datos-de-referencia.md#5-traducciones-de-la-interfaz-no-son-datos-de-referencia)
