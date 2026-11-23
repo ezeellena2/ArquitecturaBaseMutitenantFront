@@ -110,7 +110,7 @@ function colorViolations(source: string, kind: "tsx" | "css" = "tsx"): string[] 
   // Un estilo en línea o un objeto que pinta (`color: "red"`) y un atributo de SVG (`fill="white"`).
   const styleProperty = /\b(color|background(?:Color)?|border(?:Top|Right|Bottom|Left|Block|Inline)?(?:Color)?|outline(?:Color)?|fill|stroke|caretColor|accentColor|textDecoration(?:Color)?|boxShadow|stopColor|floodColor)\s*:\s*(["'`])([^"'`]*)\2/g;
   for (const match of source.matchAll(styleProperty)) {
-    for (const name of namedColorsIn(match[3])) found.push(`${match[1]}: "${match[3]}": va un token de tema.md`);
+    for (const name of namedColorsIn(match[3])) found.push(`${match[1]}: ${name}: va un token de tema.md`);
   }
   for (const match of source.matchAll(/\s(fill|stroke|color|stopColor|floodColor)=(["'])([^"']*)\2/g)) {
     for (const name of namedColorsIn(match[3])) found.push(`${match[1]}="${name}": va currentColor o un token de tema.md`);
