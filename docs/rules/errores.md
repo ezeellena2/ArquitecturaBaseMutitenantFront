@@ -37,6 +37,7 @@
 
 ## Lo verifica
 - `harness.test.ts` (E0): formato y referencias de la ficha.
+- `error-usage.test.ts` (E12): ninguna decisión por el texto de un error (`detail`, `title` o `message` comparados o buscados con `includes`, `===`, `switch` o una expresión regular), en todo `src`; y fuera de `shared/api`, ni el `message` crudo, ni el `title` o el `detail` del problema sin `ApiError`, ni el `traceId`.
 
 ## Detalle
 [frontend.md §4, "Errores"](../architecture/frontend.md#errores)
