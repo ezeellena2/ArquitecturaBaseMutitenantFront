@@ -28,7 +28,7 @@
 | Compacto | compact | Solo KPI con tooltip completo; 1,3 M / 1.3M |
 | Tamaño / duración | FileSizeText / DurationText | bytes → 1,5 MB / 1.5 MB; segundos → 2 h 15 min |
 | Teléfono | PhoneText / PhoneField | E.164; nacional si corresponde al país de cultura, internacional en otro caso |
-| Zona | TimeZoneText / TimeZoneSelect | Ciudad traducida y offset actual; nunca ID crudo; orden por SortOrder, offset y ciudad |
+| Zona | TimeZoneText / TimeZoneSelect | Ciudad traducida y, en gris, la hora de su país y el desfase actual («Montevideo · hora de Uruguay · GMT−3», 262), en una sola lista; nunca ID crudo; orden por SortOrder, offset y ciudad |
 | Cultura | CultureText / CultureSelect | Nombre del catálogo; selector en lengua propia con nombre traducido de respaldo |
 | Fiscal | TaxIdText / TaxIdNumberField | Máscara/etiqueta de TaxIdTypes; entrada sin separadores; validación stdnum |
 | Correo | EmailField / texto | Trim, NFC, minúsculas, IDN legible y límites UTF-8 del contrato |
