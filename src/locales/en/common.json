@@ -54,7 +54,9 @@
     "invalidMoney": "Enter a valid amount for the selected currency.",
     "invalidPercent": "Enter a valid percentage.",
     "createOption": "Create “{{value}}”",
-    "selectedList": "{{rest}} and {{last}}"
+    "selectedList": "{{rest}} and {{last}}",
+    "timeZoneCount_one": "{{count}} zone",
+    "timeZoneCount_other": "{{count}} zones"
   },
   "errors": {
     "network": "We couldn't connect. Check your connection.",
@@ -260,5 +262,19 @@
       "confirm": "Resend",
       "pending": "Resending…"
     }
+  },
+  "picker": {
+    "count_one": "{{count}} option",
+    "count_other": "{{count}} options",
+    "search": "Search {{label}}",
+    "searching": "Searching…",
+    "noMatches": "No option matches “{{search}}”.",
+    "empty": "There are no options.",
+    "failed": "We couldn't load the options.",
+    "more": "Show {{count}} more",
+    "upTo": "Up to {{count}}",
+    "chosenOf": "You chose {{count}} of {{max}}",
+    "done": "Done ({{count}})",
+    "andMore": "and {{count}} more"
   }
 }

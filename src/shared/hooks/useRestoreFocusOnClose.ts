@@ -15,12 +15,18 @@ import { useLayoutEffect, useRef, type RefObject } from "react";
 /// correo, la fila ya no ofrece "Agregar correo"; y una opción de un menú (el ⋮ de una fila) se va con el menú, así
 /// que el diálogo recibe el botón del menú. Un elemento que ya no está en la página, que está deshabilitado o que es
 /// `<body>` no toma el foco; sin `fallback`, el foco cae en `<body>` igual que sin este hook.
+///
+/// Un diálogo que abre una elección de la pieza para elegir (`Picker`, 262) se abre mientras la lista se cierra, con el foco
+/// todavía adentro de ella, en un elemento que desaparece enseguida. La lista dice con `data-return-focus-to` cuál es su
+/// botón, y el diálogo guarda ese botón en lugar del elemento de la lista.
 export function useRestoreFocusOnClose(open = true, fallback?: RefObject<HTMLElement | null> | HTMLElement | null): (event: Event) => void {
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
 
   useLayoutEffect(() => {
     if (open) {
-      previouslyFocusedRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      const active = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      const opener = active?.closest("[data-return-focus-to]")?.getAttribute("data-return-focus-to");
+      previouslyFocusedRef.current = (opener ? document.getElementById(opener) : null) ?? active;
     }
   }, [open]);
 
