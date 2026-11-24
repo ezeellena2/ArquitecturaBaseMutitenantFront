@@ -2,11 +2,12 @@ import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useCountdown } from "@/shared/hooks/useCountdown";
 import { ApiError } from "./ApiError";
-import { formatCountdown } from "@/shared/format/countdown";
+import { formatWait } from "@/shared/format/countdown";
 
-/// El formulario le pasa el 429 del botón iniciador. El hook solo cuenta: nunca reenvía el pedido.
+/// El formulario le pasa el 429 del botón iniciador. El hook solo cuenta: nunca reenvía el pedido. La espera va en m:ss
+/// y, desde una hora (un tope diario, 0063), en horas y minutos.
 export function useRetryAfterCountdown() {
-  const { t } = useTranslation("errors");
+  const { t } = useTranslation(["errors", "format"]);
   const { seconds, isRunning, restart } = useCountdown(0);
 
   function startFromError(error: unknown): void {
@@ -15,7 +16,7 @@ export function useRetryAfterCountdown() {
     }
   }
 
-  const time = formatCountdown(seconds);
+  const time = formatWait(seconds, t);
 
   return {
     seconds,

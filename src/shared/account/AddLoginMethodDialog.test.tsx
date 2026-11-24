@@ -352,6 +352,20 @@ it("respeta Retry-After tras once minutos sin reenviar solo, conserva OTP y bloq
   } finally { clock.mockRestore(); }
 });
 
+// 0063 y H10: los topes diarios de Mi cuenta (el del correo y el de los códigos por WhatsApp) dicen su texto, el que ya
+// tradujo el back, y la espera en horas y minutos.
+it.each([
+  { type: "Email" as const, value: "ana@example.test", code: "Messaging.Email.DailyLimit", detail: "Por ahora no se pueden mandar más correos, y no se guardó nada. Probá de nuevo más tarde." },
+  { type: "Phone" as const, value: "+5491155554521", code: "WhatsApp.LoginCode.AccountDailyLimit", detail: "Por hoy no se pueden mandar más códigos por WhatsApp a esta cuenta. Probá de nuevo más tarde." },
+])("un tope diario ($code) dice su texto y espera en horas y minutos", async ({ type, value, code, detail }) => {
+  server.use(http.post("/api/me/login-methods/pending/code", () =>
+    HttpResponse.json({ status: 429, code, detail, retryAfter: 82345 }, { status: 429 })));
+  renderWithProviders(<AddLoginMethodDialog open onOpenChange={() => {}} onComplete={vi.fn()} method={{ id: "pending", type, value, isVerified: false, isPrimary: false, canRemove: true, canMakePrimary: false }} />);
+
+  expect(await screen.findByRole("alert")).toHaveTextContent(detail);
+  expect(screen.getByRole("button", { name: "Reintentá en 22 h 53 min" })).toBeDisabled();
+});
+
 it("cerrar abandona una respuesta tardía sin reabrir OTP ni completar", async () => {
   const user = userEvent.setup(); enableWhatsApp();
   let resolve!: () => void;

@@ -36,6 +36,19 @@ describe("useRetryAfterCountdown", () => {
     expect(onRetry).not.toHaveBeenCalled();
   });
 
+  // 0063: el tope diario del correo pide esperar hasta un día; desde una hora, la espera va en horas y minutos.
+  it("dice una espera larga en horas y minutos", () => {
+    vi.useFakeTimers({ toFake: ["setInterval", "clearInterval", "performance"] });
+    const { result } = renderHook(() => useRetryAfterCountdown(), { wrapper: Wrapper });
+    act(() => result.current.startFromError(new ApiError(429, { code: "Messaging.Email.DailyLimit", retryAfter: 82345 })));
+
+    expect(result.current.label).toBe("Reintentá en 22 h 53 min");
+    act(() => vi.advanceTimersByTime(82345_000 - 3600_000));
+    expect(result.current.label).toBe("Reintentá en 1 h");
+    act(() => vi.advanceTimersByTime(1000));
+    expect(result.current.label).toBe("Reintentá en 59:59");
+  });
+
   it("ignora errores que no sean 429 con Retry-After", () => {
     const { result } = renderHook(() => useRetryAfterCountdown(), { wrapper: Wrapper });
     act(() => result.current.startFromError(new ApiError(409, { code: "General.ConcurrencyConflict" })));

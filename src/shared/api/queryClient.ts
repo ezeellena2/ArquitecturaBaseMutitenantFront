@@ -4,7 +4,7 @@ import { toastError, toastErrorWithCode } from "@/shared/ui/sonner";
 import { toast } from "sonner";
 import { ApiError } from "./ApiError";
 import { publishAccessError } from "./accessErrorStore";
-import { apiErrorMessage, isGenericApiError } from "./errorMessage";
+import { apiErrorMessage, isGenericApiError, rateLimitMessage } from "./errorMessage";
 
 /// Lo que una consulta le dice al manejo global de errores.
 interface AppQueryMeta extends Record<string, unknown> {
@@ -41,12 +41,13 @@ async function copyTraceId(traceId: string): Promise<void> {
 }
 
 /// Red, 5xx y 429, iguales para consultas y mutaciones («Criterio · Avisos»): sin conexión, «Reintentar» vuelve a
-/// pedir lo mismo; un 5xx ofrece copiar el código de seguimiento, que no se muestra; un 429 nunca se reintenta solo.
+/// pedir lo mismo; un 5xx ofrece copiar el código de seguimiento, que no se muestra; un 429 nunca se reintenta solo, y
+/// un tope diario dice el suyo (`rateLimitMessage`).
 function toastGenericError(error: ApiError, retry: () => void): void {
   if (error.isNetworkError) {
     toastError(apiErrorMessage(error, i18n.t), { action: { label: i18n.t("actions.retry"), onClick: retry } });
   } else if (error.status === 429) {
-    toastError(i18n.t("rateLimited", { ns: "errors" }));
+    toastError(rateLimitMessage(error, i18n.t));
   } else if (error.traceId) {
     const traceId = error.traceId;
     toastErrorWithCode(apiErrorMessage(error, i18n.t), { label: i18n.t("copyCode", { ns: "errors" }), onClick: () => copyTraceId(traceId) });

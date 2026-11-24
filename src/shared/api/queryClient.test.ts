@@ -3,7 +3,8 @@ import { toast } from "sonner";
 import { beforeAll, afterEach, describe, expect, it, vi } from "vitest";
 import i18n, { configureI18n } from "@/shared/i18n";
 import { ApiError } from "./ApiError";
-import { getAccessError } from "./accessErrorStore";
+import { clearAccessError, getAccessError } from "./accessErrorStore";
+import { actionErrorMessage } from "./errorMessage";
 import { createQueryClient, queryClient } from "./queryClient";
 
 beforeAll(async () => {
@@ -192,6 +193,35 @@ describe("avisos de las mutaciones", () => {
 
     expect(sent).toHaveBeenCalledTimes(1);
     expect(toastError).toHaveBeenCalledWith("Hiciste muchos pedidos seguidos. Probá de nuevo en unos segundos.", expect.anything());
+  });
+
+  // 0063: el tope diario del correo no es «muchos pedidos seguidos». Una invitación o su reenvío lo avisan abajo con el
+  // texto del back, sin reintentar solo.
+  it("el tope diario del correo avisa con su texto", async () => {
+    const toastError = vi.spyOn(toast, "error");
+    const detail = "Por ahora no se pueden mandar más correos, y no se guardó nada. Probá de nuevo más tarde.";
+    const sent = vi.fn().mockRejectedValue(new ApiError(429, { code: "Messaging.Email.DailyLimit", detail, retryAfter: 82345 }));
+    await observe(sent).mutate().catch(() => undefined);
+
+    expect(sent).toHaveBeenCalledTimes(1);
+    expect(toastError).toHaveBeenCalledWith(detail, expect.anything());
+  });
+
+  // 0061: un 403 nuevo de quien da lo que no tiene es de negocio. Va en la pantalla de la acción, con el texto del back:
+  // ni un aviso abajo ni «No tenés permiso» en lugar de la pantalla.
+  it.each([
+    "Roles.Role.PermissionsNotHeld", "Tenancy.Member.RolesNotHeld", "Tenancy.Member.HasMorePermissions",
+    "Companies.Membership.RolesNotHeld", "Companies.Membership.HasMorePermissions",
+    "Platform.Operator.PermissionsNotHeld", "Platform.Operator.HasMorePermissions",
+  ])("el 403 %s queda para su pantalla", async (code) => {
+    const toastError = vi.spyOn(toast, "error");
+    clearAccessError();
+    const error = new ApiError(403, { code, detail: "No podés dar ni quitar permisos que no tenés." });
+    await observe(() => Promise.reject(error)).mutate().catch(() => undefined);
+
+    expect(toastError).not.toHaveBeenCalled();
+    expect(getAccessError()).toBeNull();
+    expect(actionErrorMessage(error, i18n.t)).toBe("No podés dar ni quitar permisos que no tenés.");
   });
 
   it("deja los errores de negocio a su pantalla y respeta meta.handlesError", async () => {

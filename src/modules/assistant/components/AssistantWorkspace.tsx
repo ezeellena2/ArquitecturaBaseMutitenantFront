@@ -3,7 +3,7 @@ import { AssistantRuntimeProvider } from "@assistant-ui/react";
 import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage, apiErrorMessage, isRateLimitError } from "@/shared/api/errorMessage";
 import { useRetryAfterOf } from "@/shared/api/useRetryAfterCountdown";
-import { formatCountdown } from "@/shared/format/countdown";
+import { formatWait } from "@/shared/format/countdown";
 import { FormError } from "@/shared/ui/FormError";
 import { Button } from "@/shared/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
@@ -40,7 +40,7 @@ export function AssistantWorkspace({ props, session, state }: { props: Assistant
   // ícono; lo escrito queda y mandar vuelve a mano cuando termina.
   const rateLimit = [operations.error, runtime.error].find(isRateLimitError) ?? null;
   const limit = useRetryAfterOf(rateLimit);
-  const limitNotice = limit.isRunning ? <FormError tone="warning" message={t("rateLimited", { time: formatCountdown(limit.seconds) })} /> : null;
+  const limitNotice = limit.isRunning ? <FormError tone="warning" message={t("rateLimited", { time: formatWait(limit.seconds, t) })} /> : null;
   const runtimeError = runtime.error && "code" in runtime.error && !runtime.blockedCode && !isRateLimitError(runtime.error)
     ? runtime.error instanceof ApiError ? apiErrorMessage(runtime.error, t)
       : runtime.turn?.start ? null : assistantStreamErrorMessage(runtime.error, t) : null;

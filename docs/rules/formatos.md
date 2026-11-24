@@ -2,7 +2,7 @@
 **Regla:** mostrar con shared/ui/format y cargar con shared/ui/fields. Solo shared/format formatea; el back usa DisplayFormatter con cultura y zona explícitas. Ambos consumen los mismos [casos](../../../ArquitecturaBaseMutitenant/docs/contracts/format-cases.json).
 ## Cómo se hace
 - useFormat resuelve cultura efectiva, zona de `/api/me` y moneda del dato; sin sesión, relaciones del catálogo.
-- Los instantes se comparan con `shared/time`: el reloj toma `Date` de cada respuesta API y avanza con `performance.now`, independiente de la fecha del dispositivo. Las esperas de reenvío usan tiempo monotónico y su texto m:ss sale de `shared/format/countdown`.
+- Los instantes se comparan con `shared/time`: el reloj toma `Date` de cada respuesta API y avanza con `performance.now`, independiente de la fecha del dispositivo. Las esperas de reenvío usan tiempo monotónico y su texto m:ss sale de `shared/format/countdown`; la de un 429 (`formatWait`), desde una hora, va en horas y minutos redondeados para arriba («22 h 53 min»), porque un tope diario pide esperar hasta un día (0063).
 - Cultura: cuenta → selección del navegador → predeterminada habilitada; define idioma y formato. La zona es la de la cuenta en los tres accesos; fechas civiles y períodos no se convierten.
 - La moneda del dato es explícita; DefaultCurrency solo precarga un importe nuevo.
 - shared/referenceData entrega todas las filas traducidas con isEnabled; los selectores ofrecen habilitadas y el formato acepta valores guardados deshabilitados.
@@ -55,6 +55,6 @@
 ## Copiá de
 - `src/areas/business/roles/columns.tsx` (E4), `src/shared/ui/format/` y `src/shared/ui/fields/` (E1).
 ## Lo verifica
-- `format-usage.test.ts` (E1), `statusTones.test.ts` (E7)
+- `format-usage.test.ts` (E1), `statusTones.test.ts` (E7), `countdown.test.ts` (la espera larga, base de la 12)
 ## Detalle
 [Datos de referencia](../../../ArquitecturaBaseMutitenant/docs/architecture/datos-de-referencia.md) y [números y moneda](../../../ArquitecturaBaseMutitenant/docs/rules/numeros-y-moneda.md).

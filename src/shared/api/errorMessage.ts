@@ -15,6 +15,15 @@ export function isRateLimitError(error: unknown): error is ApiError {
   return error instanceof ApiError && error.status === 429;
 }
 
+/// Los topes de negocio que no son «muchos pedidos seguidos» y dicen su texto, el que ya tradujo el back, también en el
+/// aviso de abajo: el diario del correo (0063), que frena una invitación o su reenvío hasta un día.
+const quotasWithText: ReadonlySet<string> = new Set(["Messaging.Email.DailyLimit"]);
+
+/// El texto de un 429 en el aviso de abajo (`queryClient`): el de su tope, si lo tiene; si no, el común.
+export function rateLimitMessage(error: ApiError, t: TFunction): string {
+  return error.code && quotasWithText.has(error.code) && error.detail ? error.detail : t("errors:rateLimited");
+}
+
 /// Lo que pidió la pantalla no existe para quien mira (404, también un id de otra organización o de otro acceso): la
 /// ficha muestra `NotFoundPage` en lugar de la pantalla de error con «Reintentar».
 export function isNotFoundError(error: unknown): error is ApiError {
