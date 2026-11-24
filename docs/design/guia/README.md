@@ -11,7 +11,7 @@ Son dos guías, porque una versión de un artefacto admite hasta 511 archivos. L
 - **la del lienzo**, con todo menos Formularios: <https://claude.ai/artifact/3afhCQaqwMx6kLxY4B6gpZ>;
 - **la de Formularios**, de la etapa 12 a la 25, con la biblioteca de la plataforma: <https://claude.ai/artifact/K78KMJcoq8dw6YmMjuRvEu>.
 
-Qué va en la de Formularios lo dicen `CAPITULO_FORMULARIOS` y `BIBLIOTECA`, en `recorrido.py`: su capítulo y, aparte, las pantallas de la biblioteca de la plataforma. El índice del lienzo sigue los capítulos sin partir. Los recorridos guiados van por etapa: de la 12 en adelante, en la de Formularios.
+Qué va en la de Formularios lo dicen `CAPITULO_FORMULARIOS` y `BIBLIOTECA`, en `recorrido.py`: su capítulo y, aparte, las pantallas de la biblioteca de la plataforma. El índice del lienzo sigue los capítulos sin partir. Los recorridos guiados van por etapa: de la 12 en adelante, en la de Formularios. Un capítulo de `LIENZOS_APARTE` tiene sus tableros en otro lienzo, porque el principal llegó a los 512 archivos por versión: desde el 24/11, «Contrata módulos», en el de «Módulos y suscripciones». La guía del lienzo lo suma igual, con «Abrir su lienzo».
 
 **Se regeneran y se publican con cada versión del lienzo**, cada una en su link.
 

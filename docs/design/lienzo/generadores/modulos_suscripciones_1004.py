@@ -3,8 +3,8 @@ después de la E25: la organización pide, prueba, se suscribe, cambia la tarjet
 ofrece cada módulo con sus precios, resuelve los pedidos, ve las suscripciones con sus cobros, fija los topes de una organización
 y carga los plazos y las claves de Mercado Pago.
 
-Escribe, en la página «Propuesta · Módulos y suscripciones» de un lienzo aparte (su índice es `canvas-propuesta-modulos.json`, porque
-el principal llegó a los 512 archivos que admite una versión con la v180), para que el usuario los apruebe:
+Escribe, en la página «Módulos y suscripciones» de un lienzo aparte (su índice es `canvas-modulos.json`, porque el principal
+llegó a los 512 archivos que admite una versión con la v180), los tableros que el usuario aprobó el 2026-11-24:
 - en la organización: `MOD-Modulos`, `MOD-Suscribir`, `MOD-Pedir` (con la propuesta del asistente, ADR 0068), `MOD-Confirmar`
   y `MOD-Exportar`;
 - en Plataforma: `Plat-MOD-Catalogo`, `Plat-MOD-Modulo`, `Plat-MOD-Precio`, `Plat-MOD-Pedidos`, `Plat-MOD-Suscripciones`,
@@ -29,9 +29,9 @@ import sys
 sys.stdout.reconfigure(encoding="utf-8")
 PROJ = pathlib.Path(__file__).resolve().parent.parent
 COPIA = pathlib.Path(__file__).resolve().parent / "modulos_suscripciones_1004"
-PAGINA = {"id": "propuesta-modulos", "name": "Propuesta · Módulos y suscripciones"}
+# El id de la página es el de la propuesta, para que sigan andando los enlaces de antes (aprobada el 2026-11-24).
+PAGINA = {"id": "propuesta-modulos", "name": "Módulos y suscripciones"}
 MARCA = 'data-mod="modulos"'
-PARA_APROBAR = " · para aprobar"
 
 
 def copia(nombre):
@@ -894,7 +894,7 @@ def mod_modulos():
     n = len(estados)
     quien = [LUCIA] * (n - 1) + [TOMAS]
     rell = {"@MAIN@": mains, "@VELO@": [""] * n, "@MENU_MOD@": [MENU_MOD_ORG] * (n - 1) + [""], **personas(quien)}
-    return tablero("Roles", "Módulos · /org/modulos" + PARA_APROBAR, CSS_COMPU, marco_org(), rell, estados, 1440, 900)
+    return tablero("Roles", "Módulos · /org/modulos", CSS_COMPU, marco_org(), rell, estados, 1440, 900)
 
 
 def m_mod_modulos():
@@ -914,7 +914,7 @@ def m_mod_modulos():
     rell = {"@TBAR@": [barra_t("Módulos", "Administración", "M-WA-Menu.dc.html")] * n,
             "@TCUERPO@": [f'<div class="ap-cuerpo">{x}</div>' if k < n - 1 else x for k, x in enumerate(cuerpos)],
             "@THOJA@": hojas}
-    return tablero("M-Roles", "Módulos · teléfono" + PARA_APROBAR, CSS_TEL, marco, rell, estados, 390, 844)
+    return tablero("M-Roles", "Módulos · teléfono", CSS_TEL, marco, rell, estados, 390, 844)
 
 
 def cards_modulos(est_form, tip_abierta=False, keb=True, marcada=False):
@@ -1015,7 +1015,7 @@ def mod_suscribir():
     n = len(estados)
     quien = [LUCIA] * (n - 1) + [TOMAS]
     rell = {"@MAIN@": [e[1] for e in estados], "@VELO@": [""] * n, "@MENU_MOD@": [MENU_MOD_ORG] * (n - 1) + [""], **personas(quien)}
-    return tablero("Roles", "Suscribirme a un módulo · /org/modulos/formularios/suscripcion" + PARA_APROBAR, CSS_COMPU,
+    return tablero("Roles", "Suscribirme a un módulo · /org/modulos/formularios/suscripcion", CSS_COMPU,
                    marco_org([("Inicio", "Inicio-Org.dc.html"), ("Módulos", "MOD-Modulos.dc.html"), ("Formularios", None)]),
                    rell, [e[0] for e in estados], 1440, 900)
 
@@ -1074,7 +1074,7 @@ def m_mod_suscribir():
     n = len(est)
     rell = {"@TBAR@": [barra_t(e[1], "Formularios" if e[1] != "Módulos" else "Administración", "M-MOD-Modulos.dc.html") for e in est],
             "@TCUERPO@": [e[2] for e in est], "@THOJA@": [e[3] for e in est]}
-    return tablero("M-Roles", "Suscribirme a un módulo · teléfono" + PARA_APROBAR, CSS_TEL, marco_tel("m_roles", sin_nav=True), rell, [e[0] for e in est], 390, 844)
+    return tablero("M-Roles", "Suscribirme a un módulo · teléfono", CSS_TEL, marco_tel("m_roles", sin_nav=True), rell, [e[0] for e in est], 390, 844)
 
 
 # ================================================================================================================ MOD-Pedir
@@ -1156,7 +1156,7 @@ def mod_pedir():
     velos += ["", ""]
     n = len(estados)
     rell = {"@MAIN@": mains, "@VELO@": velos, "@MENU_MOD@": [MENU_MOD_ORG] * n, **personas([LUCIA] * n)}
-    return tablero("Roles", "Pedir un módulo, también con la propuesta del asistente" + PARA_APROBAR, CSS_COMPU, marco_org(), rell, estados, 1440, 900)
+    return tablero("Roles", "Pedir un módulo, también con la propuesta del asistente", CSS_COMPU, marco_org(), rell, estados, 1440, 900)
 
 
 def hoja_pedir(estado):
@@ -1207,7 +1207,7 @@ def m_mod_pedir():
     hojas += ["", ""]
     n = len(estados)
     rell = {"@TBAR@": [barra_t("Módulos", "Administración", "M-WA-Menu.dc.html")] * n, "@TCUERPO@": cuerpos, "@THOJA@": hojas}
-    return tablero("M-Roles", "Pedir un módulo · teléfono" + PARA_APROBAR, CSS_TEL, marco_tel("m_roles"), rell, estados, 390, 844)
+    return tablero("M-Roles", "Pedir un módulo · teléfono", CSS_TEL, marco_tel("m_roles"), rell, estados, 390, 844)
 
 
 # ================================================================================================================ MOD-Confirmar
@@ -1245,7 +1245,7 @@ def mod_confirmar():
     mains = [pagina_modulos(e[1], None, abierto=False, tip_abierta=bool(e[3]) and not e[2], marcada=False) + e[3] for e in est]
     n = len(est)
     rell = {"@MAIN@": mains, "@VELO@": [e[2] for e in est], "@MENU_MOD@": [MENU_MOD_ORG] * n, **personas([LUCIA] * n)}
-    return tablero("Roles", "Probar gratis y dar de baja un módulo" + PARA_APROBAR, CSS_COMPU, marco_org(), rell, [e[0] for e in est], 1440, 900)
+    return tablero("Roles", "Probar gratis y dar de baja un módulo", CSS_COMPU, marco_org(), rell, [e[0] for e in est], 1440, 900)
 
 
 def m_mod_confirmar():
@@ -1269,7 +1269,7 @@ def m_mod_confirmar():
     ]
     n = len(est)
     rell = {"@TBAR@": [barra_t("Módulos", "Administración", "M-WA-Menu.dc.html")] * n, "@TCUERPO@": [e[1] for e in est], "@THOJA@": [e[2] for e in est]}
-    return tablero("M-Roles", "Probar gratis y dar de baja un módulo · teléfono" + PARA_APROBAR, CSS_TEL, marco_tel("m_roles"), rell, [e[0] for e in est], 390, 844)
+    return tablero("M-Roles", "Probar gratis y dar de baja un módulo · teléfono", CSS_TEL, marco_tel("m_roles"), rell, [e[0] for e in est], 390, 844)
 
 
 # ================================================================================================================ MOD-Exportar
@@ -1310,7 +1310,7 @@ def mod_exportar():
     mains = [pagina_modulos(susp[1], susp[2], abierto=True, tip_abierta=False)] + mains
     n = len(est)
     rell = {"@MAIN@": mains, "@VELO@": [e[1] for e in est], "@MENU_MOD@": [MENU_MOD_ORG] * n, **personas([LUCIA] * n)}
-    return tablero("Roles", "Exportar los datos de un módulo" + PARA_APROBAR, CSS_COMPU, marco_org(), rell, [e[0] for e in est], 1440, 900)
+    return tablero("Roles", "Exportar los datos de un módulo", CSS_COMPU, marco_org(), rell, [e[0] for e in est], 1440, 900)
 
 
 def m_mod_exportar():
@@ -1336,7 +1336,7 @@ def m_mod_exportar():
     n = len(est)
     cuerpo = f'<div class="ap-cuerpo"><div class="mod-cards">{cards_modulos(("Suspendido", "amb", f"Tus datos se guardan hasta el {BORRA}."))}</div></div>'
     rell = {"@TBAR@": [barra_t("Módulos", "Administración", "M-WA-Menu.dc.html")] * n, "@TCUERPO@": [cuerpo] * n, "@THOJA@": [e[1] for e in est]}
-    return tablero("M-Roles", "Exportar los datos de un módulo · teléfono" + PARA_APROBAR, CSS_TEL, marco_tel("m_roles"), rell, [e[0] for e in est], 390, 844)
+    return tablero("M-Roles", "Exportar los datos de un módulo · teléfono", CSS_TEL, marco_tel("m_roles"), rell, [e[0] for e in est], 390, 844)
 
 
 # ================================================================================================================ Plataforma: datos
@@ -1411,7 +1411,7 @@ def plat_mod_catalogo():
     marco = marco_plat([("Plataforma", "Organizaciones.dc.html"), ("Módulos", None)])
     rell = {"@MAIN@": [e[1] for e in est], "@VELO@": [e[2] for e in est],
             "@MENU_MOD@": [menu_mod_plat("Catálogo")] * (n - 1) + [""], **personas(quien)}
-    return tablero("Organizaciones", "Catálogo de módulos · /plataforma/modulos" + PARA_APROBAR, CSS_COMPU, marco, rell, [e[0] for e in est], 1440, 900)
+    return tablero("Organizaciones", "Catálogo de módulos · /plataforma/modulos", CSS_COMPU, marco, rell, [e[0] for e in est], 1440, 900)
 
 
 def marco_tel_plat(mas=True, base="m_organizaciones"):
@@ -1445,7 +1445,7 @@ def m_plat_mod_catalogo():
     ]
     n = len(est)
     rell = {"@TBAR@": [barra_t("Módulos", "Plataforma", "M-Mas-Plat.dc.html")] * n, "@TCUERPO@": [e[1] for e in est], "@THOJA@": [e[2] for e in est]}
-    return tablero("M-Organizaciones", "Catálogo de módulos · teléfono" + PARA_APROBAR, CSS_TEL, marco_tel_plat(), rell, [e[0] for e in est], 390, 844)
+    return tablero("M-Organizaciones", "Catálogo de módulos · teléfono", CSS_TEL, marco_tel_plat(), rell, [e[0] for e in est], 390, 844)
 
 
 # ================================================================================================================ Plat-MOD-Modulo
@@ -1502,7 +1502,7 @@ def plat_mod_modulo():
     quien = [MARTIN] * (n - 1) + [SOFIA]
     marco = marco_plat([("Plataforma", "Organizaciones.dc.html"), ("Módulos", "Plat-MOD-Catalogo.dc.html"), ("Formularios", None)])
     rell = {"@MAIN@": [e[1] for e in est], "@VELO@": [e[2] for e in est], "@MENU_MOD@": [menu_mod_plat("Catálogo")] * (n - 1) + [""], **personas(quien)}
-    return tablero("Organizaciones", "Un módulo · /plataforma/modulos/formularios" + PARA_APROBAR, CSS_COMPU, marco, rell, [e[0] for e in est], 1440, 900)
+    return tablero("Organizaciones", "Un módulo · /plataforma/modulos/formularios", CSS_COMPU, marco, rell, [e[0] for e in est], 1440, 900)
 
 
 def m_plat_mod_modulo():
@@ -1532,7 +1532,7 @@ def m_plat_mod_modulo():
     ]
     n = len(est)
     rell = {"@TBAR@": [e[1] for e in est], "@TCUERPO@": [e[2] for e in est], "@THOJA@": [e[3] for e in est]}
-    return tablero("M-Organizaciones", "Un módulo · teléfono" + PARA_APROBAR, CSS_TEL, marco_tel_plat(), rell, [e[0] for e in est], 390, 844)
+    return tablero("M-Organizaciones", "Un módulo · teléfono", CSS_TEL, marco_tel_plat(), rell, [e[0] for e in est], 390, 844)
 
 
 # ================================================================================================================ Plat-MOD-Precio
@@ -1597,7 +1597,7 @@ def plat_mod_precio():
     n = len(est)
     marco = marco_plat([("Plataforma", "Organizaciones.dc.html"), ("Módulos", "Plat-MOD-Catalogo.dc.html"), ("Formularios", None)])
     rell = {"@MAIN@": [e[1] for e in est], "@VELO@": [e[2] for e in est], "@MENU_MOD@": [menu_mod_plat("Catálogo")] * n, **personas([MARTIN] * n)}
-    return tablero("Organizaciones", "Nuevo precio de un módulo" + PARA_APROBAR, CSS_COMPU, marco, rell, [e[0] for e in est], 1440, 900)
+    return tablero("Organizaciones", "Nuevo precio de un módulo", CSS_COMPU, marco, rell, [e[0] for e in est], 1440, 900)
 
 
 def m_plat_mod_precio():
@@ -1632,7 +1632,7 @@ def m_plat_mod_precio():
             ("Sin permiso", sin_permiso_t("M-Organizaciones.dc.html"), "")]
     n = len(est)
     rell = {"@TBAR@": [bar] * n, "@TCUERPO@": [e[1] for e in est], "@THOJA@": [e[2] for e in est]}
-    return tablero("M-Organizaciones", "Nuevo precio de un módulo · teléfono" + PARA_APROBAR, CSS_TEL, marco_tel("m_organizaciones", sin_nav=True), rell, [e[0] for e in est], 390, 844)
+    return tablero("M-Organizaciones", "Nuevo precio de un módulo · teléfono", CSS_TEL, marco_tel("m_organizaciones", sin_nav=True), rell, [e[0] for e in est], 390, 844)
 
 
 # ================================================================================================================ Plat-MOD-Pedidos
@@ -1718,7 +1718,7 @@ def plat_mod_pedidos():
     quien = [MARTIN] * (n - 1) + [SOFIA]
     marco = marco_plat([("Plataforma", "Organizaciones.dc.html"), ("Módulos", "Plat-MOD-Catalogo.dc.html"), ("Pedidos", None)])
     rell = {"@MAIN@": [e[1] for e in est], "@VELO@": [e[2] for e in est], "@MENU_MOD@": [menu_mod_plat("Pedidos")] * (n - 1) + [""], **personas(quien)}
-    return tablero("Organizaciones", "Pedidos de módulos · /plataforma/modulos/pedidos" + PARA_APROBAR, CSS_COMPU, marco, rell, [e[0] for e in est], 1440, 900)
+    return tablero("Organizaciones", "Pedidos de módulos · /plataforma/modulos/pedidos", CSS_COMPU, marco, rell, [e[0] for e in est], 1440, 900)
 
 
 def m_plat_mod_pedidos():
@@ -1753,7 +1753,7 @@ def m_plat_mod_pedidos():
     filtro = f'<button type="button" class="ap-ib" aria-label="Filtros">{icono("<path d=\'M4 6h16M7 12h10M10 18h4\'/>", 22, "2")}</button>'
     rell = {"@TBAR@": [barra_t("Pedidos de módulos", "Plataforma", "M-Mas-Plat.dc.html", filtro)] * (n - 1) + [barra_t("Pedidos de módulos", "Plataforma", "M-Mas-Plat.dc.html")],
             "@TCUERPO@": [e[1] for e in est], "@THOJA@": [e[2] for e in est]}
-    return tablero("M-Organizaciones", "Pedidos de módulos · teléfono" + PARA_APROBAR, CSS_TEL, marco_tel_plat(), rell, [e[0] for e in est], 390, 844)
+    return tablero("M-Organizaciones", "Pedidos de módulos · teléfono", CSS_TEL, marco_tel_plat(), rell, [e[0] for e in est], 390, 844)
 
 
 # ================================================================================================================ Plat-MOD-Suscripciones
@@ -1837,7 +1837,7 @@ def plat_mod_suscripciones():
     quien = [MARTIN] * (n - 1) + [SOFIA]
     marco = marco_plat([("Plataforma", "Organizaciones.dc.html"), ("Módulos", "Plat-MOD-Catalogo.dc.html"), ("Suscripciones", None)])
     rell = {"@MAIN@": [e[1] for e in est], "@VELO@": [""] * n, "@MENU_MOD@": [menu_mod_plat("Suscripciones")] * (n - 1) + [""], **personas(quien)}
-    return tablero("Organizaciones", "Suscripciones · /plataforma/modulos/suscripciones" + PARA_APROBAR, CSS_COMPU, marco, rell, [e[0] for e in est], 1440, 900)
+    return tablero("Organizaciones", "Suscripciones · /plataforma/modulos/suscripciones", CSS_COMPU, marco, rell, [e[0] for e in est], 1440, 900)
 
 
 def m_plat_mod_suscripciones():
@@ -1869,7 +1869,7 @@ def m_plat_mod_suscripciones():
     ]
     n = len(est)
     rell = {"@TBAR@": [e[1] for e in est], "@TCUERPO@": [e[2] for e in est], "@THOJA@": [""] * n}
-    return tablero("M-Organizaciones", "Suscripciones · teléfono" + PARA_APROBAR, CSS_TEL, marco_tel_plat(), rell, [e[0] for e in est], 390, 844)
+    return tablero("M-Organizaciones", "Suscripciones · teléfono", CSS_TEL, marco_tel_plat(), rell, [e[0] for e in est], 390, 844)
 
 
 # ================================================================================================================ Plat-Org-Modulos
@@ -1974,7 +1974,7 @@ def plat_org_modulos():
     n = len(est)
     quien = [MARTIN] * (n - 1) + [SOFIA]
     rell = {"@MAIN@": [e[1] for e in est], "@VELO@": [e[2] for e in est], "@MENU_MOD@": [menu_mod_plat_cerrado()] * (n - 1) + [""], **personas(quien)}
-    return tablero("Organizacion", "Ficha de una organización · Módulos, con sus filas y sus topes" + PARA_APROBAR, CSS_COMPU, marco_ficha_org(), rell,
+    return tablero("Organizacion", "Ficha de una organización · Módulos, con sus filas y sus topes", CSS_COMPU, marco_ficha_org(), rell,
                    [e[0] for e in est], 1440, 900)
 
 
@@ -2016,7 +2016,7 @@ def m_plat_org_modulos():
     ]
     n = len(est)
     rell = {"@TBAR@": [e[1] for e in est], "@TCUERPO@": [e[2] for e in est], "@THOJA@": [e[3] for e in est]}
-    return tablero("M-Organizacion", "Ficha de una organización · Módulos · teléfono" + PARA_APROBAR, CSS_TEL, marco_tel("m_organizacion"), rell,
+    return tablero("M-Organizacion", "Ficha de una organización · Módulos · teléfono", CSS_TEL, marco_tel("m_organizacion"), rell,
                    [e[0] for e in est], 390, 844)
 
 
@@ -2098,7 +2098,7 @@ def config_plat_modulos():
     n = len(est)
     quien = [MARTIN] * (n - 1) + [SOFIA]
     rell = {"@MAIN@": [e[1] for e in est], "@VELO@": [e[2] for e in est], **personas(quien)}
-    return tablero("Config-Plat", "Configuración de la plataforma · Módulos y cobros, y Mercado Pago" + PARA_APROBAR, CSS_COMPU, marco_config_plat(), rell,
+    return tablero("Config-Plat", "Configuración de la plataforma · Módulos y cobros, y Mercado Pago", CSS_COMPU, marco_config_plat(), rell,
                    [e[0] for e in est], 1440, 900)
 
 
@@ -2139,7 +2139,7 @@ def m_config_plat_modulos():
     ]
     n = len(est)
     rell = {"@TBAR@": [barra_t("Configuración", "Administración", "M-Mas-Plat.dc.html")] * n, "@TCUERPO@": [e[1] for e in est], "@THOJA@": [e[2] for e in est]}
-    return tablero("M-Config-Plat", "Configuración de la plataforma · Módulos y cobros, y Mercado Pago · teléfono" + PARA_APROBAR, CSS_TEL,
+    return tablero("M-Config-Plat", "Configuración de la plataforma · Módulos y cobros, y Mercado Pago · teléfono", CSS_TEL,
                    marco_tel("m_config_plat"), rell, [e[0] for e in est], 390, 844)
 
 
@@ -2228,7 +2228,7 @@ def mensajes_modulos():
             listas.append(lista(nombre))
             ders.append(f'<section class="msg-der">{barra("false", "true")}<div class="msg-vista">{w}</div></section>')
     rell = {"@LISTA@": listas, "@DER@": ders}
-    return tablero("Mensajes", "Los avisos de los módulos" + PARA_APROBAR, CSS_COMPU, marco, rell, estados, 1440, 900)
+    return tablero("Mensajes", "Los avisos de los módulos", CSS_COMPU, marco, rell, estados, 1440, 900)
 
 
 # ---------------------------------------------------------------------------------------------------------------- canvas.json
@@ -2246,7 +2246,8 @@ TELEFONOS = [
     ("M-Plat-MOD-Pedidos", m_plat_mod_pedidos), ("M-Plat-MOD-Suscripciones", m_plat_mod_suscripciones), ("M-Plat-Org-Modulos", m_plat_org_modulos),
     ("M-Config-Plat-Modulos", m_config_plat_modulos),
 ]
-NOTA = ("Módulos y suscripciones (ADR 0069 del back; spec `docs/plans/formularios/modulos-y-suscripciones.md`), para aprobar. Va después de la E25: "
+NOTA = ("Módulos y suscripciones (ADR 0069 del back; spec `docs/plans/formularios/modulos-y-suscripciones.md`), aprobada por el usuario "
+        "el 2026-11-24. Va después de la E25: "
         "cada tablero muestra solo lo que existe hasta acá (78).\n\n"
         "En la organización, «Módulos» va en Administración, después de Configuración, con `modules.manage` (de entrada, solo el Dueño). "
         "Cada módulo con su descripción, su estado, su precio y el que viene; las acciones van en su ⋮ (261) y el servidor dice cuáles. "
@@ -2259,16 +2260,16 @@ NOTA = ("Módulos y suscripciones (ADR 0069 del back; spec `docs/plans/formulari
         "«Mercado Pago» después de «Límites de uso». Aprobar un pedido, cambiar lo que se ofrece, un precio nuevo y guardar la "
         "configuración piden «Confirmá que sos vos» (la prueba reciente).\n\n"
         "Los correos van en `Mensajes-Modulos`: seis también por WhatsApp, con su plantilla, y dos solo por correo.\n\n"
-        "Es un lienzo aparte porque el principal llegó a los 512 archivos que admite una versión. Al aprobarlo, sus tableros pasan al "
-        "principal cuando se les haga lugar, y recién ahí entran en la guía y en los índices. Los enlaces a pantallas que están en el "
-        "principal (Inicio, Usuarios, Organizaciones) no llevan a ningún lado acá.")
+        "Es un lienzo aparte porque el principal llegó a los 512 archivos que admite una versión, y el usuario eligió que quede acá. "
+        "Su índice, `Indice-modulos`, es el capítulo «Contrata módulos» de la guía; el índice general del principal lleva a este lienzo. "
+        "Los enlaces a pantallas que están en el principal (Inicio, Usuarios, Organizaciones) no llevan a ningún lado acá.")
 
 
 # El lienzo aparte (pedido del usuario del 2026-11-23): el principal llegó a los 512 archivos que admite una versión con la v180,
-# así que la propuesta va en su propio artefacto Design, con su índice. Al aprobarla, sus tableros pasan al principal cuando se les
-# haga lugar, y recién ahí entran en la guía y en los índices (como las acciones del asistente, v177 a v179).
-INDICE = PROJ / "canvas-propuesta-modulos.json"
-TITULO = "Propuesta · Módulos y suscripciones"
+# así que la etapa va en su propio artefacto Design, con su índice; aprobada, se queda ahí (2026-11-24). Arriba a la izquierda va
+# `Indice-modulos`, que escribe `indices_1004.py`; esta corrida lo conserva.
+INDICE = PROJ / "canvas-modulos.json"
+TITULO = "Módulos y suscripciones"
 CREADO = "2026-11-23T21:30:00Z"
 
 
@@ -2278,12 +2279,14 @@ def registrar():
     for nombre, _ in TABLEROS + TELEFONOS:
         t = (PROJ / f"{nombre}.dc.html").read_text(encoding="utf-8")
         titulos[nombre] = re.search(r"<title>(.*?)</title>", t).group(1)
+    antes = json.loads(INDICE.read_text(encoding="utf-8")) if INDICE.exists() else {"boards": {}}
+    indices = {k: v for k, v in antes["boards"].items() if k.startswith("Indice-")}
     c_ = {"v": 3, "createdOnFiles": {"v": 1, "at": CREADO}, "title": TITULO, "launch": {"view": "canvas", "page": PAGINA["id"]},
-          "pages": [dict(PAGINA)], "boards": {}, "order": [], "notes": {}, "designSystems": principal["designSystems"]}
+          "pages": [dict(PAGINA)], "boards": dict(indices), "order": [], "notes": {}, "designSystems": principal["designSystems"]}
     # Dos filas: la organización y Plataforma, cada pantalla con su teléfono abajo.
     org = [n for n, _ in TABLEROS if n.startswith("MOD-")]
     plat = [n for n, _ in TABLEROS if not n.startswith("MOD-")]
-    x0, paso = 700, 1540
+    x0, paso = 2260, 1540  # a la izquierda, el índice (1440) y la nota (620)
     for fila, nombres in enumerate((org, plat)):
         y = fila * 2100
         for k, nombre in enumerate(nombres):
@@ -2293,8 +2296,8 @@ def registrar():
             if tel in titulos:
                 c_["boards"][f"{tel}.dc.html"] = {"h": 844, "is_interactive": True, "page": PAGINA["id"], "title": titulos[tel], "w": 390,
                                                   "x": x0 + k * paso, "y": y + 1000}
-    c_["notes"]["propuesta-modulos"] = {"color": "blue", "page": PAGINA["id"], "text": NOTA, "w": 620, "x": 0, "y": 0}
-    c_["order"] = [f"{n}.dc.html" for n, _ in TABLEROS + TELEFONOS]
+    c_["notes"]["propuesta-modulos"] = {"color": "blue", "page": PAGINA["id"], "text": NOTA, "w": 620, "x": 1540, "y": 0}
+    c_["order"] = list(indices) + [f"{n}.dc.html" for n, _ in TABLEROS + TELEFONOS]
     INDICE.write_text(json.dumps(c_, ensure_ascii=False, indent=2), encoding="utf-8")
 
 

@@ -13,7 +13,7 @@ import tempfile
 
 AQUI = pathlib.Path(__file__).resolve().parent
 sys.path.insert(0, str(AQUI))
-from recorrido import BIBLIOTECA, CAPITULO_FORMULARIOS, CAPITULOS, CODIGO, TEXTO_PLATAFORMA, VERSION  # noqa: E402
+from recorrido import BIBLIOTECA, CAPITULO_FORMULARIOS, CAPITULOS, CODIGO, LIENZOS_APARTE, TEXTO_PLATAFORMA, VERSION  # noqa: E402
 
 LIENZO = AQUI.parent / "lienzo"
 SALIDA = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else pathlib.Path(tempfile.gettempdir()) / "guia-lienzo"
@@ -21,6 +21,8 @@ URL_LIENZO = "https://claude.ai/artifact/WzoVTM574QGka8nCU4iFEK"
 URL_GUIA = "https://claude.ai/artifact/3afhCQaqwMx6kLxY4B6gpZ"
 URL_GUIA_FORMULARIOS = "https://claude.ai/artifact/K78KMJcoq8dw6YmMjuRvEu"
 CANVAS = json.loads((LIENZO / "canvas.json").read_text(encoding="utf-8"))["boards"]
+for _indice, _ in LIENZOS_APARTE.values():  # los tableros de un lienzo aparte se capturan igual, desde esta carpeta
+    CANVAS.update(json.loads((LIENZO / _indice).read_text(encoding="utf-8"))["boards"])
 REPETIDAS = {}  # captura de un recorrido idéntica a otra → la que queda (el artefacto admite hasta 512 archivos)
 
 
@@ -100,7 +102,7 @@ GUIAS = {
     "lienzo": {
         "archivo": "Guia-Lienzo.html", "titulo": "Guía del lienzo multitenant", "h1": "Guía del lienzo",
         "texto": "El recorrido completo, en el orden en que una persona usa el sistema: llega al sitio, entra, ve su perfil, registra su empresa, "
-                 "arma su equipo, la administra, atiende por WhatsApp, le pregunta al asistente y, aparte, lo que usan los operadores de la plataforma. "
+                 "arma su equipo, la administra, contrata módulos, atiende por WhatsApp, le pregunta al asistente y, aparte, lo que usan los operadores de la plataforma. "
                  "Los formularios tienen su propia guía. " + ANTES,
         "recorrido": lambda r: r["etapa"] not in ETAPAS_FORMULARIOS,
         "otra": (URL_GUIA_FORMULARIOS, "Abrir la guía de Formularios"),
@@ -171,7 +173,8 @@ def pagina(guia):
     for k, (cid, titulo, texto, ps) in enumerate(capitulos(guia), 1):
         nav.append(f'<a href="#{cid}"><span class="n">{k}</span>{e(titulo)}</a>')
         filas = "".join(pantalla(p, f"{k}.{i}") for i, p in enumerate(ps, 1))
-        secciones.append(f'<section class="cap-sec" id="{cid}"><header class="cap-cab"><span class="paso">Paso {k}</span><h2>{e(titulo)}</h2><p>{e(texto)}</p></header>{filas}</section>')
+        aparte = (f' <a href="{e(LIENZOS_APARTE[cid][1])}" target="_blank" rel="noopener">Abrir su lienzo</a>' if cid in LIENZOS_APARTE else "")
+        secciones.append(f'<section class="cap-sec" id="{cid}"><header class="cap-cab"><span class="paso">Paso {k}</span><h2>{e(titulo)}</h2><p>{e(texto)}{aparte}</p></header>{filas}</section>')
         total_p += len(ps)
         total_t += sum(len(p[5]) + len(p[6]) + len(p[7]) for p in ps)
         prog += sum(1 for p in ps if p[3] == "si")

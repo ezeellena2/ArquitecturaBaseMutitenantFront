@@ -177,6 +177,11 @@ def pasar(t, cuenta):
 
 
 canvas = json.loads((PROJ / "canvas.json").read_text(encoding="utf-8"))
+sys.path.insert(0, str(PROJ.parent / "guia"))
+from recorrido import LIENZOS_APARTE  # noqa: E402  los tableros de un lienzo aparte también pasan
+
+for _indice, _ in LIENZOS_APARTE.values():
+    canvas["boards"].update(json.loads((PROJ / _indice).read_text(encoding="utf-8"))["boards"])
 cuenta, cambiados = {}, 0
 for nombre in sorted(canvas["boards"]):
     ruta = PROJ / nombre

@@ -4,6 +4,9 @@ por pantalla con enlaces a su compu, su teléfono y lo que se abre desde ahí. C
 
 Sale de `docs/design/guia/recorrido.py`, así el lienzo y la guía cuentan lo mismo. Un tablero que está en el Archivo no
 aparece. Toda pantalla nueva se suma a `recorrido.py` y vuelve a correr este generador (README del lienzo).
+
+Un capítulo de `R.LIENZOS_APARTE` tiene sus tableros en otro artefacto: su índice va en ese lienzo, registrado en su
+`canvas-*.json`, y la tarjeta del índice general lleva a ese lienzo en otra pestaña.
 """
 import html
 import json
@@ -17,7 +20,9 @@ sys.path.insert(0, str(PROJ.parent / "guia"))
 import recorrido as R  # noqa: E402
 
 CANVAS = json.loads((PROJ / "canvas.json").read_text(encoding="utf-8"))
-B = CANVAS["boards"]
+B = dict(CANVAS["boards"])
+for _indice, _ in R.LIENZOS_APARTE.values():
+    B.update(json.loads((PROJ / _indice).read_text(encoding="utf-8"))["boards"])
 PAGINA = "mapa"
 NOMBRE_PAGINA = "Índice y mapas"
 ANCHO = 1440
@@ -138,7 +143,7 @@ def alto_area(pantallas):
 
 
 # Altos medidos con Playwright (fondo del contenido + 56); si falta uno, se usa la estimación.
-ALTOS = {'Indice': 1214, 'Indice-administra': 786, 'Indice-asistente': 579, 'Indice-empresa': 416, 'Indice-entra': 547, 'Indice-equipo': 547, 'Indice-formularios': 2121, 'Indice-llega': 547, 'Indice-manda': 437, 'Indice-persona': 560, 'Indice-plataforma': 1140, 'Indice-whatsapp': 1002}
+ALTOS = {'Indice': 1214, 'Indice-administra': 786, 'Indice-asistente': 579, 'Indice-empresa': 416, 'Indice-entra': 547, 'Indice-equipo': 547, 'Indice-formularios': 2121, 'Indice-llega': 547, 'Indice-manda': 437, 'Indice-modulos': 685, 'Indice-persona': 560, 'Indice-plataforma': 1140, 'Indice-whatsapp': 1002}
 
 
 def pagina(titulo, cuerpo, alto):
@@ -152,7 +157,8 @@ def pagina(titulo, cuerpo, alto):
 def indice_area(cid, titulo, texto, pantallas):
     pantallas = [p for p in pantallas if any(vigente(x) for x in p[5] + p[6] + p[7])]
     tarjetas = "".join(tarjeta(p)[0] for p in pantallas)
-    cuerpo = (f'<a class="ix-volver" href="Indice.dc.html">{VOLVER} Índice general</a>'
+    volver = "" if cid in R.LIENZOS_APARTE else f'<a class="ix-volver" href="Indice.dc.html">{VOLVER} Índice general</a>'
+    cuerpo = (f'{volver}'
               f'<div><h1>{html.escape(titulo)}</h1><p class="sub">{html.escape(texto)}</p>'
               f'<span class="ix-hint">{OJO} Con Play, tocá una pantalla y vas a su tablero.</span></div>'
               f'<div class="ix-grid">{tarjetas}</div>')
@@ -167,8 +173,12 @@ REFERENCIA = [("Criterio-Marco", "Marco y pantallas"), ("Criterio-Botones", "Bot
 def indice_general(areas):
     tarjetas = ""
     for cid, titulo, texto, n_pant, n_tab in areas:
-        tarjetas += (f'<a class="ix-area" href="Indice-{cid}.dc.html"><span class="t">{html.escape(titulo)}{FLECHA}</span>'
-                     f'<span class="d">{html.escape(texto)}</span><span class="n">{n_pant} pantallas · {n_tab} tableros</span></a>')
+        if cid in R.LIENZOS_APARTE:  # sus tableros están en otro artefacto: se abre en otra pestaña
+            destino, donde = f'href="{R.LIENZOS_APARTE[cid][1]}" target="_blank" rel="noopener"', " · en su lienzo"
+        else:
+            destino, donde = f'href="Indice-{cid}.dc.html"', ""
+        tarjetas += (f'<a class="ix-area" {destino}><span class="t">{html.escape(titulo)}{FLECHA}</span>'
+                     f'<span class="d">{html.escape(texto)}</span><span class="n">{n_pant} pantallas · {n_tab} tableros{donde}</span></a>')
     ref = "".join(f'<a href="{n}.dc.html">{html.escape(t)}{FLECHA}</a>' for n, t in REFERENCIA if vigente(n) or n.startswith("Criterio"))
     cuerpo = (f'<div><h1>Índice general</h1><p class="sub">Todas las pantallas del sistema, en el orden en que una persona lo usa: el mismo de la guía.</p>'
               f'<span class="ix-hint">{OJO} Con Play, tocá un área y después una pantalla.</span></div>'
@@ -204,7 +214,8 @@ def registrar(tableros):
     if "guia" in c["notes"] and c["notes"]["guia"].get("page") == PAGINA:
         c["notes"]["guia"].update({"x": 4880, "y": 260})
     y = 260 + max(altos["Indice"], c["boards"]["Recorridos.dc.html"]["h"], c["boards"]["Mapa-Ingreso.dc.html"]["h"]) + 200
-    areas = [n for n in tableros if n != "Indice"]
+    aparte = {f"Indice-{cid}" for cid in R.LIENZOS_APARTE}
+    areas = [n for n in tableros if n != "Indice" and n not in aparte]
     por_fila = 6
     for k, n in enumerate(areas):
         fila = k // por_fila
@@ -213,9 +224,17 @@ def registrar(tableros):
         c["boards"][f"{n}.dc.html"] = {"x": (k % por_fila) * 1520, "y": y_fila, "w": ANCHO, "h": altos[n], "title": f"Índice · {titulo} · tocá Play y elegí una pantalla",
                                        "page": PAGINA, "is_interactive": True}
     for n in tableros:
-        if f"{n}.dc.html" not in c["order"]:
+        if n not in aparte and f"{n}.dc.html" not in c["order"]:
             c["order"].append(f"{n}.dc.html")
     (PROJ / "canvas.json").write_text(json.dumps(c, ensure_ascii=False, indent=2), encoding="utf-8")
+    # El índice de un capítulo aparte va arriba a la izquierda de su lienzo, antes que sus tableros.
+    for cid, (indice, _) in R.LIENZOS_APARTE.items():
+        n, a = f"Indice-{cid}", json.loads((PROJ / indice).read_text(encoding="utf-8"))
+        titulo = next(t for c_, t, _, _ in R.CAPITULOS if c_ == cid)
+        a["boards"][f"{n}.dc.html"] = {"x": 0, "y": 0, "w": ANCHO, "h": altos[n], "title": f"Índice · {titulo} · tocá Play y elegí una pantalla",
+                                       "page": a["launch"]["page"], "is_interactive": True}
+        a["order"] = [f"{n}.dc.html"] + [k for k in a["order"] if k != f"{n}.dc.html"]
+        (PROJ / indice).write_text(json.dumps(a, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 if __name__ == "__main__":

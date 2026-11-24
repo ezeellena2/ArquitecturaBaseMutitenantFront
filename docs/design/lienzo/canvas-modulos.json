@@ -4,7 +4,7 @@
     "v": 1,
     "at": "2026-11-23T21:30:00Z"
   },
-  "title": "Propuesta · Módulos y suscripciones",
+  "title": "Módulos y suscripciones",
   "launch": {
     "view": "canvas",
     "page": "propuesta-modulos"
@@ -12,7 +12,7 @@
   "pages": [
     {
       "id": "propuesta-modulos",
-      "name": "Propuesta · Módulos y suscripciones"
+      "name": "Módulos y suscripciones"
     }
   ],
   "boards": {
@@ -20,229 +20,239 @@
       "h": 900,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Módulos · /org/modulos · para aprobar",
+      "title": "Módulos · /org/modulos",
       "w": 1440,
-      "x": 700,
+      "x": 2260,
       "y": 0
     },
     "M-MOD-Modulos.dc.html": {
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Módulos · teléfono · para aprobar",
+      "title": "Módulos · teléfono",
       "w": 390,
-      "x": 700,
+      "x": 2260,
       "y": 1000
     },
     "MOD-Suscribir.dc.html": {
       "h": 900,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Suscribirme a un módulo · /org/modulos/formularios/suscripcion · para aprobar",
+      "title": "Suscribirme a un módulo · /org/modulos/formularios/suscripcion",
       "w": 1440,
-      "x": 2240,
+      "x": 3800,
       "y": 0
     },
     "M-MOD-Suscribir.dc.html": {
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Suscribirme a un módulo · teléfono · para aprobar",
+      "title": "Suscribirme a un módulo · teléfono",
       "w": 390,
-      "x": 2240,
+      "x": 3800,
       "y": 1000
     },
     "MOD-Pedir.dc.html": {
       "h": 900,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Pedir un módulo, también con la propuesta del asistente · para aprobar",
+      "title": "Pedir un módulo, también con la propuesta del asistente",
       "w": 1440,
-      "x": 3780,
+      "x": 5340,
       "y": 0
     },
     "M-MOD-Pedir.dc.html": {
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Pedir un módulo · teléfono · para aprobar",
+      "title": "Pedir un módulo · teléfono",
       "w": 390,
-      "x": 3780,
+      "x": 5340,
       "y": 1000
     },
     "MOD-Confirmar.dc.html": {
       "h": 900,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Probar gratis y dar de baja un módulo · para aprobar",
+      "title": "Probar gratis y dar de baja un módulo",
       "w": 1440,
-      "x": 5320,
+      "x": 6880,
       "y": 0
     },
     "M-MOD-Confirmar.dc.html": {
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Probar gratis y dar de baja un módulo · teléfono · para aprobar",
+      "title": "Probar gratis y dar de baja un módulo · teléfono",
       "w": 390,
-      "x": 5320,
+      "x": 6880,
       "y": 1000
     },
     "MOD-Exportar.dc.html": {
       "h": 900,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Exportar los datos de un módulo · para aprobar",
+      "title": "Exportar los datos de un módulo",
       "w": 1440,
-      "x": 6860,
+      "x": 8420,
       "y": 0
     },
     "M-MOD-Exportar.dc.html": {
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Exportar los datos de un módulo · teléfono · para aprobar",
+      "title": "Exportar los datos de un módulo · teléfono",
       "w": 390,
-      "x": 6860,
+      "x": 8420,
       "y": 1000
     },
     "Plat-MOD-Catalogo.dc.html": {
       "h": 900,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Catálogo de módulos · /plataforma/modulos · para aprobar",
+      "title": "Catálogo de módulos · /plataforma/modulos",
       "w": 1440,
-      "x": 700,
+      "x": 2260,
       "y": 2100
     },
     "M-Plat-MOD-Catalogo.dc.html": {
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Catálogo de módulos · teléfono · para aprobar",
+      "title": "Catálogo de módulos · teléfono",
       "w": 390,
-      "x": 700,
+      "x": 2260,
       "y": 3100
     },
     "Plat-MOD-Modulo.dc.html": {
       "h": 900,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Un módulo · /plataforma/modulos/formularios · para aprobar",
+      "title": "Un módulo · /plataforma/modulos/formularios",
       "w": 1440,
-      "x": 2240,
+      "x": 3800,
       "y": 2100
     },
     "M-Plat-MOD-Modulo.dc.html": {
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Un módulo · teléfono · para aprobar",
+      "title": "Un módulo · teléfono",
       "w": 390,
-      "x": 2240,
+      "x": 3800,
       "y": 3100
     },
     "Plat-MOD-Precio.dc.html": {
       "h": 900,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Nuevo precio de un módulo · para aprobar",
+      "title": "Nuevo precio de un módulo",
       "w": 1440,
-      "x": 3780,
+      "x": 5340,
       "y": 2100
     },
     "M-Plat-MOD-Precio.dc.html": {
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Nuevo precio de un módulo · teléfono · para aprobar",
+      "title": "Nuevo precio de un módulo · teléfono",
       "w": 390,
-      "x": 3780,
+      "x": 5340,
       "y": 3100
     },
     "Plat-MOD-Pedidos.dc.html": {
       "h": 900,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Pedidos de módulos · /plataforma/modulos/pedidos · para aprobar",
+      "title": "Pedidos de módulos · /plataforma/modulos/pedidos",
       "w": 1440,
-      "x": 5320,
+      "x": 6880,
       "y": 2100
     },
     "M-Plat-MOD-Pedidos.dc.html": {
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Pedidos de módulos · teléfono · para aprobar",
+      "title": "Pedidos de módulos · teléfono",
       "w": 390,
-      "x": 5320,
+      "x": 6880,
       "y": 3100
     },
     "Plat-MOD-Suscripciones.dc.html": {
       "h": 900,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Suscripciones · /plataforma/modulos/suscripciones · para aprobar",
+      "title": "Suscripciones · /plataforma/modulos/suscripciones",
       "w": 1440,
-      "x": 6860,
+      "x": 8420,
       "y": 2100
     },
     "M-Plat-MOD-Suscripciones.dc.html": {
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Suscripciones · teléfono · para aprobar",
+      "title": "Suscripciones · teléfono",
       "w": 390,
-      "x": 6860,
+      "x": 8420,
       "y": 3100
     },
     "Plat-Org-Modulos.dc.html": {
       "h": 900,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Ficha de una organización · Módulos, con sus filas y sus topes · para aprobar",
+      "title": "Ficha de una organización · Módulos, con sus filas y sus topes",
       "w": 1440,
-      "x": 8400,
+      "x": 9960,
       "y": 2100
     },
     "M-Plat-Org-Modulos.dc.html": {
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Ficha de una organización · Módulos · teléfono · para aprobar",
+      "title": "Ficha de una organización · Módulos · teléfono",
       "w": 390,
-      "x": 8400,
+      "x": 9960,
       "y": 3100
     },
     "Config-Plat-Modulos.dc.html": {
       "h": 900,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Configuración de la plataforma · Módulos y cobros, y Mercado Pago · para aprobar",
+      "title": "Configuración de la plataforma · Módulos y cobros, y Mercado Pago",
       "w": 1440,
-      "x": 9940,
+      "x": 11500,
       "y": 2100
     },
     "M-Config-Plat-Modulos.dc.html": {
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Configuración de la plataforma · Módulos y cobros, y Mercado Pago · teléfono · para aprobar",
+      "title": "Configuración de la plataforma · Módulos y cobros, y Mercado Pago · teléfono",
       "w": 390,
-      "x": 9940,
+      "x": 11500,
       "y": 3100
     },
     "Mensajes-Modulos.dc.html": {
       "h": 900,
       "is_interactive": true,
       "page": "propuesta-modulos",
-      "title": "Los avisos de los módulos · para aprobar",
+      "title": "Los avisos de los módulos",
       "w": 1440,
-      "x": 11480,
+      "x": 13040,
       "y": 2100
+    },
+    "Indice-modulos.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 685,
+      "title": "Índice · Contrata módulos · tocá Play y elegí una pantalla",
+      "page": "propuesta-modulos",
+      "is_interactive": true
     }
   },
   "order": [
+    "Indice-modulos.dc.html",
     "MOD-Modulos.dc.html",
     "MOD-Suscribir.dc.html",
     "MOD-Pedir.dc.html",
@@ -273,9 +283,9 @@
     "propuesta-modulos": {
       "color": "blue",
       "page": "propuesta-modulos",
-      "text": "Módulos y suscripciones (ADR 0069 del back; spec `docs/plans/formularios/modulos-y-suscripciones.md`), para aprobar. Va después de la E25: cada tablero muestra solo lo que existe hasta acá (78).\n\nEn la organización, «Módulos» va en Administración, después de Configuración, con `modules.manage` (de entrada, solo el Dueño). Cada módulo con su descripción, su estado, su precio y el que viene; las acciones van en su ⋮ (261) y el servidor dice cuáles. El detalle de un estado (hasta cuándo, el motivo de un rechazo) va en la (i) del estado. Suscribirme es una página: el precio, lo que incluye, la tarjeta de MercadoPago.js y el consentimiento sin tildar.\n\nPedir es la única acción del asistente (0068): el diálogo de pedir sobre «Módulos», con «Propuesta del asistente» y el módulo en la pieza para elegir (262).\n\nEn Plataforma, «Módulos» es una rama de Gestión (Catálogo, Pedidos y Suscripciones). La ficha de una organización redibuja la pestaña «Módulos»: cada módulo con sus filas por origen y la zona «Topes». Configuración suma «Módulos y cobros» y «Mercado Pago» después de «Límites de uso». Aprobar un pedido, cambiar lo que se ofrece, un precio nuevo y guardar la configuración piden «Confirmá que sos vos» (la prueba reciente).\n\nLos correos van en `Mensajes-Modulos`: seis también por WhatsApp, con su plantilla, y dos solo por correo.\n\nEs un lienzo aparte porque el principal llegó a los 512 archivos que admite una versión. Al aprobarlo, sus tableros pasan al principal cuando se les haga lugar, y recién ahí entran en la guía y en los índices. Los enlaces a pantallas que están en el principal (Inicio, Usuarios, Organizaciones) no llevan a ningún lado acá.",
+      "text": "Módulos y suscripciones (ADR 0069 del back; spec `docs/plans/formularios/modulos-y-suscripciones.md`), aprobada por el usuario el 2026-11-24. Va después de la E25: cada tablero muestra solo lo que existe hasta acá (78).\n\nEn la organización, «Módulos» va en Administración, después de Configuración, con `modules.manage` (de entrada, solo el Dueño). Cada módulo con su descripción, su estado, su precio y el que viene; las acciones van en su ⋮ (261) y el servidor dice cuáles. El detalle de un estado (hasta cuándo, el motivo de un rechazo) va en la (i) del estado. Suscribirme es una página: el precio, lo que incluye, la tarjeta de MercadoPago.js y el consentimiento sin tildar.\n\nPedir es la única acción del asistente (0068): el diálogo de pedir sobre «Módulos», con «Propuesta del asistente» y el módulo en la pieza para elegir (262).\n\nEn Plataforma, «Módulos» es una rama de Gestión (Catálogo, Pedidos y Suscripciones). La ficha de una organización redibuja la pestaña «Módulos»: cada módulo con sus filas por origen y la zona «Topes». Configuración suma «Módulos y cobros» y «Mercado Pago» después de «Límites de uso». Aprobar un pedido, cambiar lo que se ofrece, un precio nuevo y guardar la configuración piden «Confirmá que sos vos» (la prueba reciente).\n\nLos correos van en `Mensajes-Modulos`: seis también por WhatsApp, con su plantilla, y dos solo por correo.\n\nEs un lienzo aparte porque el principal llegó a los 512 archivos que admite una versión, y el usuario eligió que quede acá. Su índice, `Indice-modulos`, es el capítulo «Contrata módulos» de la guía; el índice general del principal lleva a este lienzo. Los enlaces a pantallas que están en el principal (Inicio, Usuarios, Organizaciones) no llevan a ningún lado acá.",
       "w": 620,
-      "x": 0,
+      "x": 1540,
       "y": 0
     }
   },

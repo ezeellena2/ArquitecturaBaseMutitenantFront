@@ -9,7 +9,11 @@ VERSION = "versión 179 · 23 de noviembre de 2026"
 CAPITULO_FORMULARIOS = "formularios"
 BIBLIOTECA = ("biblioteca-plat", "La biblioteca de la plataforma", "Lo que usan los operadores para ofrecer plantillas de formularios a las organizaciones: la biblioteca, "
               "cada plantilla con sus reglas y el diseño de su PDF, y las categorías.")
-TEXTO_PLATAFORMA = "Lo que usan los operadores del servicio: aprobar organizaciones, revisar cuentas y recuperaciones, los documentos legales y el WhatsApp propio."
+# Capítulos cuyos tableros están en un lienzo aparte, porque el principal llegó a los 512 archivos que admite una versión
+# (el usuario lo eligió el 2026-11-24): capítulo → (su índice, en docs/design/lienzo, y su enlace). La guía los suma como
+# cualquier otro; el índice general del principal lleva a ese lienzo, que tiene su propio índice del capítulo.
+LIENZOS_APARTE = {"modulos": ("canvas-modulos.json", "https://claude.ai/artifact/TWmqhEkZ3KmLr2pRXgr4HR")}
+TEXTO_PLATAFORMA ="Lo que usan los operadores del servicio: aprobar organizaciones, revisar cuentas y recuperaciones, los documentos legales y el WhatsApp propio."
 
 # Estado del código por etapa (2026-10-04): 1 a 4 y 6 programadas; 5 con el back listo; 7 a 11 sin empezar.
 CODIGO = {
@@ -95,7 +99,35 @@ CAPITULOS = [
         ("campana", "La campana", "—", "no", "—", ["Campana"], ["M-Campana"], ["Campana-Plat", "M-Campana-Plat", "Campana-14", "M-Campana-14"],
          "En el encabezado de todas las pantallas con sesión, con su número: lo que llegó, lo que falló en segundo plano y lo que espera a alguien, según quién mira. Cada aviso lleva a donde se resuelve; en el teléfono, en la barra de arriba. Cada etapa suma los suyos: desde la 14, cuando WhatsApp rechaza una versión."),
     ]),
-    ("whatsapp", "Atiende por WhatsApp", "El módulo de WhatsApp de cada organización: chats con clientes y empleados, contactos, difusiones, bot y números.", [
+    ("modulos", "Contrata módulos", "Lo que la organización suma a su cuenta: probar gratis, suscribirse con tarjeta, pedir y dar de baja cada módulo; y lo que usa la plataforma para ofrecerlos, cobrarlos y seguirlos. Va después de la E25, y sus tableros están en un lienzo aparte.", [
+        ("mod-modulos", "Módulos", "Administración › Módulos", "no", "Módulos", ["MOD-Modulos"], ["M-MOD-Modulos"], [],
+         "Cada módulo con su estado, su precio por mes y el que viene, desde apagado hasta en prueba, suscripto, con el cobro rechazado o suspendido. Las acciones van en el ⋮, y el detalle de un estado (hasta cuándo, el motivo de un rechazo), en su (i)."),
+        ("mod-suscribir", "Suscribirme a un módulo", "/org/modulos/:modulo/suscripcion", "no", "Módulos", ["MOD-Suscribir"], ["M-MOD-Suscribir"], [],
+         "El precio, lo que incluye, la tarjeta en el formulario de Mercado Pago y el consentimiento sin tildar; mientras se confirma el pago, la tarjeta rechazada y el precio que cambió. También cambiar la tarjeta."),
+        ("mod-pedir", "Pedir un módulo", "Administración › Módulos", "no", "Módulos", ["MOD-Pedir"], ["M-MOD-Pedir"], [],
+         "El diálogo de pedir y cancelar un pedido, también con «Propuesta del asistente», la única acción del asistente en esta etapa."),
+        ("mod-confirmar", "Probar gratis y dar de baja", "Administración › Módulos", "no", "Módulos", ["MOD-Confirmar"], ["M-MOD-Confirmar"], [],
+         "Las confirmaciones de empezar la prueba, una sola vez por módulo, y de dar de baja, que sigue andando hasta el fin del período."),
+        ("mod-exportar", "Exportar los datos de un módulo", "Administración › Módulos", "no", "Módulos", ["MOD-Exportar"], ["M-MOD-Exportar"], [],
+         "Desde el ⋮: se pide, se prepara y queda para descargar, hasta que se borran los datos del módulo."),
+        ("plat-mod-catalogo", "Catálogo de módulos", "/plataforma/modulos", "no", "Módulos", ["Plat-MOD-Catalogo"], ["M-Plat-MOD-Catalogo"], [],
+         "Cada módulo con si se ofrece, si se puede pedir, probar y suscribirse, su precio y sus suscripciones. Cambiar lo que se ofrece pide motivo y «Confirmá que sos vos»."),
+        ("plat-mod-modulo", "Un módulo del catálogo", "/plataforma/modulos/:modulo", "no", "Módulos", ["Plat-MOD-Modulo"], ["M-Plat-MOD-Modulo"], [],
+         "Lo que se ofrece y la historia de sus precios, cada uno con su detalle."),
+        ("plat-mod-precio", "Nuevo precio de un módulo", "/plataforma/modulos/:modulo", "no", "Módulos", ["Plat-MOD-Precio"], ["M-Plat-MOD-Precio"], [],
+         "El monto, desde cuándo, los topes de lo que incluye y el motivo; un precio nuevo se avisa con anticipación."),
+        ("plat-mod-pedidos", "Pedidos de módulos", "/plataforma/modulos/pedidos", "no", "Módulos", ["Plat-MOD-Pedidos"], ["M-Plat-MOD-Pedidos"], [],
+         "Los pendientes primero. Aprobar pide motivo, acepta un vencimiento y pide «Confirmá que sos vos»; rechazar pide motivo."),
+        ("plat-mod-suscripciones", "Suscripciones", "/plataforma/modulos/suscripciones", "no", "Módulos", ["Plat-MOD-Suscripciones"], ["M-Plat-MOD-Suscripciones"], [],
+         "Cada suscripción con su estado y su próximo cobro. La ficha trae los cobros, con «Factura pendiente» y el cobro repetido marcado para devolverlo en Mercado Pago."),
+        ("plat-org-modulos", "Los módulos de una organización", "/plataforma/organizaciones/:id", "no", "Módulos", ["Plat-Org-Modulos"], ["M-Plat-Org-Modulos"], [],
+         "La pestaña «Módulos» de la ficha: cada módulo con sus filas por origen y la zona «Topes», con el tope propio de esta organización."),
+        ("config-plat-modulos", "Módulos y cobros, y Mercado Pago", "/plataforma/configuracion", "no", "Módulos", ["Config-Plat-Modulos"], ["M-Config-Plat-Modulos"], [],
+         "Los plazos de la prueba, la gracia y el borrado, y las claves de Mercado Pago, después de «Límites de uso». Guardar pide motivo y «Confirmá que sos vos»."),
+        ("mensajes-modulos", "Los avisos de los módulos", "—", "no", "Módulos", ["Mensajes-Modulos"], [], [],
+         "Los ocho avisos por correo: seis también por WhatsApp, con su plantilla, y dos solo por correo."),
+    ]),
+    ("whatsapp","Atiende por WhatsApp", "El módulo de WhatsApp de cada organización: chats con clientes y empleados, contactos, difusiones, bot y números.", [
         ("wa-chats", "Chats", "WhatsApp › Chats", "no", "11", ["WA-Chats"], ["M-WA-Chats"],
          ["WA-Chats-SinTomar", "WA-Chats-Nota", "WA-Chats-Pasar", "WA-Chats-24h", "WA-Chats-Plantilla", "M-WA-Conversacion", "M-WA-Chats-SinTomar", "M-WA-Chats-Nota", "M-WA-24h", "M-WA-Chats-Pasar", "M-WA-Chats-Plantilla", "M-WA-Menu"],
          "Las bandejas Clientes | Internos, tomar un chat (y si lo tomó otra persona), pasarlo, la nota interna, la ventana de 24 horas, las fotos, audios y documentos como «Mandó…», el número desconectado y sin medio de pago."),
