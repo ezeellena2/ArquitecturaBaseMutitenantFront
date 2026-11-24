@@ -269,6 +269,8 @@ function RoleEditor({ role, groups, reload }: { role?: RoleResponse; groups?: re
       summary={summary}
       // Tablero Rol: «De sistema» antes de dónde vale; la banda nunca dice «Cambios sin guardar» (base de la 12).
       status={role?.isSystemRole ? t("roles:system") : undefined}
+      // Rol-Base2 y M-Rol-Base2 («Ver el rol Dueño», 260): por qué no se cambia, en la (i) del título.
+      help={role?.isSystemRole && role.scope === "Organization" ? t("roles:ownerHelp") : undefined}
       phoneSubtitle={summary}
       actionsNotice={phone ? limitNotice : undefined}
       actions={editable ? <>

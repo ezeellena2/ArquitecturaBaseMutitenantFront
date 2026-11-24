@@ -10,6 +10,7 @@
   "discard": "Descartar cambios",
   "save": "Guardar cambios",
   "system": "De sistema",
+  "ownerHelp": "Es el rol del sistema con todos los permisos de la organización: no se cambia.",
   "custom": "Personalizado",
   "removed": "Dimos de baja el rol {{name}}.",
   "created": "Creamos el rol {{name}}.",

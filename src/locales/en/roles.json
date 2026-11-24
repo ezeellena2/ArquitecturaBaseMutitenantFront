@@ -10,6 +10,7 @@
   "discard": "Discard changes",
   "save": "Save changes",
   "system": "System",
+  "ownerHelp": "It's the system role with every permission in the organization: it can't be changed.",
   "custom": "Custom",
   "removed": "Role {{name}} was deactivated.",
   "created": "Role {{name}} was created.",

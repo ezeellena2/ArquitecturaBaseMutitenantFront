@@ -458,6 +458,7 @@ describe("RoleEditorPage", () => {
     expect(screen.getByRole("group", { name: "Nombre" })).toHaveTextContent("Dueño");
     expect(screen.getByRole("group", { name: "Nombre" }).querySelector("[data-slot=read-only-field]")).toHaveClass("bg-[var(--s2)]");
     expect(screen.getByRole("group", { name: "Descripción" }).querySelector("[data-slot=read-only-field]")).toHaveClass("min-h-21");
+    expect(screen.getByRole("heading", { level: 1, name: "Dueño" })).toHaveAccessibleDescription("Es el rol del sistema con todos los permisos de la organización: no se cambia.");
     // 260 (Rol-Base2, «Ver el rol Dueño»): se lee con tildes, sin casillas y con sus áreas cerradas; cada una se abre para leer.
     expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Abrir o cerrar Roles" })).toHaveAttribute("aria-expanded", "false");
