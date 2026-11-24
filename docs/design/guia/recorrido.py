@@ -113,6 +113,8 @@ CAPITULOS = [
          "Quién atiende cada bandeja y cuándo avisar por correo si nadie toma un chat."),
         ("wa-plantillas", "Plantillas", "Administración › WhatsApp", "no", "11", ["WA-Plantillas"], ["M-WA-Plantillas"], ["WA-Plantilla-Nueva", "M-WA-Plantilla-Nueva"],
          "Los mensajes que aprueba Meta para escribir fuera de las 24 horas."),
+        ("wa-config", "Configuración de WhatsApp", "Administración › WhatsApp", "no", "Base 2", ["WA-Config-Base2"], ["M-WA-Config-Base2"], [],
+         "Cuánto se guardan los mensajes de los chats de la organización, dentro del máximo de la plataforma."),
         ("wa-telefonos", "Cargar teléfonos de empleados", "Usuarios › Cargar teléfonos", "no", "11", ["WA-Telefonos"], ["M-WA-Telefonos"], [],
          "En dos pasos: pegar o subir los números y ver qué pasa con cada uno, sin revelar quién tiene cuenta. Las invitaciones quedan en Usuarios."),
     ]),
