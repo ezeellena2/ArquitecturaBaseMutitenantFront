@@ -26,12 +26,12 @@ const role: RoleResponse = {
 
 const permissionGroups = [
   { area: "roles", name: "Roles", permissions: [
-    { code: "roles.read", name: "Ver roles", description: "Los roles y sus permisos." },
-    { code: "roles.manage", name: "Administrar roles", description: "Crear, editar e inactivar roles." },
+    { code: "roles.read", name: "Ver roles", description: "Los roles y sus permisos.", includes: [], grantable: true },
+    { code: "roles.manage", name: "Administrar roles", description: "Crear, editar e inactivar roles.", includes: [], grantable: true },
   ] },
   { area: "company", name: "Miembros de empresa", permissions: [
-    { code: "company.members.read", name: "Ver miembros", description: "Miembros." },
-    { code: "company.members.manage", name: "Administrar miembros", description: "Administrar miembros." },
+    { code: "company.members.read", name: "Ver miembros", description: "Miembros.", includes: [], grantable: true },
+    { code: "company.members.manage", name: "Administrar miembros", description: "Administrar miembros.", includes: [], grantable: true },
   ] },
 ];
 
@@ -452,26 +452,20 @@ describe("RoleEditorPage", () => {
     renderRouteWithProviders("/org/roles/role-owner", { as: "business-role-manager" });
 
     expect(await screen.findByRole("heading", { name: "Dueño" })).toBeVisible();
-    expect(await screen.findByText("Ver roles")).toBeVisible();
     expect(screen.queryByRole("textbox", { name: "Nombre" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Guardar cambios" })).not.toBeInTheDocument();
     // A11 (Rol, «Ver el rol Dueño»): nombre y descripción en el mismo campo que al editar, apagado.
     expect(screen.getByRole("group", { name: "Nombre" })).toHaveTextContent("Dueño");
     expect(screen.getByRole("group", { name: "Nombre" }).querySelector("[data-slot=read-only-field]")).toHaveClass("bg-[var(--s2)]");
     expect(screen.getByRole("group", { name: "Descripción" }).querySelector("[data-slot=read-only-field]")).toHaveClass("min-h-21");
-    expect(screen.getByText("Ver roles")).toBeVisible();
-    expect(screen.queryByText("Los roles y sus permisos.")).not.toBeInTheDocument();
-    expect(screen.getByText("2 de 2 elegidos")).toBeVisible();
-    // Tablero Rol: las casillas de un rol de sistema, bloqueadas y grises. En el teléfono, M-Rol (v108, «Ver el rol Dueño»,
-    // .ap-chk.on.fijo): también grises, las marcadas en `--casilla-fija` y sin transparencia.
-    const locked = screen.getByRole("checkbox", { name: "Ver roles" });
-    expect(locked).toBeDisabled();
-    expect(locked).toHaveClass("disabled:data-[state=checked]:bg-[var(--borde2)]", "max-md:enabled:data-[state=checked]:border-[var(--marca)]!");
-    expect(locked).toHaveClass("max-md:disabled:data-[state=checked]:bg-[var(--casilla-fija)]!", "max-md:disabled:data-[state=checked]:border-[var(--casilla-fija)]!", "max-md:disabled:opacity-100!");
-    expect(locked).not.toHaveClass("max-md:disabled:data-[state=checked]:bg-[var(--marca)]!", "max-md:disabled:opacity-55!");
-    expect(screen.getByRole("checkbox", { name: "Todos los permisos de Roles" })).toBeDisabled();
-    await user.click(screen.getByRole("button", { name: "Abrir o cerrar Roles" }));
+    // 260 (Rol-Base2, «Ver el rol Dueño»): se lee con tildes, sin casillas y con sus áreas cerradas; cada una se abre para leer.
+    expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Abrir o cerrar Roles" })).toHaveAttribute("aria-expanded", "false");
     expect(screen.queryByText("Ver roles")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Abrir o cerrar Roles" }));
+    expect(screen.getByText("Ver roles")).toBeVisible();
+    expect(screen.getAllByRole("img", { name: "Tiene este permiso" })).toHaveLength(2);
+    expect(screen.queryByText("Los roles y sus permisos.")).not.toBeInTheDocument();
     expect(screen.queryByText("Ver miembros")).not.toBeInTheDocument();
   });
 
@@ -535,34 +529,48 @@ describe("RoleEditorPage", () => {
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
   });
 
-  // Tablero Rol: cada área es una fila de 40 con la cuenta a la derecha; cada permiso, una fila de 40, sin descripción.
-  it("en la compu el árbol de permisos tiene filas de 40 con la cuenta a la derecha", async () => {
+  // Tablero Rol-Base2 (260 y 269): en la compu, la tabla «Permiso» sola, sin cuentas; el editor siembra con lo que el rol
+  // permite (un rol viejo sin «Ver roles» abre con él, sin cambios sin guardar), lo incluido va marcado y apagado con su
+  // motivo, y lo que quien edita no puede dar, apagado con el suyo.
+  it("en la compu los permisos van en áreas plegables, con lo incluido y lo que no podés dar apagados con su motivo", async () => {
+    const user = userEvent.setup();
+    let body: unknown;
+    const groups = [
+      { area: "roles", name: "Roles", permissions: [
+        { code: "roles.read", name: "Ver roles", description: "Los roles y sus permisos.", includes: [], grantable: true },
+        { code: "roles.manage", name: "Administrar roles", description: "Crear, editar e inactivar roles.", includes: ["roles.read"], grantable: true },
+      ] },
+      { area: "settings", name: "Configuración", permissions: [
+        { code: "settings.read", name: "Ver la configuración", description: "Consultarla.", includes: [], grantable: true },
+        { code: "settings.manage", name: "Cambiar la configuración", description: "Editarla.", includes: ["settings.read"], grantable: false },
+      ] },
+    ];
     server.use(
-      http.get("/api/permissions", () => HttpResponse.json(permissionGroups)),
-      http.get("/api/roles/role-custom", () => HttpResponse.json(role)),
+      http.get("/api/permissions", () => HttpResponse.json(groups)),
+      http.get("/api/roles/role-custom", () => HttpResponse.json({ ...role, permissions: ["roles.manage"] })),
+      http.put("/api/roles/role-custom", async ({ request }) => { body = await request.json(); return HttpResponse.json({ version: 5 }); }),
     );
     renderRouteWithProviders("/org/roles/role-custom", { as: "business-role-manager" });
 
-    const area = await screen.findByRole("checkbox", { name: "Todos los permisos de Roles" });
-    const row = area.closest<HTMLElement>("[data-slot='permission-area']")!;
-    expect(row).toHaveClass("min-h-10", "border-b");
-    expect(row).toHaveTextContent("1 de 2");
-    // «1 de 2» a la derecha de su banda.
-    expect(within(row).getByText("1 de 2")).toHaveClass("ml-auto");
-    const permission = screen.getByRole("checkbox", { name: "Ver roles" }).closest("label")!;
-    expect(permission).toHaveClass("min-h-10", "pl-13");
-    // M-Rol (.ap-area y .ap-perm): en el teléfono, la flecha ocupa 18 (la casilla del área queda en 62), el área va sin
-    // línea y cada permiso lleva la suya arriba: entre dos áreas cerradas no hay línea.
-    expect(within(row).getByRole("button", { name: "Abrir o cerrar Roles" })).toHaveClass("max-md:w-4.5");
-    expect(row).toHaveClass("max-md:border-b-0");
-    expect(permission).toHaveClass("max-md:border-b-0", "max-md:border-t");
-    expect(screen.queryByText("Los roles y sus permisos.")).not.toBeInTheDocument();
-    // Tablero Rol (.o-gnom): el nombre del área también la cierra y la abre.
-    const user = userEvent.setup();
-    await user.click(within(row).getByRole("button", { name: "Roles" }));
-    expect(screen.queryByRole("checkbox", { name: "Ver roles" })).not.toBeInTheDocument();
-    await user.click(within(row).getByRole("button", { name: "Roles" }));
-    expect(screen.getByRole("checkbox", { name: "Ver roles" })).toBeChecked();
+    const table = await screen.findByRole("table", { name: "Permisos" });
+    expect(within(table).getByRole("columnheader", { name: "Permiso" })).toBeVisible();
+    expect(screen.queryByRole("heading", { level: 2, name: "Permisos" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Abrir o cerrar Roles" })).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("button", { name: "Abrir o cerrar Configuración" })).toHaveAttribute("aria-expanded", "false");
+    const read = screen.getByRole("checkbox", { name: "Ver roles" });
+    expect(read).toBeChecked();
+    expect(read).toHaveAttribute("aria-disabled", "true");
+    expect(read).toHaveAccessibleDescription("Los roles y sus permisos. Lo incluye «Administrar roles».");
+    expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
+    expect(screen.queryByText(/de 2/)).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Abrir o cerrar Configuración" }));
+    expect(screen.getByRole("checkbox", { name: "Cambiar la configuración" })).toHaveAccessibleDescription("Editarla. No tenés este permiso.");
+    expect(screen.getByRole("checkbox", { name: "Todos los permisos de Configuración" })).toHaveAttribute("aria-disabled", "true");
+    await user.click(screen.getByRole("checkbox", { name: "Ver la configuración" }));
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+    // Guarda lo que el rol permite: lo pedido más lo incluido.
+    await waitFor(() => expect(body).toMatchObject({ permissions: ["roles.manage", "roles.read", "settings.read"], version: 4 }));
   });
 
   // Tablero Rol (v87 y v96): al crear, «Cancelar»; «Vale en» sin asterisco y «Descripción» a todo el ancho de la caja.
@@ -586,7 +594,7 @@ describe("RoleEditorPage", () => {
     expect(description).not.toHaveClass("resize-y");
   });
 
-  // Tablero M-Rol: en el teléfono los campos van sueltos, «Vale en» como el desplegable apagado (A11), «Permisos» con la cuenta a la derecha
+  // Tablero M-Rol: en el teléfono los campos van sueltos, «Vale en» como el desplegable apagado (A11), «Permisos» sin cuentas
   // y los botones fijos abajo.
   it("en el teléfono los campos van sueltos y los botones fijos abajo", async () => {
     const restore = asPhone();
@@ -604,8 +612,10 @@ describe("RoleEditorPage", () => {
       expect(await axe(container)).toHaveNoViolations();
       expect(screen.getByRole("heading", { level: 1, name: "Solo lectura" }).closest("header")).toHaveTextContent("Vale en toda la organización · 0 usuarios lo tienen");
       expect(screen.getByRole("heading", { name: "Datos del rol" })).toHaveClass("sr-only");
+      // M-Rol-Base2: «Permisos» arriba y la tabla «Permiso» en su tarjeta, sin cuentas.
       expect(screen.getByRole("heading", { level: 2, name: "Permisos" })).toHaveClass("text-[0.84375rem]");
-      expect(screen.getByText("1 de 2 elegidos")).toHaveClass("text-[0.84375rem]");
+      expect(within(screen.getByRole("table", { name: "Permisos" })).getByRole("columnheader", { name: "Permiso" })).toBeVisible();
+      expect(screen.queryByText("1 de 2 elegidos")).not.toBeInTheDocument();
       const fixed = screen.getByRole("button", { name: "Guardar cambios" }).parentElement!;
       expect(fixed).toHaveAttribute("data-slot", "fixed-actions");
       expect(screen.getAllByRole("button", { name: "Descartar cambios" })).toHaveLength(1);

@@ -5,7 +5,6 @@
   "editorTitle": "Role",
   "dataTitle": "Role details",
   "permissionsTitle": "Permissions",
-  "toggleArea": "Open or close {{name}}",
   "backToList": "Back to Roles and permissions",
   "cancel": "Cancel",
   "discard": "Discard changes",
@@ -28,9 +27,6 @@
   "listSummaryFallback": "{{n}} roles",
   "scopeAndUsers_one": "Applies to {{scope}} · {{n}} user has this role",
   "scopeAndUsers_other": "Applies to {{scope}} · {{n}} users have this role",
-  "permissionCount": "{{selected}} of {{total}} selected",
-  "groupCount": "{{selected}} of {{total}}",
-  "allPermissions": "All {{area}} permissions",
   "columns": {
     "name": "Role",
     "description": "Description",

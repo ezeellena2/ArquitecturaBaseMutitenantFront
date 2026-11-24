@@ -16,7 +16,7 @@ import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage, isNotFoundError, isRateLimitError } from "@/shared/api/errorMessage";
 import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
-import type { CreateRoleRequest, RoleResponse, RoleScope, UpdateRoleRequest } from "@/shared/api/types";
+import type { CreateRoleRequest, PermissionGroupResponse, RoleResponse, RoleScope, UpdateRoleRequest } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { sameList } from "@/shared/lib/sameList";
@@ -45,10 +45,11 @@ import {
   rolesQueryKeyRoot,
   updateRole,
 } from "../api/roles";
-import { PermissionPicker } from "../components/PermissionPicker";
 import { RoleScopeField } from "../components/RoleScopeField";
 import { roleErrorField } from "../errors";
-import { canonicalPermissions, groupsForScope, selectionCount } from "../lib/permissionPicker";
+import { canonicalPermissions, groupsForScope } from "../lib/permissionPicker";
+import { PermissionPicker } from "@/shared/ui/PermissionPicker";
+import { allowedPermissions } from "@/shared/ui/permissionAreas";
 import { countOf } from "@/shared/format/countOf";
 
 const nameMaxLength = validationConstraints.CreateRoleHttpRequest.name.maxLength;
@@ -75,8 +76,14 @@ const serverFields: Record<string, keyof RoleForm> = { name: "name", description
 // El catálogo de permisos: lo pide la página junto con el rol, no después, y lo usa el editor.
 const permissionGroupsQuery = { queryKey: permissionGroupsQueryKey, queryFn: fetchPermissionGroups, meta: { silent: true } };
 
-function valuesFromRole(role: RoleResponse): RoleForm {
-  return { name: role.name, description: role.description ?? "", scope: role.scope, companyId: role.companyId ?? "", permissions: canonicalPermissions(role.permissions) };
+/// Lo que el rol permite (260): lo guardado más lo que incluye, así el editor siembra, compara y guarda eso, y un rol viejo
+/// sin lo incluido abre con todo, sin cambios sin guardar. Sin el catálogo (no cargó), lo guardado tal cual.
+function rolePermissions(role: RoleResponse, groups: readonly PermissionGroupResponse[] | undefined): string[] {
+  return groups ? allowedPermissions(groups, role.permissions) : canonicalPermissions(role.permissions);
+}
+
+function valuesFromRole(role: RoleResponse, groups: readonly PermissionGroupResponse[] | undefined): RoleForm {
+  return { name: role.name, description: role.description ?? "", scope: role.scope, companyId: role.companyId ?? "", permissions: rolePermissions(role, groups) };
 }
 
 /// Desde una empresa (su pestaña Roles) el rol nuevo llega con la empresa elegida. «Cada empresa» ya no se crea desde
@@ -91,7 +98,7 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
   const { t } = useTranslation(["roles", "common"]);
   const { roleId } = useParams();
   const { can } = usePermissions();
-  useQuery({ ...permissionGroupsQuery, enabled: mode === "edit" || can("roles.manage") });
+  const permissionGroups = useQuery({ ...permissionGroupsQuery, enabled: mode === "edit" || can("roles.manage") });
   const role = useQuery({
     queryKey: roleQueryKey(roleId ?? ""),
     queryFn: () => fetchRole(roleId!),
@@ -101,13 +108,14 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
   useBreadcrumbLeaf(mode === "create" ? t("roles:createTitle") : role.data ? role.data.name : undefined);
 
   if (mode === "create") return <RoleEditor />;
-  if (role.isPending) return <Page title={t("roles:editorTitle")}><p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
+  // El editor siembra con lo que el rol permite, con lo incluido del catálogo: espera a los dos.
+  if (role.isPending || permissionGroups.isPending) return <Page title={t("roles:editorTitle")}><p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p></Page>;
   // «Criterio · Avisos» (Pantalla de error): el rol no cargó y no hay nada que mostrar; si no existe (404),
   // «No encontramos esta página» (errores.md).
   if (!role.data) return isNotFoundError(role.error)
     ? <NotFoundPage homePath={homeOf("business")} screen={t("roles:editorTitle")} back={{ to: "/org/roles", label: t("roles:backToList") }} />
     : <LoadErrorPage onRetry={() => { void role.refetch(); }} screen={t("roles:editorTitle")} back={{ to: "/org/roles", label: t("roles:backToList") }} />;
-  return <RoleEditor key={role.data.id} role={role.data} reload={async () => (await role.refetch()).data} />;
+  return <RoleEditor key={role.data.id} role={role.data} groups={permissionGroups.data} reload={async () => (await role.refetch()).data} />;
 }
 
 /** Repetir el alta con lo mismo conserva la clave; cambiar cualquier dato es otra operación (R05). */
@@ -120,7 +128,7 @@ function sameRoleRequest(previous: CreateRoleRequest, next: CreateRoleRequest) {
 /// que se abren. Al editar, «Descartar cambios» vuelve a lo guardado sin salir; al crear, «Cancelar» vuelve a la lista
 /// (lienzo v87). La versión que manda el guardado la lleva `useEditForm`; el 409, la franja y «¿Salir sin guardar?» los
 /// pone `useEditPage`.
-function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Promise<RoleResponse | undefined> }) {
+function RoleEditor({ role, groups, reload }: { role?: RoleResponse; groups?: readonly PermissionGroupResponse[]; reload?: () => Promise<RoleResponse | undefined> }) {
   const { t } = useTranslation(["roles", "common"]);
   const format = useFormat();
   const [searchParams] = useSearchParams();
@@ -131,7 +139,7 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
   const editable = can("roles.manage") && role?.isSystemRole !== true;
   const schema = useMemo(() => roleFormSchema(t), [t]);
   const { form, version, resetTo, wrote } = useEditForm<RoleResponse | undefined, RoleForm, RoleFormValues>({
-    read: role, toValues: (read) => read ? valuesFromRole(read) : valuesForNewRole(searchParams), resolver: zodResolver(schema),
+    read: role, toValues: (read) => read ? valuesFromRole(read, groups) : valuesForNewRole(searchParams), resolver: zodResolver(schema),
   });
   const { errors } = form.formState;
   const scopeField = useController({ control: form.control, name: "scope" });
@@ -155,7 +163,8 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
     ...(role?.companyId && role.companyName ? [{ id: role.companyId, name: role.companyName }] : [])];
   const companyOptions = companies.data?.items ?? [];
   const scopeGroups = useMemo(() => groupsForScope(permissionGroups.data ?? [], scope), [permissionGroups.data, scope]);
-  const count = selectionCount(scopeGroups.flatMap((group) => group.permissions), permissions);
+  // Lo guardado del rol: un área con algo guardado arranca abierta, aunque después se le quite todo.
+  const savedPermissions = useMemo(() => role ? rolePermissions(role, groups) : [], [role, groups]);
 
   // P2 (E9): al llegar a un límite, el aviso va arriba del formulario, lo escrito queda y «Guardar» cuenta hasta poder
   // tocarse de nuevo, a mano.
@@ -237,6 +246,21 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
   const saving = create.isPending || update.isPending;
   // P2: en la compu, arriba del formulario (Rol); en el teléfono, abajo, sobre los botones fijos (M-Rol).
   const limitNotice = limit.isRunning && isRateLimitError(failure) ? <Banner tone="warning" role="alert">{apiErrorMessage(failure, t)}</Banner> : null;
+  // Tableros Rol-Base2 y M-Rol-Base2 (260): en la compu, la tabla «Permiso» sola, debajo de los datos; en el teléfono, con
+  // «Permisos» arriba. Lo que falta elegir, la carga y el error van debajo de su encabezado.
+  const permissionsLoading = Boolean(scope) && permissionGroups.isPending;
+  const permissionsNotice = errors.permissions?.message || !scope || permissionsLoading ? <>
+    {/* Tablero Rol (.w-cartel.o-prob, con 12 y 16 de margen): en la compu, el cartel de problema; en el teléfono, la franja. */}
+    {errors.permissions?.message ? phone ? <FormError className="mx-3.5 mt-3" message={errors.permissions.message} />
+      : <Banner tone="danger" className="mx-4 my-3">{errors.permissions.message}</Banner> : null}
+    {!scope ? <p className="p-4 text-[0.8125rem] text-[var(--t3)] max-md:px-4 max-md:py-3.5 max-md:text-[0.90625rem] max-md:text-[var(--t2)]">{t("roles:scope.chooseForPermissions")}</p>
+      : permissionsLoading ? <p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p> : null}
+  </> : null;
+  // El Dueño y todo rol de sistema que no se cambia se leen con tildes y con sus áreas cerradas; un rol que quien mira no
+  // puede cambiar, con tildes y abiertas las áreas que tienen algo.
+  const permissionPicker = <PermissionPicker key={scope ?? ""} label={t("roles:permissionsTitle")} framed={!phone}
+    groups={permissionsLoading ? [] : scopeGroups} picked={permissions} saved={savedPermissions} onChange={permissionsField.field.onChange}
+    readOnly={!editable} openWhenRead={role?.isSystemRole !== true}>{permissionsNotice}</PermissionPicker>;
 
   return <>
     <Page banner={edit.banner}
@@ -283,15 +307,7 @@ function RoleEditor({ role, reload }: { role?: RoleResponse; reload?: () => Prom
           </SectionFields>
         </Section>
 
-        <Section title={t("roles:permissionsTitle")} phone="inset" meta={scope ? t("roles:permissionCount", count) : undefined}>
-          {/* Tablero Rol (.w-cartel.o-prob, con 12 y 16 de margen): en la compu, el cartel de problema; M-Rol no lo dibuja y
-              el teléfono sigue con la franja de sus avisos. */}
-          {errors.permissions?.message ? phone ? <FormError className="mx-3.5 mt-3" message={errors.permissions.message} />
-            : <Banner tone="danger" className="mx-4 my-3">{errors.permissions.message}</Banner> : null}
-          {!scope ? <p className="p-4 text-[0.8125rem] text-[var(--t3)] max-md:px-4 max-md:py-3.5 max-md:text-[0.90625rem] max-md:text-[var(--t2)]">{t("roles:scope.chooseForPermissions")}</p>
-            : permissionGroups.isPending ? <p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p>
-              : <PermissionPicker key={scope} groups={scopeGroups} value={permissions} onChange={permissionsField.field.onChange} readOnly={!editable} />}
-        </Section>
+        {phone ? <Section title={t("roles:permissionsTitle")} phone="inset">{permissionPicker}</Section> : permissionPicker}
       </form>
     </Page>
     {edit.leaveDialog}

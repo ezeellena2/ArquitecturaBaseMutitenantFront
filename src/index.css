@@ -64,6 +64,8 @@
   --punto-pendiente: oklch(0.62 0.12 240);
   /* La casilla marcada y fija de un rol de sistema en el teléfono (tablero M-Rol, .ap-chk.on.fijo, v108). */
   --casilla-fija: oklch(0.78 0.006 78);
+  /* Lo incluido o lo que no se puede dar, marcado y apagado (260 y 269): el verde de la marca, claro. */
+  --casilla-incluida: oklch(0.78 0.06 140);
   /* Tableros Pagina-Publica y M-Pagina-Publica: el brillo arriba a la derecha del fondo de la página pública. */
   --fondo-brillo: oklch(0.94 0.04 95);
   --foco: var(--marca);

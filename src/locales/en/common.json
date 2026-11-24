@@ -217,5 +217,16 @@
     "title": "Filters",
     "clearAll": "Clear all",
     "remove": "Remove {{filter}}"
+  },
+  "permissionPicker": {
+    "permission": "Permission",
+    "toggleArea": "Open or close {{name}}",
+    "allPermissions": "All {{area}} permissions",
+    "includedBy_one": "Included by {{names}}.",
+    "includedBy_other": "Included by {{names}}.",
+    "quoted": "“{{name}}”",
+    "notHeld": "You don't have this permission.",
+    "areaNotHeld": "It has permissions you don't have.",
+    "granted": "Has this permission"
   }
 }

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { cn } from "cn"
-import { CheckIcon } from "lucide-react"
+import { CheckIcon, MinusIcon } from "lucide-react"
 import { Checkbox as CheckboxPrimitive } from "radix-ui"
 
 function Checkbox({
@@ -13,11 +13,14 @@ function Checkbox({
     <CheckboxPrimitive.Root
       data-slot="checkbox"
       className={cn(
-        "peer size-4 shrink-0 rounded-[0.25rem] border border-input transition-shadow outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:bg-input/30 dark:aria-invalid:ring-destructive/40 dark:data-[state=checked]:bg-primary",
+        "group/checkbox peer size-4 shrink-0 rounded-[0.25rem] border border-input transition-shadow outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:bg-input/30 dark:aria-invalid:ring-destructive/40 dark:data-[state=checked]:bg-primary",
         // Tablero Rol (un rol de sistema): bloqueada va gris, como las casillas bloqueadas del navegador, y no en el
         // verde de la marca a media transparencia. Igual apagada con su motivo (`aria-disabled`, 211).
         "disabled:opacity-100 disabled:border-[var(--borde2)] disabled:bg-[var(--s2)] disabled:data-[state=checked]:border-[var(--borde2)] disabled:data-[state=checked]:bg-[var(--borde2)]",
         "aria-disabled:cursor-not-allowed aria-disabled:border-[var(--borde2)] aria-disabled:bg-[var(--s2)] aria-disabled:data-[state=checked]:border-[var(--borde2)] aria-disabled:data-[state=checked]:bg-[var(--borde2)]",
+        // La casilla de un grupo con algunos elegidos (260, el área de un rol): parcial, con la raya en el verde de la marca.
+        "data-[state=indeterminate]:border-primary data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground",
+        "aria-disabled:data-[state=indeterminate]:border-[var(--borde2)] aria-disabled:data-[state=indeterminate]:bg-[var(--borde2)]",
         className
       )}
       {...props}
@@ -26,7 +29,8 @@ function Checkbox({
         data-slot="checkbox-indicator"
         className="grid place-content-center text-current transition-none"
       >
-        <CheckIcon className="size-3.5" />
+        <CheckIcon className="size-3.5 group-data-[state=indeterminate]/checkbox:hidden" />
+        <MinusIcon className="hidden size-3.5 group-data-[state=indeterminate]/checkbox:block" />
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>
   )
