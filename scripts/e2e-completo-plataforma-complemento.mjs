@@ -213,11 +213,11 @@ async function inviteOperator(h, page, email, status = 201) {
   await page.getByRole("button", { name: "Invitar operador", exact: true }).filter({ visible: true }).first().click();
   const dialog = page.getByRole("dialog", { name: "Invitar operador", exact: true });
   await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(email);
-  const picker = dialog.getByRole("button", { name: "Permisos de plataforma", exact: true });
-  await picker.focus(); await picker.press("ArrowDown");
-  assert.equal(await page.getByRole("menuitemcheckbox").count(), 14);
-  await page.getByRole("menuitemcheckbox", { name: "Ver la auditoría", exact: true }).click();
-  await page.keyboard.press("Escape");
+  // Cuentas-Base2 (260): los permisos en áreas plegables, nueve áreas cerradas al empezar.
+  const permissions = dialog.getByRole("table", { name: "Permisos de plataforma", exact: true });
+  assert.equal(await permissions.getByRole("button", { name: /^Abrir o cerrar / }).count(), 9);
+  await permissions.getByRole("button", { name: "Abrir o cerrar Auditoría", exact: true }).click();
+  await permissions.getByRole("checkbox", { name: "Ver la auditoría", exact: true }).click();
   const before = new Set(await h.env.files());
   const response = await clickHttp(page, dialog.getByRole("button", { name: "Invitar", exact: true }), "/api/platform/operators/invitations", status);
   if (status !== 201) return { response, dialog, before };

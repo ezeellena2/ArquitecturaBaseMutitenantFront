@@ -275,12 +275,12 @@ async function addAccountReadByUi(h, page, target, base) {
   await page.getByRole("heading", { name: target.displayName, exact: true }).waitFor();
   await openAction(page, "Cambiar permisos");
   const form = page.getByRole("dialog", { name: `Cambiar permisos de ${target.displayName}`, exact: true });
-  const picker = form.getByRole("button", { name: "Permisos de plataforma", exact: true });
-  await picker.focus(); await picker.press("ArrowDown");
-  assert.equal(await page.getByRole("menuitemcheckbox").count(), 14, "Catálogo individual completo, con los módulos instalados.");
-  assert.equal(await page.getByRole("menuitemcheckbox", { name: "Ver organizaciones", exact: true }).getAttribute("aria-checked"), "true");
-  await page.getByRole("menuitemcheckbox", { name: "Ver cuentas", exact: true }).click();
-  await page.keyboard.press("Escape");
+  // Cuenta-Plat-Base2 (260): los permisos en áreas plegables, abiertas las que tienen algo.
+  const permissions = form.getByRole("table", { name: "Permisos de plataforma", exact: true });
+  assert.equal(await permissions.getByRole("button", { name: /^Abrir o cerrar / }).count(), 9, "Catálogo individual completo, con los módulos instalados.");
+  assert.equal(await permissions.getByRole("checkbox", { name: "Ver organizaciones", exact: true }).getAttribute("aria-checked"), "true");
+  await permissions.getByRole("button", { name: "Abrir o cerrar Cuentas", exact: true }).click();
+  await permissions.getByRole("checkbox", { name: "Ver cuentas", exact: true }).click();
   const reason = "Prueba integral: sólo consultar cuentas y organizaciones.";
   await form.getByRole("textbox", { name: /^Motivo/ }).fill(reason);
   const saved = responseAt(page, `/api/platform/accounts/${target.id}/operator`, "PUT");
