@@ -1,5 +1,6 @@
 import { useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { NumberAmbiguousError } from "@/shared/format/parsers";
 import { useFormat } from "@/shared/format/useFormat";
 import { Input } from "../input";
 
@@ -27,7 +28,9 @@ export function NumberField({ value, onChange, onValidityChange, digits, id, nam
   const messageId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const [draft, setDraft] = useState<string | null>(null);
-  const [invalid, setInvalid] = useState(false);
+  // 207: el número que se lee de dos maneras tiene su propio aviso.
+  const [problem, setProblem] = useState<"invalidNumber" | "numberAmbiguous" | null>(null);
+  const invalid = problem !== null;
   const [touched, setTouched] = useState(false);
   const displayed = !format.isLoading && value !== null
     ? digits === undefined ? format.formatQuantity(value) : format.formatDecimal(value, digits) : "";
@@ -38,12 +41,13 @@ export function NumberField({ value, onChange, onValidityChange, digits, id, nam
     try {
       const parsed = format.parseDecimal(input);
       inputRef.current?.setCustomValidity("");
-      setInvalid(false);
+      setProblem(null);
       onValidityChange?.(true);
       onChange(parsed);
-    } catch {
-      inputRef.current?.setCustomValidity(t("fields.invalidNumber"));
-      setInvalid(true);
+    } catch (error) {
+      const next = error instanceof NumberAmbiguousError ? "numberAmbiguous" : "invalidNumber";
+      inputRef.current?.setCustomValidity(t(`fields.${next}`));
+      setProblem(next);
       onValidityChange?.(false);
       onChange(null);
     }
@@ -57,6 +61,6 @@ export function NumberField({ value, onChange, onValidityChange, digits, id, nam
       onChange={(event) => change(event.target.value)} disabled={disabled || format.isLoading}
       required={required} placeholder={placeholder} aria-busy={format.isLoading}
       aria-invalid={externalInvalid || showError} aria-describedby={description} aria-label={label} />
-    {showError && <p id={messageId} role="alert" className="text-[0.8125rem] text-[var(--peligro)]">{t("fields.invalidNumber")}</p>}
+    {showError && <p id={messageId} role="alert" className="text-[0.8125rem] text-[var(--peligro)]">{t(`fields.${problem}`)}</p>}
   </>;
 }

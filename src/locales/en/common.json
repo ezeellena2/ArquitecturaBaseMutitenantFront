@@ -49,6 +49,7 @@
     "invalidDateTime": "Enter a valid date and time.",
     "invalidTime": "Enter a valid time.",
     "invalidNumber": "Enter a valid number.",
+    "numberAmbiguous": "It can be read two ways: write it without a thousands separator, like 1500 or 1500.5.",
     "invalidMoney": "Enter a valid amount for the selected currency.",
     "invalidPercent": "Enter a valid percentage.",
     "createOption": "Create “{{value}}”",

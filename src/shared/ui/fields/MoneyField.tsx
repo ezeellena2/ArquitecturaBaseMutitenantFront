@@ -1,6 +1,7 @@
 import { useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { MoneyValue } from "@/shared/format/formatters";
+import { NumberAmbiguousError } from "@/shared/format/parsers";
 import { useFormat } from "@/shared/format/useFormat";
 import { Input } from "../input";
 import { Label } from "../label";
@@ -34,7 +35,9 @@ export function MoneyField({ value, onChange, onValidityChange, id, name, disabl
   const messageId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const [draft, setDraft] = useState<string | null>(null);
-  const [invalid, setInvalid] = useState(false);
+  // 207: el número que se lee de dos maneras tiene su propio aviso.
+  const [problem, setProblem] = useState<"invalidMoney" | "numberAmbiguous" | null>(null);
+  const invalid = problem !== null;
   const [touched, setTouched] = useState(false);
   const [currencyOverride, setCurrencyOverride] = useState<{ base: string | null; selected: string } | null>(null);
   const currency = fixedCurrency ? currencyCode ?? value?.currency ?? (format.isLoading ? "" : format.currency ?? "") : currencyOverride?.base === (value?.currency ?? null)
@@ -51,12 +54,13 @@ export function MoneyField({ value, onChange, onValidityChange, id, name, disabl
     try {
       const parsed = format.parseMoney(input, selected, precision);
       inputRef.current?.setCustomValidity("");
-      setInvalid(false);
+      setProblem(null);
       onValidityChange?.(true);
       onChange(parsed);
-    } catch {
-      inputRef.current?.setCustomValidity(t("fields.invalidMoney"));
-      setInvalid(true);
+    } catch (error) {
+      const next = error instanceof NumberAmbiguousError ? "numberAmbiguous" : "invalidMoney";
+      inputRef.current?.setCustomValidity(t(`fields.${next}`));
+      setProblem(next);
       onValidityChange?.(false);
       onChange(null);
     }
@@ -79,6 +83,6 @@ export function MoneyField({ value, onChange, onValidityChange, id, name, disabl
         }}
         disabled={disabled} aria-invalid={externalInvalid || showError} />
     </div> : null}
-    {showError && <p id={messageId} role="alert" className="text-[0.8125rem] text-[var(--peligro)]">{t("fields.invalidMoney")}</p>}
+    {showError && <p id={messageId} role="alert" className="text-[0.8125rem] text-[var(--peligro)]">{t(`fields.${problem}`)}</p>}
   </div>;
 }

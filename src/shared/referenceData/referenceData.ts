@@ -43,7 +43,7 @@ const cultureSchema = z.object({
   datePattern: z.string().min(1),
   timePattern: z.string().min(1),
   dateTimePattern: z.string().min(1),
-  longDatePattern: z.string().min(1),
+  // LongDatePattern sigue en el contrato hasta que el back lo borre (0060), sin uso: no hay fecha larga (205).
   amDesignator: z.string().min(1),
   pmDesignator: z.string().min(1),
   decimalSeparator: z.string().min(1),

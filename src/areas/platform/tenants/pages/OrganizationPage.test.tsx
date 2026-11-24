@@ -81,7 +81,7 @@ describe("Ficha de Organización", () => {
   it.each(["Suspended", "Closed"] as const)("%s dice fecha y motivo reales en la (i) del estado y sin dato no inventa", async (status) => {
     detail({ ...organization, status, lastStateChange: { atUtc: "2026-09-03T14:00:00Z", action: status === "Suspended" ? "OrganizationSuspended" : "OrganizationClosed", reason: "Reclamo" } });
     const { queryClient } = render();
-    const why = await screen.findByRole("img", { name: status === "Suspended" ? /^El 03\/09\/2026 \d{2}:\d{2}\. Motivo: Reclamo\.$/ : /^El 03\/09\/2026 \d{2}:\d{2}\. Motivo: Reclamo\. Queda de solo lectura\.$/ });
+    const why = await screen.findByRole("img", { name: status === "Suspended" ? /^El 03\/09\/2026, \d{2}:\d{2}\. Motivo: Reclamo\.$/ : /^El 03\/09\/2026, \d{2}:\d{2}\. Motivo: Reclamo\. Queda de solo lectura\.$/ });
     expect(why).toHaveAttribute("tabindex", "0");
     expect(screen.queryByText(/Motivo: Reclamo/)).not.toBeInTheDocument();
     detail({ ...organization, status, lastStateChange: null }); await act(async () => { await queryClient.invalidateQueries({ queryKey: tenantsQueryRoot }); });
@@ -116,7 +116,7 @@ describe("Ficha de Organización", () => {
   it("Dueño sin nombre/correo conserva null; último ingreso con fecha y hora", async () => {
     const user = userEvent.setup(); detail({ ...organization, owners: [{ ...owner, displayName: null, email: null, lastSignInAtUtc: "2026-01-12T11:40:00Z" }] }); render(); await user.click(await screen.findByRole("tab", { name: "Dueños 1" }));
     // El Dueño y su correo van cada uno en su columna (base de la 12): sin dato, los dos dicen la raya.
-    expect(await screen.findAllByRole("img", { name: "Sin dato" })).toHaveLength(2); expect(within(screen.getByRole("tabpanel")).getByText("12/01/2026 08:40")).toBeVisible();
+    expect(await screen.findAllByRole("img", { name: "Sin dato" })).toHaveLength(2); expect(within(screen.getByRole("tabpanel")).getByText("12/01/2026, 08:40")).toBeVisible();
   });
   it("404 y error inicial usan las pantallas comunes y Reintentar vuelve a pedir", async () => {
     const user = userEvent.setup(); server.use(http.get("/api/platform/tenants/delta", () => HttpResponse.json({ code: "Tenancy.Tenant.NotFound" }, { status: 404 }))); const first = render();
@@ -132,7 +132,7 @@ describe("Ficha de Organización", () => {
   });
   it("a 390 el ⋮ abre la hoja con menuitem, fecha corta y actor/motivo; axe", async () => {
     asPhone(); const user = userEvent.setup(); const { container } = render(); expect(await screen.findByRole("heading", { name: "Grupo Delta" })).toBeVisible();
-    expect(screen.getByText(/3 empresas · 11 miembros/)).toBeVisible(); expect(await screen.findByText("20/09/2026 11:02")).toBeVisible(); expect(screen.getByText("Martín Sosa · Se resolvió el reclamo")).toBeVisible();
+    expect(screen.getByText(/3 empresas · 11 miembros/)).toBeVisible(); expect(await screen.findByText("20/09/2026, 11:02")).toBeVisible(); expect(screen.getByText("Martín Sosa · Se resolvió el reclamo")).toBeVisible();
     expect(screen.getByText(history.action)).toBeVisible(); expect(screen.queryByText(history.summary)).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Suspender" })).not.toBeInTheDocument(); const trigger = screen.getByRole("button", { name: "Acciones de Grupo Delta" }); await user.click(trigger); expect(within(await screen.findByRole("dialog", { name: "Grupo Delta" })).getByRole("menuitem", { name: "Suspender" })).toBeVisible(); await user.keyboard("{Escape}"); expect(await axe(container)).toHaveNoViolations();
   });

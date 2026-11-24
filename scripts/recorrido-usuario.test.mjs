@@ -458,8 +458,9 @@ test("la campana se nombra con lo que tiene sin leer y una fecha se ve completa,
   assert.equal(bellLabel(0), "Avisos");
   assert.equal(bellLabel(3), "Avisos: 3");
   for (const wrong of [-1, 1.5, "2"]) assert.throws(() => bellLabel(wrong));
-  for (const text of ["09/11/2026 14:05", " 01/01/2027 00:00\n"]) assert.equal(isFullDateTime(text), true, text);
-  for (const text of ["09/11/26 14:05", "09/11/2026", "9/11/2026 14:05", "09/11/2026 14:05:30", "hace 2 horas", "hoy 14:05", "11/09/2026 2:05 PM"])
+  for (const text of ["09/11/2026, 14:05", " 01/01/2027, 00:00\n"]) assert.equal(isFullDateTime(text), true, text);
+  for (const text of ["09/11/26, 14:05", "09/11/2026", "9/11/2026, 14:05", "09/11/2026, 14:05:30", "09/11/2026 14:05", "hace 2 horas",
+    "hoy 14:05", "11/09/2026, 2:05 PM"])
     assert.equal(isFullDateTime(text), false, text);
 });
 

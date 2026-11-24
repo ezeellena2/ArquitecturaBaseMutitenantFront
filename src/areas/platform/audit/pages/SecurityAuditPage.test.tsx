@@ -64,7 +64,7 @@ describe("SecurityAuditPage", () => {
     expect(await screen.findByRole("button", { name: /Configuró el autenticador/u })).toBeVisible();
     for (const summary of ["Confirmó con el autenticador", "Confirmó con un código de recuperación", "Ingresó con un código de recuperación"]) expect(screen.getByRole("button", { name: new RegExp(summary, "u") })).toBeVisible();
     expect(queries.at(-1)?.searchParams.get("type")).toBe("signins");
-    expect(screen.getAllByText("26/09/2026 17:30").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("26/09/2026, 17:30").length).toBeGreaterThan(0);
   });
 
   it("restablecer el autenticador va en Cuentas, sobre la cuenta restablecida y con el motivo del operador", async () => {
@@ -128,7 +128,7 @@ describe("SecurityAuditPage", () => {
     await user.click(await screen.findByRole("button", { name: "Ver el detalle: Suspendió la cuenta" }));
     const dialog = await screen.findByRole("dialog", { name: "Suspendió la cuenta" });
     expect(dialog).toHaveClass("md:max-w-140");
-    expect(dialog).toHaveTextContent("Fecha y hora26/09/2026 17:30");
+    expect(dialog).toHaveTextContent("Fecha y hora26/09/2026, 17:30");
     expect(dialog).toHaveTextContent("SobreAna Gómez");
     expect(dialog).toHaveTextContent("QuiénLaura Díaz · Operador");
     expect(dialog).toHaveTextContent("MotivoDenuncia de uso indebido.");
@@ -223,7 +223,7 @@ describe("SecurityAuditPage", () => {
     const { container } = mount();
     const title = await screen.findByText("Suspendió la cuenta");
     const row = title.closest("li")!;
-    expect(row).toHaveTextContent("26/09/2026 17:30");
+    expect(row).toHaveTextContent("26/09/2026, 17:30");
     expect(row).toHaveTextContent("Ana Gómez · Laura Díaz");
     expect(title).not.toHaveClass("truncate");
     expect(screen.getByText("Administración")).toBeVisible();
@@ -232,7 +232,7 @@ describe("SecurityAuditPage", () => {
     await user.click(title);
     const dialog = await screen.findByRole("dialog", { name: "Suspendió la cuenta" });
     expect(dialog).toHaveClass("bottom-0", "rounded-t-[1.25rem]");
-    expect(dialog).toHaveTextContent("Fecha y hora26/09/2026 17:30");
+    expect(dialog).toHaveTextContent("Fecha y hora26/09/2026, 17:30");
     expect(within(dialog).getAllByRole("img", { name: "Sin dato" })).toHaveLength(2);
     expect(await axe(dialog)).toHaveNoViolations();
     await user.click(within(dialog).getAllByRole("button", { name: "Cerrar" }).at(-1)!);
@@ -250,7 +250,7 @@ describe("SecurityAuditPage", () => {
     await act(async () => { view.queryClient.setQueryData(currentUserQueryKey, { ...auditOnly, culture: "en-US" }); });
     await user.click(await screen.findByRole("button", { name: "View details: Suspendió la cuenta" }));
     const dialog = await screen.findByRole("dialog", { name: "Suspendió la cuenta" });
-    expect(dialog).toHaveTextContent("Date and time09/26/2026 5:30 PM");
+    expect(dialog).toHaveTextContent("Date and time09/26/2026, 5:30 PM");
     expect(dialog).toHaveTextContent("AboutAna Gómez");
     expect(dialog).toHaveTextContent("IP address181.45.178.•••");
   });

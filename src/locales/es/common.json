@@ -49,6 +49,7 @@
     "invalidDateTime": "Ingresá una fecha y hora válidas.",
     "invalidTime": "Ingresá una hora válida.",
     "invalidNumber": "Ingresá un número válido.",
+    "numberAmbiguous": "Se puede leer de dos maneras: escribilo sin separador de miles, como 1500 o 1500,5.",
     "invalidMoney": "Ingresá un monto válido para la moneda elegida.",
     "invalidPercent": "Ingresá un porcentaje válido.",
     "createOption": "Crear «{{value}}»",

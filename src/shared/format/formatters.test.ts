@@ -99,7 +99,7 @@ function renderCase(item: FormatCase, now: string): string {
     case "date": return formatter.formatDate(item.input as string);
     case "dateTime": return formatter.formatDateTime(item.input as string);
     case "time": return formatter.formatTime(item.input as string);
-    case "dateLong": return formatter.formatDateLong(item.input as string);
+    case "month": return formatter.formatMonth(item.input as string);
     case "dateRange": return formatter.formatDateRange(item.input as { start: string; end: string });
     case "integer": return formatter.formatInteger(item.input as number);
     case "decimal": {
@@ -140,7 +140,7 @@ describe.skipIf(!backendPresent)("paridad con format-cases.json", () => {
   it("abarca todos los tipos documentados en ambas culturas", () => {
     const types = new Set(contract.cases.map((item) => item.type));
     for (const type of [
-      "date", "dateTime", "time", "dateLong", "dateRange", "integer", "decimal",
+      "date", "dateTime", "time", "month", "dateRange", "integer", "decimal",
       "quantity", "percent", "money", "compact", "fileSize", "duration", "phone", "timeZone",
       "culture", "taxId", "email", "enum", "boolean", "empty", "text",
     ]) {
@@ -192,15 +192,27 @@ describe.skipIf(!backendPresent)("reloj del formateador", () => {
     }
   });
 
-  // formatos.md (base de la 12): una fecha se muestra completa, con su año, y un momento con su hora; nunca la fecha
-  // corta, «hace 2 horas», «hoy» ni «ayer». El front ya no tiene con qué armarlas.
-  it("no ofrece la fecha corta, la relativa ni la de calendario", () => {
+  // formatos.md (base de la 12): una fecha se muestra completa, con su año, y un momento con su hora después de una coma;
+  // nunca la fecha corta, la fecha larga, «hace 2 horas», «hoy» ni «ayer» (205). El front ya no tiene con qué armarlas.
+  it("no ofrece la fecha corta, la larga, la relativa ni la de calendario", () => {
     const formatter = createFormatters({
       referenceData: sourceCatalog("es-AR"), culture: "es-AR", timeZone: "America/Argentina/Buenos_Aires",
       now: "2026-10-03T18:00:00Z", translate: translator("es-AR"),
     }) as unknown as Record<string, unknown>;
-    for (const name of ["formatShortDate", "formatShortDateTime", "formatRelative", "formatCalendar"]) expect(formatter[name]).toBeUndefined();
-    expect((formatter.formatDateTime as (value: string) => string)("2026-10-03T13:42:00Z")).toBe("03/10/2026 10:42");
+    for (const name of ["formatShortDate", "formatShortDateTime", "formatDateLong", "formatRelative", "formatCalendar"]) {
+      expect(formatter[name]).toBeUndefined();
+    }
+    expect((formatter.formatDateTime as (value: string) => string)("2026-10-03T13:42:00Z")).toBe("03/10/2026, 10:42");
+  });
+
+  it("rechaza un patrón con el mes en letras", () => {
+    const data = sourceCatalog("es-AR");
+    const referenceData = {
+      ...data,
+      cultures: data.cultures.map((row) => row.code === "es-AR" ? { ...row, datePattern: "d 'de' MMMM 'de' yyyy" } : row),
+    };
+    const formatter = createFormatters({ referenceData, culture: "es-AR", timeZone: "UTC", translate: translator("es-AR") });
+    expect(() => formatter.formatDate("2026-10-03")).toThrow();
   });
 });
 
@@ -246,7 +258,7 @@ describe("designadores horarios del catálogo", () => {
       translate: translator("en-US") });
 
     expect(formatter.formatTime("14:35:00")).toBe("2:35 p. m.");
-    expect(formatter.formatDateTime("2026-09-27T14:35:00Z")).toBe("09/27/2026 2:35 p. m.");
+    expect(formatter.formatDateTime("2026-09-27T14:35:00Z")).toBe("09/27/2026, 2:35 p. m.");
   });
 });
 

@@ -70,6 +70,37 @@ describe("NumberField y MoneyField", () => {
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
+  // 207: «1.500» se lee 1500 con los miles y 1,5 sin ellos; el campo pide escribirlo sin separador de miles.
+  it("avisa que un número se puede leer de dos maneras, en la cantidad y en el monto", async () => {
+    const number = vi.fn();
+    const money = vi.fn();
+    const validity = vi.fn();
+    render(<AppProviders><FormField label="Cantidad"><NumberField value={null} onChange={number} onValidityChange={validity} /></FormField>
+      <FormField label="Monto"><MoneyField value={null} onChange={money} /></FormField></AppProviders>);
+    const quantity = await screen.findByRole("textbox", { name: "Cantidad" });
+    await waitFor(() => expect(quantity).toBeEnabled());
+    fireEvent.change(quantity, { target: { value: "1.500" } });
+    expect(number).toHaveBeenLastCalledWith(null);
+    expect(validity).toHaveBeenLastCalledWith(false);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    fireEvent.blur(quantity);
+    expect(quantity).toHaveAttribute("aria-invalid", "true");
+    expect(quantity).toHaveAccessibleDescription("Se puede leer de dos maneras: escribilo sin separador de miles, como 1500 o 1500,5.");
+    fireEvent.change(quantity, { target: { value: "1500" } });
+    expect(number).toHaveBeenLastCalledWith(1500);
+    expect(validity).toHaveBeenLastCalledWith(true);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+
+    const amount = screen.getByRole("textbox", { name: "Monto" });
+    fireEvent.change(amount, { target: { value: "1.500" } });
+    fireEvent.blur(amount);
+    expect(money).toHaveBeenLastCalledWith(null);
+    expect(screen.getByRole("alert")).toHaveTextContent("Se puede leer de dos maneras: escribilo sin separador de miles, como 1500 o 1500,5.");
+    fireEvent.change(amount, { target: { value: "1.500,5" } });
+    expect(money).toHaveBeenLastCalledWith({ amount: 1500.5, currency: "ARS" });
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
   it("emite Money con moneda del catálogo y respeta sus unidades menores", async () => {
     const onChange = vi.fn();
     const onValidityChange = vi.fn();
@@ -110,8 +141,10 @@ describe("NumberField y MoneyField", () => {
     const input = await screen.findByRole("textbox", { name: "Monto" });
     await waitFor(() => expect(input).toBeEnabled());
     expect(screen.getByRole("combobox", { name: "Moneda" })).toHaveTextContent("(CLP)");
-    fireEvent.change(input, { target: { value: "1.234" } });
+    fireEvent.change(input, { target: { value: "1234" } });
     expect(onChange).toHaveBeenLastCalledWith({ amount: 1234, currency: "CLP" });
+    fireEvent.change(input, { target: { value: "1.234.567" } });
+    expect(onChange).toHaveBeenLastCalledWith({ amount: 1234567, currency: "CLP" });
     fireEvent.change(input, { target: { value: "1.234,5" } });
     expect((input as HTMLInputElement).checkValidity()).toBe(false);
   });

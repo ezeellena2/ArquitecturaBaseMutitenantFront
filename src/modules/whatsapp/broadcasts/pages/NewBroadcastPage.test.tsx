@@ -73,7 +73,7 @@ describe("Nueva difusión", () => {
     await user.click(await screen.findByRole("option", { name: "Aviso de horario · Marketing" }));
     fireEvent.change(await screen.findByLabelText(/^Nombre/, { selector: "input[name='variables.0']" }), { target: { value: "Martina" } });
     await user.click(screen.getByRole("radio", { name: "Programar" }));
-    fireEvent.change(await screen.findByRole("textbox", { name: /Fecha y hora/ }), { target: { value: "20/12/2026 09:00" } });
+    fireEvent.change(await screen.findByRole("textbox", { name: /Fecha y hora/ }), { target: { value: "20/12/2026, 09:00" } });
     await screen.findByText("312 contactos");
     await user.click(screen.getByRole("button", { name: "Programar" }));
 
@@ -195,7 +195,7 @@ describe("Nueva difusión", () => {
       fireEvent.change(await variable("Nombre", 0), { target: { value: "Martina" } });
 
       await user.click(screen.getByRole("radio", { name: "Programar" }));
-      fireEvent.change(await screen.findByRole("textbox", { name: /Fecha y hora/ }), { target: { value: "20/12/2026 09:00" } });
+      fireEvent.change(await screen.findByRole("textbox", { name: /Fecha y hora/ }), { target: { value: "20/12/2026, 09:00" } });
       await user.click(screen.getByRole("radio", { name: "Ahora" }));
       expect(screen.queryByRole("textbox", { name: /Fecha y hora/ })).not.toBeInTheDocument();
       await user.click(screen.getByRole("radio", { name: "Programar" }));

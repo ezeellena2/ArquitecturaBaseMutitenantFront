@@ -70,9 +70,9 @@ beforeEach(async () => {
 // Tableros Campana y Campana-Plat: la campana en la barra de arriba de la compu, con el número de lo que lista sin leer.
 describe("la campana en la compu", () => {
   it.each([
-    ["consumer-empty", "/", [loginMethod], "Avisos: 1", loginMethodText, "20/09/2026 10:12"],
-    ["business-admin", "/org", [loginMethod], "Avisos: 1", loginMethodText, "20/09/2026 10:12"],
-    ["platform-operator", "/plataforma", [recovery, organization], "Avisos: 2", "Pablo Ortiz pidió recuperar su cuenta", "27/09/2026 10:20"],
+    ["consumer-empty", "/", [loginMethod], "Avisos: 1", loginMethodText, "20/09/2026, 10:12"],
+    ["business-admin", "/org", [loginMethod], "Avisos: 1", loginMethodText, "20/09/2026, 10:12"],
+    ["platform-operator", "/plataforma", [recovery, organization], "Avisos: 2", "Pablo Ortiz pidió recuperar su cuenta", "27/09/2026, 10:20"],
   ] as const)("en %s va antes de tu menú, con el número sin leer, y abre «Avisos»", async (as, path, items, label, text, date) => {
     serveNotifications(...items);
     const user = userEvent.setup();

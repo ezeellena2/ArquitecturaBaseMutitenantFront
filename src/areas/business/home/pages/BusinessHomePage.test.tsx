@@ -125,7 +125,7 @@ describe("BusinessHomePage", () => {
 
     const areas = await screen.findByRole("navigation", { name: "Áreas de la organización" });
     const audit = within(areas).getByRole("link", { name: /^Auditoría/ });
-    expect(audit).toHaveTextContent("01/10/2026 10:42");
+    expect(audit).toHaveTextContent("01/10/2026, 10:42");
     expect(audit).not.toHaveTextContent("Último cambio");
   });
 
@@ -146,7 +146,7 @@ describe("BusinessHomePage", () => {
     // El punto del tono que registra el Inicio para el estado de la página (statusTones), como la Página pública.
     expect(card("Página pública").querySelector("[data-slot='status-dot']")).toHaveClass("bg-[var(--punto-ok)]");
     expect(card("Configuración")).toHaveTextContent("delta.ejemplo.com");
-    expect(card("Auditoría")).toHaveTextContent("03/10/2026 10:42");
+    expect(card("Auditoría")).toHaveTextContent("03/10/2026, 10:42");
     expect(card("Auditoría")).not.toHaveTextContent("hoy");
 
     const toResolve = screen.getByRole("region", { name: "Para resolver" });

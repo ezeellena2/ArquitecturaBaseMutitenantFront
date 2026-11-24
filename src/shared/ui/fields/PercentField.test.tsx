@@ -14,7 +14,7 @@ describe("PercentField", () => {
     render(<AppProviders><FormField label="Porcentaje"><PercentField value={0.125} onChange={onChange} /></FormField></AppProviders>);
     const input = await screen.findByRole("textbox", { name: "Porcentaje" });
     await waitFor(() => expect(input).toBeEnabled());
-    expect(input).toHaveValue("12,5 %");
+    expect(input).toHaveValue("12,5%");
     fireEvent.change(input, { target: { value: "25,5" } });
     expect(onChange).toHaveBeenLastCalledWith(0.255);
     fireEvent.change(input, { target: { value: "" } });
@@ -40,5 +40,11 @@ describe("PercentField", () => {
     expect(onChange).toHaveBeenLastCalledWith(0.125);
     expect(onValidityChange).toHaveBeenLastCalledWith(true);
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+
+    // 207: lo que se lee distinto con y sin los miles pide escribirlo sin separador de miles.
+    fireEvent.change(input, { target: { value: "1.500" } });
+    expect(onChange).toHaveBeenLastCalledWith(null);
+    fireEvent.blur(input);
+    expect(screen.getByRole("alert")).toHaveTextContent("Se puede leer de dos maneras: escribilo sin separador de miles, como 1500 o 1500,5.");
   });
 });

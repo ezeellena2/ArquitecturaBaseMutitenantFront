@@ -104,10 +104,10 @@ describe("Ficha de Cuenta de Plataforma", () => {
   // «Cerrar sesiones», solo con la cuenta activa, como el tablero en cada estado.
   it.each([
     ["Activa", ["Cerrar sesiones", "Suspender"], null],
-    ["Suspendida", ["Reactivar"], /^El 27\/09\/2026 \d{2}:\d{2}\. Motivo: Denuncia de uso indebido\.$/],
-    ["Necesita recuperación", ["Suspender"], /^El 20\/09\/2026 \d{2}:\d{2} terminó su membresía en Kappa S\.R\.L\., que administraba su único método de ingreso\.$/],
-    ["Por borrar", [], /^Pidió borrar su cuenta el 27\/09\/2026 \d{2}:\d{2}\.$/],
-    ["Por borrar a pedido de la plataforma", [], /^La plataforma pidió borrar la cuenta el 27\/09\/2026 \d{2}:\d{2}\. Motivo: —$/],
+    ["Suspendida", ["Reactivar"], /^El 27\/09\/2026, \d{2}:\d{2}\. Motivo: Denuncia de uso indebido\.$/],
+    ["Necesita recuperación", ["Suspender"], /^El 20\/09\/2026, \d{2}:\d{2} terminó su membresía en Kappa S\.R\.L\., que administraba su único método de ingreso\.$/],
+    ["Por borrar", [], /^Pidió borrar su cuenta el 27\/09\/2026, \d{2}:\d{2}\.$/],
+    ["Por borrar a pedido de la plataforma", [], /^La plataforma pidió borrar la cuenta el 27\/09\/2026, \d{2}:\d{2}\. Motivo: —$/],
     ["Borrada", [], null],
   ] as const)("estado %s conserva evidencia y acciones", async (state, actions, why) => {
     data = platformAccountDetailFixture({ state }); open();
@@ -136,7 +136,7 @@ describe("Ficha de Cuenta de Plataforma", () => {
     data = platformAccountDetailFixture({ state: "Necesita recuperación" });
     data.organizations.push({ ...data.organizations[0], tenantId: "tenant-otra", name: "Otra", endedAtUtc: "2026-09-25T13:00:00Z" });
     open(); await screen.findByRole("heading", { name: "Pablo Ortiz", level: 1 });
-    expect(screen.getByRole("img", { name: /^El 20\/09\/2026 \d{2}:\d{2} terminó su membresía en Kappa S\.R\.L\./ })).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: /^El 20\/09\/2026, \d{2}:\d{2} terminó su membresía en Kappa S\.R\.L\./ })).toBeInTheDocument();
   });
   it("organizaciones: nombre traducido por API, null vacío, estados de membresía y vínculo", async () => {
     data.organizations.push({ ...data.organizations[0], tenantId: "ended", name: "Terminada", status: "Removed" });

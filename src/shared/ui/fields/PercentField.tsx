@@ -1,5 +1,6 @@
 import { useId, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { NumberAmbiguousError } from "@/shared/format/parsers";
 import { useFormat } from "@/shared/format/useFormat";
 import { Input } from "../input";
 
@@ -24,7 +25,9 @@ export function PercentField({ value, onChange, onValidityChange, id, name, disa
   const messageId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const [draft, setDraft] = useState<string | null>(null);
-  const [invalid, setInvalid] = useState(false);
+  // 207: el número que se lee de dos maneras tiene su propio aviso.
+  const [problem, setProblem] = useState<"invalidPercent" | "numberAmbiguous" | null>(null);
+  const invalid = problem !== null;
   const [touched, setTouched] = useState(false);
   const displayed = !format.isLoading && value !== null ? format.formatPercent(value) : "";
   const inputValue = draft ?? displayed;
@@ -34,12 +37,13 @@ export function PercentField({ value, onChange, onValidityChange, id, name, disa
     try {
       const parsed = format.parsePercent(input);
       inputRef.current?.setCustomValidity("");
-      setInvalid(false);
+      setProblem(null);
       onValidityChange?.(true);
       onChange(parsed);
-    } catch {
-      inputRef.current?.setCustomValidity(t("fields.invalidPercent"));
-      setInvalid(true);
+    } catch (error) {
+      const next = error instanceof NumberAmbiguousError ? "numberAmbiguous" : "invalidPercent";
+      inputRef.current?.setCustomValidity(t(`fields.${next}`));
+      setProblem(next);
       onValidityChange?.(false);
       onChange(null);
     }
@@ -53,6 +57,6 @@ export function PercentField({ value, onChange, onValidityChange, id, name, disa
       onChange={(event) => change(event.target.value)} disabled={disabled || format.isLoading}
       required={required} placeholder={placeholder} aria-busy={format.isLoading}
       aria-invalid={externalInvalid || showError} aria-describedby={description} />
-    {showError && <p id={messageId} role="alert" className="text-[0.8125rem] text-[var(--peligro)]">{t("fields.invalidPercent")}</p>}
+    {showError && <p id={messageId} role="alert" className="text-[0.8125rem] text-[var(--peligro)]">{t(`fields.${problem}`)}</p>}
   </>;
 }

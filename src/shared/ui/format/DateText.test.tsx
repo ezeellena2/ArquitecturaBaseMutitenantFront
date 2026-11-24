@@ -5,9 +5,8 @@ import { DateText } from "./DateText";
 vi.mock("@/shared/format/useFormat", () => ({
   useFormat: () => ({
     formatDate: () => "27/09/2026",
-    formatDateTime: () => "27/09/2026 12:00",
+    formatDateTime: () => "27/09/2026, 12:00",
     formatTime: () => "12:00",
-    formatDateLong: () => "27 de septiembre de 2026",
     formatEmpty: () => "—",
   }),
 }));
@@ -18,7 +17,7 @@ describe("DateText", () => {
     const time = screen.getByText("27/09/2026");
     expect(time.tagName).toBe("TIME");
     expect(time).toHaveAttribute("datetime", "2026-09-27T15:00:00Z");
-    expect(time).toHaveAttribute("title", "27/09/2026 12:00");
+    expect(time).toHaveAttribute("title", "27/09/2026, 12:00");
   });
 
   it("conserva DateOnly sin convertirlo a instante y muestra el vacío", () => {
@@ -31,6 +30,6 @@ describe("DateText", () => {
   // formatos.md (base de la 12): un momento va con fecha y hora completas; sin tooltip, porque ya dice todo.
   it("un momento muestra la fecha y la hora completas", () => {
     render(<DateText value="2026-09-27T15:00:00Z" kind="dateTime" />);
-    expect(screen.getByText("27/09/2026 12:00")).not.toHaveAttribute("title");
+    expect(screen.getByText("27/09/2026, 12:00")).not.toHaveAttribute("title");
   });
 });

@@ -18,15 +18,22 @@ describe("período mensual central", () => {
     }
   });
 
-  it("localiza mes y año sin convertir el período por zona ni perder años tempranos", () => {
-    expect(format().formatMonth("2026-10")).toBe("Octubre de 2026");
-    expect(format("en-US").formatMonth("2026-10")).toBe("October 2026");
-    for (const year of ["0001", "0099", "0100", "9999"]) {
-      expect(format().formatMonth(`${year}-02`)).toBe(`Febrero de ${year}`);
-      expect(format("en-US", "Pacific/Kiritimati").formatMonth(`${year}-02`)).toBe(`February ${year}`);
+  // 205: el mes nunca va en letras; se escribe como su rango, y al elegirlo, los meses van con su número.
+  it("escribe el mes como su rango sin convertirlo por zona ni perder años tempranos", () => {
+    expect(format().formatMonth("2026-10")).toBe("01/10/2026 – 31/10/2026");
+    expect(format("en-US").formatMonth("2026-10")).toBe("10/01/2026 – 10/31/2026");
+    expect(format().formatMonth("2028-02")).toBe("01/02/2028 – 29/02/2028");
+    expect(format().formatMonth("2026-02")).toBe("01/02/2026 – 28/02/2026");
+    expect(format("en-US", "Pacific/Kiritimati").formatMonth("2026-12")).toBe("12/01/2026 – 12/31/2026");
+    for (const [year, last] of [["0001", "28"], ["0004", "29"], ["0099", "28"], ["0100", "28"], ["2000", "29"], ["9999", "28"]]) {
+      expect(format().formatMonth(`${year}-02`)).toBe(`01/02/${year} – ${last}/02/${year}`);
+      expect(format("en-US", "Pacific/Kiritimati").formatMonth(`${year}-02`)).toBe(`02/01/${year} – 02/${last}/${year}`);
       expect(format().getMonthOptions(`${year}-02`)).toHaveLength(12);
-      expect(format().getMonthOptions(`${year}-02`)[11]).toEqual({ value: `${year}-12`, label: "Diciembre" });
+      expect(format().getMonthOptions(`${year}-02`)[11]).toEqual({ value: `${year}-12`, label: "12" });
     }
+    expect(format().getMonthOptions("2026-10").map((option) => option.label))
+      .toEqual(["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]);
+    expect(format("en-US").getMonthOptions("2026-10")[0]).toEqual({ value: "2026-01", label: "01" });
     expect(() => format().formatMonth("0000-01")).toThrow();
     expect(() => format().getMonthOptions("2026-13")).toThrow();
     expect(format().getAdjacentMonthYear("0100-02", -1)).toBe("0099-02");

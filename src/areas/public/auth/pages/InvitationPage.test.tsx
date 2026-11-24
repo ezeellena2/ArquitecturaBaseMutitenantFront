@@ -140,8 +140,8 @@ describe("InvitationPage", () => {
       const { container, client } = show();
       const heading = await screen.findByRole("heading", { name: "Te sumás a Grupo Delta" });
       expect(heading.parentElement).toHaveTextContent("La invitación es para invitada@example.test.");
-      expect(screen.getByText("Lucía Fernández te invitó").parentElement).toHaveTextContent("Lucía Fernández te invitóDueño · 30/09/2026 09:00");
-      expect(screen.getByText("Empresa").closest("dl")).toHaveTextContent("EmpresaDelta Norte S.A.RolesSolo lecturaVence07/10/2026 09:00");
+      expect(screen.getByText("Lucía Fernández te invitó").parentElement).toHaveTextContent("Lucía Fernández te invitóDueño · 30/09/2026, 09:00");
+      expect(screen.getByText("Empresa").closest("dl")).toHaveTextContent("EmpresaDelta Norte S.A.RolesSolo lecturaVence07/10/2026, 09:00");
       expect(screen.getByTestId("auth-brand-panel")).toHaveTextContent("Entrás con un código por correo o por WhatsApp.");
       expect(screen.getByTestId("auth-brand-panel")).toHaveTextContent("Sin contraseñas: entrás con un código por correo o WhatsApp.");
       expect(await axe(container)).toHaveNoViolations();

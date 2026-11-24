@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { referenceDataFixture } from "@/test/mocks/handlers";
-import { parseDate, parseDateTime, parseDecimal, parseMoney, parsePercent, parseTime } from "./parsers";
+import { NumberAmbiguousError, parseDate, parseDateTime, parseDecimal, parseMoney, parsePercent, parseTime } from "./parsers";
 
 const referenceData = referenceDataFixture();
 const spanish = referenceData.cultures[0];
@@ -15,6 +15,33 @@ describe("entrada según Cultures", () => {
     expect(() => parseDecimal("12.34,5", spanish)).toThrow();
     expect(() => parseDecimal("1,234.5", spanish)).toThrow();
     expect(() => parseDecimal("Infinity", english)).toThrow();
+  });
+
+  // 207: lo que se lee distinto con y sin los miles es un error de su campo, que pide escribirlo sin separador de miles.
+  it("marca como ambiguo el número con un solo separador de miles y sin decimales, en la región de cada idioma", () => {
+    for (const input of ["1.500", "12.500", "125.500", "-1.500", " 1.500 "]) {
+      expect(() => parseDecimal(input, spanish), input).toThrow(NumberAmbiguousError);
+    }
+    for (const input of ["1,500", "125,500", "-1,500"]) {
+      expect(() => parseDecimal(input, english), input).toThrow(NumberAmbiguousError);
+    }
+    expect(parseDecimal("1500", spanish)).toBe(1500);
+    expect(parseDecimal("1,5", spanish)).toBe(1.5);
+    expect(parseDecimal("1500,5", spanish)).toBe(1500.5);
+    expect(parseDecimal("1.500,5", spanish)).toBe(1500.5);
+    expect(parseDecimal("1.234.567", spanish)).toBe(1234567);
+    expect(parseDecimal("1.5", english)).toBe(1.5);
+    expect(parseDecimal("1,500.5", english)).toBe(1500.5);
+    expect(parseDecimal("1,234,567", english)).toBe(1234567);
+    expect(() => parseDecimal("1.5", spanish)).not.toThrow(NumberAmbiguousError);
+    expect(() => parseDecimal("1.5", spanish)).toThrow();
+  });
+
+  it("el monto y el porcentaje ambiguos se marcan igual que el número", () => {
+    expect(() => parseMoney("1.500", "ARS", spanish, referenceData)).toThrow(NumberAmbiguousError);
+    expect(parseMoney("1.500,00", "ARS", spanish, referenceData)).toEqual({ amount: 1500, currency: "ARS" });
+    expect(() => parsePercent("1.500", spanish)).toThrow(NumberAmbiguousError);
+    expect(() => parsePercent("1,500%", english)).toThrow(NumberAmbiguousError);
   });
 
   it("emite el contrato Money y valida los decimales desde Currencies, sin redondear", () => {
@@ -81,29 +108,31 @@ describe("entrada según Cultures", () => {
     expect(parseTime("2:35 p. m.", custom)).toBe("14:35:00");
     expect(parseTime("12:05 a. m.", custom)).toBe("00:05:00");
     expect(() => parseTime("2:35 PM", custom)).toThrow();
-    expect(parseDateTime("09/27/2026 2:35 p. m.", custom, "UTC"))
+    expect(parseDateTime("09/27/2026, 2:35 p. m.", custom, "UTC"))
       .toBe("2026-09-27T14:35:00Z");
   });
 
   it("convierte la fecha y hora de la cultura y zona efectiva a un instante UTC", () => {
     const zone = "America/Argentina/Buenos_Aires";
-    expect(parseDateTime("27/09/2026 14:35", spanish, zone))
+    // 205: la hora va después de una coma, como la escribe el patrón de la cultura.
+    expect(parseDateTime("27/09/2026, 14:35", spanish, zone))
       .toBe("2026-09-27T17:35:00Z");
-    expect(parseDateTime("09/27/2026 2:35 PM", english, zone))
+    expect(parseDateTime("09/27/2026, 2:35 PM", english, zone))
       .toBe("2026-09-27T17:35:00Z");
     expect(parseDateTime("", spanish, zone)).toBeNull();
-    expect(() => parseDateTime("31/02/2026 14:35", spanish, zone)).toThrow();
+    expect(() => parseDateTime("31/02/2026, 14:35", spanish, zone)).toThrow();
   });
 
   it("rechaza una hora local inexistente o ambigua durante cambio horario", () => {
     const zone = "America/New_York";
-    expect(() => parseDateTime("03/08/2026 2:30 AM", english, zone)).toThrow();
-    expect(() => parseDateTime("11/01/2026 1:30 AM", english, zone)).toThrow();
-    expect(parseDateTime("11/01/2026 2:30 AM", english, zone))
+    expect(() => parseDateTime("03/08/2026, 2:30 AM", english, zone)).toThrow();
+    expect(() => parseDateTime("11/01/2026, 1:30 AM", english, zone)).toThrow();
+    expect(parseDateTime("11/01/2026, 2:30 AM", english, zone))
       .toBe("2026-11-01T07:30:00Z");
   });
 
   it("admite el símbolo visible del porcentaje además de su valor numérico", () => {
+    expect(parsePercent("12,5%", spanish)).toBe(0.125);
     expect(parsePercent("12,5 %", spanish)).toBe(0.125);
     expect(parsePercent("12.5%", english)).toBe(0.125);
     expect(() => parsePercent("%", spanish)).toThrow();

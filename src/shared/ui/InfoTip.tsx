@@ -14,7 +14,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./tool
 /// toma el foco: no se lo roba al campo cuando se abre un diálogo.
 ///
 /// `standalone` es la (i) del estado en la banda (175, `.t10n-i`): no acompaña a un campo, así que se enfoca sola y la
-/// frase es su nombre («El 18/09/2026 16:45. Motivo: dos meses sin pago.»).
+/// frase es su nombre («El 18/09/2026, 16:45. Motivo: dos meses sin pago.»).
 export function InfoTip({ id, text, title, className, standalone = false }: { id?: string; text: string; title: string; className?: string; standalone?: boolean }) {
   const { phone } = useAppChrome();
   const [open, setOpen] = useState(false);

@@ -24,12 +24,14 @@ type CivilParts = { year: number; month: number; day: number; hour: number; minu
 function parseCivil(value: string, timeZone: string, culture: string): CivilParts {
   const date = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
   if (date) {
-    const [, year, month, day] = date;
-    const parsed = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
-    if (parsed.getUTCFullYear() !== Number(year) || parsed.getUTCMonth() + 1 !== Number(month) || parsed.getUTCDate() !== Number(day)) {
+    const [year, month, day] = date.slice(1).map(Number);
+    // setUTCFullYear y no Date.UTC, que lleva los años 0 a 99 al siglo XX.
+    const parsed = new Date(0);
+    parsed.setUTCFullYear(year, month - 1, day);
+    if (parsed.getUTCFullYear() !== year || parsed.getUTCMonth() + 1 !== month || parsed.getUTCDate() !== day) {
       throw new Error("La fecha civil no es válida.");
     }
-    return { year: Number(year), month: Number(month), day: Number(day), hour: 0, minute: 0, second: 0 };
+    return { year, month, day, hour: 0, minute: 0, second: 0 };
   }
 
   const time = /^(\d{2}):(\d{2}):(\d{2})$/.exec(value);
@@ -67,15 +69,12 @@ function parseCivil(value: string, timeZone: string, culture: string): CivilPart
   };
 }
 
+/** Una fecha se escribe solo con números (205): un patrón con el mes en letras es un error del catálogo. */
 function applyDatePattern(pattern: string, parts: CivilParts, profile: CultureReference): string {
-  const monthName = () => new Intl.DateTimeFormat(profile.code, {
-    timeZone: "UTC", calendar: "gregory", month: "long",
-  }).format(new Date(Date.UTC(parts.year, parts.month - 1, 1)));
   const pad = (value: number) => String(value).padStart(2, "0");
   const hour12 = parts.hour % 12 || 12;
   const tokens: Record<string, () => string> = {
     yyyy: () => String(parts.year).padStart(4, "0"),
-    MMMM: monthName,
     MM: () => pad(parts.month),
     M: () => String(parts.month),
     dd: () => pad(parts.day),
@@ -88,8 +87,11 @@ function applyDatePattern(pattern: string, parts: CivilParts, profile: CultureRe
     m: () => String(parts.minute),
     tt: () => parts.hour < 12 ? profile.amDesignator : profile.pmDesignator,
   };
-  return pattern.replace(/'([^']*)'|yyyy|MMMM|MM|M|dd|d|HH|H|hh|h|mm|m|tt/g, (token, quoted: string | undefined) =>
-    quoted === undefined ? tokens[token]() : quoted);
+  return pattern.replace(/'([^']*)'|yyyy|MMMM|MMM|MM|M|dd|d|HH|H|hh|h|mm|m|tt/g, (token, quoted: string | undefined) => {
+    if (quoted !== undefined) return quoted;
+    if (token === "MMMM" || token === "MMM") throw new Error("Una fecha se escribe solo con números.");
+    return tokens[token]();
+  });
 }
 
 function formatNumber(value: number, minimumDigits: number, maximumDigits: number,
@@ -139,7 +141,6 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
   function formatDate(value: string): string { return date(value, profile.datePattern); }
   function formatDateTime(value: string): string { return date(value, profile.dateTimePattern); }
   function formatTime(value: string): string { return date(value, profile.timePattern); }
-  function formatDateLong(value: string): string { return date(value, profile.longDatePattern); }
 
   function monthDate(value: string): Date {
     if (parseMonth(value) === null) throw new Error("El período mensual no puede estar vacío.");
@@ -148,23 +149,21 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
     return parsed;
   }
 
-  function monthLabel(value: string, includeYear: boolean): string {
-    const parts = new Intl.DateTimeFormat(culture, {
-      timeZone: "UTC", calendar: "gregory", numberingSystem: "latn", month: "long",
-      ...(includeYear ? { year: "numeric" } as const : {}),
-    }).formatToParts(monthDate(value));
-    const label = parts.map((part) => part.type === "year" ? value.slice(0, 4) : part.value).join("");
-    return label.charAt(0).toLocaleUpperCase(culture) + label.slice(1);
+  /** Mes civil, sin conversión por zona: su rango, «01/10/2026 – 31/10/2026»; nunca en letras (205). */
+  function formatMonth(value: string): string {
+    const first = monthDate(value);
+    const last = new Date(0);
+    last.setUTCFullYear(first.getUTCFullYear(), first.getUTCMonth() + 1, 0);
+    const day = (date: Date) => `${value}-${String(date.getUTCDate()).padStart(2, "0")}`;
+    return formatDateRange({ start: day(first), end: day(last) });
   }
 
-  /** Mes civil, sin conversión por zona; nombres localizados, año completo del contrato. */
-  function formatMonth(value: string): string { return monthLabel(value, true); }
-
+  /** Al elegir, los meses van con su número, «01» a «12», nunca con su nombre (205). */
   function getMonthOptions(value: string): { value: string; label: string }[] {
     monthDate(value);
     return Array.from({ length: 12 }, (_, index) => {
-      const month = `${value.slice(0, 4)}-${String(index + 1).padStart(2, "0")}`;
-      return { value: month, label: monthLabel(month, false) };
+      const label = String(index + 1).padStart(2, "0");
+      return { value: `${value.slice(0, 4)}-${label}`, label };
     });
   }
 
@@ -323,7 +322,7 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
 
   return {
     formatMonth, getMonthOptions, getAdjacentMonthYear, getCurrentMonth,
-    formatDate, formatDateTime, formatTime, formatDateLong, formatDateRange,
+    formatDate, formatDateTime, formatTime, formatDateRange,
     formatInteger, formatDecimal, formatQuantity, formatPercent, formatMoney, formatCompact,
     formatFileSize, formatDuration, formatPhone, formatTimeZone, formatCulture, formatTaxId,
     formatEmail, formatEnum, formatBoolean, formatEmpty, formatText,

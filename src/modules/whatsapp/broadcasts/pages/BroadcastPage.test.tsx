@@ -68,7 +68,7 @@ describe("Resultados de una difusión", () => {
       }),
     );
     const { user } = mountWhatsApp(whatsappMember("whatsapp.broadcasts"), "/org/whatsapp/difusiones/broadcast-scheduled");
-    expect(await screen.findByText(/Programada para el 20\/12\/2026 09:00/)).toBeVisible();
+    expect(await screen.findByText(/Programada para el 20\/12\/2026, 09:00/)).toBeVisible();
     screen.getByRole("button", { name: "Más acciones" }).focus();
     await user.keyboard("{Enter}");
     await user.click(await screen.findByRole("menuitem", { name: "Cancelar difusión" }));

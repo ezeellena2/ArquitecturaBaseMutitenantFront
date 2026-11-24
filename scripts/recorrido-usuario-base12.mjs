@@ -56,9 +56,10 @@ export function bellLabel(unread) {
   return unread > 0 ? `Avisos: ${unread}` : "Avisos";
 }
 
-/** La fecha completa, con su año, y la hora: «dd/mm/aaaa hh:mm», el patrón de es-AR (cultures.json, formatos.md). */
+/** La fecha completa, con su año, y la hora después de una coma: «dd/mm/aaaa, hh:mm», el patrón de es-AR (cultures.json,
+ *  formatos.md y 205). */
 export function isFullDateTime(text) {
-  return /^\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}$/u.test(String(text).trim());
+  return /^\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}$/u.test(String(text).trim());
 }
 
 /** El enlace de una invitación en su .eml: en el origen del front y con el token en el fragmento, nunca en la consulta. */

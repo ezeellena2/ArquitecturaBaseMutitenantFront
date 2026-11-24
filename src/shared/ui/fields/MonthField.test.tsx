@@ -19,6 +19,7 @@ describe("MonthField", () => {
     await changeCulture("es-AR");
   });
 
+  // 205: cerrado dice el rango del mes; abierto, el año y los meses con su número, nunca su nombre (Asistente-Uso-Org).
   it("elige mes y año por teclado, devuelve foco y nunca envía el formulario", async () => {
     const user = userEvent.setup();
     const submit = vi.fn();
@@ -29,19 +30,20 @@ describe("MonthField", () => {
     renderWithProviders(<Example />);
     const trigger = screen.getByRole("combobox", { name: /Mes/ });
     await waitFor(() => expect(trigger).toBeEnabled());
-    expect(trigger).toHaveTextContent("Octubre de 2026");
+    expect(trigger).toHaveTextContent("01/10/2026 – 31/10/2026");
     trigger.focus();
     await user.keyboard("{Enter}");
     expect(screen.getAllByRole("dialog")).toHaveLength(1);
-    expect(screen.getByRole("option", { name: "Octubre" })).toHaveFocus();
+    expect(screen.getByRole("option", { name: "10" })).toHaveFocus();
+    expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual(["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"]);
     await user.keyboard("{ArrowDown}{Enter}");
-    await waitFor(() => expect(trigger).toHaveTextContent("Noviembre de 2026"));
+    await waitFor(() => expect(trigger).toHaveTextContent("01/11/2026 – 30/11/2026"));
     expect(trigger).toHaveFocus();
     await user.keyboard(" ");
     const year = screen.getByRole("textbox", { name: "Año" });
     fireEvent.change(year, { target: { value: "0001" } });
-    await user.click(screen.getByRole("option", { name: "Febrero" }));
-    expect(trigger).toHaveTextContent("Febrero de 0001");
+    await user.click(screen.getByRole("option", { name: "02" }));
+    expect(trigger).toHaveTextContent("01/02/0001 – 28/02/0001");
     expect(trigger).toHaveFocus();
     expect(submit).not.toHaveBeenCalled();
   });
@@ -63,7 +65,7 @@ describe("MonthField", () => {
     expect(change).not.toHaveBeenCalled();
     fireEvent.change(year, { target: { value: "0001" } });
     expect(screen.getByRole("button", { name: "Año anterior" })).toBeDisabled();
-    await user.click(screen.getByRole("option", { name: "Enero" }));
+    await user.click(screen.getByRole("option", { name: "01" }));
     expect(change).toHaveBeenLastCalledWith("0001-01");
   });
 
@@ -77,13 +79,13 @@ describe("MonthField", () => {
     fireEvent.change(screen.getByRole("textbox", { name: "Año" }), { target: { value: "1234" } });
     rerender(<MonthField aria-label="Mes" value="0099-02" onChange={change} />);
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(trigger).toHaveTextContent("Febrero de 0099");
+    expect(trigger).toHaveTextContent("01/02/0099 – 28/02/0099");
     await user.click(trigger);
     expect(screen.getByRole("textbox", { name: "Año" })).toHaveValue("0099");
     await user.keyboard("{Escape}");
     expect(trigger).toHaveFocus();
     await user.keyboard("{ArrowDown}");
-    expect(screen.getByRole("option", { name: "Febrero" })).toHaveFocus();
+    expect(screen.getByRole("option", { name: "02" })).toHaveFocus();
     rerender(<MonthField aria-label="Mes" value="0099-02" disabled onChange={change} />);
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(trigger).toBeDisabled();
@@ -136,7 +138,7 @@ describe("MonthField", () => {
     await waitFor(() => expect(release).toBeDefined());
     release?.();
     await waitFor(() => expect(trigger).toBeEnabled());
-    expect(trigger).toHaveTextContent("February 0100");
+    expect(trigger).toHaveTextContent("02/01/0100 – 02/28/0100");
   });
 
   it("en el teléfono conserva un solo popup accesible, el rótulo y la descripción externa", async () => {

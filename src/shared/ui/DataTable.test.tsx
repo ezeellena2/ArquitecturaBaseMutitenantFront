@@ -4,10 +4,10 @@ import { describe, expect, it, vi } from "vitest";
 import { DataTable, type Column } from "./DataTable";
 
 const formatDate = vi.hoisted(() => vi.fn(() => "27/09/2026"));
-const formatDateTime = vi.hoisted(() => vi.fn(() => "27/09/2026 12:00"));
+const formatDateTime = vi.hoisted(() => vi.fn(() => "27/09/2026, 12:00"));
 const formatMoney = vi.hoisted(() => vi.fn(() => "$ 1.234,50"));
 const formatDecimal = vi.hoisted(() => vi.fn(() => "12,50"));
-const formatPercent = vi.hoisted(() => vi.fn(() => "12,5 %"));
+const formatPercent = vi.hoisted(() => vi.fn(() => "12,5%"));
 const formatEnum = vi.hoisted(() => vi.fn(() => "Activo"));
 
 vi.mock("@/shared/format/useFormat", () => ({
@@ -72,7 +72,7 @@ describe("DataTable", () => {
     render(<DataTable columns={columns} rows={[rows[0], { ...rows[0], id: "2", total: null }]} rowKey={(row) => row.id} />);
 
     expect(screen.getAllByRole("row")).toHaveLength(3);
-    expect(screen.getAllByText("27/09/2026")[0]).toHaveAttribute("title", "27/09/2026 12:00");
+    expect(screen.getAllByText("27/09/2026")[0]).toHaveAttribute("title", "27/09/2026, 12:00");
     expect(formatDate).toHaveBeenCalledWith(rows[0].createdAtUtc);
     expect(formatMoney).toHaveBeenCalledWith(rows[0].total);
     expect(formatDecimal).toHaveBeenCalledWith(12.5, 2);

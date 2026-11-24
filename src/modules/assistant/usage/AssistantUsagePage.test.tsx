@@ -32,6 +32,9 @@ describe("Uso Business: contrato agregado sin permiso de chat", () => {
       http.get("/api/organization/assistant/settings", () => { otherReads++; return HttpResponse.json({}, { status: 501 }); }));
     orgHandler(); mountSettings(businessManager, orgPath);
     expect(await screen.findByRole("columnheader", { name: "Personas" })).toBeVisible();
+    // Asistente-Uso-Org (205): el mes se escribe como su rango, en el selector y debajo del título.
+    expect(screen.getByRole("combobox", { name: "Mes" })).toHaveTextContent("01/10/2026 – 31/10/2026");
+    expect(screen.getAllByText("01/10/2026 – 31/10/2026").length).toBeGreaterThanOrEqual(2);
     const day = within(screen.getByRole("table")).getAllByRole("row")[1];
     expect(day).toHaveTextContent("07/10/2026"); expect(within(day).getAllByRole("cell")[2]).toHaveTextContent("8"); expect(day).toHaveTextContent("USD 6,10");
     const summary = screen.getByRole("group", { name: "Resumen de uso" });
@@ -45,7 +48,7 @@ describe("Uso Business: contrato agregado sin permiso de chat", () => {
   it("en-US conserva dinero y mes del formato central", async () => {
     await changeCulture("en-US"); orgHandler(); mountSettings({ ...businessManager, culture: "en-US" }, orgPath);
     expect(await screen.findByRole("columnheader", { name: "People" })).toBeVisible();
-    expect(screen.getByRole("combobox", { name: "Month" })).toHaveTextContent("October 2026");
+    expect(screen.getByRole("combobox", { name: "Month" })).toHaveTextContent("10/01/2026 – 10/31/2026");
     expect(screen.getByText(/USD\s6\.10/)).toBeVisible();
   });
   it("sin presupuesto aplicable conserva costo y conteos sin inventar un tope", async () => {
@@ -105,7 +108,7 @@ describe("Uso Business: contrato agregado sin permiso de chat", () => {
     const app = mountSettings(businessManager, orgPath + "&page=2");
     await screen.findByRole("table");
     await app.user.click(screen.getByRole("combobox", { name: "Mes" }));
-    await app.user.click(screen.getByRole("option", { name: "Septiembre" }));
+    await app.user.click(screen.getByRole("option", { name: "09" }));
     await waitFor(() => expect(urls.at(-1)?.searchParams.get("month")).toBe("2026-09"));
     expect(urls.at(-1)?.searchParams.get("page")).toBe("1");
   });

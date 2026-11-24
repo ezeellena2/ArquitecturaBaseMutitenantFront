@@ -12,6 +12,19 @@ export function parseMonth(input: string): string | null {
   return input;
 }
 
+/**
+ * 207: un número que se lee distinto con y sin los miles («1.500» en es-AR, «1,500» en en-US) es un error de su campo,
+ * que pide escribirlo sin separador de miles («1500» o «1,5»). Los campos lo distinguen del número inválido por su clase.
+ */
+export class NumberAmbiguousError extends Error {
+  readonly code = "numberAmbiguous";
+
+  constructor() {
+    super("El número se puede leer de dos maneras.");
+    this.name = "NumberAmbiguousError";
+  }
+}
+
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -28,6 +41,10 @@ function numericParts(input: string, culture: CultureReference): { value: number
   const grouped = `[1-9]\\d{0,2}(?:${group}\\d{3})+`;
   const pattern = new RegExp(`^[+-]?(?:\\d+|${grouped})(?:${decimal}\\d+)?$`);
   if (!pattern.test(trimmed)) throw new Error("El número no coincide con la cultura seleccionada.");
+  // Un solo separador de miles y sin decimales: con los miles es 1500 y sin ellos, 1,5.
+  if (trimmed.split(culture.groupSeparator).length === 2 && !trimmed.includes(culture.decimalSeparator)) {
+    throw new NumberAmbiguousError();
+  }
 
   const fraction = trimmed.split(culture.decimalSeparator)[1];
   const canonical = trimmed
@@ -69,7 +86,7 @@ export function parseMoney(
   return { amount: parsed.value, currency };
 }
 
-/** El usuario escribe 12,5 %, mientras el contrato HTTP recibe 0.125. */
+/** El usuario escribe 12,5%, mientras el contrato HTTP recibe 0.125. */
 export function parsePercent(input: string, culture: CultureReference): number | null {
   const trimmed = input.trim();
   const numeric = trimmed.replace(/\s*%$/, "");

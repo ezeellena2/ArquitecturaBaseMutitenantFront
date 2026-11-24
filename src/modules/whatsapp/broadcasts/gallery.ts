@@ -71,7 +71,7 @@ const fillDraft: GalleryAction[] = [
   click("Plantilla", "combobox"), click("Aviso de horario · Marketing", "option"),
   fill("Nombre del cliente", "Martina"),
   click("Una etiqueta", "radio"), click("Etiqueta", "combobox"), click("Mayorista", "option"),
-  click("Programar", "radio"), fill("Fecha y hora", "20/12/2026 09:00"),
+  click("Programar", "radio"), fill("Fecha y hora", "20/12/2026, 09:00"),
 ];
 const newPath = "/org/whatsapp/difusiones/nueva";
 

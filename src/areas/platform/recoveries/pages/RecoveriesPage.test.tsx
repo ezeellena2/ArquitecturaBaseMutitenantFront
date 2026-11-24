@@ -43,14 +43,14 @@ describe("Recuperaciones de Plataforma", () => {
     expect(await screen.findByText("4 pedidos · 2 pendientes")).toBeVisible();
     expect(screen.getByRole("link", { name: "Pablo Ortiz" })).toHaveAttribute("href", "/plataforma/cuentas/pablo");
     expect(screen.getByText("Sin cuenta")).toBeVisible(); expect(screen.getAllByText("pa•••@gmail.com").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("27/09/2026 10:20").length).toBeGreaterThan(0); expect(await axe(container)).toHaveNoViolations();
+    expect(screen.getAllByText("27/09/2026, 10:20").length).toBeGreaterThan(0); expect(await axe(container)).toHaveNoViolations();
   });
   it("accountId presente con nombre null conserva vacío y permite aprobar; nombre presente sin id no inventa cuenta", async () => {
     const user = userEvent.setup(); server.use(http.get("/api/platform/recoveries/paged", () => HttpResponse.json(list([{ ...pending, accountName: null }, { ...noAccount, accountName: "Nombre residual" }]))));
     renderRouteWithProviders("/plataforma/recuperaciones", { as: "platform-operator" });
     expect(await screen.findByRole("link", { name: "Sin dato" })).toHaveAttribute("href", "/plataforma/cuentas/pablo");
     expect(screen.queryByText("Nombre residual")).not.toBeInTheDocument();
-    await open(user, "Revisar", "27/09/2026 10:20"); expect(within(screen.getByRole("dialog")).getByRole("button", { name: "Aprobar" })).toBeEnabled(); expect(within(screen.getByRole("dialog")).queryByText("Ninguna")).not.toBeInTheDocument();
+    await open(user, "Revisar", "27/09/2026, 10:20"); expect(within(screen.getByRole("dialog")).getByRole("button", { name: "Aprobar" })).toBeEnabled(); expect(within(screen.getByRole("dialog")).queryByText("Ninguna")).not.toBeInTheDocument();
   });
   it("sin pedidos: banda y vacío, sin pie", async () => {
     server.use(http.get("/api/platform/recoveries/paged", () => HttpResponse.json(list([]))), http.get("/api/platform/recoveries/filter-counts", () => HttpResponse.json({ total: 0, statuses: [] })));
@@ -81,7 +81,7 @@ describe("Recuperaciones de Plataforma", () => {
   });
   it("revisión: Pedido en cuerpo, grilla y motivo obligatorio para ambas acciones", async () => {
     const user = userEvent.setup(); const { container } = renderRouteWithProviders("/plataforma/recuperaciones", { as: "platform-operator" }); const dialog = await open(user);
-    expect(within(dialog).getByText("Pedido del 27/09/2026 10:20")).toBeVisible(); expect(within(dialog).getByText("Entraba con")).toBeVisible(); expect(within(dialog).getByText("pa•••@gmail.com · verificado")).toBeVisible();
+    expect(within(dialog).getByText("Pedido del 27/09/2026, 10:20")).toBeVisible(); expect(within(dialog).getByText("Entraba con")).toBeVisible(); expect(within(dialog).getByText("pa•••@gmail.com · verificado")).toBeVisible();
     expect(within(dialog).getByText("Si lo aprobás, el método nuevo pasa a ser el principal de la cuenta y le avisamos a la persona.")).toBeVisible();
     // Tablero Recuperaciones (161): el título nombra el pedido, «Aprobar» es la principal, «Rechazar» la secundaria y el
     // foco arranca en «Cancelar».
@@ -175,7 +175,7 @@ describe("Recuperaciones de Plataforma", () => {
   });
   it("390 tiene sólo Filtros, fecha corta y filas sin avatar; revisión con axe", async () => {
     asPhone(); const user = userEvent.setup(); const { container } = renderRouteWithProviders("/plataforma/recuperaciones", { as: "platform-operator" });
-    await screen.findByText("Pablo Ortiz"); expect(screen.queryByRole("table")).not.toBeInTheDocument(); expect(screen.getByRole("button", { name: "Filtros" })).toBeVisible(); expect(screen.queryByRole("button", { name: "Buscar por cuenta, correo o teléfono" })).not.toBeInTheDocument(); expect(screen.getAllByText("27/09/2026 10:20").length).toBeGreaterThan(0); expect(screen.getAllByText("pa•••@kappa.ejemplo.com → pa•••@gmail.com")[0]).toBeVisible();
+    await screen.findByText("Pablo Ortiz"); expect(screen.queryByRole("table")).not.toBeInTheDocument(); expect(screen.getByRole("button", { name: "Filtros" })).toBeVisible(); expect(screen.queryByRole("button", { name: "Buscar por cuenta, correo o teléfono" })).not.toBeInTheDocument(); expect(screen.getAllByText("27/09/2026, 10:20").length).toBeGreaterThan(0); expect(screen.getAllByText("pa•••@kappa.ejemplo.com → pa•••@gmail.com")[0]).toBeVisible();
     await user.click(screen.getByRole("button", { name: "Acciones de Pablo Ortiz" })); await user.click(await screen.findByRole("menuitem", { name: "Revisar" })); await screen.findByRole("textbox", { name: "Motivo" }); expect(await axe(container)).toHaveNoViolations();
   });
   it("cambiar accountId abandona motivo, aunque siga Pendiente; volver no revive el diálogo", async () => {
@@ -194,7 +194,7 @@ describe("Recuperaciones de Plataforma", () => {
   it("en-US traduce banda, fechas y estado; busca con Accept-Language efectivo", async () => {
     const page = renderRouteWithProviders("/plataforma/recuperaciones", { as: "platform-operator" }); await screen.findByRole("link", { name: "Pablo Ortiz" });
     await act(async () => { page.queryClient.setQueryData(currentUserQueryKey, { ...platformOperator, culture: "en-US" }); });
-    expect(await screen.findByText("4 requests · 2 pending")).toBeVisible(); expect(screen.getAllByText("09/27/2026 10:20 AM").length).toBeGreaterThan(0); expect(screen.getAllByText("Pending").length).toBeGreaterThan(0);
+    expect(await screen.findByText("4 requests · 2 pending")).toBeVisible(); expect(screen.getAllByText("09/27/2026, 10:20 AM").length).toBeGreaterThan(0); expect(screen.getAllByText("Pending").length).toBeGreaterThan(0);
   });
   it("error de lista reintenta y 403 de conteo secundario no bloquea", async () => {
     let reads = 0; const user = userEvent.setup(); server.use(http.get("/api/platform/recoveries/paged", () => ++reads === 1 ? HttpResponse.json({ code: "Test.List", detail: "Lectura rechazada" }, { status: 400 }) : HttpResponse.json(list())), http.get("/api/platform/recoveries/filter-counts", () => HttpResponse.json({ code: "Authorization.Forbidden" }, { status: 403 })));

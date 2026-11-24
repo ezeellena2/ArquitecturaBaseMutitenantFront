@@ -41,7 +41,7 @@ describe("contexto de formato E1", () => {
     await waitFor(() => expect(result.current.isLoading).toBe(false));
     expect(result.current.formatInteger(1234)).toBe("1.234");
     expect(result.current.parseTime("14:35")).toBe("14:35:00");
-    expect(result.current.parseDateTime("27/09/2026 14:35"))
+    expect(result.current.parseDateTime("27/09/2026, 14:35"))
       .toBe("2026-09-27T17:35:00Z");
   });
 

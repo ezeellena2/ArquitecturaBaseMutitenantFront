@@ -33,8 +33,8 @@ describe("CultureSelect", () => {
     // Tablero «Criterio · Formularios»: un solo control por dato; con dos opciones, sin buscador.
     expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
     await user.click(select);
-    expect(await screen.findByText("27/09/2026 14:35 · 1.234,50")).toBeVisible();
-    expect(screen.getByText("09/27/2026 2:35 PM · 1,234.50")).toBeVisible();
+    expect(await screen.findByText("27/09/2026, 14:35 · 1.234,50")).toBeVisible();
+    expect(screen.getByText("09/27/2026, 2:35 PM · 1,234.50")).toBeVisible();
     expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
     // Tablero Cuenta: cada idioma se nombra en su propia lengua, aunque la pantalla esté en español.
     await user.click(screen.getByRole("option", { name: /English \(United States\)/ }));

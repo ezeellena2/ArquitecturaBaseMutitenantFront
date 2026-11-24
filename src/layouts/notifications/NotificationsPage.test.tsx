@@ -48,9 +48,9 @@ afterEach(() => restore());
 // «Avisos», con ‹ y el nombre del perfil debajo del título.
 describe("la campana en el teléfono", () => {
   it.each([
-    ["consumer-empty", "/mas", "/avisos", "Personal", loginMethod, loginMethodText, "20/09/2026 10:12"],
-    ["business-admin", "/mas", "/avisos", "Empresa A", loginMethod, loginMethodText, "20/09/2026 10:12"],
-    ["platform-operator", "/plataforma/mas", "/plataforma/avisos", "Plataforma", recovery, "Pablo Ortiz pidió recuperar su cuenta", "27/09/2026 10:20"],
+    ["consumer-empty", "/mas", "/avisos", "Personal", loginMethod, loginMethodText, "20/09/2026, 10:12"],
+    ["business-admin", "/mas", "/avisos", "Empresa A", loginMethod, loginMethodText, "20/09/2026, 10:12"],
+    ["platform-operator", "/plataforma/mas", "/plataforma/avisos", "Plataforma", recovery, "Pablo Ortiz pidió recuperar su cuenta", "27/09/2026, 10:20"],
   ] as const)("en %s, la campana de la barra lleva a «Avisos»", async (as, from, to, profile, item, text, date) => {
     serveNotifications(item);
     const user = userEvent.setup();

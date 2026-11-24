@@ -229,9 +229,9 @@ describe("AuditPage", () => {
 
       const thisYear = (await screen.findByText("Habilitó a Tomás Acosta")).closest("li")!;
       // formatos.md (base de la 12): la fecha va completa, con su año, también la del año en curso.
-      expect(within(thisYear).getByText("02/10/2026 09:00")).toHaveAttribute("datetime", "2026-10-02T12:00:00Z");
+      expect(within(thisYear).getByText("02/10/2026, 09:00")).toHaveAttribute("datetime", "2026-10-02T12:00:00Z");
       const lastYear = screen.getByText("Deshabilitó a Tomás Acosta").closest("li")!;
-      expect(within(lastYear).getByText("30/12/2025 09:00")).toBeInTheDocument();
+      expect(within(lastYear).getByText("30/12/2025, 09:00")).toBeInTheDocument();
       // Lienzo v99 (Criterio · Decisiones): debajo del título va el camino, «Administración», y no el período del filtro.
       expect(screen.getByText("Administración", { selector: "[data-slot='app-bar'] span" })).toBeInTheDocument();
       expect(screen.queryByText("Últimos 30 días", { selector: "[data-slot='app-bar'] span" })).not.toBeInTheDocument();
@@ -266,7 +266,7 @@ describe("AuditPage", () => {
       const terms = within(detail).getAllByRole("term");
       const values = within(detail).getAllByRole("definition");
       expect(terms.map((term) => term.textContent)).toEqual(["Fecha y hora", "Quién", "Dónde", "Roles en la empresa"]);
-      expect(values[0]).toHaveTextContent("27/09/2026 10:42");
+      expect(values[0]).toHaveTextContent("27/09/2026, 10:42");
       expect(within(values[1]).getByText("Lucía Fernández")).toBeVisible();
       expect(within(values[1]).getByText("lucia.fernandez@delta.ejemplo.com")).toHaveClass("block", "break-words");
       expect(values[1]).not.toHaveTextContent("·");

@@ -31,15 +31,15 @@ export function referenceDataFixture(culture = "es-AR"): ReferenceData {
     cultures: [
       {
         code: "es-AR", languageCode: "es", countryCode: "AR", datePattern: "dd/MM/yyyy",
-        timePattern: "HH:mm", dateTimePattern: "dd/MM/yyyy HH:mm", longDatePattern: "d 'de' MMMM 'de' yyyy",
+        timePattern: "HH:mm", dateTimePattern: "dd/MM/yyyy, HH:mm",
         amDesignator: "a. m.", pmDesignator: "p. m.",
         decimalSeparator: ",", groupSeparator: ".", currencyPattern: "{symbol} {number}",
-        percentPattern: "{number} %", fallbackCulture: null, isDefault: true,
+        percentPattern: "{number}%", fallbackCulture: null, isDefault: true,
         name: english ? "Spanish (Argentina)" : "Español (Argentina)", isEnabled: true, sortOrder: 1,
       },
       {
         code: "en-US", languageCode: "en", countryCode: "US", datePattern: "MM/dd/yyyy",
-        timePattern: "h:mm tt", dateTimePattern: "MM/dd/yyyy h:mm tt", longDatePattern: "MMMM d, yyyy",
+        timePattern: "h:mm tt", dateTimePattern: "MM/dd/yyyy, h:mm tt",
         amDesignator: "AM", pmDesignator: "PM",
         decimalSeparator: ".", groupSeparator: ",", currencyPattern: "{symbol}{number}",
         percentPattern: "{number}%", fallbackCulture: "es-AR", isDefault: false,
