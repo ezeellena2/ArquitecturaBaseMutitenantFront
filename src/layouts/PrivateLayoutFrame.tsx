@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
 import { Outlet, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
@@ -27,6 +27,34 @@ interface PrivateLayoutFrameProps {
   navigation: NavigationConfig;
   scope?: "personal" | "business" | "platform";
   children?: ReactNode;
+}
+
+// Las teclas con las que el navegador mueve una página. Con Ctrl, Alt o Cmd son atajos de otra cosa.
+const scrollKeys = new Set(["PageUp", "PageDown", "Home", "End", "ArrowUp", "ArrowDown", " "]);
+
+/// «Criterio · Menús» (213): las teclas que mueven la pantalla mueven el contenido aunque el foco esté en el menú. Con
+/// el alto de la pantalla (`h-svh`), el que se desplaza es `main`, así que Re Pág, Av Pág, Inicio, Fin, Espacio y las
+/// flechas no movían nada con el foco en el menú, en la barra, en la barra de abajo del teléfono o en ninguna parte
+/// (al abrir una pantalla, o cuando se fue el botón que lo tenía). La tecla le pasa el foco a `main` y el navegador, que
+/// mira el foco recién después de avisarle a la página, mueve el contenido con esa misma tecla.
+///
+/// Lo que ya tiene la tecla se queda con ella: un control que la usó (`defaultPrevented`), un botón con Espacio y todo lo
+/// que está adentro del contenido o fuera del armazón, como un diálogo o un menú abierto, donde un campo, un desplegable
+/// o una lista siguen siendo los que la reciben.
+function useScrollKeysToContent(shell: RefObject<HTMLElement | null>, content: RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    function handOver(event: KeyboardEvent) {
+      const frame = shell.current;
+      const main = content.current;
+      const focused = document.activeElement;
+      if (event.defaultPrevented || event.ctrlKey || event.altKey || event.metaKey || !scrollKeys.has(event.key)
+        || frame === null || main === null || main.contains(focused)) return;
+      const outsideContent = focused === null || focused === document.body || frame.contains(focused);
+      if (outsideContent && !(event.key === " " && focused?.closest("button"))) main.focus({ preventScroll: true });
+    }
+    document.addEventListener("keydown", handOver);
+    return () => document.removeEventListener("keydown", handOver);
+  }, [shell, content]);
 }
 
 export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayoutFrameProps) {
@@ -84,12 +112,17 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
   }), [isMobile, navigation.moreTo, navigation.breadcrumbRoot?.path, routePanel, onHome, onMore, bottomSection, panelEntry, context?.title, hideBottomNav, hideActiveSection, home?.path, markHome, t]);
   // Tableros M-Campana*: en el teléfono, la campana va en la barra de cada pantalla de primer nivel y lleva a «Avisos».
   const phoneBell = useMemo(() => <PhoneNotificationBell to={scope === "platform" ? platformNotificationsPath : notificationsPath} />, [scope]);
+  const shellRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLElement>(null);
+  useScrollKeysToContent(shellRef, contentRef);
 
   if (isSigningOut) return <SessionStatusPage status="closing" />;
 
   if (isMobile) return <AppChromeProvider value={chrome}><AppBarBellProvider value={phoneBell}>
-    <div className="flex h-svh flex-col bg-[var(--superficie)]">
-      <main className="relative flex min-h-0 flex-1 flex-col overflow-y-auto">{children ?? <Outlet />}</main>
+    <div ref={shellRef} className="flex h-svh flex-col bg-[var(--superficie)]">
+      {/* `tabIndex={-1}`: toma el foco cuando le pasan las teclas que mueven la pantalla, sin sumarse al recorrido con Tab.
+          Sin contorno: es la pantalla entera, y el foco visible lo muestran los controles de adentro. */}
+      <main ref={contentRef} tabIndex={-1} className="relative flex min-h-0 flex-1 flex-col overflow-y-auto outline-none">{children ?? <Outlet />}</main>
       {navigation.moreTo && !bottomNavHidden ? <BottomNav label={t("navigation.sections")} items={[
         ...(bottomSections?.map(({ link, icon: Icon }) => ({
           key: link.path, label: t(link.phoneLabelKey ?? link.labelKey), to: link.path, icon: <Icon className="size-6" />, active: (link === bottomSection?.link || (link === home && onHome)) && !activeSectionHidden,
@@ -101,7 +134,7 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
   </AppBarBellProvider></AppChromeProvider>;
 
   return <AppChromeProvider value={chrome}>
-    <div className="flex h-svh print:h-auto">
+    <div ref={shellRef} className="flex h-svh print:h-auto">
       <Sidebar
         navigation={shownNavigation}
         account={account}
@@ -120,7 +153,7 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
         onClose={() => setToggledPanel({ pathname, panel: null })} />
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <Topbar breadcrumbs={<Breadcrumbs navigation={navigation} permissions={permissions} />} bell={<NotificationBell />} />
-        <main className="relative min-h-0 flex-1 scroll-pt-14 overflow-y-auto bg-[var(--fondo)] print:overflow-visible">{children ?? <Outlet />}</main>
+        <main ref={contentRef} tabIndex={-1} className="relative min-h-0 flex-1 scroll-pt-14 overflow-y-auto bg-[var(--fondo)] outline-none print:overflow-visible">{children ?? <Outlet />}</main>
       </div>
     </div>
   </AppChromeProvider>;

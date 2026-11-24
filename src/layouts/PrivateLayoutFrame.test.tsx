@@ -210,6 +210,71 @@ describe("PrivateLayoutFrame", () => {
     expect(screen.getByRole("link", { name: "Volver al inicio" })).toHaveAttribute("href", "/org");
   });
 
+  // «Criterio · Menús» (213): Re Pág, Av Pág, Inicio, Fin, Espacio y las flechas mueven lo que tiene el foco, y el que
+  // scrollea es `main`. jsdom no scrollea: acá se prueba que la tecla le pasa el foco al contenido; el navegador lo mueve
+  // con la misma tecla.
+  it("las teclas que mueven la pantalla le pasan el foco al contenido aunque nada lo tenga", async () => {
+    render(<MemoryRouter initialEntries={["/org"]}><PrivateLayoutFrame navigation={businessNavigation} scope="business"><h1>{"Inicio"}</h1></PrivateLayoutFrame></MemoryRouter>);
+    expect(document.body).toHaveFocus();
+
+    await userEvent.keyboard("{PageDown}");
+
+    expect(screen.getByRole("main")).toHaveFocus();
+  });
+
+  it.each(["{PageUp}", "{PageDown}", "{Home}", "{End}", "{ArrowDown}", "{ArrowUp}", " "])("%s con el foco en un enlace del menú mueve el contenido", async (key) => {
+    render(<MemoryRouter initialEntries={["/org"]}><PrivateLayoutFrame navigation={businessNavigation} scope="business"><h1>{"Inicio"}</h1></PrivateLayoutFrame></MemoryRouter>);
+    const home = within(screen.getByRole("complementary", { name: "Navegación principal" })).getByRole("link", { name: "Inicio" });
+
+    home.focus();
+    await userEvent.keyboard(key);
+
+    expect(screen.getByRole("main")).toHaveFocus();
+  });
+
+  it("un botón del menú se queda con Espacio, que lo aprieta", async () => {
+    session.permissions = ["users.read"];
+    render(<MemoryRouter initialEntries={["/org"]}><PrivateLayoutFrame navigation={businessNavigation} scope="business"><h1>{"Inicio"}</h1></PrivateLayoutFrame></MemoryRouter>);
+    const administration = screen.getByRole("button", { name: "Administración" });
+
+    administration.focus();
+    await userEvent.keyboard(" ");
+
+    expect(administration).toHaveFocus();
+    expect(administration).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("con Ctrl o Alt la tecla es un atajo de otra cosa y el foco se queda en el menú", async () => {
+    render(<MemoryRouter initialEntries={["/org"]}><PrivateLayoutFrame navigation={businessNavigation} scope="business"><h1>{"Inicio"}</h1></PrivateLayoutFrame></MemoryRouter>);
+    const home = within(screen.getByRole("complementary", { name: "Navegación principal" })).getByRole("link", { name: "Inicio" });
+
+    home.focus();
+    await userEvent.keyboard("{Control>}{End}{/Control}{Alt>}{ArrowDown}{/Alt}");
+
+    expect(home).toHaveFocus();
+  });
+
+  it("un campo del contenido se queda con sus teclas", async () => {
+    render(<MemoryRouter initialEntries={["/org"]}><PrivateLayoutFrame navigation={businessNavigation} scope="business"><input aria-label="Nombre" /></PrivateLayoutFrame></MemoryRouter>);
+    const name = screen.getByRole("textbox", { name: "Nombre" });
+
+    name.focus();
+    await userEvent.keyboard("{Home}{PageDown}{ArrowUp} ");
+
+    expect(name).toHaveFocus();
+  });
+
+  it("en el teléfono, las teclas mueven el contenido con el foco en la barra de abajo", async () => {
+    viewport.mobile = true;
+    render(<MemoryRouter initialEntries={["/org"]}><PrivateLayoutFrame navigation={businessNavigation} scope="business"><h1>{"Inicio"}</h1></PrivateLayoutFrame></MemoryRouter>);
+    const more = within(screen.getByRole("navigation", { name: "Secciones" })).getByRole("link", { name: "Más" });
+
+    more.focus();
+    await userEvent.keyboard("{PageDown}");
+
+    expect(screen.getByRole("main")).toHaveFocus();
+  });
+
   it("durante el cierre reemplaza el layout para no mostrar datos de sesión vacíos", () => {
     render(<MemoryRouter><PrivateLayoutFrame navigation={businessNavigation}><h1>{"Inicio"}</h1></PrivateLayoutFrame></MemoryRouter>);
     act(() => beginSignOut());
