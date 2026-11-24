@@ -25,7 +25,7 @@ import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
-import { CopyIcon } from "@/shared/ui/icons";
+import { CopyIcon, ShieldCheckIcon } from "@/shared/ui/icons";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { CultureSelect } from "@/shared/ui/fields/CultureSelect";
 import { CurrencySelect } from "@/shared/ui/fields/CurrencySelect";
@@ -231,8 +231,10 @@ function SettingsEditor({ settings, loadError, reload }: {
                   <span><span>{t(`settings:domains.status.${domain.status}`)}</span>{domain.status === "Verified" && domain.managedEmailCount > 0
                     ? ` · ${t("settings:domains.managedEmails", { count: domain.managedEmailCount, organization: organizationName })}` : null}</span>
                 </span>}>
-                {domain.status === "Pending" && canManage && domain.txtRecordValue ? <Button type="button" variant="outline" size="sm" onClick={() => openVerify(domain)}>{t("settings:domains.verify")}</Button> : null}
+                {/* Criterio-Tablas-Base2 (261): ninguna fila lleva un botón con texto; «Verificar» va primero en su ⋮. */}
                 {canManage ? <RowActions label={t("settings:domains.actions", { domain: domain.domain })} title={domain.domain} actions={[
+                  { label: t("settings:domains.verify"), accessibleName: t("settings:domains.verify"), icon: ShieldCheckIcon,
+                    hidden: domain.status !== "Pending" || !domain.txtRecordValue, onSelect: () => openVerify(domain) },
                   { label: t("settings:domains.remove"), accessibleName: t("settings:domains.remove"), icon: Trash2, destructive: true, onSelect: () => setDomainToRemove(domain) },
                 ]} /> : null}
               </ListItem>)}</List>}

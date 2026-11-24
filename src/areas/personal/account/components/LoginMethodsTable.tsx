@@ -2,11 +2,10 @@ import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import googleMark from "@/assets/google-mark.svg";
 import type { AccountLoginMethod } from "@/shared/api/types";
-import { Button } from "@/shared/ui/button";
 import { RowActions } from "@/shared/ui/RowActions";
 import { PhoneText } from "@/shared/ui/format/PhoneText";
 import { useFormat } from "@/shared/format/useFormat";
-import { DeleteIcon, MailIcon, StarIcon, WhatsAppIcon } from "@/shared/ui/icons";
+import { DeleteIcon, MailIcon, ShieldCheckIcon, StarIcon, WhatsAppIcon } from "@/shared/ui/icons";
 import { List, ListItem } from "@/shared/ui/List";
 import { StatusDotMark } from "@/shared/ui/StatusDot";
 import { AccountGoogleButton } from "./AccountGoogleButton";
@@ -41,7 +40,9 @@ function MethodMenu({ method, onAction }: { method: AccountLoginMethod; onAction
   const { t } = useTranslation("account");
   const format = useFormat();
   const value = method.type === "Phone" ? format.formatPhone(method.value ?? "") : method.value;
+  // Criterio-Tablas-Base2 (261): ninguna fila lleva un botón con texto; «Verificar» va primero en su ⋮.
   return <RowActions label={t("actionsFor", { value })} title={method.type === "Google" ? t("google") : value ?? undefined} actions={[
+    { label: t("verify"), accessibleName: t("verify"), icon: ShieldCheckIcon, hidden: method.isVerified, onSelect: (trigger) => onAction("verify", method, trigger) },
     { label: t("makePrimary"), accessibleName: t("makePrimary"), icon: StarIcon, hidden: !method.canMakePrimary, onSelect: (trigger) => onAction("primary", method, trigger) },
     { label: t(method.type === "Google" ? "unlink" : "remove"), accessibleName: t(method.type === "Google" ? "unlink" : "remove"), icon: DeleteIcon, destructive: true, hidden: !method.canRemove, onSelect: (trigger) => onAction("remove", method, trigger) },
   ]} />;
@@ -51,9 +52,7 @@ export function LoginMethodsTable({ methods, canLinkGoogle = false, onAction }: 
   const { t } = useTranslation("account");
   return <List label={t("methods")}>
     {methods.map((method) => <ListItem key={method.id} className="min-h-14" icon={<MethodIcon method={method} />} title={method.type === "Google" ? t("google") : method.type === "Phone" ? <PhoneText value={method.value} /> : method.value} detail={methodDetail(method, t)}>
-      {/* Cuenta (.cb-enl de 13) y M-Cuenta (.acc-t de 15, como «Vincular»). */}
-      {!method.isVerified ? <Button type="button" variant="link" size="sm" className="px-1 text-[0.8125rem] max-md:text-[0.9375rem]" onClick={() => onAction("verify", method)}>{t("verify")}</Button> : null}
-      {method.canMakePrimary || method.canRemove ? <MethodMenu method={method} onAction={onAction} /> : null}
+      {!method.isVerified || method.canMakePrimary || method.canRemove ? <MethodMenu method={method} onAction={onAction} /> : null}
     </ListItem>)}
     {canLinkGoogle ? <ListItem icon={<img src={googleMark} className="size-4" alt="" aria-hidden="true" />} title={t("google")} detail={t("unlinked")}>
       <AccountGoogleButton compact />

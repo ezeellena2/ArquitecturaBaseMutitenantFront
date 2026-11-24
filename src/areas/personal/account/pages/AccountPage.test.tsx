@@ -119,6 +119,13 @@ it("relee la lista tras clear sin depender de capacidades previas en 390 px", as
   }
 });
 
+// Criterio-Tablas-Base2 (261): «Verificar» va primero en el ⋮ de la fila, no como un botón con texto.
+async function openVerify(user: ReturnType<typeof userEvent.setup>) {
+  const kebab = await screen.findByRole("button", { name: /^Acciones de .*4521$/ });
+  kebab.focus(); await user.keyboard("{ArrowDown}");
+  await user.click(await screen.findByRole("menuitem", { name: "Verificar" }));
+}
+
 describe("Mi cuenta", () => {
   // Tablero M-Cuenta: en el teléfono, grupos sobre gris con el título arriba; «Agregar correo» en texto y
   // «Dar de baja» en texto rojo, sin ícono.
@@ -518,7 +525,7 @@ it("verificación Phone cancelada reconcilia el éxito tardío sin cerrar otro d
     http.post("/api/me/login-methods/phone/verify", async () => { verifying(); await new Promise<void>((resolve) => { release = resolve; }); verified = true; return new HttpResponse(null, { status: 204 }); }),
   );
   renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
-  await user.click(await screen.findByRole("button", { name: "Verificar" }));
+  await openVerify(user);
   await user.type(await screen.findByRole("textbox", { name: "Código 1" }), "123456");
   await user.click(screen.getByRole("button", { name: "Verificar" }));
   await waitFor(() => expect(verifying).toHaveBeenCalledOnce());
@@ -584,7 +591,7 @@ describe("la campana después de cambiar un método de ingreso", () => {
     server.use(http.post("/api/me/login-methods/phone/verify", async () => { verifying(); if (cancelled) await new Promise<void>((resolve) => { release = resolve; }); state.done = true; return new HttpResponse(null, { status: 204 }); }));
     renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
     expect(await screen.findByRole("button", { name: "Avisos: 1" })).toBeVisible();
-    await user.click(await screen.findByRole("button", { name: "Verificar" }));
+    await openVerify(user);
     await user.type(await screen.findByRole("textbox", { name: "Código 1" }), "123456");
     await user.click(screen.getByRole("button", { name: "Verificar" }));
     await waitFor(() => expect(verifying).toHaveBeenCalledOnce());

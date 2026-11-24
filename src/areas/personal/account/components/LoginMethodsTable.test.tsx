@@ -77,9 +77,13 @@ describe("métodos de cuenta", () => {
     // M-Cuenta (.w-est.amb y .acc-t): en el teléfono, «Sin verificar» lleva el punto ámbar y «Verificar» va en 15, como
     // «Vincular»; en la compu (Cuenta), sin punto y en 13.
     expect(screen.getByText("Sin verificar").querySelector("[data-slot='status-dot']")).toHaveClass("bg-[var(--punto-alerta)]", "hidden", "max-md:block");
-    expect(within(row).getByRole("button", { name: "Verificar" })).toHaveClass("text-[0.8125rem]", "max-md:text-[0.9375rem]");
-    await user.click(within(row).getByRole("button", { name: "Verificar" }));
-    expect(onAction).toHaveBeenCalledWith("verify", pending);
+    // Criterio-Tablas-Base2 (261): ninguna fila lleva un botón con texto; «Verificar» va primero en su ⋮.
+    expect(within(row).queryByRole("button", { name: "Verificar" })).not.toBeInTheDocument();
+    const kebab = within(row).getByRole("button", { name: "Acciones de ana@example.test" });
+    kebab.focus(); await user.keyboard("{ArrowDown}");
+    expect((await screen.findAllByRole("menuitem")).map((item) => item.textContent)).toEqual(["Verificar", "Quitar"]);
+    await user.click(screen.getByRole("menuitem", { name: "Verificar" }));
+    expect(onAction).toHaveBeenCalledWith("verify", pending, kebab);
   });
 
   it("muestra Google sin vincular en la misma lista cuando puede agregarse", async () => {

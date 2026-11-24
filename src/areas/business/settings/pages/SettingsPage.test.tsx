@@ -31,6 +31,19 @@ beforeEach(async () => {
   await changeCulture("es-AR");
 });
 
+// «Verificar» de un dominio pendiente va primero en el ⋮ de su fila (261).
+async function openDomainVerify(user: ReturnType<typeof userEvent.setup>, phone = false) {
+  const kebab = await screen.findByRole("button", { name: "Acciones de delta.example.test" });
+  if (phone) {
+    // En el teléfono, el ⋮ abre la hoja de la fila.
+    await user.click(kebab);
+    await user.click(within(await screen.findByRole("dialog", { name: "delta.example.test" })).getByRole("menuitem", { name: "Verificar" }));
+    return;
+  }
+  kebab.focus(); await user.keyboard("{ArrowDown}");
+  await user.click(await screen.findByRole("menuitem", { name: "Verificar" }));
+}
+
 describe("SettingsPage", () => {
   it("desde Inicio pagina sólo dominios pendientes y limpiar recupera verificados", async () => {
     const rows = Array.from({ length: 12 }, (_, index) => ({ ...pending, id: `pending-${index}`, domain: `pending-${index}.example.test` }));
@@ -393,7 +406,7 @@ describe("SettingsPage", () => {
       );
       renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
 
-      await user.click(await screen.findByRole("button", { name: "Verificar" }));
+      await openDomainVerify(user, true);
       const verify = await screen.findByRole("dialog", { name: "Verificar delta.example.test" });
       // .ap-cod: el rótulo y el registro con la altura normal de su letra, la caja con radio 12 y el ícono de copiar del
       // tablero (dos hojas chicas).
@@ -423,7 +436,9 @@ describe("SettingsPage", () => {
     expect(screen.getByText("Pendiente")).toBeVisible();
     expect(screen.queryByText(/ab-verificacion/)).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: "Verificar" }));
+    // Criterio-Tablas-Base2 (261): ninguna fila lleva un botón con texto; «Verificar» va primero en su ⋮.
+    expect(screen.queryByRole("button", { name: "Verificar" })).not.toBeInTheDocument();
+    await openDomainVerify(user);
     const verify = await screen.findByRole("dialog", { name: "Verificar delta.example.test" });
     expect(within(verify).getByText("ab-verificacion=7f3c9a2e")).toBeVisible();
   });
