@@ -9,6 +9,7 @@ import { Toaster } from "@/shared/ui/sonner";
 import { IconDefaults } from "@/shared/ui/IconDefaults";
 import { Button } from "@/shared/ui/button";
 import { AppAuthProvider } from "@/auth/AuthProvider";
+import { SignOutFromOtherTabs } from "@/auth/SignOutFromOtherTabs";
 import { AuthContext, type AuthContextProps } from "react-oidc-context";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { ModuleRegistryProvider } from "@/shared/modules/ModuleRegistry";
@@ -47,6 +48,8 @@ export function AppProviders({ children, client = queryClient, authContext, modu
       </FormatProvider>
     </ReferenceDataStartup>
     <Toaster />
+    {/* N12: salir en otra pestaña de este lado cierra esta, en cualquier pantalla. */}
+    <SignOutFromOtherTabs />
   </QueryClientProvider>;
 
   return (

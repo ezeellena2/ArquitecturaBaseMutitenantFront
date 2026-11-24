@@ -12,6 +12,11 @@ export function beginSignOut(): void {
   notify();
 }
 
+/// Si esta pestaña ya está saliendo: el aviso de otra no la vuelve a cerrar.
+export function isSignOutInProgress(): boolean {
+  return isSigningOut;
+}
+
 export function cancelSignOut(): void {
   isSigningOut = false;
   notify();
