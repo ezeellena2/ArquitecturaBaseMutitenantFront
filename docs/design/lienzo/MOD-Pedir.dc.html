@@ -1,0 +1,1024 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Pedir un módulo, también con la propuesta del asistente · para aprobar</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ab/components/bundle.css">
+<script src="ds/ab/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <style>
+    :root { --t1: oklch(0.24 0.014 78); --t2: oklch(0.46 0.014 78); --t3: oklch(0.6 0.01 78); --borde: oklch(0.91 0.009 95); --borde2: oklch(0.83 0.013 95); --fondo: oklch(0.975 0.004 95); --s2: oklch(0.975 0.004 95); --s3: oklch(0.95 0.005 95); --marca: oklch(0.48 0.115 140); --marca-h: oklch(0.43 0.115 140); --marca-t: oklch(0.96 0.032 95); --marca-tx: oklch(0.41 0.1 140); --peligro: oklch(0.57 0.2 25); --peligro-t: oklch(0.97 0.02 25); --ok: oklch(0.44 0.12 155); --ok-t: oklch(0.95 0.05 155); --alerta: oklch(0.5 0.12 70); --alerta-t: oklch(0.96 0.06 85); }
+    body { margin: 0; background: var(--fondo); -webkit-font-smoothing: antialiased; font-family: Inter, system-ui, sans-serif; }
+    button, input, textarea, select { font-family: inherit; }
+    .sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .brand { display: block; width: 23.7px/*32px*/; height: 23.7px/*32px*/; border-radius: 3px/*9px*/; background: var(--marca); }
+    .avatar { display: inline-flex; width: 23.7px/*32px*/; height: 23.7px/*32px*/; align-items: center; justify-content: center; border-radius: 3px/*999px*/; background: var(--marca); color: #fff; font-size: 11.5px/*14px*/; font-weight: 600; flex-shrink: 0; }
+    .avatar.gris { background: var(--s3); color: var(--t2); }
+    .icon-btn { display: inline-flex; width: 26.6px/*36px*/; height: 26.6px/*36px*/; align-items: center; justify-content: center; border: 0; border-radius: 3px/*8px*/; background: transparent; color: var(--t2); cursor: pointer; }
+    .icon-btn:hover { background: var(--s3); color: var(--t1); }
+    .scope { border-bottom: 1px solid var(--borde); padding: 10.1px/*14px*/ 8.6px/*12px*/; }
+    .scope-name { margin: 0; font-size: 12.3px/*15px*/; line-height: 14.8px/*20px*/; font-weight: 600; color: var(--t1); }
+    .scope-detail { margin: 2px 0 0; font-size: 10.7px/*13px*/; line-height: 13.3px/*18px*/; color: var(--t3); }
+
+    /* Página */
+    .pagina { padding: 20.2px/*28px*/ 23px/*32px*/ 17.3px/*24px*/; display: flex; flex-direction: column; gap: 14.4px/*20px*/; font-size: 11.5px/*14px*/; line-height: 1.5; color: var(--t1); }
+    .ph { display: flex; align-items: flex-start; justify-content: space-between; gap: 11.5px/*16px*/; }
+    .ph h1, .hero h1 { margin: 0; font-size: 21.3px/*26px*/; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; color: var(--t1); }
+    .ph .res { margin: 4.3px/*6px*/ 0 0; font-size: 11.5px/*14px*/; color: var(--t2); }
+    .ph .tit { display: flex; align-items: center; gap: 8.6px/*12px*/; flex-wrap: wrap; }
+    .sucio { font-size: 11.5px/*14px*/; color: var(--alerta); font-weight: 500; }
+    .acciones { display: flex; align-items: center; gap: 7.2px/*10px*/; flex-shrink: 0; }
+    .b { height: 29.6px/*40px*/; box-sizing: border-box; padding: 0 13px/*18px*/; border-radius: 3px/*10px*/; border: 1px solid transparent; font-size: 11.5px/*14px*/; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 5.8px/*8px*/; cursor: pointer; text-decoration: none; white-space: nowrap; }
+    .b-pri { background: var(--marca); color: #fff; }
+    .b-pri:hover { background: var(--marca-h); }
+    .b-sec { background: #fff; border-color: var(--borde); color: var(--t1); }
+    .b-sec:hover { border-color: var(--borde2); background: var(--s2); }
+    .b-pel { background: var(--peligro); color: #fff; }
+    .b-gho { background: transparent; color: var(--t2); }
+    .b-gho:hover { background: var(--s3); color: var(--t1); }
+    .b-lg, .b.lg { height: 35.5px/*48px*/; padding: 0 15.8px/*22px*/; font-size: 12.3px/*15px*/; border-radius: 3px/*12px*/; }
+    .b-full { width: 100%; }
+    .b:disabled { opacity: 0.5; cursor: default; }
+    .lnk { border: 0; background: transparent; padding: 0; font-size: inherit; font-weight: 600; color: var(--marca-tx); cursor: pointer; text-decoration: none; }
+    .lnk:hover { text-decoration: underline; text-underline-offset: 3px; }
+    .lnk:disabled { color: var(--t3); cursor: default; text-decoration: none; font-weight: 500; }
+
+    /* Barra de filtros */
+    .fb { background: #fff; border: 1px solid var(--borde); border-radius: 3px/*14px*/; padding: 10.1px/*14px*/ 11.5px/*16px*/; display: flex; align-items: center; gap: 7.2px/*10px*/; flex-wrap: wrap; }
+    .fb-bus { position: relative; flex: 1 1 280px; max-width: 360px; }
+    .fb-bus input { width: 100%; height: 29.6px/*40px*/; box-sizing: border-box; padding: 0 8.6px/*12px*/ 0 27.4px/*38px*/; border: 1px solid var(--borde); border-radius: 3px/*10px*/; background: var(--s2); font-size: 11.5px/*14px*/; color: var(--t1); }
+    .fb-bus input::placeholder { color: var(--t3); }
+    .fb-bus input:focus { outline: none; border-color: var(--marca); background: #fff; box-shadow: 0 0 0 3px oklch(0.48 0.115 140 / 0.15); }
+    .fb-bus svg { position: absolute; left: 8.6px/*12px*/; top: 50%; transform: translateY(-50%); color: var(--t3); pointer-events: none; }
+    .envoltura { position: relative; }
+    .pill-sel { height: 29.6px/*40px*/; box-sizing: border-box; padding: 0 10.1px/*14px*/; border-radius: 3px/*999px*/; border: 1px solid var(--borde); background: #fff; font-size: 11.5px/*14px*/; color: var(--t2); display: inline-flex; align-items: center; gap: 5.8px/*8px*/; cursor: pointer; white-space: nowrap; }
+    .pill-sel:hover { border-color: var(--borde2); }
+    .pill-sel.con { color: var(--marca-tx); border-color: oklch(0.48 0.115 140 / 0.35); background: var(--marca-t); font-weight: 500; }
+    .fb-limpiar { border: 0; background: transparent; font-size: 11.5px/*14px*/; color: var(--t3); cursor: pointer; padding: 5.8px/*8px*/ 7.2px/*10px*/; border-radius: 3px/*8px*/; }
+    .fb-limpiar:hover { color: var(--t1); background: var(--s2); }
+    .fb-der { margin-left: auto; display: flex; align-items: center; gap: 7.2px/*10px*/; }
+
+    /* Menús: filtros, ⋮ de las filas y menú del usuario */
+    .menu { position: absolute; z-index: 20; top: calc(100% + 4.4px/*6px*/); background: #fff; border: 1px solid var(--borde); border-radius: 3px/*12px*/; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); padding: 4.3px/*6px*/; min-width: 220px; display: flex; flex-direction: column; }
+    .menu.izq { left: 0; }
+    .menu.der { right: 0; }
+    .menu.arriba { top: auto; bottom: calc(100% + 4.4px/*6px*/); }
+    .menu-it { display: flex; align-items: center; gap: 7.2px/*10px*/; min-height: 29.6px/*40px*/; padding: 5.8px/*8px*/ 8.6px/*12px*/; border: 0; border-radius: 3px/*8px*/; background: transparent; font-size: 11.5px/*14px*/; color: var(--t1); cursor: pointer; text-align: left; width: 100%; box-sizing: border-box; text-decoration: none; white-space: nowrap; }
+    .menu-it:hover { background: var(--s2); }
+    .menu-it.on { background: var(--marca-t); color: var(--marca-tx); font-weight: 500; }
+    .menu-it svg { color: var(--t3); flex-shrink: 0; }
+    .menu-it:hover svg { color: var(--t1); }
+    .menu-it.pel, .menu-it.pel svg { color: var(--peligro); }
+    .menu-it.pel:hover { background: var(--peligro-t); }
+    .menu-it.apagado { color: var(--t3); cursor: default; }
+    .menu-it.apagado:hover { background: transparent; }
+    .menu-sep { height: 1px; background: var(--borde); margin: 2.9px/*4px*/ 0; }
+    .menu-cnt { margin-left: auto; padding-left: 11.5px/*16px*/; font-size: 10.7px/*13px*/; color: var(--t3); font-variant-numeric: tabular-nums; }
+    .menu-tit { padding: 5.8px/*8px*/ 8.6px/*12px*/ 2.9px/*4px*/; font-size: 10.7px/*13px*/; font-weight: 600; color: var(--t3); }
+    .menu-cab { display: flex; align-items: center; gap: 8.6px/*12px*/; padding: 7.2px/*10px*/ 8.6px/*12px*/; }
+    .menu-cab .n1 { font-size: 12.3px/*15px*/; font-weight: 600; color: var(--t1); }
+    .menu-cab .n2 { font-size: 10.7px/*13px*/; color: var(--t2); }
+    .perfil-t { display: flex; flex-direction: column; min-width: 0; flex-grow: 1; line-height: 1.3; }
+    .perfil-t .n1 { font-size: 11.5px/*14px*/; font-weight: 500; color: var(--t1); overflow: hidden; text-overflow: ellipsis; }
+    .perfil-t .n2 { font-size: 10.7px/*13px*/; color: var(--t3); }
+    .ico-perfil { width: 23.7px/*32px*/; height: 23.7px/*32px*/; border-radius: 3px/*9px*/; background: var(--s3); color: var(--t2); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 10.7px/*13px*/; font-weight: 700; }
+    .menu-it.on .ico-perfil { background: #fff; color: var(--marca-tx); }
+    .capa { position: absolute; inset: 0; z-index: 15; border: 0; padding: 0; background: transparent; cursor: default; }
+
+    /* Botón del usuario en la barra superior */
+    .um-btn { display: inline-flex; align-items: center; gap: 7.2px/*10px*/; height: 32.6px/*44px*/; padding: 0 7.2px/*10px*/ 0 4.3px/*6px*/; border: 1px solid transparent; border-radius: 3px/*12px*/; background: transparent; cursor: pointer; text-align: left; }
+    .um-btn:hover, .um-btn[aria-expanded="true"] { background: #fff; border-color: var(--borde); }
+    .um-txt { display: flex; flex-direction: column; line-height: 1.25; }
+    .um-txt .n1 { font-size: 11.5px/*14px*/; font-weight: 600; color: var(--t1); }
+    .um-txt .n2 { font-size: 10.7px/*13px*/; color: var(--t2); }
+    .um-btn > svg { color: var(--t3); }
+    .ab-topbar { height: 47.4px/*64px*/; }
+
+    /* Tablas */
+    .tarjeta { background: #fff; border: 1px solid var(--borde); border-radius: 3px/*14px*/; box-shadow: 0 1px 2px oklch(0.24 0.014 78 / 0.04); }
+    .tt-h { display: grid; align-items: center; gap: 11.5px/*16px*/; height: 34px/*46px*/; padding: 0 14.4px/*20px*/; border-bottom: 1px solid var(--borde); font-size: 10.7px/*13px*/; font-weight: 600; color: var(--t2); white-space: nowrap; }
+    .tt-h.gris { background: var(--s3); color: var(--t2); }
+    .tt-h.azul-claro { background: oklch(0.95 0.032 95); color: var(--marca-tx); border-bottom-color: oklch(0.88 0.048 95); }
+    .tt-h.azul { background: var(--marca); color: #fff; border-bottom-color: var(--marca); }
+    .tarjeta > .tt-h:first-child { border-radius: 3px/*13px*/ 3px/*13px*/ 0 0; }
+    .tt-f { display: grid; align-items: center; gap: 11.5px/*16px*/; min-height: 47.4px/*64px*/; padding: 7.2px/*10px*/ 14.4px/*20px*/; box-sizing: border-box; border-bottom: 1px solid var(--borde); font-size: 11.5px/*14px*/; }
+    .tt-f:hover { background: var(--s2); }
+    .tt-f.nueva { background: var(--marca-t); }
+    .tt-f > * { min-width: 0; }
+    .c1 { display: block; font-weight: 500; color: var(--t1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .c1.n { font-weight: 400; }
+    .c2 { display: block; font-size: 10.7px/*13px*/; color: var(--t3); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    a.c1 { text-decoration: none; }
+    a.c1:hover { color: var(--marca-tx); text-decoration: underline; text-underline-offset: 3px; }
+    .num { font-variant-numeric: tabular-nums; color: var(--t1); text-align: right; }
+    .tt-h .num { color: inherit; }
+    .der { display: flex; justify-content: flex-end; }
+    .pill { display: inline-flex; align-items: center; gap: 4.3px/*6px*/; padding: 3px 7.2px/*10px*/; border-radius: 3px/*999px*/; font-size: 10.5px/*12.5px*/; font-weight: 500; white-space: nowrap; }
+    .pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .pill.ok { background: var(--ok-t); color: var(--ok); }
+    .pill.off { background: var(--s3); color: var(--t2); }
+    .pill.pend { background: var(--marca-t); color: var(--marca-tx); }
+    .pill.alerta { background: var(--alerta-t); color: var(--alerta); }
+    .pill.mal { background: var(--peligro-t); color: var(--peligro); }
+    .rol { display: inline-flex; padding: 3px 7.2px/*10px*/; border-radius: 3px/*999px*/; font-size: 10.5px/*12.5px*/; font-weight: 500; background: var(--s3); color: var(--t1); white-space: nowrap; }
+    .rol.sis { background: var(--marca-t); color: var(--marca-tx); }
+    .roles { display: flex; gap: 4.3px/*6px*/; flex-wrap: nowrap; overflow: hidden; }
+    .kebab { width: 23.7px/*32px*/; height: 23.7px/*32px*/; box-sizing: border-box; border-radius: 3px/*8px*/; border: 1px solid transparent; background: transparent; color: var(--t3); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    .kebab:hover, .kebab[aria-expanded="true"] { background: #fff; border-color: var(--borde); color: var(--t1); }
+    .pie { display: flex; justify-content: space-between; align-items: center; padding: 8.6px/*12px*/ 14.4px/*20px*/; font-size: 10.7px/*13px*/; color: var(--t2); }
+    .pag { display: flex; align-items: center; gap: 7.2px/*10px*/; }
+    .pag .pill-sel { height: 23.7px/*32px*/; font-size: 10.7px/*13px*/; padding: 0 8.6px/*12px*/; }
+    .pag .ico-btn:disabled { opacity: 0.4; cursor: default; background: transparent; border-color: transparent; }
+    .pie.centro { justify-content: center; }
+    .vacio { padding: 34.6px/*48px*/ 17.3px/*24px*/; display: flex; flex-direction: column; align-items: center; gap: 8.6px/*12px*/; text-align: center; }
+    .vacio strong { font-size: 13.1px/*16px*/; font-weight: 600; color: var(--t1); }
+    .vacio span { font-size: 11.5px/*14px*/; color: var(--t2); max-width: 420px; }
+
+    /* Fichas */
+    .volver2 { display: inline-flex; align-items: center; gap: 4.3px/*6px*/; font-size: 11.5px/*14px*/; color: var(--t2); text-decoration: none; align-self: flex-start; }
+    .volver2:hover { color: var(--marca-tx); }
+    .hero { background: #fff; border: 1px solid var(--borde); border-radius: 3px/*14px*/; padding: 17.3px/*24px*/; display: flex; justify-content: space-between; gap: 17.3px/*24px*/; align-items: flex-start; }
+    .hero .tit { display: flex; align-items: center; gap: 8.6px/*12px*/; flex-wrap: wrap; }
+    .hero .sub { margin-top: 5.8px/*8px*/; font-size: 12.3px/*15px*/; color: var(--t2); }
+    .tabs2 { display: flex; gap: 4.3px/*6px*/; border-bottom: 1px solid var(--borde); }
+    .tab2 { display: inline-flex; align-items: center; gap: 5.8px/*8px*/; padding: 7.2px/*10px*/ 11.5px/*16px*/; font-size: 11.5px/*14px*/; font-weight: 500; color: var(--t2); background: var(--s2); border: 1px solid var(--borde); border-bottom-color: transparent; border-radius: 3px/*10px*/ 3px/*10px*/ 0 0; margin-bottom: -1px; cursor: pointer; }
+    .tab2:hover { color: var(--t1); background: var(--s3); }
+    .tab2[aria-selected="true"] { color: var(--marca-tx); background: #fff; border-top: 2px solid var(--marca); border-bottom-color: #fff; }
+    .tab2 .cnt { font-size: 10.5px/*12px*/; font-weight: 600; padding: 1px 5.8px/*8px*/; border-radius: 3px/*999px*/; background: var(--s3); color: var(--t2); }
+    .tab2[aria-selected="true"] .cnt { background: var(--marca-t); color: var(--marca-tx); }
+
+    /* Formularios */
+    .hoja { background: #fff; border: 1px solid var(--borde); border-radius: 3px/*14px*/; padding: 17.3px/*24px*/; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14.4px/*20px*/ 17.3px/*24px*/; }
+    .hoja h2 { grid-column: 1 / -1; margin: 5.8px/*8px*/ 0 -2.9px/*4px*/; font-size: 13.9px/*17px*/; font-weight: 600; color: var(--t1); }
+    .hoja h2:first-child { margin-top: 0; }
+    .hoja .linea { grid-column: 1 / -1; height: 1px; background: var(--borde); margin: 2.9px/*4px*/ 0; }
+    .campo2 { display: flex; flex-direction: column; gap: 5.8px/*8px*/; min-width: 0; }
+    .campo2.ancho { grid-column: 1 / -1; }
+    .et { font-size: 10.7px/*13px*/; font-weight: 600; color: var(--t2); display: flex; align-items: center; gap: 5.8px/*8px*/; }
+    .et .req { color: var(--peligro); margin-left: -4.3px/*6px*/; }
+    .et .todos { margin-left: auto; display: inline-flex; align-items: center; gap: 4.3px/*6px*/; font-weight: 500; color: var(--t2); cursor: pointer; }
+    .et .todos input { width: 16px; height: 16px; margin: 0; accent-color: var(--marca); cursor: pointer; }
+    .in2 { height: 32.6px/*44px*/; width: 100%; box-sizing: border-box; padding: 0 10.1px/*14px*/; border: 1px solid var(--borde); border-radius: 3px/*10px*/; background: #fff; font-size: 12.3px/*15px*/; color: var(--t1); }
+    .in2::placeholder { color: var(--t3); }
+    .in2:focus { outline: none; border-color: var(--marca); box-shadow: 0 0 0 3px oklch(0.48 0.115 140 / 0.15); }
+    .in2.mal { border-color: var(--peligro); }
+    .in2[readonly] { background: var(--s2); color: var(--t2); }
+    textarea.in2 { height: auto; min-height: 88px; padding: 7.2px/*10px*/ 10.1px/*14px*/; line-height: 1.5; resize: none; }
+    button.in2 { display: flex; align-items: center; justify-content: space-between; gap: 7.2px/*10px*/; cursor: pointer; text-align: left; }
+    button.in2:disabled { background: var(--s2); color: var(--t2); cursor: default; }
+    button.in2 .val { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .vacio2 { color: var(--t3); }
+    button.in2 svg { color: var(--t3); flex-shrink: 0; }
+    .err2 { font-size: 10.7px/*13px*/; color: var(--peligro); }
+    .lista { max-height: 300px; overflow-y: auto; left: 0; right: auto; min-width: 100%; width: max-content; max-width: 400px; box-sizing: border-box; }
+    .op2 { display: flex; align-items: flex-start; gap: 7.2px/*10px*/; padding: 7.2px/*10px*/ 8.6px/*12px*/; border: 0; border-radius: 3px/*8px*/; background: transparent; text-align: left; width: 100%; box-sizing: border-box; cursor: pointer; }
+    .op2:hover { background: var(--s2); }
+    .op2.on { background: var(--marca-t); }
+    .op2 input { width: 16px; height: 16px; margin: 2px 0 0; accent-color: var(--marca); cursor: pointer; flex-shrink: 0; }
+    .op2 .opn { display: block; font-size: 11.5px/*14px*/; font-weight: 500; color: var(--t1); }
+    .op2 .opd { display: block; font-size: 10.7px/*13px*/; color: var(--t2); margin-top: 1px; }
+    .fila-emp { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) 44px; gap: 8.6px/*12px*/; align-items: start; }
+    .quitar { width: 32.6px/*44px*/; height: 32.6px/*44px*/; box-sizing: border-box; border: 1px solid var(--borde); border-radius: 3px/*10px*/; background: #fff; color: var(--t3); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    .quitar:hover { color: var(--peligro); border-color: oklch(0.57 0.2 25 / 0.4); background: var(--peligro-t); }
+    .sumar { align-self: flex-start; display: inline-flex; align-items: center; gap: 5.8px/*8px*/; border: 0; background: transparent; padding: 2.9px/*4px*/ 0; font-size: 11.5px/*14px*/; font-weight: 600; color: var(--marca-tx); cursor: pointer; }
+    .aviso-linea { grid-column: 1 / -1; display: flex; align-items: flex-start; gap: 7.2px/*10px*/; padding: 8.6px/*12px*/ 10.1px/*14px*/; border-radius: 3px/*10px*/; font-size: 11.5px/*14px*/; line-height: 1.5; }
+    .aviso-linea.alerta { background: var(--alerta-t); color: oklch(0.4 0.1 70); }
+    .aviso-linea.mal { background: var(--peligro-t); color: oklch(0.45 0.17 25); }
+    .aviso-linea.info { background: var(--marca-t); color: var(--marca-tx); }
+    .aviso-linea svg { flex-shrink: 0; margin-top: 2px; }
+
+    /* Campo con prefijo (dirección pública) */
+    .in-pre { display: flex; align-items: stretch; height: 32.6px/*44px*/; border: 1px solid var(--borde); border-radius: 3px/*10px*/; background: #fff; overflow: hidden; }
+    .in-pre:focus-within { border-color: var(--marca); box-shadow: 0 0 0 3px oklch(0.48 0.115 140 / 0.15); }
+    .in-pre.mal { border-color: var(--peligro); }
+    .in-pre > span { display: inline-flex; align-items: center; padding: 0 8.6px/*12px*/; background: var(--s2); border-right: 1px solid var(--borde); font-size: 12.3px/*15px*/; color: var(--t2); white-space: nowrap; }
+    .in-pre > input { flex: 1; min-width: 0; border: 0; outline: none; padding: 0 10.1px/*14px*/; font-size: 12.3px/*15px*/; color: var(--t1); background: transparent; }
+
+    /* Inicio: indicadores, tarjetas con cabecera y pasos */
+    .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 11.5px/*16px*/; }
+    .kpi { background: #fff; border: 1px solid var(--borde); border-radius: 3px/*14px*/; padding: 14.4px/*20px*/ 17.3px/*24px*/; display: flex; flex-direction: column; gap: 4.3px/*6px*/; text-decoration: none; color: inherit; }
+    a.kpi:hover { border-color: var(--borde2); box-shadow: 0 4px 12px oklch(0.24 0.014 78 / 0.06); }
+    .kpi .k { font-size: 10.7px/*13px*/; font-weight: 600; color: var(--t2); }
+    .kpi .v { font-size: 26.2px/*32px*/; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; color: var(--t1); font-variant-numeric: tabular-nums; }
+    .kpi .p { font-size: 10.7px/*13px*/; color: var(--t3); }
+    .t-cab { display: flex; align-items: center; justify-content: space-between; gap: 11.5px/*16px*/; padding: 13px/*18px*/ 14.4px/*20px*/; border-bottom: 1px solid var(--borde); }
+    .t-cab h2 { margin: 0; font-size: 13.9px/*17px*/; font-weight: 600; color: var(--t1); }
+    .t-cab .d { font-size: 11.5px/*14px*/; color: var(--t2); }
+    .paso { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; gap: 10.1px/*14px*/; align-items: center; padding: 10.1px/*14px*/ 14.4px/*20px*/; border-bottom: 1px solid var(--borde); }
+    .paso:last-child { border-bottom: 0; }
+    .paso .ck { width: 17.8px/*24px*/; height: 17.8px/*24px*/; border-radius: 50%; border: 2px solid var(--borde2); box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; color: #fff; }
+    .paso.hecho .ck { background: var(--ok); border-color: var(--ok); }
+    .paso.hecho .c1 { color: var(--t2); text-decoration: line-through; text-decoration-color: var(--t3); }
+    .ico-btn { width: 23.7px/*32px*/; height: 23.7px/*32px*/; box-sizing: border-box; border-radius: 3px/*8px*/; border: 1px solid transparent; background: transparent; color: var(--t3); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    .ico-btn:hover { background: #fff; border-color: var(--borde); color: var(--t1); }
+    .cambios { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 7.2px/*10px*/ 11.5px/*16px*/; font-size: 11.5px/*14px*/; }
+    .cambios .k { color: var(--t2); font-weight: 500; }
+    .cambios .antes { color: var(--t3); text-decoration: line-through; }
+
+    /* Diálogos */
+    .velo { position: absolute; inset: 0; z-index: 40; background: oklch(0.2 0.014 78 / 0.42); display: flex; align-items: center; justify-content: center; }
+    .dlg { width: 640px; max-width: calc(100% - 32px); background: #fff; border-radius: 3px/*18px*/; box-shadow: 0 24px 48px oklch(0.2 0.014 78 / 0.22); display: flex; flex-direction: column; font-size: 11.5px/*14px*/; line-height: 1.5; color: var(--t1); }
+    .dlg.chico { width: 460px; }
+    .dlg-h { display: flex; justify-content: space-between; align-items: flex-start; gap: 8.6px/*12px*/; padding: 14.4px/*20px*/ 17.3px/*24px*/; border-bottom: 1px solid var(--borde); }
+    .dlg-h h2 { margin: 0; font-size: 15.6px/*19px*/; font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; color: var(--t1); }
+    .dlg-h p { margin: 2.9px/*4px*/ 0 0; font-size: 11.5px/*14px*/; color: var(--t2); }
+    .dlg-x { width: 23.7px/*32px*/; height: 23.7px/*32px*/; flex-shrink: 0; border: 0; border-radius: 3px/*8px*/; background: transparent; color: var(--t3); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    .dlg-x:hover { background: var(--s2); color: var(--t1); }
+    .dlg-b { padding: 14.4px/*20px*/ 17.3px/*24px*/; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11.5px/*16px*/; }
+    .dlg-b.una { grid-template-columns: minmax(0, 1fr); }
+    .dlg-t { padding: 14.4px/*20px*/ 17.3px/*24px*/; font-size: 12.3px/*15px*/; color: var(--t2); line-height: 1.55; }
+    .dlg-f { display: flex; justify-content: flex-end; gap: 8.6px/*12px*/; padding: 11.5px/*16px*/ 17.3px/*24px*/; border-top: 1px solid var(--borde); }
+    .toast2 { position: absolute; z-index: 41; right: 17.3px/*24px*/; bottom: 17.8px/*24px*/; display: flex; align-items: center; gap: 7.2px/*10px*/; padding: 8.6px/*12px*/ 11.5px/*16px*/; max-width: 460px; background: #fff; border: 1px solid var(--borde); border-radius: 3px/*12px*/; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); font-size: 11.5px/*14px*/; color: var(--t1); }
+    .toast2 svg { flex-shrink: 0; }
+
+    /* Compacto: medidas finales de todo el sistema (pisan las de arriba). */
+    .pagina { padding: 14.4px/*20px*/ 17.3px/*24px*/; gap: 10.1px/*14px*/; font-size: 10.7px/*13px*/; }
+    .ph h1, .hero h1 { font-size: 16.4px/*20px*/; }
+    .ph .res { margin-top: 2px; font-size: 10.7px/*13px*/; }
+    .sucio { font-size: 10.7px/*13px*/; }
+    .acciones { gap: 5.8px/*8px*/; }
+    .b { height: 25.2px/*34px*/; padding: 0 10.1px/*14px*/; border-radius: 3px/*8px*/; font-size: 10.7px/*13px*/; gap: 4.3px/*6px*/; }
+    .b svg { width: 14px; height: 14px; }
+    .b-lg, .b.lg { height: 29.6px/*40px*/; padding: 0 13px/*18px*/; font-size: 11.5px/*14px*/; border-radius: 3px/*10px*/; }
+    .b-sm { height: 20.7px/*28px*/; padding: 0 7.2px/*10px*/; font-size: 10.5px/*12.5px*/; border-radius: 3px/*7px*/; }
+    .fb { padding: 7.2px/*10px*/ 8.6px/*12px*/; border-radius: 3px/*12px*/; gap: 5.8px/*8px*/; }
+    .fb-bus { flex: 0 1 300px; }
+    .fb-bus input { height: 23.7px/*32px*/; padding-left: 23px/*32px*/; border-radius: 3px/*8px*/; font-size: 10.7px/*13px*/; }
+    .fb-bus svg { left: 7.2px/*10px*/; width: 14px; height: 14px; }
+    .pill-sel { height: 23.7px/*32px*/; padding: 0 8.6px/*12px*/; gap: 4.3px/*6px*/; font-size: 10.7px/*13px*/; }
+    .fb-limpiar { padding: 4.3px/*6px*/ 5.8px/*8px*/; font-size: 10.7px/*13px*/; }
+    .fb-der { gap: 5.8px/*8px*/; }
+    .menu { border-radius: 3px/*10px*/; padding: 2.9px/*4px*/; min-width: 200px; }
+    .menu-it { min-height: 25.2px/*34px*/; padding: 4.3px/*6px*/ 7.2px/*10px*/; gap: 5.8px/*8px*/; font-size: 10.7px/*13px*/; }
+    .menu-it svg { width: 15px; height: 15px; }
+    .menu-cnt { font-size: 10.5px/*12px*/; }
+    .menu-tit { padding: 4.3px/*6px*/ 7.2px/*10px*/ 2px; font-size: 10.5px/*12px*/; }
+    .menu-cab { padding: 5.8px/*8px*/ 7.2px/*10px*/; }
+    .ico-perfil { width: 20.7px/*28px*/; height: 20.7px/*28px*/; border-radius: 3px/*8px*/; font-size: 10.5px/*11.5px*/; }
+    .perfil-t .n1 { font-size: 10.7px/*13px*/; }
+    .perfil-t .n2 { font-size: 10.5px/*12px*/; }
+    .um-btn { height: 29.6px/*40px*/; gap: 5.8px/*8px*/; border-radius: 3px/*10px*/; }
+    .um-txt .n1 { font-size: 10.7px/*13px*/; }
+    .um-txt .n2 { font-size: 10.5px/*12px*/; }
+    .avatar { width: 20.7px/*28px*/; height: 20.7px/*28px*/; font-size: 10.5px/*12px*/; }
+    .ab-topbar { height: 38.5px/*52px*/; }
+    .scope { padding: 8.6px/*12px*/; }
+    .scope-name { font-size: 11.5px/*14px*/; }
+    .scope-detail { font-size: 10.5px/*12px*/; }
+    .tarjeta { border-radius: 3px/*12px*/; }
+    .tarjeta > .tt-h:first-child { border-radius: 3px/*11px*/ 3px/*11px*/ 0 0; }
+    .tt-h { height: 28.1px/*38px*/; padding: 0 11.5px/*16px*/; gap: 8.6px/*12px*/; font-size: 10.5px/*12px*/; }
+    .tt-f { min-height: 31.1px/*42px*/; padding: 4.3px/*6px*/ 11.5px/*16px*/; gap: 8.6px/*12px*/; font-size: 10.7px/*13px*/; }
+    .c2 { font-size: 10.5px/*12px*/; }
+    .pill { padding: 2px 5.8px/*8px*/; gap: 3.6px/*5px*/; font-size: 10.5px/*12px*/; }
+    .pill::before { width: 5px; height: 5px; }
+    .rol { padding: 2px 5.8px/*8px*/; font-size: 10.5px/*12px*/; }
+    .roles { gap: 2.9px/*4px*/; }
+    .kebab { width: 20.7px/*28px*/; height: 20.7px/*28px*/; border-radius: 3px/*7px*/; }
+    .pie { padding: 5.8px/*8px*/ 11.5px/*16px*/; font-size: 10.5px/*12px*/; }
+    .pag { gap: 5.8px/*8px*/; }
+    .pag .pill-sel { height: 20.7px/*28px*/; padding: 0 7.2px/*10px*/; font-size: 10.5px/*12px*/; }
+    .ico-btn { width: 20.7px/*28px*/; height: 20.7px/*28px*/; border-radius: 3px/*7px*/; }
+    .vacio { padding: 23px/*32px*/ 11.5px/*16px*/; gap: 7.2px/*10px*/; }
+    .vacio strong { font-size: 11.5px/*14px*/; }
+    .vacio span { font-size: 10.7px/*13px*/; }
+    .volver2 { font-size: 10.7px/*13px*/; }
+    .tab2 { padding: 5px/*7px*/ 10.1px/*14px*/; font-size: 10.7px/*13px*/; border-radius: 3px/*8px*/ 3px/*8px*/ 0 0; }
+    .tab2 .cnt { font-size: 10.5px/*11.5px*/; padding: 0 5px/*7px*/; }
+    .hoja { padding: 14.4px/*20px*/; gap: 10.1px/*14px*/ 14.4px/*20px*/; border-radius: 3px/*12px*/; }
+    .hoja h2 { margin: 2.9px/*4px*/ 0 -2.9px/*4px*/; font-size: 12.3px/*15px*/; }
+    .campo2 { gap: 4.3px/*6px*/; }
+    .et { font-size: 10.5px/*12px*/; }
+    .in2 { height: 26.6px/*36px*/; padding: 0 8.6px/*12px*/; border-radius: 3px/*8px*/; font-size: 11.1px/*13.5px*/; }
+    textarea.in2 { min-height: 47.4px/*64px*/; padding: 5.8px/*8px*/ 8.6px/*12px*/; }
+    .in-pre { height: 26.6px/*36px*/; border-radius: 3px/*8px*/; }
+    .op2 { padding: 5px/*7px*/ 7.2px/*10px*/; gap: 5.8px/*8px*/; }
+    .op2 .opn { font-size: 10.7px/*13px*/; }
+    .op2 .opd { font-size: 10.5px/*12px*/; }
+    .fila-emp { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) 36px; gap: 7.2px/*10px*/; }
+    .quitar { width: 26.6px/*36px*/; height: 26.6px/*36px*/; border-radius: 3px/*8px*/; }
+    .sumar { font-size: 10.7px/*13px*/; }
+    .aviso-linea { padding: 7.2px/*10px*/ 8.6px/*12px*/; font-size: 10.7px/*13px*/; border-radius: 3px/*8px*/; }
+    .dlg { width: 560px; border-radius: 3px/*14px*/; font-size: 10.7px/*13px*/; }
+    .dlg.chico { width: 420px; }
+    .dlg-h { padding: 11.5px/*16px*/ 14.4px/*20px*/; }
+    .dlg-h h2 { font-size: 13.1px/*16px*/; }
+    .dlg-h p { margin-top: 2px; font-size: 10.7px/*13px*/; }
+    .dlg-x { width: 20.7px/*28px*/; height: 20.7px/*28px*/; }
+    .dlg-b { padding: 11.5px/*16px*/ 14.4px/*20px*/; gap: 8.6px/*12px*/ 10.1px/*14px*/; }
+    .dlg-t { padding: 11.5px/*16px*/ 14.4px/*20px*/; font-size: 11.1px/*13.5px*/; }
+    .dlg-f { padding: 8.6px/*12px*/ 14.4px/*20px*/; gap: 5.8px/*8px*/; }
+    .toast2 { padding: 7.2px/*10px*/ 10.1px/*14px*/; font-size: 10.7px/*13px*/; border-radius: 3px/*10px*/; }
+    .cambios { gap: 5.8px/*8px*/ 10.1px/*14px*/; font-size: 10.7px/*13px*/; grid-template-columns: 140px minmax(0, 1fr); }
+
+    /* Encabezado de página: banda blanca pegada a la barra de arriba. Las acciones de la página van a la derecha:
+       la principal al final; si hay más de tres, las que sobran van al menú «Más acciones». */
+    .banda-pag { display: flex; align-items: center; justify-content: space-between; gap: 11.5px/*16px*/; min-height: 47.4px/*64px*/; box-sizing: border-box; padding: 8.6px/*12px*/ 17.3px/*24px*/; background: #fff; border-bottom: 1px solid var(--borde); font-size: 10.7px/*13px*/; color: var(--t1); }
+    .banda-pag .izq { display: flex; align-items: center; gap: 8.6px/*12px*/; min-width: 0; }
+    .banda-pag .ico { width: 26.6px/*36px*/; height: 26.6px/*36px*/; border-radius: 3px/*10px*/; background: var(--marca-t); color: var(--marca-tx); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .banda-pag .atras { width: 20.7px/*28px*/; height: 20.7px/*28px*/; box-sizing: border-box; border-radius: 3px/*7px*/; border: 1px solid var(--borde); color: var(--t2); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; text-decoration: none; }
+    .banda-pag .atras:hover { color: var(--t1); border-color: var(--borde2); background: var(--s2); }
+    .banda-pag .tit { display: flex; align-items: center; gap: 7.2px/*10px*/; flex-wrap: wrap; }
+    .banda-pag h1 { margin: 0; font-size: 14.8px/*18px*/; font-weight: 700; letter-spacing: -0.015em; line-height: 1.25; color: var(--t1); }
+    .banda-pag .res { margin: 2px 0 0; font-size: 10.7px/*13px*/; color: var(--t2); }
+    .banda-pag .mas { width: 25.2px/*34px*/; height: 25.2px/*34px*/; box-sizing: border-box; border-radius: 3px/*8px*/; border: 1px solid var(--borde); background: #fff; color: var(--t2); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    .banda-pag .mas:hover, .banda-pag .mas[aria-expanded="true"] { border-color: var(--borde2); color: var(--t1); background: var(--s2); }
+
+    /* Pantallas públicas y landing, más compactas. */
+    .auth-form { padding: 17.3px/*24px*/ 28.8px/*40px*/ 15.8px/*22px*/; }
+    .auth-top { font-size: 12.3px/*15px*/; }
+    .auth-caja { width: 380px; gap: 11.5px/*16px*/; }
+    .auth-caja h1 { font-size: 19.7px/*24px*/; }
+    .auth-caja .sub { margin-top: 4.3px/*6px*/; font-size: 11.5px/*14px*/; }
+    .auth-marca { padding: 40.3px/*56px*/; gap: 14.4px/*20px*/; }
+    .auth-marca h2 { font-size: 26.2px/*32px*/; }
+    .auth-marca p { font-size: 12.3px/*15px*/; }
+    .auth-marca li { font-size: 11.5px/*14px*/; grid-template-columns: 34px minmax(0, 1fr); gap: 8.6px/*12px*/; }
+    .auth-marca li span:first-child { width: 25.2px/*34px*/; height: 25.2px/*34px*/; border-radius: 3px/*9px*/; }
+    .b-google { height: 29.6px/*40px*/; border-radius: 3px/*10px*/; font-size: 11.5px/*14px*/; }
+    .seg2 { padding: 3px; border-radius: 3px/*10px*/; }
+    .seg2 button { height: 23.7px/*32px*/; font-size: 10.7px/*13px*/; border-radius: 3px/*8px*/; }
+    .in2.lg { height: 29.6px/*40px*/; }
+    .otp { gap: 5.8px/*8px*/; }
+    .otp input { height: 38.5px/*52px*/; font-size: 18px/*22px*/; border-radius: 3px/*10px*/; }
+    .msj { padding: 7.2px/*10px*/ 8.6px/*12px*/; font-size: 10.7px/*13px*/; border-radius: 3px/*10px*/; }
+    .nota { font-size: 10.5px/*12px*/; }
+    .fila-links { font-size: 10.7px/*13px*/; }
+    .circulo { width: 38.5px/*52px*/; height: 38.5px/*52px*/; }
+    .cuenta-card { padding: 7.2px/*10px*/ 8.6px/*12px*/; border-radius: 3px/*10px*/; }
+    .org-av { width: 41.4px/*56px*/; height: 41.4px/*56px*/; border-radius: 3px/*14px*/; font-size: 16.4px/*20px*/; }
+    .datos-inv { padding: 8.6px/*12px*/ 10.1px/*14px*/; font-size: 10.7px/*13px*/; border-radius: 3px/*10px*/; }
+    .codigos { padding: 8.6px/*12px*/ 11.5px/*16px*/; font-size: 11.5px/*14px*/; border-radius: 3px/*10px*/; }
+    .qr { width: 140px; height: 140px; }
+    .sesion h1 { font-size: 16.4px/*20px*/; }
+    .sesion p { font-size: 11.5px/*14px*/; }
+    .metodo { padding: 7.2px/*10px*/ 0; grid-template-columns: 34px minmax(0, 1fr) auto auto; gap: 8.6px/*12px*/; }
+    .metodo .ic { width: 25.2px/*34px*/; height: 25.2px/*34px*/; border-radius: 3px/*9px*/; }
+
+    .c1.vencido { color: var(--peligro); }
+    .c1.nada { color: var(--t3); }
+
+    /* Menú lateral y barra superior, compactos. */
+    .ab-root { --size-topbar: 52px; }
+    .ab-app-shell { font-size: 10.7px/*13px*/; }
+    .ab-sidebar { width: 232px; }
+    .ab-sidebar__toggle { top: 47.4px/*64px*/; }
+    .brand { width: 20.7px/*28px*/; height: 20.7px/*28px*/; border-radius: 3px/*8px*/; }
+    .ab-sidebar__nav { padding: 5.8px/*8px*/ 5.8px/*8px*/ 7.2px/*10px*/; }
+    .ab-sidebar__list, .ab-sidebar__children { gap: 2px; }
+    .ab-sidebar__link, .ab-sidebar__branch { padding: 4.3px/*6px*/ 7.2px/*10px*/; gap: 7.2px/*10px*/; font-size: 10.7px/*13px*/; line-height: 14.8px/*20px*/; }
+    .ab-sidebar__link > svg, .ab-sidebar__branch > svg:first-child { width: 13.3px/*18px*/; height: 13.3px/*18px*/; }
+    .ab-sidebar__group--spaced { margin-top: 8.6px/*12px*/; }
+    .ab-sidebar__group-label { padding: 0 7.2px/*10px*/; font-size: 10.5px/*11px*/; }
+    .ab-sidebar__children { margin-left: 13.7px/*19px*/; padding-left: 7.2px/*10px*/; }
+    .ab-sidebar__footer { padding: 7.2px/*10px*/ 8.6px/*12px*/; }
+    .ab-sidebar__name { font-size: 10.7px/*13px*/; }
+    .ab-breadcrumbs__list { font-size: 10.7px/*13px*/; }
+    .icon-btn { width: 23.7px/*32px*/; height: 23.7px/*32px*/; }
+    .tt-h { background: var(--s3); }
+
+    button.ab-sidebar__branch { padding: 4.3px/*6px*/ 7.2px/*10px*/; gap: 7.2px/*10px*/; font-size: 10.7px/*13px*/; line-height: 14.8px/*20px*/; }
+
+    /* Tabla de permisos de un rol */
+    .t-cab { padding: 8.6px/*12px*/ 11.5px/*16px*/; }
+    .t-cab h2 { font-size: 12.3px/*15px*/; }
+    .t-cab .d { font-size: 10.7px/*13px*/; }
+    .tt-grupo { display: grid; align-items: center; gap: 8.6px/*12px*/; min-height: 28.1px/*38px*/; padding: 4.3px/*6px*/ 11.5px/*16px*/; background: var(--s2); border-bottom: 1px solid var(--borde); cursor: pointer; font-size: 10.7px/*13px*/; }
+    .tt-grupo .c1 { font-weight: 600; }
+    .tt-grupo input, .fila-perm input { width: 16px; height: 16px; margin: 0; accent-color: var(--marca); cursor: pointer; }
+    .fila-perm { cursor: pointer; }
+    .fila-perm.elegido { background: oklch(0.985 0.01 95); }
+    .tt-grupo .cnt-area { font-weight: 400; color: var(--t2); }
+    .fila-perm { min-height: 26.6px/*36px*/ !important; }
+    .tt-grupo { box-sizing: border-box; min-height: 29.6px/*40px*/; }
+
+    /* Etapa 9 (R10): opción apagada con su motivo debajo */
+    .menu-it.inact-off { align-items: flex-start; }
+    .menu-it.inact-off svg { color: var(--t3); margin-top: 2px; }
+    .menu-it .mot { display: flex; flex-direction: column; gap: 2px; }
+    .menu-it .mot small { font-size: 10.5px/*12.5px*/; color: var(--t3); }
+  </style>
+                                <style data-tema="c2">
+/* Común a las tres direcciones: marca con nombre, rótulos sin mayúsculas, sombras suaves. */
+.ab-sidebar__head { gap: 7.2px/*10px*/; border-bottom-color: transparent; }
+.brand { position: relative; background: linear-gradient(135deg, var(--marca) 0%, var(--marca-2) 100%); box-shadow: 0 2px 6px -1px var(--marca-sombra); }
+.brand::after { content: ""; position: absolute; inset: 8px; border-radius: 3px; border: 2.5px solid #fff; border-right-color: transparent; transform: rotate(-45deg); }
+.ab-sidebar__head::after { content: "ArquitecturaBase"; font-size: 11.5px/*14px*/; font-weight: 700; letter-spacing: -0.01em; color: var(--lado-t1); }
+.ab-sidebar__group-label { text-transform: none !important; letter-spacing: 0 !important; font-size: 10.5px/*12px*/ !important; font-weight: 600; color: var(--lado-t3) !important; }
+.scope { border-bottom-color: transparent !important; padding: 4.3px/*6px*/ 8.6px/*12px*/ 8.6px/*12px*/ !important; }
+.scope-name { color: var(--lado-t1) !important; }
+.scope-detail { color: var(--lado-t3) !important; }
+.ab-sidebar { background: var(--lado) !important; border-right-color: var(--lado-borde) !important; }
+.ab-sidebar__link, .ab-sidebar__branch { color: var(--lado-t2) !important; border-radius: 3px/*8px*/ !important; }
+.ab-sidebar__link:hover, .ab-sidebar__branch:hover { background: var(--lado-hover) !important; color: var(--lado-t1) !important; }
+.ab-sidebar__link--active, .ab-sidebar__link--active:hover { background: var(--lado-activo) !important; color: var(--lado-activo-t) !important; font-weight: 600 !important; }
+.ab-sidebar__children { border-left-color: var(--lado-borde) !important; }
+.ab-sidebar__footer { border-top-color: var(--lado-borde) !important; }
+.ab-sidebar__name { color: var(--lado-t1) !important; }
+.ab-sidebar__email { color: var(--lado-t3) !important; }
+.ab-sidebar__toggle { background: var(--lado) !important; border-color: var(--lado-borde) !important; color: var(--lado-t2) !important; }
+.avatar { background: linear-gradient(135deg, var(--marca) 0%, var(--marca-2) 100%); }
+.ab-topbar { background: var(--barra) !important; border-bottom-color: var(--borde) !important; }
+.banda-pag { background: var(--banda) !important; }
+.banda-pag h1 { letter-spacing: -0.015em; }
+.banda-pag .ico { background: var(--marca-t); color: var(--marca-tx); }
+.tarjeta, .fb { border-color: var(--borde) !important; box-shadow: var(--sombra) !important; }
+.tt-h, .tt-h.gris { background: var(--cab) !important; color: var(--t2) !important; }
+.tt-f:hover { background: var(--fila-hover) !important; }
+.b-pri { background: linear-gradient(180deg, var(--marca) 0%, var(--marca-h) 100%) !important; box-shadow: 0 1px 2px var(--marca-sombra), inset 0 1px 0 rgb(255 255 255 / 0.15); }
+.b-pri:hover { filter: brightness(1.05); }
+.pill-sel { background: #fff; }
+/* Administración: desplegable al pie del menú lateral. */
+.ab-sidebar__nav { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+.admin-grupo { margin-top: auto; padding-top: 5.8px/*8px*/; border-top: 1px solid var(--lado-borde); }
+.admin-grupo > .ab-sidebar__list > li > .ab-sidebar__branch { font-weight: 600; color: var(--lado-t1) !important; }
+.ab-sidebar__branch[aria-expanded="false"] .ab-sidebar__chevron { transform: rotate(-90deg); }
+.admin-grupo .ab-sidebar__children { margin-left: 7.2px/*10px*/ !important; padding-left: 5.8px/*8px*/ !important; }
+.admin-grupo .ab-sidebar__children .ab-sidebar__link, .admin-grupo .ab-sidebar__children .ab-sidebar__branch { padding-left: 5.8px/*8px*/ !important; padding-right: 5.8px/*8px*/ !important; }
+.admin-grupo .ab-sidebar__children .ab-sidebar__children { margin-left: 11.5px/*16px*/ !important; }
+
+.brand { flex-shrink: 0; }
+/* Panel de Administración: segundo panel al lado del menú lateral (escritorio), con el mismo estilo del menú. */
+.adm-panel { width: 232px; flex-shrink: 0; height: 100%; box-sizing: border-box; display: flex; flex-direction: column; background: oklch(0.902 0.04 95); border-right: 1px solid oklch(0.845 0.047 95); position: relative; z-index: 25; }
+.ab-root:not(.adm-abierto) .adm-panel { display: none; }
+.adm-cab { height: 38.5px/*52px*/; box-sizing: border-box; display: flex; align-items: center; padding: 0 11.5px/*16px*/; border-bottom: 1px solid oklch(0.845 0.047 95); }
+.adm-cab strong { font-size: 11.5px/*14px*/; font-weight: 700; color: var(--lado-t1); }
+.adm-cerrar { padding: 0; font-family: inherit; position: absolute; right: -10.1px/*14px*/; top: 47.4px/*64px*/; width: 20.7px/*28px*/; height: 20.7px/*28px*/; border-radius: 3px/*999px*/; display: inline-flex; align-items: center; justify-content: center; background: #fff; border: 1px solid var(--borde2); box-shadow: 0 1px 3px oklch(0.24 0.012 60 / 0.15); color: var(--t1); cursor: pointer; z-index: 30; }
+.adm-cerrar:hover { color: var(--marca); }
+.adm-panel .ab-sidebar__nav { padding: 8.6px/*12px*/ 5.8px/*8px*/; }
+.adm-panel .ab-sidebar__link, .adm-panel .ab-sidebar__branch { color: var(--lado-t2) !important; }
+.adm-panel .ab-sidebar__link:hover, .adm-panel .ab-sidebar__branch:hover { background: oklch(0.872 0.043 95) !important; color: var(--lado-t1) !important; }
+.adm-panel .ab-sidebar__link--active, .adm-panel .ab-sidebar__link--active:hover { background: #fff !important; color: var(--lado-activo-t) !important; box-shadow: 0 1px 2px oklch(0.24 0.012 60 / 0.08), 0 0 0 1px var(--borde); }
+.adm-panel .ab-sidebar__children { border-left-color: oklch(0.825 0.047 95) !important; }
+.adm-btn { cursor: pointer; user-select: none; width: 100%; border: 0; background: transparent; font-family: inherit; text-align: left; }
+.adm-btn .adm-flecha { margin-left: auto; transition: transform 0.15s; }
+.ab-root.adm-abierto .adm-btn { background: var(--lado-activo) !important; color: var(--lado-activo-t) !important; font-weight: 600 !important; box-shadow: 0 1px 2px oklch(0.24 0.012 60 / 0.08), 0 0 0 1px var(--borde); }
+.ab-root.adm-abierto .adm-btn .adm-flecha { transform: rotate(180deg); }
+.ab-root.adm-abierto .ab-sidebar__toggle { display: none; }
+/* Encabezados de tabla: si no entran, bajan de línea en vez de pisarse. */
+.tt-h { white-space: normal !important; line-height: 1.25; height: auto !important; min-height: 31.1px/*42px*/; padding-top: 2.9px/*4px*/ !important; padding-bottom: 2.9px/*4px*/ !important; }
+/* C · Cálido y suave: neutros tibios, verde pasto, bordes más redondos. */
+:root { --marca: oklch(0.48 0.115 140); --marca-2: oklch(0.66 0.15 128); --marca-h: oklch(0.43 0.115 140); --marca-t: oklch(0.955 0.035 130); --marca-tx: oklch(0.41 0.1 140); --marca-sombra: oklch(0.48 0.115 140 / 0.3);
+  --fondo: oklch(0.975 0.008 95); --s2: oklch(0.97 0.009 95); --s3: oklch(0.945 0.011 95); --borde: oklch(0.915 0.013 95); --borde2: oklch(0.84 0.018 95);
+  --t1: oklch(0.24 0.012 60); --t2: oklch(0.47 0.012 60); --t3: oklch(0.62 0.01 60);
+  --lado: oklch(0.965 0.01 95); --lado-borde: oklch(0.915 0.013 95); --lado-t1: var(--t1); --lado-t2: var(--t2); --lado-t3: var(--t3); --lado-hover: oklch(0.935 0.013 95); --lado-activo: #fff; --lado-activo-t: oklch(0.41 0.1 140);
+  --barra: oklch(0.965 0.01 95); --banda: #fff; --cab: oklch(0.97 0.009 95); --fila-hover: oklch(0.978 0.009 95); --sombra: 0 1px 2px oklch(0.24 0.012 60 / 0.05), 0 8px 24px -12px oklch(0.24 0.012 60 / 0.14); }
+.ab-sidebar__link--active { box-shadow: 0 1px 2px oklch(0.24 0.012 60 / 0.08), 0 0 0 1px var(--borde); }
+.ab-topbar { border-bottom-color: transparent !important; }
+.tarjeta, .fb { border-radius: 3px/*16px*/ !important; }
+.tarjeta > .tt-h:first-child { border-radius: 3px/*15px*/ 3px/*15px*/ 0 0 !important; }
+.ab-app-shell__main { background: var(--fondo); }
+.b { border-radius: 3px/*10px*/; }
+/* C2 · Cálido con marco paja (menú lateral y barra superior en un tono más marcado). */
+:root { --lado: oklch(0.922 0.036 95); --lado-borde: oklch(0.865 0.04 95); --lado-t1: oklch(0.24 0.015 60); --lado-t2: oklch(0.42 0.02 80); --lado-t3: oklch(0.55 0.018 60); --lado-hover: oklch(0.892 0.04 95); --lado-activo: #fff; --lado-activo-t: oklch(0.41 0.1 140);
+  --barra: oklch(0.922 0.036 95); --fondo: oklch(0.985 0.005 95); }
+.ab-topbar { border-bottom-color: var(--lado-borde) !important; }
+.ab-sidebar__head { border-bottom-color: var(--lado-borde) !important; }
+.um-btn:hover { background: var(--lado-hover) !important; }
+/* Filas alternadas: la segunda de cada par con un fondo arena suave. */
+.tarjeta > .tt-f:nth-child(odd) { background: oklch(0.968 0.015 95); }
+.tt-f:hover { background: oklch(0.955 0.03 130) !important; }
+
+  </style><!-- /tema -->
+  <style data-criterio="aplicado">
+/* Botones: 4 tipos y 2 tamaños (36 y 32); 44 solo en ingreso y registro. Esquinas de 8 (10 en los grandes). */
+.b { height: 26.6px/*36px*/ !important; padding: 0 10.1px/*14px*/ !important; border-radius: 3px/*8px*/ !important; font-size: 11.5px/*14px*/ !important; font-weight: 600 !important; gap: 4.3px/*6px*/ !important; }
+.b-sm { height: 23.7px/*32px*/ !important; padding: 0 8.6px/*12px*/ !important; font-size: 10.7px/*13px*/ !important; border-radius: 3px/*8px*/ !important; }
+.b-lg, .b.lg { height: 32.6px/*44px*/ !important; padding: 0 13px/*18px*/ !important; font-size: 12.3px/*15px*/ !important; border-radius: 3px/*10px*/ !important; }
+.b-sec { border-color: var(--borde2) !important; }
+.b-pel { background: #fff !important; border: 1px solid oklch(0.57 0.2 25 / 0.4) !important; color: oklch(0.52 0.19 25) !important; }
+.dlg-f .b-pel, .velo .b-pel { background: oklch(0.55 0.2 25) !important; border-color: oklch(0.55 0.2 25) !important; color: #fff !important; }
+.b-google { height: 32.6px/*44px*/ !important; border-radius: 3px/*10px*/ !important; border-color: var(--borde2) !important; }
+.kebab, .ico-btn { width: 23.7px/*32px*/ !important; height: 23.7px/*32px*/ !important; border-radius: 3px/*8px*/ !important; }
+/* Campos: 36 en la app; en ingreso y registro, a la altura de sus botones (44). El código, 44. */
+.in2 { height: 26.6px/*36px*/; border-radius: 3px/*8px*/ !important; border-color: var(--borde2) !important; font-size: 11.1px/*13.5px*/ !important; }
+.in2.lg { height: 32.6px/*44px*/ !important; font-size: 12.3px/*15px*/ !important; border-radius: 3px/*10px*/ !important; }
+textarea.in2 { height: auto; min-height: 84px; }
+.otp input { height: 32.6px/*44px*/ !important; border-radius: 3px/*8px*/ !important; }
+.et { font-size: 10.5px/*12.5px*/ !important; font-weight: 600 !important; color: var(--t2) !important; }
+.err2 { font-size: 10.5px/*12.5px*/ !important; }
+/* Encabezados con color: arena, sin mayúsculas, 40 de alto en tablas y 48 en diálogos. */
+.tt-h, .tt-h.gris { background: oklch(0.945 0.027 95) !important; border-bottom-color: oklch(0.89 0.031 95) !important; text-transform: none !important; letter-spacing: 0 !important; min-height: 29.6px/*40px*/ !important; height: 29.6px/*40px*/ !important; font-size: 10.7px/*13px*/ !important; }
+.tt-f { min-height: 29.6px/*40px*/ !important; font-size: 10.7px/*13px*/ !important; box-sizing: border-box !important; padding-top: 2.9px/*4px*/ !important; padding-bottom: 2.9px/*4px*/ !important; }
+.tt-h { box-sizing: border-box !important; }
+.dlg-h { background: oklch(0.945 0.027 95) !important; border-bottom-color: oklch(0.89 0.031 95) !important; padding-top: 8.6px/*12px*/ !important; padding-bottom: 8.6px/*12px*/ !important; }
+.dlg-h h2 { font-size: 12.3px/*15px*/ !important; font-weight: 600 !important; }
+.dlg-h p { display: none !important; }
+/* Estados: punto de color y palabra, sin fondo ni etiqueta. */
+.pill { background: transparent !important; padding: 0 !important; color: var(--t1) !important; font-size: 10.7px/*13px*/ !important; font-weight: 400 !important; }
+.pill::before { width: 8px !important; height: 8px !important; }
+.pill.ok::before { background: oklch(0.6 0.13 155) !important; }
+.pill.pend::before { background: oklch(0.62 0.12 240) !important; }
+.pill.alerta::before { background: oklch(0.72 0.15 70) !important; }
+.pill.mal::before { background: oklch(0.57 0.2 25) !important; }
+.pill.off { color: var(--t2) !important; }
+.pill.off::before { background: oklch(0.75 0.01 78) !important; }
+.rol, .rol.sis { background: transparent !important; padding: 0 !important; font-weight: 400 !important; color: var(--t1) !important; font-size: 10.7px/*13px*/ !important; }
+.roles { gap: 0 !important; }
+.roles .rol + .rol::before { content: ", "; }
+/* Sin etiquetas con fondo: el rótulo chico del panel de la marca queda como texto. */
+.kicker { background: transparent !important; padding: 0 !important; border: 0 !important; font-size: 10.7px/*13px*/ !important; font-weight: 600 !important; }
+/* Banda: al lado del título no va nada; estado y «De sistema» van en la segunda línea, separados por un punto medio. */
+.banda-pag .res { display: flex !important; align-items: center; flex-wrap: wrap; gap: 4.3px/*6px*/; }
+.banda-pag .res > :empty { display: none !important; }
+.banda-pag .res > * + *::before { content: "·"; color: var(--t3); margin-right: 4.3px/*6px*/; }
+.banda-pag .res .rol { color: var(--t2) !important; }
+.banda-pag .res .sucio { color: oklch(0.5 0.12 70) !important; font-weight: 500 !important; }
+/* La cantidad de una pestaña, en gris y sin fondo. */
+.cnt { background: transparent !important; padding: 0 !important; color: var(--t3) !important; font-weight: 500 !important; }
+/* El error de una acción directa: borde rojo y ✕; no se va solo. */
+.toast2.mal { border-color: oklch(0.57 0.2 25 / 0.45) !important; }
+/* Formularios: cada título de sección es un encabezado arena a lo ancho de la caja (el «colorcito»), sin líneas sueltas. */
+.hoja { overflow: hidden; }
+.hoja:has(> h2:first-child) { padding-top: 0 !important; }
+.hoja .campo2.ancho > input.in2 { max-width: 420px; }
+.hoja h2 { grid-column: 1 / -1; margin: 0 -14.4px/*20px*/ !important; padding: 7.2px/*10px*/ 14.4px/*20px*/ !important; background: oklch(0.945 0.027 95); border-bottom: 1px solid oklch(0.89 0.031 95); font-size: 11.1px/*13.5px*/ !important; font-weight: 600 !important; }
+.hoja h2:not(:first-child) { border-top: 1px solid oklch(0.89 0.031 95); margin-top: 4.3px/*6px*/ !important; }
+.hoja .linea { display: none !important; }
+  </style>
+<style data-vuelta="1002-Roles">
+.tt-f .dos { display: flex; flex-direction: column; gap: 1px; line-height: 1.35; min-width: 0; }
+.tt-f .dos > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tt-f .dos .n2 { font-size: 10.5px/*12px*/; color: var(--t3); }
+.tt-f .dos .c1 { font-weight: 500; }
+.tt-f.o-alto { min-height: 38.5px/*52px*/ !important; }
+</style>
+<style data-regla="menus-con-lineas">
+.menu[role="menu"] { padding: 0; overflow: hidden; }
+.menu[role="menu"] .menu-it { border-radius: 0; min-height: 31.1px/*42px*/; padding: 5.8px/*8px*/ 10.1px/*14px*/; border-top: 1px solid var(--borde); margin-top: -1px; }
+.menu[role="menu"] .menu-sep { height: 6px; margin: 0; background: var(--s2); border-top: 1px solid var(--borde); }
+.o-menu { padding: 0; overflow: hidden; }
+.o-menu .it { border-radius: 0; }
+.o-menu .it + .it { border-top: 1px solid var(--borde); }
+</style>
+<style data-regla="flechita-blanca">
+.ab-sidebar__toggle { background: #fff !important; border-color: var(--lado-borde) !important; color: var(--t2) !important; }
+</style>
+<style data-regla="lineas-menu-lateral">
+.ab-sidebar__list > li + li, .ab-sidebar__children > li + li { border-top: 1px solid var(--lado-borde); padding-top: 2px; }
+.w-nav > .w-ln, .w-hijos > .w-ln, .w-abajo > .w-ln { position: relative; }
+.w-nav > .w-ln + .w-ln::before, .w-nav > .w-hijos + .w-ln::before, .w-hijos > .w-ln + .w-ln::before, .w-abajo > .w-ln + .w-ln::before {
+  content: ""; position: absolute; left: 0; right: 0; top: -2px; height: 1px; background: oklch(0.865 0.04 95); }
+</style>
+<style data-vuelta="1004-panel-admin">
+.adm-cab { padding: 0 10.1px/*14px*/; }
+.adm-panel .ab-sidebar__nav { padding: 7.2px/*10px*/ 5.8px/*8px*/; }
+.adm-panel .ab-sidebar__list, .adm-panel .ab-sidebar__children { display: flex; flex-direction: column; gap: 2px; }
+.adm-panel .ab-sidebar__list > li, .adm-panel .ab-sidebar__children > li { position: relative; margin: 0; border-top: 0 !important; padding-top: 0 !important; }
+.adm-panel .ab-sidebar__list > li + li::before, .adm-panel .ab-sidebar__children > li + li::before { content: ""; position: absolute; left: 0; right: 0; top: -2px; height: 1px; background: oklch(0.865 0.04 95); }
+.adm-panel .ab-sidebar__link, .adm-panel .ab-sidebar__branch { display: flex; align-items: center; gap: 7.2px/*10px*/; width: 100%; height: 23.7px/*32px*/; box-sizing: border-box; padding: 0 7.2px/*10px*/ !important; font-size: 10.7px/*13px*/; font-weight: 400 !important; text-decoration: none; }
+.adm-panel .ab-sidebar__link--active { font-weight: 600 !important; }
+.adm-panel .ab-sidebar__list > li > .ab-sidebar__branch { font-weight: 600 !important; color: var(--t1) !important; }
+.adm-panel .ab-sidebar__chevron { margin-left: auto; width: 14px; height: 14px; color: var(--t3); flex-shrink: 0; }
+.adm-panel .ab-cerrado .ab-sidebar__chevron { transform: rotate(-90deg); }
+.adm-panel .ab-sidebar__children { margin: 2px 0 0 13px/*18px*/ !important; padding-left: 7.2px/*10px*/ !important; border-left: 1px solid oklch(0.815 0.052 95) !important; }
+</style>
+<style data-vuelta="1004-marco-criterio">
+.ab-sidebar__head { height: 39.2px/*53px*/; box-sizing: border-box; padding: 0 10.1px/*14px*/ !important; }
+.scope { padding: 8.6px/*12px*/ 10.1px/*14px*/ !important; border-bottom: 0 !important; }
+.scope-name { font-size: 11.5px/*14px*/ !important; font-weight: 700 !important; line-height: 14px/*18.9px*/ !important; color: var(--t1) !important; }
+.scope-detail { margin: 0 !important; font-size: 10.5px/*12.5px*/ !important; line-height: 14px/*18.9px*/ !important; color: var(--t3) !important; }
+.ab-sidebar > .ab-sidebar__nav { padding: 2.9px/*4px*/ 5.8px/*8px*/ 0 !important; }
+.ab-sidebar .admin-grupo { margin: auto -5.8px/*8px*/ 0 !important; padding: 5.8px/*8px*/ !important; border-top: 1px solid oklch(0.865 0.04 95) !important; }
+.ab-sidebar .ab-sidebar__list { display: flex; flex-direction: column; gap: 2px; }
+.ab-sidebar .ab-sidebar__list > li { position: relative; margin: 0; border-top: 0 !important; padding-top: 0 !important; }
+.ab-sidebar .ab-sidebar__list > li + li::before { content: ""; position: absolute; left: 0; right: 0; top: -2px; height: 1px; background: oklch(0.865 0.04 95); }
+.ab-sidebar .ab-sidebar__link { height: 23.7px/*32px*/; box-sizing: border-box; padding: 0 7.2px/*10px*/ !important; font-size: 10.7px/*13px*/; font-weight: 400 !important; }
+.ab-sidebar .ab-sidebar__link-label { font-weight: inherit !important; }
+.ab-sidebar .ab-sidebar__link--active, .ab-root.adm-abierto .adm-btn, .ab-root.wa-abierto .wa-btn { font-weight: 600 !important; }
+.ab-sidebar__footer { padding: 7.2px/*10px*/ 10.1px/*14px*/ !important; }
+.ab-sidebar__user { gap: 7.2px/*10px*/ !important; }
+.ab-sidebar__user .avatar { width: 23.7px/*32px*/; height: 23.7px/*32px*/; font-size: 10.7px/*13px*/; }
+.ab-sidebar__name { font-size: 10.7px/*13px*/ !important; font-weight: 700 !important; line-height: 1.3 !important; }
+.ab-sidebar__email { font-size: 10.5px/*12px*/ !important; line-height: 1.3 !important; color: var(--t3) !important; }
+.ab-breadcrumbs__list, .ab-breadcrumbs__item, .ab-breadcrumbs__link, .ab-breadcrumbs__separator { font-size: 10.7px/*13px*/ !important; font-weight: 400 !important; color: var(--t2) !important; }
+.ab-topbar .um-btn .avatar { width: 23.7px/*32px*/; height: 23.7px/*32px*/; font-size: 10.5px/*12px*/; }
+</style>
+<style data-vuelta="1004-buscador-36">
+.fb-bus { flex: 0 1 360px; max-width: 360px; }
+.fb-bus input { height: 26.6px/*36px*/; padding-left: 25.9px/*36px*/; border-radius: 3px/*8px*/; font-size: 10.7px/*13px*/; }
+.fb-bus svg { left: 8.6px/*12px*/; width: 16px; height: 16px; }
+</style>
+<style data-vuelta="1004-dialogos-r2b">
+.dlg-b { padding: 14.4px/*20px*/; gap: 10.1px/*14px*/; }
+</style>
+<style data-vuelta="1004-alineacion-app">
+.in2.mal { border-color: var(--peligro) !important; }
+</style>
+<style data-vuelta="1004-piezas-comunes">
+.banda-pag { height: 47.4px/*64px*/ !important; min-height: 0 !important; padding-top: 0 !important; padding-bottom: 0 !important; box-sizing: border-box !important; }
+.ab-breadcrumbs__list { gap: 2.9px/*4px*/ !important; }
+.dlg { border-radius: 3px/*12px*/ !important; }
+.dlg-h { min-height: 35.5px/*48px*/ !important; box-sizing: border-box !important; padding: 0 5.8px/*8px*/ 0 14.4px/*20px*/ !important; align-items: center !important; }
+.dlg-x { width: 23.7px/*32px*/ !important; height: 23.7px/*32px*/ !important; color: var(--t2) !important; }
+.dlg-x svg { width: 16px !important; height: 16px !important; }
+.tarjeta, .fb { border-radius: 3px/*12px*/ !important; box-shadow: none !important; }
+.tarjeta > .tt-h:first-child { border-radius: 3px/*11px*/ 3px/*11px*/ 0 0 !important; }
+</style>
+<style data-vuelta="1004-e12-ajustes"></style>
+<style data-campana="1">
+.w-cmp-env { position: relative; display: inline-flex; margin-left: auto; margin-right: 4.3px/*6px*/; }
+.w-campana { position: relative; width: 28.1px/*38px*/; height: 28.1px/*38px*/; border-radius: 3px/*10px*/; display: inline-flex; align-items: center; justify-content: center; color: var(--t2); text-decoration: none; }
+.w-campana:hover, .w-campana.on { background: oklch(0.24 0.014 78 / 0.06); color: var(--t1); }
+.w-campana .n { position: absolute; top: 2px; right: 1px; min-width: 13.3px/*18px*/; height: 13.3px/*18px*/; padding: 0 3.6px/*5px*/; box-sizing: border-box; border-radius: 3px/*9px*/; background: var(--marca); color: #fff; font-size: 10.5px/*11px*/; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; border: 2px solid oklch(0.95 0.027 95); }
+.w-cmp-env + .w-umd, .w-cmp-env + .envoltura { margin-left: 0 !important; }
+.cmp-lista { position: absolute; z-index: 40; top: calc(100% + 5.9px/*8px*/); right: 0; width: 420px; background: #fff; border: 1px solid var(--borde); border-radius: 3px/*12px*/; box-shadow: 0 16px 40px oklch(0.24 0.014 78 / 0.18); overflow: hidden; text-align: left; }
+.cmp-cab { display: flex; align-items: center; justify-content: space-between; padding: 8.6px/*12px*/ 11.5px/*16px*/; border-bottom: 1px solid var(--borde); font-size: 12.3px/*15px*/; font-weight: 700; color: var(--t1); }
+.cmp-cab span { font-size: 10.7px/*13px*/; font-weight: 500; color: var(--t3); }
+.cmp-it { display: flex; align-items: flex-start; gap: 8.6px/*12px*/; padding: 8.6px/*12px*/ 11.5px/*16px*/; text-decoration: none; color: var(--t1); }
+.cmp-it + .cmp-it { border-top: 1px solid var(--borde); }
+.cmp-it:hover { background: var(--s2); }
+.cmp-ic { width: 23.7px/*32px*/; height: 23.7px/*32px*/; border-radius: 3px/*9px*/; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; background: var(--s2); color: var(--t2); }
+.cmp-ic.fallo { background: var(--peligro-t); color: oklch(0.52 0.19 25); }
+.cmp-ic.espera { background: oklch(0.95 0.06 85); color: oklch(0.45 0.1 70); }
+.cmp-ic.llego { background: var(--marca-t); color: var(--marca-tx); }
+.cmp-tx { display: flex; flex-direction: column; gap: 2px; min-width: 0; font-size: 11.5px/*14px*/; line-height: 1.35; }
+.cmp-tx small { font-size: 10.5px/*12.5px*/; color: var(--t3); }
+.cmp-vacia { padding: 20.2px/*28px*/ 11.5px/*16px*/; text-align: center; font-size: 11.5px/*14px*/; color: var(--t2); }
+</style>
+<style data-b0="org">
+.tt-h .ord { margin-left: 2.9px/*4px*/; font-size: 10.5px/*10px*/; color: var(--t2); }
+.tt-f > .c2b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--t2); }
+</style>
+<style data-t10="nucleo">
+/* 161 · El foco arranca en «Cancelar», para que un Enter apurado no confirme lo que no se leyó. */
+:root .dlg-f .t10n-foco, :root .df .t10n-foco { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--marca) !important; }
+</style>
+<style data-mod="modulos">
+
+/* Módulos y suscripciones (ADR 0069). La (i) y su tooltip; abierta, para verla en el tablero (211). */
+.mod-i { position: relative; display: inline-flex; align-items: center; margin-left: 2.9px/*4px*/; color: var(--t3); cursor: help; vertical-align: -2px; }
+.mod-tip { position: absolute; z-index: 60; left: -8.6px/*12px*/; top: calc(100% + 5.9px/*8px*/); width: max-content; max-width: 300px; padding: 5px/*7px*/ 7.2px/*10px*/; border-radius: 3px/*6px*/; background: oklch(0.27 0.012 60); color: #fff; font-size: 10.5px/*12.5px*/; font-weight: 400; line-height: 1.4; white-space: normal; text-align: left; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); }
+.mod-tip::before { content: ""; position: absolute; left: 10.1px/*14px*/; bottom: 100%; border: 6px solid transparent; border-bottom-color: oklch(0.27 0.012 60); }
+.mod-tip.arriba { top: auto; bottom: calc(100% + 5.9px/*8px*/); }
+.mod-tip.arriba::before { bottom: auto; top: 100%; border-bottom-color: transparent; border-top-color: oklch(0.27 0.012 60); }
+.mod-tip.der { left: auto; right: -8.6px/*12px*/; }
+.mod-tip.der::before { left: auto; right: 10.1px/*14px*/; }
+.mod-apag { position: relative; display: inline-flex; }
+
+/* Los avisos según su tipo (210): blancos, con el filo de 3 px y el ícono del color de su tipo. */
+.mod-av { --mod-tipo: var(--t2); display: flex; align-items: flex-start; gap: 7.2px/*10px*/; padding: 7.2px/*10px*/ 8.6px/*12px*/; border: 1px solid var(--borde2); border-left: 3px solid var(--mod-tipo); border-radius: 3px; background: #fff; color: var(--t1); font-size: 10.7px/*13px*/; line-height: 1.45; }
+.mod-av > svg { flex: none; margin-top: 1px; color: var(--mod-tipo); }
+.mod-av .tx { flex: 1; min-width: 0; }
+.mod-av.aten { --mod-tipo: oklch(0.7 0.15 70); }
+.mod-av.ok { --mod-tipo: oklch(0.55 0.13 155); }
+.mod-av.mal { --mod-tipo: oklch(0.55 0.2 25); }
+.mod-av .acc { flex: none; display: flex; gap: 5.8px/*8px*/; align-items: center; }
+
+/* El aro: lo que carga y el botón que trabaja (115 y 160). */
+.mod-aro { display: inline-block; width: 14px; height: 14px; box-sizing: border-box; margin-right: 4.3px/*6px*/; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; vertical-align: -2px; animation: mod-girar 0.8s linear infinite; }
+.mod-aro.grande { width: 16.3px/*22px*/; height: 16.3px/*22px*/; margin: 0; border-width: 2.5px; border-color: oklch(0.89 0.031 95); border-top-color: var(--marca); }
+@keyframes mod-girar { to { transform: rotate(360deg); } }
+
+/* La compu. La primera carga de un listado: el encabezado y el aro en el alto de ocho filas, sin filas esqueleto (160). */
+.mod-carga { height: 320px; display: flex; align-items: center; justify-content: center; }
+.mod-bloque { display: flex; flex-direction: column; align-items: center; gap: 7.2px/*10px*/; padding: 23px/*32px*/ 11.5px/*16px*/; text-align: center; font-size: 11.5px/*14px*/; }
+.mod-bloque strong { font-weight: 600; color: var(--t1); }
+.mod-centro { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8.6px/*12px*/; text-align: center; }
+.mod-centro .circ { display: inline-flex; width: 38.5px/*52px*/; height: 38.5px/*52px*/; align-items: center; justify-content: center; border-radius: 3px; background: var(--s2, oklch(0.965 0.012 95)); color: var(--t2); }
+.mod-centro h2 { margin: 0; font-size: 14.8px/*18px*/; font-weight: 600; color: var(--t1); }
+.mod-pagina { position: relative; }
+.mod-espera { display: flex; flex-direction: column; align-items: center; gap: 10.1px/*14px*/; padding: 51.8px/*72px*/ 11.5px/*16px*/; text-align: center; }
+.mod-espera h2 { margin: 0; font-size: 14.8px/*18px*/; font-weight: 600; color: var(--t1); }
+
+/* Las tablas de la etapa: un dato por columna (206), con la columna ordenada marcada (264). */
+.tt-h .ord { margin-left: 2.9px/*4px*/; font-size: 10.5px/*10px*/; }
+.tt-f .mod-c { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tt-f .mod-c.t2 { color: var(--t2); }
+.tt-f .mod-c.t3 { color: var(--t3); }
+.tt-f.mod-grupo { background: oklch(0.975 0.006 95) !important; font-weight: 600; }
+.tt-f.mod-sub > span:first-child { padding-left: 20.2px/*28px*/; }
+.tt-f .mod-nombre { color: var(--t1); font-weight: 600; text-decoration: none; }
+.tt-f.mod-marcada { box-shadow: inset 3px 0 0 var(--marca); }
+.tarjeta .envoltura { position: relative; }
+.mod-menu { position: absolute; z-index: 50; top: calc(100% + 3px/*4px*/); right: 0; min-width: 220px; }
+.mod-menu .menu-it { display: flex; align-items: center; gap: 5.8px/*8px*/; width: 100%; }
+.mod-menu .menu-it svg { color: var(--t3); flex: none; }
+.mod-menu .menu-it.pel svg { color: inherit; }
+.mod-menu .menu-it.apagado { position: relative; color: var(--t3); cursor: default; }
+.mod-menu .menu-it .mod-tip { left: 5.8px/*8px*/; }
+
+/* Las zonas de una página: el encabezado con su título y, a la derecha, solo su acción (145). */
+.mod-zonas { display: flex; flex-direction: column; gap: 11.5px/*16px*/; }
+.mod-zona { background: #fff; border: 1px solid var(--borde); border-radius: 3px; }
+.mod-zona > .cab { display: flex; align-items: center; gap: 8.6px/*12px*/; min-height: 32.6px/*44px*/; padding: 0 11.5px/*16px*/; border-bottom: 1px solid var(--borde); background: oklch(0.945 0.027 95); border-radius: 3px 3px 0 0; }
+.mod-zona > .cab h2 { margin: 0 auto 0 0; font-size: 11.5px/*14px*/; font-weight: 600; color: var(--t1); }
+.mod-zona > .cuerpo { padding: 11.5px/*16px*/; }
+.mod-zona > .cuerpo.sin { padding: 0; }
+.mod-zona > .cuerpo.sin .tarjeta { border: 0; border-radius: 0; }
+.mod-zona > .campos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10.1px/*14px*/ 14.4px/*20px*/; padding: 11.5px/*16px*/; }
+.mod-zona .ancho { grid-column: 1 / -1; }
+
+/* Lo que se lee, en su grilla (138): el rótulo y el valor, cada uno en su columna. */
+.mod-dl { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 7.2px/*10px*/ 11.5px/*16px*/; font-size: 11.5px/*14px*/; }
+.mod-dl.dos { grid-template-columns: 200px minmax(0, 1fr) 200px minmax(0, 1fr); }
+.mod-dl .k { color: var(--t2); }
+.mod-dl .v { color: var(--t1); min-width: 0; overflow-wrap: anywhere; }
+.velo .mod-dl { grid-template-columns: 170px minmax(0, 1fr); font-size: 11.1px/*13.5px*/; }
+
+/* La tarjeta de Mercado Pago: sus campos los dibuja MercadoPago.js, con la forma de los nuestros. */
+.mod-mp { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10.1px/*14px*/ 14.4px/*20px*/; }
+.mod-mp .in2 { display: flex; align-items: center; justify-content: space-between; text-align: left; color: var(--t1); }
+.mod-mp .in2.vacio { color: var(--t3); }
+.mod-mp .in2.mal { border-color: oklch(0.57 0.2 25 / 0.7); }
+.mod-mp .err { display: block; margin-top: 3.6px/*5px*/; color: oklch(0.52 0.19 25); font-size: 10.5px/*12.5px*/; }
+.mod-acepto { display: flex; align-items: flex-start; gap: 7.2px/*10px*/; font-size: 11.5px/*14px*/; line-height: 1.45; color: var(--t1); }
+.mod-acepto input { width: 16px; height: 16px; margin: 2px 0 0; flex: none; accent-color: var(--marca); }
+.mod-clave { display: flex; align-items: center; gap: 8.6px/*12px*/; }
+.mod-clave .val { flex: 1; font-family: ui-monospace, Consolas, monospace; letter-spacing: 0.02em; }
+.mod-clave .val.vacio { font-family: inherit; color: var(--t3); }
+.mod-url { display: flex; align-items: center; gap: 5.8px/*8px*/; }
+.mod-url code { flex: 1; min-width: 0; padding: 0 7.2px/*10px*/; height: 26.6px/*36px*/; display: inline-flex; align-items: center; border: 1px solid var(--borde); border-radius: 3px; background: var(--s3); font-size: 10.7px/*13px*/; color: var(--t1); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+/* Los plazos (270): cada uno con su (i), su mínimo y su máximo. */
+.mod-plazos { font-size: 11.5px/*14px*/; }
+.mod-plazos .f { display: grid; grid-template-columns: minmax(0, 1fr) 150px 110px 110px; align-items: center; gap: 0 11.5px/*16px*/; min-height: 38.5px/*52px*/; padding: 0 11.5px/*16px*/; border-top: 1px solid var(--borde); }
+.mod-plazos .f.h { min-height: 29.6px/*40px*/; border-top: 0; background: oklch(0.945 0.027 95); color: var(--t2); font-weight: 600; font-size: 10.7px/*13px*/; }
+.mod-plazos .num { text-align: right; }
+.mod-plazos .in2 { width: 100%; }
+.mod-plazos .err { grid-column: 2 / -1; padding-bottom: 5.8px/*8px*/; color: oklch(0.52 0.19 25); font-size: 10.5px/*12.5px*/; }
+.mod-plazos .in2.mal { border-color: oklch(0.57 0.2 25 / 0.7); }
+
+/* Los diálogos de la etapa. */
+.velo .dlg .dlg-b .mod-av, .velo .dlg .dlg-b .mod-dl, .velo .dlg .dlg-b .mod-acepto { grid-column: 1 / -1; }
+.velo .dlg.medio { width: 560px; }
+.velo .b[aria-disabled="true"] { opacity: 0.55; cursor: default; }
+.mod-btn-apag { position: relative; display: inline-flex; }
+.mod-btn-apag .b { opacity: 0.55; cursor: default; }
+.mod-btn-apag .mod-tip { left: auto; right: 0; }
+.mod-btn-apag .mod-tip::before { left: auto; right: 13px/*18px*/; }
+.mod-campo-err { display: block; margin-top: 3.6px/*5px*/; color: oklch(0.52 0.19 25); font-size: 10.5px/*12.5px*/; }
+.in2.mal { border-color: oklch(0.57 0.2 25 / 0.7) !important; }
+.mod-pre { display: flex; align-items: center; }
+.mod-pre .pf { padding: 0 0 0 7.2px/*10px*/; color: var(--t2); }
+.mod-pre .in2 { border: 0 !important; box-shadow: none !important; flex: 1; }
+.mod-prebox { display: flex; align-items: center; border: 1px solid var(--borde2); border-radius: 3px; background: #fff; }
+.mod-prebox .uni { padding: 0 7.2px/*10px*/; color: var(--t2); white-space: nowrap; }
+.mod-prebox .in2 { border: 0 !important; flex: 1; min-width: 0; }
+.mod-lista { position: absolute; z-index: 60; left: 0; right: 0; top: calc(100% + 3px/*4px*/); padding: 2.9px/*4px*/ 0; border: 1px solid var(--borde2); border-radius: 3px; background: #fff; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); }
+.mod-lista .op { position: relative; display: flex; align-items: center; gap: 7.2px/*10px*/; min-height: 26.6px/*36px*/; padding: 0 8.6px/*12px*/; font-size: 11.5px/*14px*/; color: var(--t1); border-top: 1px solid var(--borde); }
+.mod-lista .op:first-child { border-top: 0; }
+.mod-lista .op .tl { margin-left: auto; color: var(--marca-tx); display: inline-flex; }
+.mod-lista .op.sel { font-weight: 600; box-shadow: inset 2px 0 0 var(--marca); }
+.mod-lista .op.apag { color: var(--t3); cursor: default; }
+.mod-lista .op .mod-tip { left: 28.8px/*40px*/; }
+.campo2.envoltura { position: relative; }
+.velo .mod-lista { position: static; margin-top: 2.9px/*4px*/; box-shadow: none; }
+
+/* «Confirmá que sos vos», como en Configuración de Plataforma. */
+.ra .otp { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5.8px/*8px*/; }
+.ra .otp input { height: 32.6px/*44px*/; width: 100%; box-sizing: border-box; padding: 0; border: 1px solid var(--borde2); border-radius: 3px; text-align: center; font-size: 16.4px/*20px*/; font-weight: 600; color: var(--t1); background: #fff; }
+.ra .ra-rec { justify-self: start; font-size: 11.1px/*13.5px*/; margin-top: 2.9px/*4px*/; }
+
+/* «Propuesta del asistente» junto al título (regla 9 de la 0068), como en los tableros `*-Propuesta`. */
+.mod-dh { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2.9px/*4px*/ 8.6px/*12px*/; }
+.mod-prop { display: inline-flex; align-items: center; gap: 3.6px/*5px*/; color: var(--marca-tx); font-size: 10.7px/*13px*/; font-weight: 500; white-space: nowrap; }
+.mod-prop svg { width: 14px; height: 14px; flex: none; }
+
+/* El aviso de abajo: lo que salió bien, abajo a la derecha (210). */
+.mod-toast { position: absolute; z-index: 45; right: 17.3px/*24px*/; bottom: 17.8px/*24px*/; display: flex; align-items: center; gap: 7.2px/*10px*/; max-width: 460px; padding: 7.2px/*10px*/ 10.1px/*14px*/; border: 1px solid var(--borde2); border-left: 3px solid oklch(0.55 0.13 155); border-radius: 3px; background: #fff; color: var(--t1); font-size: 10.7px/*13px*/; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); }
+.mod-toast > svg:first-child { color: oklch(0.55 0.13 155); flex: none; }
+.mod-toast .x { display: inline-flex; margin-left: 4.3px/*6px*/; color: var(--t3); }
+
+/* Las pestañas de la ficha de una organización, sin cantidades (145). */
+.tabs2 .tab2 .cnt { display: none; }
+.mod-tabpanel { margin-top: 11.5px/*16px*/; display: flex; flex-direction: column; gap: 11.5px/*16px*/; }
+
+/* Los correos de los avisos. */
+.mod-mail-dl { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 4.3px/*6px*/ 10.1px/*14px*/; margin: 10.1px/*14px*/ 0; padding: 8.6px/*12px*/ 10.1px/*14px*/; border: 1px solid var(--borde); border-radius: 3px; font-size: 11.5px/*14px*/; }
+.mod-mail-dl .k { color: var(--t2); }
+</style>
+<style data-t10="piezas">
+/* 173 · La marca es el nombre, sin cuadrado ni degradé; la banda, sin ícono de la sección. */
+:root .brand, :root .w-br, :root .app .sb .br, :root .lat .sb .brand2 { display: none !important; }
+:root .ab-sidebar__head { gap: 0 !important; }
+:root .banda-pag .ico, :root .w-bnd .ic, :root .bnd .ic, :root .carril .quien .ico { display: none !important; }
+:root .ini-ico, :root .lp-ico { background: transparent !important; width: auto !important; height: auto !important; }
+
+/* 173 · El avatar, un cuadrado con la inicial, sin degradé: chico (24) en la barra de arriba y en el pie del menú. */
+:root .avatar, :root .w-av, :root .ap-nav .yo, :root .av:not(.z-f), :root .org-av, :root .mail-de .logo { background: var(--marca) !important; color: #fff; border-radius: 3px/*6px*/ !important; }
+:root .avatar.gris { background: var(--s3) !important; color: var(--t2) !important; }
+:root .w-av.g { background: oklch(0.9 0.015 95) !important; color: var(--t2) !important; }
+:root .ab-topbar .um-btn .avatar, :root .ab-sidebar__user .avatar, :root .ab-sidebar__footer .avatar, :root .w-us .w-av, :root .w-umd .um .w-av { width: 17.8px/*24px*/ !important; height: 17.8px/*24px*/ !important; font-size: 10.5px/*12px*/ !important; border-radius: 3px/*5px*/ !important; }
+:root .menu-cab .avatar, :root .w-mn-cab .w-av, :root .ap .w-av, :root .ap-cbar .w-av { border-radius: 3px/*8px*/ !important; }
+:root .ap-yo .w-av, :root .ap-perfil .w-av, :root .org-av { border-radius: 3px/*12px*/ !important; }
+
+/* 173 · El activo del menú: una barra de 2 px de la marca, sin pastilla blanca ni sombra. */
+:root .ab-sidebar__link--active, :root .ab-sidebar__link--active:hover, :root .ab-root.adm-abierto .adm-btn, :root .ab-root.wa-abierto .wa-btn, :root .w-ln.on, :root .app .sb .ln.on, :root .lat .sb .ln.on {
+  background: var(--lado-hover) !important; color: var(--marca-tx) !important; font-weight: 600 !important; box-shadow: inset 2px 0 0 var(--marca) !important; border-radius: 0 3px/*8px*/ 3px/*8px*/ 0 !important; }
+:root .adm-panel .ab-sidebar__link--active, :root .adm-panel .ab-sidebar__link--active:hover, :root .w-panel .w-ln.on, :root .lat .panel .ln.on {
+  background: oklch(0.872 0.043 95) !important; color: var(--marca-tx) !important; font-weight: 600 !important; box-shadow: inset 2px 0 0 var(--marca) !important; border-radius: 0 3px/*8px*/ 3px/*8px*/ 0 !important; }
+
+/* 173 · El principal, sólido: sin degradé ni sombra. */
+:root .b-pri, :root .cb-pri { background: var(--marca) !important; box-shadow: none !important; filter: none !important; }
+:root .b-pri:hover, :root .cb-pri:hover, :root .cb-pri.h { background: var(--marca-h) !important; filter: none !important; }
+:root .ab-btn.ab-btn--outline:not(:focus-visible) { box-shadow: none !important; }
+
+/* 173 · Los filtros y las etiquetas, con el radio de un control; los contadores, como texto. */
+:root .pill-sel, :root .filtros .pil, :root .w-pil, :root .caja.fil .pi, :root .flt .pil, :root .fb2 .pil, :root .tb .pie .pil, :root .tel .pills span, :root .ap-chips2 span, :root .ap-flt .ch, :root .pl-chip, :root .flt.r311 .chip, :root .as-chip, :root .ap-pill { border-radius: 3px/*8px*/ !important; }
+:root .pill, :root .rol, :root .pl-marca, :root .ap-fila .pl-marca, :root .auth-marca .kicker, :root .lp-kicker { border-radius: 3px/*6px*/ !important; }
+:root .tab2 .cnt, :root .ini .t-cab .cnt { background: transparent !important; padding: 0 !important; border-radius: 0 !important; color: var(--t3) !important; }
+:root .w-panel .w-ln .cnt, :root .fm-cnt, :root .ap-fila .fm-cnt, :root .ap-it .ap-cnt { background: transparent !important; padding: 0 !important; min-width: 0 !important; height: auto !important; border-radius: 0 !important; color: var(--marca-tx) !important; font-weight: 600 !important; }
+:root .w-campana .n, :root .ap-campana .n, :root .c-campana .n, :root .cmp .n, :root .c-bad, :root .pl-fil .n, :root .flt.r311 .pil .n { border-radius: 3px/*5px*/ !important; }
+
+/* 143 y 144 · Las opciones de un filtro no dicen cuántas filas traen, y la barra no lleva el total: va al pie. */
+:root .menu-cnt, :root .f-mn .cnt, :root .mf-ck small, :root .mf .esq-n, :root .tot { display: none !important; }
+
+/* 137 · Una línea fina entre columnas, del tono de la que separa las filas, en el encabezado y en el cuerpo. */
+:root .tt-h, :root .tt-f, :root .w-th:not(.k-desp *), :root .w-tr:not(.k-desp *) { position: relative; }
+/* Las filas de una tabla con columnas fijas conservan su relleno, del que sale dónde queda cada columna fija (ver TABLA_FIJA). */
+:root .k-desp .w-th, :root .k-desp .w-tr { padding-left: 16px !important; padding-right: 8px !important; }
+:root .tt-f > * + *:not(.ab-sidebar__chevron):not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.circ):not(.ck):not(.cmp-ic):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.mod-carga):not(.mod-centro):not(.n):not(.quitar):not(.tl):not(.todos):not(.velo):not(.w-campana):not(.w-cmp-env):not(.wa-cnt):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__chevron):not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.circ):not(.ck):not(.cmp-ic):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.mod-carga):not(.mod-centro):not(.n):not(.quitar):not(.tl):not(.todos):not(.velo):not(.w-campana):not(.w-cmp-env):not(.wa-cnt):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.915 0.013 95 / 0.8); pointer-events: none; }
+:root .tt-h > * + *:not(.ab-sidebar__chevron):not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.circ):not(.ck):not(.cmp-ic):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.mod-carga):not(.mod-centro):not(.n):not(.quitar):not(.tl):not(.todos):not(.velo):not(.w-campana):not(.w-cmp-env):not(.wa-cnt):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__chevron):not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.circ):not(.ck):not(.cmp-ic):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.mod-carga):not(.mod-centro):not(.n):not(.quitar):not(.tl):not(.todos):not(.velo):not(.w-campana):not(.w-cmp-env):not(.wa-cnt):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.89 0.031 95); pointer-events: none; }
+:root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__chevron):not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.circ):not(.ck):not(.cmp-ic):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.mod-carga):not(.mod-centro):not(.n):not(.quitar):not(.tl):not(.todos):not(.velo):not(.w-campana):not(.w-cmp-env):not(.wa-cnt):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__chevron):not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.circ):not(.ck):not(.cmp-ic):not(.der):not(.dlg-f):not(.dlg-x):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.mas):not(.menu-cnt):not(.mod-carga):not(.mod-centro):not(.n):not(.quitar):not(.tl):not(.todos):not(.velo):not(.w-campana):not(.w-cmp-env):not(.wa-cnt):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { margin-left: -8.5px; }
+:root .w-th.pl > :first-child, :root .w-tr.pl:not(.sel) > :first-child { box-shadow: none !important; }
+
+/* 174 · El texto largo se ve entero: la celda baja de renglón en lugar de cortar con «…». */
+:root .tt-f > *, :root .tt-f .dos > *, :root .tt-f > .c2b, :root .c1, :root .c2, :root .w-tr > span, :root .w-tr .dos span, :root .w-tr .k-tc small, :root .w-tr.pl > span, :root .w-th.pl > span,
+:root .tb .tr > *, :root .tb .tr .dos > *, :root .ap-fila .l2, :root .q-it .dato b, :root .q-it .dato > span, :root .w-it .dato > b, :root .w-it .dato > span, :root .fx-n a, :root .tb-hor .h .l, :root .k-lee, :root .pl-quien .tx, :root .tr-sec .h .r, :root .ini-t .d, :root .c-p b, :root .c-p .tx > span, :root .w-tr.t .dos span, :root .lista .it .dato, :root .cg-fot .nm, :root .as-adj .n, :root .md-it .tx b, :root .md-it .tx small, :root .o-fila .dos > *, :root .o-res .dos > *, :root .dir-desc, :root .dir-emp a {
+  white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: break-word; }
+/* Las celdas que se centraban con un interlineado del alto de la fila (la planilla, la tabla de los Criterio): al bajar de renglón,
+   cada renglón ocupaba una fila entera. Se centran con su relleno, que da el mismo alto con un renglón. */
+:root .w-tr.pl > span, :root .tb .tr > * { line-height: 1.35 !important; padding-top: 9.5px/*13.2px*/ !important; padding-bottom: 9.5px/*13.2px*/ !important; }
+:root .w-th.pl > span, :root .tb .th > * { line-height: 1.35 !important; padding-top: 8.1px/*11.2px*/ !important; padding-bottom: 8.1px/*11.2px*/ !important; }
+:root .ab-sidebar__link-label, :root .w-ln { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+:root .ab-sidebar .ab-sidebar__link, :root .ab-sidebar__link, :root .w-ln { height: auto !important; min-height: 23.7px/*32px*/; box-sizing: border-box; padding-top: 4.3px/*6px*/ !important; padding-bottom: 4.3px/*6px*/ !important; line-height: 14.8px/*20px*/; }
+/* 174 · Quién sos, entero: el nombre y el correo del pie del menú y de la cabecera de tu menú bajan de renglón (el correo, después
+   de la «@», con `CORREO_JS`). */
+:root .ab-sidebar__name, :root .ab-sidebar__email, :root .perfil-t .n1, :root .perfil-t .n2, :root .w-us .tx b, :root .w-us .tx span, :root .w-mn-perf b, :root .w-mn-perf .s {
+  white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: break-word; }
+/* 174 y 188 · En las filas de dos o tres renglones (`.w-conv`), el texto se ve entero: el nombre y, en las listas de personas del
+   teléfono, el correo. La vista previa del último mensaje en la lista de chats sigue en un renglón con «…», como en WhatsApp: es la
+   única excepción a la 174 (188). */
+:root .w-conv .l1 b, :root .w-conv > a .l2 > span { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: break-word; }
+
+/* 142 y 164 · En el desplegable de un filtro, la elegida lleva la tilde a la izquierda y va en 600, sin el tinte, como en
+   «Criterio · Formularios» y «Criterio · Menús»; las demás dejan el lugar de la tilde, así los nombres quedan alineados. La planilla
+   (`.pl-op`) ya la dibuja, y la lista de personas (`.k-pers`, de dos renglones) no es un filtro. */
+:root .menu .menu-it[role="option"], :root .f-mn:not(.k-pers) > [role="option"]:not(.pl-op) { justify-content: flex-start !important; }
+:root .menu .menu-it[role="option"]::before, :root .f-mn:not(.k-pers) > [role="option"]:not(.pl-op)::before {
+  content: ""; flex: none; width: 16px; height: 14px; background: transparent; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5'/%3E%3C/svg%3E") no-repeat left center / 14px 14px; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5'/%3E%3C/svg%3E") no-repeat left center / 14px 14px; }
+:root .menu .menu-it[role="option"]:is(.on, [aria-selected="true"]), :root .f-mn:not(.k-pers) > [role="option"]:not(.pl-op):is(.on, [aria-selected="true"]) {
+  background: transparent !important; color: var(--t1) !important; font-weight: 600 !important; }
+:root .menu .menu-it[role="option"]:is(.on, [aria-selected="true"]):hover, :root .f-mn:not(.k-pers) > [role="option"]:not(.pl-op):is(.on, [aria-selected="true"]):hover { background: var(--s2) !important; }
+:root .menu .menu-it[role="option"]:is(.on, [aria-selected="true"])::before, :root .f-mn:not(.k-pers) > [role="option"]:not(.pl-op):is(.on, [aria-selected="true"])::before { background: var(--marca-tx); }
+/* 142 · La conversación abierta del chat y el ítem abierto de una lista con su detalle: el tinte y una barra de 3 px al inicio. */
+:root .w-conv.on, :root .md-it.on { box-shadow: inset 3px 0 0 var(--marca) !important; }
+
+/* 189 · El panel verde del ingreso, liso: sin el degradé ni la cuadrícula. Lo mismo en los otros dos paneles verdes, el cierre de
+   la página de inicio y la cabecera del Inicio del teléfono (136). La paleta Pradera no cambia. */
+:root .auth-marca, :root .lp-final, :root .c-top { background: var(--marca) !important; }
+:root .auth-marca::before { display: none !important; }
+
+/* 180 · Un ícono dentro de un botón conserva su tamaño. Con la escala, un botón de ícono queda de 21 a 24 px, y el relleno que el
+   navegador le pone a todo botón (6 px por lado) aplastaba el dibujo a la mitad de su ancho. */
+:root button > svg { flex-shrink: 0; }
+
+/* 160 · La primera carga de un listado: el encabezado y el aro en el alto de ocho filas, sin filas esqueleto. */
+.t10-carga { height: 236.8px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--borde); }
+.t10-carga-tel { flex: 1; min-height: 360px; display: flex; align-items: center; justify-content: center; }
+.t10-aro { width: 16.3px/*22px*/; height: 16.3px/*22px*/; box-sizing: border-box; border-radius: 50%; border: 2.5px solid oklch(0.89 0.031 95); border-top-color: var(--marca); animation: t10-gira 0.9s linear infinite; }
+@keyframes t10-gira { to { transform: rotate(360deg); } }
+
+/* 210 · Avisos según el tipo: el fondo nunca dice el tipo; un filo de 3 px y el ícono del color de su tipo. */
+:root :is(.f-toast, .toast2, .toast3, .t-toast, .ta-toast) { --t15-tipo: oklch(0.55 0.13 155); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde2) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root :is(.toast2.mal, .toast3.mal, .ta-toast.mal), :root :is(.f-toast, .t-toast):has(> .mal) { --t15-tipo: var(--peligro); }
+/* El aviso de una página o de un diálogo (`p-aviso`): atención salvo que lleve la tilde (salió bien) o `mal` (error). */
+:root .p-aviso { --t15-tipo: var(--alerta); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde2) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root .p-aviso:has(path[d="m8.5 12 2.4 2.4 4.6-4.8"]) { --t15-tipo: oklch(0.55 0.13 155); }
+:root .p-aviso.mal { --t15-tipo: var(--peligro); }
+:root .p-aviso > svg, :root .p-aviso > span:first-child { color: var(--t15-tipo) !important; flex: none; }
+:root :is(.f-toast, .ta-toast, .t-toast):has(> .neu) { --t15-tipo: var(--t2); }
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) { --t15-tipo: var(--alerta); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root :is(.w-cartel.info, .w-cartel.o-info) { --t15-tipo: var(--t2); }
+:root :is(.w-cartel.o-prob, .cartel.prob, .aviso-mal, .imp-franja) { --t15-tipo: var(--peligro); }
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) > svg,
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) > .fila > svg { color: var(--t15-tipo) !important; flex: none; }
+:root :is(.f-snack, .ta-snack, .e11b-snack) { border-left: 3px solid oklch(0.78 0.14 155) !important; }
+:root :is(.f-snack, .ta-snack, .e11b-snack):has(> .mal) { border-left-color: oklch(0.75 0.15 25) !important; }
+:root :is(.f-snack, .ta-snack, .e11b-snack):has(> .neu), :root .f-snack.alto:not(:has(> .ok, > .mal)) { border-left-color: oklch(0.75 0.01 78) !important; }
+/* 173 · Sin sombras, salvo en menús, desplegables y tooltips: las de este tablero. */
+:root .tarjeta { box-shadow: none !important; }
+:root a.kpi:hover { box-shadow: none !important; }
+:root .dlg { box-shadow: none !important; }
+:root .toast2 { box-shadow: none !important; }
+:root .brand { box-shadow: none !important; }
+:root .tarjeta, :root .fb { box-shadow: none !important; }
+:root .b-pri { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.15) !important; }
+:root .adm-cerrar { box-shadow: none !important; }
+:root .adm-panel .ab-sidebar__link--active, :root .adm-panel .ab-sidebar__link--active:hover { box-shadow: 0 0 0 1px var(--borde) !important; }
+:root .ab-root.adm-abierto .adm-btn { box-shadow: 0 0 0 1px var(--borde) !important; }
+:root .ab-sidebar__link--active { box-shadow: 0 0 0 1px var(--borde) !important; }
+:root .mod-toast { box-shadow: none !important; }
+</style>
+</helmet>
+<style data-menu="wa-ab">
+.wa-btn { cursor: pointer; user-select: none; width: 100%; border: 0; background: transparent; font-family: inherit; text-align: left; }
+.wa-btn .adm-flecha { margin-left: auto; transition: transform 0.15s; }
+.wa-btn .wa-cnt { margin-left: auto; font-size: 10.5px/*12px*/; font-weight: 600; color: oklch(0.41 0.1 140); }
+.wa-btn .wa-cnt + .adm-flecha { margin-left: 5.8px/*8px*/; }
+.ab-root .adm-panel.wa-panel { display: none; }
+.ab-root.wa-abierto .adm-panel.wa-panel { display: flex; }
+.ab-root.wa-abierto .wa-btn { background: var(--lado-activo) !important; color: var(--lado-activo-t) !important; font-weight: 600 !important; box-shadow: 0 1px 2px oklch(0.24 0.012 60 / 0.08), 0 0 0 1px var(--borde); }
+.ab-root.wa-abierto .wa-btn .adm-flecha { transform: rotate(180deg); }
+.ab-root.wa-abierto .ab-sidebar__toggle { display: none; }
+.wa-panel .wa-cnt { margin-left: auto; font-size: 10.5px/*12px*/; font-weight: 600; color: oklch(0.41 0.1 140); }
+</style>
+<div class="ab-root ab-app-shell adm-abierto " style="width: 1440px; height: 900px; position: relative; overflow: hidden;">
+  <aside class="ab-sidebar" aria-label="Navegación principal">
+    <div class="ab-sidebar__head"><span class="brand" aria-hidden="true"></span></div>
+    <button type="button" class="ab-btn ab-btn--ghost ab-btn--size-icon ab-sidebar__toggle" aria-label="Contraer navegación"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg></button>
+    <div class="scope">
+      <p class="scope-name">Grupo Delta</p>
+      <p class="scope-detail">Organización</p>
+    </div>
+    <nav class="ab-sidebar__nav" aria-label="Secciones">
+      <ul class="ab-sidebar__list">
+        <li><a class="ab-sidebar__link" href="Inicio-Org.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11 12 4l9 7"></path><path d="M5 10v10h14V10"></path><path d="M10 20v-6h4v6"></path></svg><span class="ab-sidebar__link-label">Inicio</span></a></li>
+      <li><button type="button" class="ab-sidebar__link wa-btn" aria-controls="wa-panel" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.2 19z"></path><path d="M9.5 9.5c.3 1.8 2.2 3.8 4 4.2l1.2-1.2 1.8.8c0 1-.8 1.8-1.8 1.8-3.3 0-6.5-3.2-6.5-6.5 0-1 .8-1.8 1.8-1.8l.8 1.8z"></path></svg><span class="ab-sidebar__link-label">WhatsApp</span><span class="wa-cnt">2</span><svg class="adm-flecha" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg></button></li>
+      <li><a class="ab-sidebar__link" href="FRM-Formularios.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ab-sidebar__icon"><path d="M14.5 3.5H7a1.5 1.5 0 0 0-1.5 1.5v14A1.5 1.5 0 0 0 7 20.5h10a1.5 1.5 0 0 0 1.5-1.5V7.5z"></path><path d="M14 3.5V8h4.5"></path><path d="M9 12.5h6"></path><path d="M9 16h4"></path></svg><span class="ab-sidebar__link-label">Gestión de formularios</span><svg class="adm-flecha" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg></a></li></ul>
+      <div class="admin-grupo">
+        <ul class="ab-sidebar__list"><li><button type="button" class="ab-sidebar__link adm-btn" aria-controls="adm-panel" aria-expanded="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 5 6v5.5c0 4.2 2.9 7.6 7 9 4.1-1.4 7-4.8 7-9V6Z"></path><path d="m9.5 12 1.8 1.8 3.4-3.6"></path></svg><span class="ab-sidebar__link-label">Administración</span><svg class="adm-flecha" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg></button></li></ul>
+      </div>
+    </nav>
+    <div class="ab-sidebar__footer"><div class="ab-sidebar__user"><span class="avatar" aria-hidden="true">L</span><div class="ab-sidebar__identity"><p class="ab-sidebar__name">Lucía Fernández</p><p class="ab-sidebar__email">lucia.fernandez@delta.ejemplo.com</p></div></div></div>
+  </aside>
+  <aside class="adm-panel" id="adm-panel" aria-label="Administración">
+    <div class="adm-cab"><strong>Administración</strong><button type="button" class="adm-cerrar" aria-label="Cerrar Administración"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg></button></div>
+    <nav class="ab-sidebar__nav" aria-label="Administración">
+      <ul class="ab-sidebar__list">
+          <li><a class="ab-sidebar__branch ab-cerrado" href="Usuarios.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20"></path><circle cx="10" cy="8" r="3.5"></circle><path d="M20 20v-1.5a3.5 3.5 0 0 0-2.6-3.4"></path><path d="M15.5 4.7a3.5 3.5 0 0 1 0 6.6"></path></svg><span class="ab-sidebar__branch-label">Gestión de usuarios</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ab-sidebar__chevron"><path d="m6 9 6 6 6-6"></path></svg></a></li>
+          <li><a class="ab-sidebar__link" href="Empresas.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16"></path><path d="M15 9h4a1 1 0 0 1 1 1v11"></path><path d="M3 21h18"></path><path d="M8 8h3"></path><path d="M8 12h3"></path><path d="M8 16h3"></path></svg><span class="ab-sidebar__link-label">Empresas</span></a></li>
+          <li><a class="ab-sidebar__link" href="Configuracion.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10"></path><circle cx="16" cy="6" r="2"></circle><path d="M4 12h4"></path><path d="M12 12h8"></path><circle cx="10" cy="12" r="2"></circle><path d="M4 18h12"></path><circle cx="18" cy="18" r="2"></circle></svg><span class="ab-sidebar__link-label">Configuración</span></a></li><li><a class="ab-sidebar__link ab-sidebar__link--active" href="MOD-Modulos.dc.html" aria-current="page"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg><span class="ab-sidebar__link-label">Módulos</span></a></li>
+          <li><a class="ab-sidebar__link" href="Pagina-Org.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"></circle><path d="M3.5 12h17"></path><path d="M12 3.5c2.4 2.6 3.5 5.5 3.5 8.5s-1.1 5.9-3.5 8.5c-2.4-2.6-3.5-5.5-3.5-8.5s1.1-5.9 3.5-8.5Z"></path></svg><span class="ab-sidebar__link-label">Página pública</span></a></li>
+          <li><a class="ab-sidebar__branch ab-cerrado" href="WA-Admin.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.2 19z"></path><path d="M9.5 9.5c.3 1.8 2.2 3.8 4 4.2l1.2-1.2 1.8.8c0 1-.8 1.8-1.8 1.8-3.3 0-6.5-3.2-6.5-6.5 0-1 .8-1.8 1.8-1.8l.8 1.8z"></path></svg><span class="ab-sidebar__branch-label">WhatsApp</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ab-sidebar__chevron"><path d="m6 9 6 6 6-6"></path></svg></a></li><li><a class="ab-sidebar__branch ab-cerrado" href="Asistente-Config-Org.dc.html"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l1.9 4.6 4.6 1.9-4.6 1.9L12 16.5l-1.9-4.6L5.5 10l4.6-1.9z"></path><path d="M18.5 15.5l.8 1.9 1.9.8-1.9.8-.8 1.9-.8-1.9-1.9-.8 1.9-.8z"></path></svg><span class="ab-sidebar__branch-label">Asistente</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ab-sidebar__chevron"><path d="m6 9 6 6 6-6"></path></svg></a></li><li><a class="ab-sidebar__link" href="Auditoria-Org.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3.5h6v3H9z"></path><path d="M15 5h3a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3"></path><path d="M9 12h6"></path><path d="M9 16h4"></path></svg><span class="ab-sidebar__link-label">Auditoría</span></a></li>
+        </ul>
+    </nav>
+  </aside>
+  <aside class="adm-panel wa-panel" id="wa-panel" aria-label="WhatsApp">
+    <div class="adm-cab"><strong>WhatsApp</strong><button type="button" class="adm-cerrar" aria-label="Cerrar WhatsApp"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"></path><path d="M17 7 7 17"></path></svg></button></div>
+    <nav class="ab-sidebar__nav" aria-label="WhatsApp"><ul class="ab-sidebar__list"><li><a class="ab-sidebar__link" href="WA-Chats.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 19 17H10l-4.5 3.5V17H5a1.5 1.5 0 0 1-1.5-1.5v-9A1.5 1.5 0 0 1 5 5z"></path></svg><span class="ab-sidebar__link-label">Chats</span><span class="wa-cnt">2</span></a></li><li><a class="ab-sidebar__link" href="WA-Contactos.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"></circle><path d="M3.5 19a5.5 5.5 0 0 1 11 0"></path><path d="M15.5 5.2a3.2 3.2 0 0 1 0 5.6"></path><path d="M17.5 13.5A5.5 5.5 0 0 1 20.5 19"></path></svg><span class="ab-sidebar__link-label">Contactos</span></a></li><li><a class="ab-sidebar__link" href="WA-Difusiones.dc.html"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10v4h3l6 4V6L7 10z"></path><path d="M16.5 9a4 4 0 0 1 0 6"></path></svg><span class="ab-sidebar__link-label">Difusiones</span></a></li></ul></nav>
+  </aside>
+
+
+  <div class="ab-app-shell__column">
+    <header class="ab-topbar">
+      <div class="ab-topbar__start">
+        <nav class="ab-breadcrumbs" aria-label="Ruta de navegación"><ol class="ab-breadcrumbs__list"><li class="ab-breadcrumbs__item"><a class="ab-breadcrumbs__link" href="Inicio-Org.dc.html">Inicio</a></li><li class="ab-breadcrumbs__separator" aria-hidden="true">/</li><li class="ab-breadcrumbs__item ab-breadcrumbs__item--current" aria-current="page">Módulos</li></ol></nav>
+      </div>
+      <span class="w-cmp-env"><a class="w-campana" href="Campana.dc.html" aria-label="Avisos: 1"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 1.5h-15z"></path><path d="M10 20.5a2 2 0 0 0 4 0"></path></svg><span class="n">1</span></a></span><span class="envoltura">
+        <button type="button" class="um-btn" aria-haspopup="menu" aria-expanded="false">
+          <span class="avatar" aria-hidden="true">L</span>
+          <span class="um-txt"><span class="n1">Lucía Fernández</span><span class="n2">Grupo Delta</span></span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg>
+        </button>
+        
+      </span>
+    </header>
+
+    <main class="ab-app-shell__main mod-pagina"><sc-if value="{{e0}}" hint-placeholder-val="{{si}}"><div class="banda-pag"><div class="izq"><span class="ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><div style="min-width: 0px;"><div class="tit"><h1>Módulos</h1></div><p class="res"></p></div></div><div class="acciones"></div></div><div class="pagina"><div class="tarjeta"><div class="tt-h" style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="" aria-sort="ascending">Módulo<span class="ord" aria-hidden="true">▲</span></span><span class="">Descripción</span><span class="">Estado</span><span class="num">Precio por mes</span><span class="num">Precio nuevo</span><span class="">Rige desde</span><span class="sr">Acciones</span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Asistente</b></span><span class="mod-c t2">Consultá a la IA sobre el sistema, con tus permisos, y dejá que te prepare tareas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 30.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de Asistente"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Formularios</b></span><span class="mod-c t2">Armá formularios, mandalos por WhatsApp o cargalos desde la web, y revisá las respuestas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 25.000,00</span><span class="num">$ 28.000,00</span><span class="mod-c ">01/01/2027</span><span></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">WhatsApp</b></span><span class="mod-c t2">Atendé a tus clientes y a tu equipo por WhatsApp, con chats, contactos, difusiones y un asistente.</span><span><span class="pill ok">Suscripto</span><span class="mod-i" tabindex="0" role="img" aria-label="El próximo cobro es el 05/12/2026."><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg></span></span><span class="num">$ 45.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de WhatsApp"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div></div></div></sc-if><sc-if value="{{e1}}" hint-placeholder-val="{{no}}"><div class="banda-pag"><div class="izq"><span class="ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><div style="min-width: 0px;"><div class="tit"><h1>Módulos</h1></div><p class="res"></p></div></div><div class="acciones"></div></div><div class="pagina"><div class="tarjeta"><div class="tt-h" style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="" aria-sort="ascending">Módulo<span class="ord" aria-hidden="true">▲</span></span><span class="">Descripción</span><span class="">Estado</span><span class="num">Precio por mes</span><span class="num">Precio nuevo</span><span class="">Rige desde</span><span class="sr">Acciones</span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Asistente</b></span><span class="mod-c t2">Consultá a la IA sobre el sistema, con tus permisos, y dejá que te prepare tareas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 30.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de Asistente"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Formularios</b></span><span class="mod-c t2">Armá formularios, mandalos por WhatsApp o cargalos desde la web, y revisá las respuestas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 25.000,00</span><span class="num">$ 28.000,00</span><span class="mod-c ">01/01/2027</span><span></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">WhatsApp</b></span><span class="mod-c t2">Atendé a tus clientes y a tu equipo por WhatsApp, con chats, contactos, difusiones y un asistente.</span><span><span class="pill ok">Suscripto</span><span class="mod-i" tabindex="0" role="img" aria-label="El próximo cobro es el 05/12/2026."><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg></span></span><span class="num">$ 45.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de WhatsApp"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div></div></div></sc-if><sc-if value="{{e2}}" hint-placeholder-val="{{no}}"><div class="banda-pag"><div class="izq"><span class="ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><div style="min-width: 0px;"><div class="tit"><h1>Módulos</h1></div><p class="res"></p></div></div><div class="acciones"></div></div><div class="pagina"><div class="tarjeta"><div class="tt-h" style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="" aria-sort="ascending">Módulo<span class="ord" aria-hidden="true">▲</span></span><span class="">Descripción</span><span class="">Estado</span><span class="num">Precio por mes</span><span class="num">Precio nuevo</span><span class="">Rige desde</span><span class="sr">Acciones</span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Asistente</b></span><span class="mod-c t2">Consultá a la IA sobre el sistema, con tus permisos, y dejá que te prepare tareas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 30.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de Asistente"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Formularios</b></span><span class="mod-c t2">Armá formularios, mandalos por WhatsApp o cargalos desde la web, y revisá las respuestas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 25.000,00</span><span class="num">$ 28.000,00</span><span class="mod-c ">01/01/2027</span><span></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">WhatsApp</b></span><span class="mod-c t2">Atendé a tus clientes y a tu equipo por WhatsApp, con chats, contactos, difusiones y un asistente.</span><span><span class="pill ok">Suscripto</span><span class="mod-i" tabindex="0" role="img" aria-label="El próximo cobro es el 05/12/2026."><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg></span></span><span class="num">$ 45.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de WhatsApp"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div></div></div></sc-if><sc-if value="{{e3}}" hint-placeholder-val="{{no}}"><div class="banda-pag"><div class="izq"><span class="ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><div style="min-width: 0px;"><div class="tit"><h1>Módulos</h1></div><p class="res"></p></div></div><div class="acciones"></div></div><div class="pagina"><div class="tarjeta"><div class="tt-h" style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="" aria-sort="ascending">Módulo<span class="ord" aria-hidden="true">▲</span></span><span class="">Descripción</span><span class="">Estado</span><span class="num">Precio por mes</span><span class="num">Precio nuevo</span><span class="">Rige desde</span><span class="sr">Acciones</span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Asistente</b></span><span class="mod-c t2">Consultá a la IA sobre el sistema, con tus permisos, y dejá que te prepare tareas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 30.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de Asistente"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Formularios</b></span><span class="mod-c t2">Armá formularios, mandalos por WhatsApp o cargalos desde la web, y revisá las respuestas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 25.000,00</span><span class="num">$ 28.000,00</span><span class="mod-c ">01/01/2027</span><span></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">WhatsApp</b></span><span class="mod-c t2">Atendé a tus clientes y a tu equipo por WhatsApp, con chats, contactos, difusiones y un asistente.</span><span><span class="pill ok">Suscripto</span><span class="mod-i" tabindex="0" role="img" aria-label="El próximo cobro es el 05/12/2026."><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg></span></span><span class="num">$ 45.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de WhatsApp"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div></div></div></sc-if><sc-if value="{{e4}}" hint-placeholder-val="{{no}}"><div class="banda-pag"><div class="izq"><span class="ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><div style="min-width: 0px;"><div class="tit"><h1>Módulos</h1></div><p class="res"></p></div></div><div class="acciones"></div></div><div class="pagina"><div class="tarjeta"><div class="tt-h" style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="" aria-sort="ascending">Módulo<span class="ord" aria-hidden="true">▲</span></span><span class="">Descripción</span><span class="">Estado</span><span class="num">Precio por mes</span><span class="num">Precio nuevo</span><span class="">Rige desde</span><span class="sr">Acciones</span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Asistente</b></span><span class="mod-c t2">Consultá a la IA sobre el sistema, con tus permisos, y dejá que te prepare tareas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 30.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de Asistente"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Formularios</b></span><span class="mod-c t2">Armá formularios, mandalos por WhatsApp o cargalos desde la web, y revisá las respuestas.</span><span><span class="pill alerta">Suspendido</span><span class="mod-i" tabindex="0" role="img" aria-label="Tus datos se guardan hasta el 21/02/2027."><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg></span></span><span class="num">$ 25.000,00</span><span class="num">$ 28.000,00</span><span class="mod-c ">01/01/2027</span><span></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">WhatsApp</b></span><span class="mod-c t2">Atendé a tus clientes y a tu equipo por WhatsApp, con chats, contactos, difusiones y un asistente.</span><span><span class="pill ok">Suscripto</span><span class="mod-i" tabindex="0" role="img" aria-label="El próximo cobro es el 05/12/2026."><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg></span></span><span class="num">$ 45.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de WhatsApp"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div></div></div></sc-if><sc-if value="{{e5}}" hint-placeholder-val="{{no}}"><div class="banda-pag"><div class="izq"><span class="ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><div style="min-width: 0px;"><div class="tit"><h1>Módulos</h1></div><p class="res"></p></div></div><div class="acciones"></div></div><div class="pagina"><div class="tarjeta"><div class="tt-h" style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="" aria-sort="ascending">Módulo<span class="ord" aria-hidden="true">▲</span></span><span class="">Descripción</span><span class="">Estado</span><span class="num">Precio por mes</span><span class="num">Precio nuevo</span><span class="">Rige desde</span><span class="sr">Acciones</span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Asistente</b></span><span class="mod-c t2">Consultá a la IA sobre el sistema, con tus permisos, y dejá que te prepare tareas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 30.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de Asistente"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Formularios</b></span><span class="mod-c t2">Armá formularios, mandalos por WhatsApp o cargalos desde la web, y revisá las respuestas.</span><span><span class="pill pend">Pedido enviado</span></span><span class="num">$ 25.000,00</span><span class="num">$ 28.000,00</span><span class="mod-c ">01/01/2027</span><span></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">WhatsApp</b></span><span class="mod-c t2">Atendé a tus clientes y a tu equipo por WhatsApp, con chats, contactos, difusiones y un asistente.</span><span><span class="pill ok">Suscripto</span><span class="mod-i" tabindex="0" role="img" aria-label="El próximo cobro es el 05/12/2026."><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg></span></span><span class="num">$ 45.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de WhatsApp"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div></div></div></sc-if><sc-if value="{{e6}}" hint-placeholder-val="{{no}}"><div class="banda-pag"><div class="izq"><span class="ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><div style="min-width: 0px;"><div class="tit"><h1>Módulos</h1></div><p class="res"></p></div></div><div class="acciones"></div></div><div class="pagina"><div class="tarjeta"><div class="tt-h" style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="" aria-sort="ascending">Módulo<span class="ord" aria-hidden="true">▲</span></span><span class="">Descripción</span><span class="">Estado</span><span class="num">Precio por mes</span><span class="num">Precio nuevo</span><span class="">Rige desde</span><span class="sr">Acciones</span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Asistente</b></span><span class="mod-c t2">Consultá a la IA sobre el sistema, con tus permisos, y dejá que te prepare tareas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 30.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de Asistente"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Formularios</b></span><span class="mod-c t2">Armá formularios, mandalos por WhatsApp o cargalos desde la web, y revisá las respuestas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 25.000,00</span><span class="num">$ 28.000,00</span><span class="mod-c ">01/01/2027</span><span></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">WhatsApp</b></span><span class="mod-c t2">Atendé a tus clientes y a tu equipo por WhatsApp, con chats, contactos, difusiones y un asistente.</span><span><span class="pill ok">Suscripto</span><span class="mod-i" tabindex="0" role="img" aria-label="El próximo cobro es el 05/12/2026."><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg></span></span><span class="num">$ 45.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de WhatsApp"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div></div></div></sc-if><sc-if value="{{e7}}" hint-placeholder-val="{{no}}"><div class="banda-pag"><div class="izq"><span class="ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><div style="min-width: 0px;"><div class="tit"><h1>Módulos</h1></div><p class="res"></p></div></div><div class="acciones"></div></div><div class="pagina"><div class="tarjeta"><div class="tt-h" style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="" aria-sort="ascending">Módulo<span class="ord" aria-hidden="true">▲</span></span><span class="">Descripción</span><span class="">Estado</span><span class="num">Precio por mes</span><span class="num">Precio nuevo</span><span class="">Rige desde</span><span class="sr">Acciones</span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Asistente</b></span><span class="mod-c t2">Consultá a la IA sobre el sistema, con tus permisos, y dejá que te prepare tareas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 30.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de Asistente"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Formularios</b></span><span class="mod-c t2">Armá formularios, mandalos por WhatsApp o cargalos desde la web, y revisá las respuestas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 25.000,00</span><span class="num">$ 28.000,00</span><span class="mod-c ">01/01/2027</span><span></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">WhatsApp</b></span><span class="mod-c t2">Atendé a tus clientes y a tu equipo por WhatsApp, con chats, contactos, difusiones y un asistente.</span><span><span class="pill ok">Suscripto</span><span class="mod-i" tabindex="0" role="img" aria-label="El próximo cobro es el 05/12/2026."><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg></span></span><span class="num">$ 45.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de WhatsApp"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div></div></div></sc-if><sc-if value="{{e8}}" hint-placeholder-val="{{no}}"><div class="banda-pag"><div class="izq"><span class="ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><div style="min-width: 0px;"><div class="tit"><h1>Módulos</h1></div><p class="res"></p></div></div><div class="acciones"></div></div><div class="pagina"><div class="tarjeta"><div class="tt-h" style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="" aria-sort="ascending">Módulo<span class="ord" aria-hidden="true">▲</span></span><span class="">Descripción</span><span class="">Estado</span><span class="num">Precio por mes</span><span class="num">Precio nuevo</span><span class="">Rige desde</span><span class="sr">Acciones</span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Asistente</b></span><span class="mod-c t2">Consultá a la IA sobre el sistema, con tus permisos, y dejá que te prepare tareas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 30.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de Asistente"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Formularios</b></span><span class="mod-c t2">Armá formularios, mandalos por WhatsApp o cargalos desde la web, y revisá las respuestas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 25.000,00</span><span class="num">$ 28.000,00</span><span class="mod-c ">01/01/2027</span><span></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">WhatsApp</b></span><span class="mod-c t2">Atendé a tus clientes y a tu equipo por WhatsApp, con chats, contactos, difusiones y un asistente.</span><span><span class="pill ok">Suscripto</span><span class="mod-i" tabindex="0" role="img" aria-label="El próximo cobro es el 05/12/2026."><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg></span></span><span class="num">$ 45.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de WhatsApp"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div></div></div></sc-if><sc-if value="{{e9}}" hint-placeholder-val="{{no}}"><div class="banda-pag"><div class="izq"><span class="ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><div style="min-width: 0px;"><div class="tit"><h1>Módulos</h1></div><p class="res"></p></div></div><div class="acciones"></div></div><div class="pagina"><div class="tarjeta"><div class="tt-h" style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="" aria-sort="ascending">Módulo<span class="ord" aria-hidden="true">▲</span></span><span class="">Descripción</span><span class="">Estado</span><span class="num">Precio por mes</span><span class="num">Precio nuevo</span><span class="">Rige desde</span><span class="sr">Acciones</span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Asistente</b></span><span class="mod-c t2">Consultá a la IA sobre el sistema, con tus permisos, y dejá que te prepare tareas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 30.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de Asistente"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Formularios</b></span><span class="mod-c t2">Armá formularios, mandalos por WhatsApp o cargalos desde la web, y revisá las respuestas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 25.000,00</span><span class="num">$ 28.000,00</span><span class="mod-c ">01/01/2027</span><span></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">WhatsApp</b></span><span class="mod-c t2">Atendé a tus clientes y a tu equipo por WhatsApp, con chats, contactos, difusiones y un asistente.</span><span><span class="pill ok">Suscripto</span><span class="mod-i" tabindex="0" role="img" aria-label="El próximo cobro es el 05/12/2026."><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg></span></span><span class="num">$ 45.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de WhatsApp"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div></div></div></sc-if><sc-if value="{{e10}}" hint-placeholder-val="{{no}}"><div class="banda-pag"><div class="izq"><span class="ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><div style="min-width: 0px;"><div class="tit"><h1>Módulos</h1></div><p class="res"></p></div></div><div class="acciones"></div></div><div class="pagina"><div class="tarjeta"><div class="tt-h" style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="" aria-sort="ascending">Módulo<span class="ord" aria-hidden="true">▲</span></span><span class="">Descripción</span><span class="">Estado</span><span class="num">Precio por mes</span><span class="num">Precio nuevo</span><span class="">Rige desde</span><span class="sr">Acciones</span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Asistente</b></span><span class="mod-c t2">Consultá a la IA sobre el sistema, con tus permisos, y dejá que te prepare tareas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 30.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de Asistente"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Formularios</b></span><span class="mod-c t2">Armá formularios, mandalos por WhatsApp o cargalos desde la web, y revisá las respuestas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 25.000,00</span><span class="num">$ 28.000,00</span><span class="mod-c ">01/01/2027</span><span></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">WhatsApp</b></span><span class="mod-c t2">Atendé a tus clientes y a tu equipo por WhatsApp, con chats, contactos, difusiones y un asistente.</span><span><span class="pill ok">Suscripto</span><span class="mod-i" tabindex="0" role="img" aria-label="El próximo cobro es el 05/12/2026."><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg></span></span><span class="num">$ 45.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de WhatsApp"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div></div></div></sc-if><sc-if value="{{e11}}" hint-placeholder-val="{{no}}"><div class="banda-pag"><div class="izq"><span class="ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><div style="min-width: 0px;"><div class="tit"><h1>Módulos</h1></div><p class="res"></p></div></div><div class="acciones"></div></div><div class="pagina"><div class="tarjeta"><div class="tt-h" style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="" aria-sort="ascending">Módulo<span class="ord" aria-hidden="true">▲</span></span><span class="">Descripción</span><span class="">Estado</span><span class="num">Precio por mes</span><span class="num">Precio nuevo</span><span class="">Rige desde</span><span class="sr">Acciones</span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Asistente</b></span><span class="mod-c t2">Consultá a la IA sobre el sistema, con tus permisos, y dejá que te prepare tareas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 30.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de Asistente"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Formularios</b></span><span class="mod-c t2">Armá formularios, mandalos por WhatsApp o cargalos desde la web, y revisá las respuestas.</span><span><span class="pill pend">Pedido enviado</span></span><span class="num">$ 25.000,00</span><span class="num">$ 28.000,00</span><span class="mod-c ">01/01/2027</span><span></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">WhatsApp</b></span><span class="mod-c t2">Atendé a tus clientes y a tu equipo por WhatsApp, con chats, contactos, difusiones y un asistente.</span><span><span class="pill ok">Suscripto</span><span class="mod-i" tabindex="0" role="img" aria-label="El próximo cobro es el 05/12/2026."><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg></span></span><span class="num">$ 45.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de WhatsApp"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div></div></div></sc-if><sc-if value="{{e12}}" hint-placeholder-val="{{no}}"><div class="banda-pag"><div class="izq"><span class="ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><div style="min-width: 0px;"><div class="tit"><h1>Módulos</h1></div><p class="res"></p></div></div><div class="acciones"></div></div><div class="pagina"><div class="tarjeta"><div class="tt-h" style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="" aria-sort="ascending">Módulo<span class="ord" aria-hidden="true">▲</span></span><span class="">Descripción</span><span class="">Estado</span><span class="num">Precio por mes</span><span class="num">Precio nuevo</span><span class="">Rige desde</span><span class="sr">Acciones</span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Asistente</b></span><span class="mod-c t2">Consultá a la IA sobre el sistema, con tus permisos, y dejá que te prepare tareas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 30.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de Asistente"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Formularios</b></span><span class="mod-c t2">Armá formularios, mandalos por WhatsApp o cargalos desde la web, y revisá las respuestas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 25.000,00</span><span class="num">$ 28.000,00</span><span class="mod-c ">01/01/2027</span><span></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">WhatsApp</b></span><span class="mod-c t2">Atendé a tus clientes y a tu equipo por WhatsApp, con chats, contactos, difusiones y un asistente.</span><span><span class="pill ok">Suscripto</span><span class="mod-i" tabindex="0" role="img" aria-label="El próximo cobro es el 05/12/2026."><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg></span></span><span class="num">$ 45.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de WhatsApp"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div></div></div></sc-if><sc-if value="{{e13}}" hint-placeholder-val="{{no}}"><div class="banda-pag"><div class="izq"><span class="ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><div style="min-width: 0px;"><div class="tit"><h1>Módulos</h1></div><p class="res"></p></div></div><div class="acciones"></div></div><div class="pagina"><div class="tarjeta"><div class="tt-h" style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="" aria-sort="ascending">Módulo<span class="ord" aria-hidden="true">▲</span></span><span class="">Descripción</span><span class="">Estado</span><span class="num">Precio por mes</span><span class="num">Precio nuevo</span><span class="">Rige desde</span><span class="sr">Acciones</span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Asistente</b></span><span class="mod-c t2">Consultá a la IA sobre el sistema, con tus permisos, y dejá que te prepare tareas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 30.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de Asistente"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Formularios</b></span><span class="mod-c t2">Armá formularios, mandalos por WhatsApp o cargalos desde la web, y revisá las respuestas.</span><span><span class="pill pend">Pedido enviado</span></span><span class="num">$ 25.000,00</span><span class="num">$ 28.000,00</span><span class="mod-c ">01/01/2027</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="true" aria-label="Acciones de Formularios"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button><div class="menu der mod-menu" role="menu"><button type="button" class="menu-it " role="menuitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 10h19"/><path d="M6.5 15h4"/></svg> Suscribirme</button><div class="menu-sep" role="separator"></div><button type="button" class="menu-it pel" role="menuitem"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="m9 9 6 6M15 9l-6 6"/></svg> Cancelar pedido</button></div></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">WhatsApp</b></span><span class="mod-c t2">Atendé a tus clientes y a tu equipo por WhatsApp, con chats, contactos, difusiones y un asistente.</span><span><span class="pill ok">Suscripto</span><span class="mod-i" tabindex="0" role="img" aria-label="El próximo cobro es el 05/12/2026."><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg></span></span><span class="num">$ 45.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de WhatsApp"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div></div></div><div class="mod-toast" role="status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.4 2.4 4.6-4.8"/></svg><span>Pediste Formularios. Te avisamos cuando lo resuelvan.</span><span class="x" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d='M7 7l10 10'/><path d='M17 7 7 17'/></svg></span></div></sc-if><sc-if value="{{e14}}" hint-placeholder-val="{{no}}"><div class="banda-pag"><div class="izq"><span class="ico" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1"/><rect x="13.5" y="3.5" width="7" height="7" rx="1"/><rect x="3.5" y="13.5" width="7" height="7" rx="1"/><rect x="13.5" y="13.5" width="7" height="7" rx="1"/></svg></span><div style="min-width: 0px;"><div class="tit"><h1>Módulos</h1></div><p class="res"></p></div></div><div class="acciones"></div></div><div class="pagina"><div class="tarjeta"><div class="tt-h" style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="" aria-sort="ascending">Módulo<span class="ord" aria-hidden="true">▲</span></span><span class="">Descripción</span><span class="">Estado</span><span class="num">Precio por mes</span><span class="num">Precio nuevo</span><span class="">Rige desde</span><span class="sr">Acciones</span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Asistente</b></span><span class="mod-c t2">Consultá a la IA sobre el sistema, con tus permisos, y dejá que te prepare tareas.</span><span><span class="pill off">Apagado</span></span><span class="num">$ 30.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de Asistente"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">Formularios</b></span><span class="mod-c t2">Armá formularios, mandalos por WhatsApp o cargalos desde la web, y revisá las respuestas.</span><span><span class="pill off">Apagado</span><span class="mod-i" tabindex="0" role="img" aria-label="Plataforma rechazó tu pedido el 20/11/2026. Motivo: Por ahora Formularios se ofrece solo a organizaciones con más de un mes de uso."><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg><span class="mod-tip " role="tooltip">Plataforma rechazó tu pedido el 20/11/2026. Motivo: Por ahora Formularios se ofrece solo a organizaciones con más de un mes de uso.</span></span></span><span class="num">$ 25.000,00</span><span class="num">$ 28.000,00</span><span class="mod-c ">01/01/2027</span><span></span></div><div class="tt-f " style="grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.2fr) minmax(0, 1.5fr) 120px 110px 100px 28px;"><span class="c1"><b class="mod-nombre">WhatsApp</b></span><span class="mod-c t2">Atendé a tus clientes y a tu equipo por WhatsApp, con chats, contactos, difusiones y un asistente.</span><span><span class="pill ok">Suscripto</span><span class="mod-i" tabindex="0" role="img" aria-label="El próximo cobro es el 05/12/2026."><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg></span></span><span class="num">$ 45.000,00</span><span class="num">—</span><span class="mod-c ">—</span><span class="der envoltura"><button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de WhatsApp"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="18.5" r="1.6"/></svg></button></span></div></div></div></sc-if></main>
+  </div>
+    
+  <sc-if value="{{e0}}" hint-placeholder-val="{{si}}"><div class="velo"><div class="dlg chico" role="alertdialog" aria-modal="true" aria-label="¿Pedir Formularios?"><div class="dlg-h"><h2>¿Pedir Formularios?</h2></div><div class="dlg-t">Le mandamos el pedido a la plataforma. Te avisamos por correo cuando lo resuelva.</div><div class="dlg-f"><button type="button" class="b b-sec">Cancelar</button><button type="button" class="b b-pri">Pedir</button></div></div></div></sc-if><sc-if value="{{e1}}" hint-placeholder-val="{{no}}"><div class="velo"><div class="dlg chico" role="alertdialog" aria-modal="true" aria-label="¿Pedir Formularios?"><div class="dlg-h"><h2>¿Pedir Formularios?</h2></div><div class="dlg-t">Le mandamos el pedido a la plataforma. Te avisamos por correo cuando lo resuelva.</div><div class="dlg-f"><button type="button" class="b b-sec">Cancelar</button><button type="button" class="b b-pri" aria-disabled="true"><span class="mod-aro" aria-hidden="true"></span>Pidiendo…</button></div></div></div></sc-if><sc-if value="{{e2}}" hint-placeholder-val="{{no}}"><div class="velo"><div class="dlg chico" role="alertdialog" aria-modal="true" aria-label="¿Pedir Formularios?"><div class="dlg-h"><h2>¿Pedir Formularios?</h2></div><div class="dlg-t">Le mandamos el pedido a la plataforma. Te avisamos por correo cuando lo resuelva.</div><div class="dlg-b una" style="padding-top: 0px;"><div class="mod-av mal" role="alert"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.2 3h7.6L21 8.2v7.6L15.8 21H8.2L3 15.8V8.2Z"/><path d="M12 8v4.5"/><path d="M12 16h.01"/></svg><span class="tx">Ya hay un pedido de Formularios esperando. Lo hizo Ana López el 23/11/2026, 09:12.</span></div></div><div class="dlg-f"><button type="button" class="b b-pri">Cerrar</button></div></div></div></sc-if><sc-if value="{{e3}}" hint-placeholder-val="{{no}}"><div class="velo"><div class="dlg chico" role="alertdialog" aria-modal="true" aria-label="¿Pedir Formularios?"><div class="dlg-h"><h2>¿Pedir Formularios?</h2></div><div class="dlg-t">Le mandamos el pedido a la plataforma. Te avisamos por correo cuando lo resuelva.</div><div class="dlg-b una" style="padding-top: 0px;"><div class="mod-av mal" role="alert"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.2 3h7.6L21 8.2v7.6L15.8 21H8.2L3 15.8V8.2Z"/><path d="M12 8v4.5"/><path d="M12 16h.01"/></svg><span class="tx">No pudimos mandar el pedido. Probá de nuevo.</span></div></div><div class="dlg-f"><button type="button" class="b b-sec">Cancelar</button><button type="button" class="b b-pri">Pedir</button></div></div></div></sc-if><sc-if value="{{e4}}" hint-placeholder-val="{{no}}"><div class="velo"><div class="dlg chico" role="alertdialog" aria-modal="true" aria-label="¿Pedir Formularios?"><div class="dlg-h"><h2>¿Pedir Formularios?</h2></div><div class="dlg-t">Le mandamos el pedido a la plataforma. Te avisamos por correo cuando lo resuelva. Tus datos se guardan hasta el 21/02/2027: si te lo prenden antes, siguen ahí.</div><div class="dlg-f"><button type="button" class="b b-sec">Cancelar</button><button type="button" class="b b-pri">Pedir</button></div></div></div></sc-if><sc-if value="{{e5}}" hint-placeholder-val="{{no}}"><div class="velo"><div class="dlg chico" role="alertdialog" aria-modal="true" aria-label="¿Cancelar el pedido de Formularios?"><div class="dlg-h"><h2>¿Cancelar el pedido de Formularios?</h2></div><div class="dlg-t">La plataforma deja de verlo. Lo podés volver a pedir.</div><div class="dlg-f"><button type="button" class="b b-sec">Volver</button><button type="button" class="b b-pri">Cancelar pedido</button></div></div></div></sc-if><sc-if value="{{e6}}" hint-placeholder-val="{{no}}"><div class="velo"><div class="dlg medio" role="dialog" aria-modal="true" aria-label="Pedir un módulo"><div class="dlg-h"><div class="mod-dh"><h2>Pedir un módulo</h2><span class="mod-prop"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 13.8 9 19.5 10.5 13.8 12 12 17.5 10.2 12 4.5 10.5 10.2 9z"></path><path d="M18.5 16v4M16.5 18h4"></path></svg>Propuesta del asistente</span></div><button type="button" class="dlg-x" aria-label="Cerrar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></button></div><div class="dlg-b una"><div class="campo2 envoltura"><span class="et">Módulo<span class="req" aria-hidden="true">*</span></span><button type="button" class="in2" aria-haspopup="listbox" aria-expanded="false"><span class="val">Formularios</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button></div><div class="mod-av " role="status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg><span class="tx">Le mandamos el pedido a la plataforma. Te avisamos por correo cuando lo resuelva.</span></div></div><div class="dlg-f"><button type="button" class="b b-sec">Cancelar</button><button type="button" class="b b-pri">Pedir</button></div></div></div></sc-if><sc-if value="{{e7}}" hint-placeholder-val="{{no}}"><div class="velo"><div class="dlg medio" role="dialog" aria-modal="true" aria-label="Pedir un módulo"><div class="dlg-h"><div class="mod-dh"><h2>Pedir un módulo</h2><span class="mod-prop"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 13.8 9 19.5 10.5 13.8 12 12 17.5 10.2 12 4.5 10.5 10.2 9z"></path><path d="M18.5 16v4M16.5 18h4"></path></svg>Propuesta del asistente</span></div><button type="button" class="dlg-x" aria-label="Cerrar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></button></div><div class="dlg-b una"><div class="campo2 envoltura"><span class="et">Módulo<span class="req" aria-hidden="true">*</span></span><button type="button" class="in2" aria-haspopup="listbox" aria-expanded="true"><span class="val">Formularios</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button><div class="mod-lista" role="listbox"><div class="op" role="option" aria-selected="false">Asistente</div><div class="op sel" role="option" aria-selected="true">Formularios<span class=tl><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span></div><div class="op apag" role="option" aria-selected="false" aria-disabled="true">WhatsApp<span class="mod-tip arriba" role="tooltip">Ya está prendido.</span></div></div></div><div class="mod-av " role="status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg><span class="tx">Le mandamos el pedido a la plataforma. Te avisamos por correo cuando lo resuelva.</span></div></div><div class="dlg-f"><button type="button" class="b b-sec">Cancelar</button><button type="button" class="b b-pri">Pedir</button></div></div></div></sc-if><sc-if value="{{e8}}" hint-placeholder-val="{{no}}"><div class="velo"><div class="dlg medio" role="dialog" aria-modal="true" aria-label="Pedir un módulo"><div class="dlg-h"><div class="mod-dh"><h2>Pedir un módulo</h2><span class="mod-prop"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 13.8 9 19.5 10.5 13.8 12 12 17.5 10.2 12 4.5 10.5 10.2 9z"></path><path d="M18.5 16v4M16.5 18h4"></path></svg>Propuesta del asistente</span></div><button type="button" class="dlg-x" aria-label="Cerrar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></button></div><div class="dlg-b una"><div class="campo2"><span class="et">Módulo<span class="req" aria-hidden="true">*</span></span><button type="button" class="in2" aria-busy="true"><span class="val" style="color: var(--t3);"><span class="mod-aro" aria-hidden="true"></span>Cargando…</span></button></div><div class="mod-av " role="status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg><span class="tx">Le mandamos el pedido a la plataforma. Te avisamos por correo cuando lo resuelva.</span></div></div><div class="dlg-f"><button type="button" class="b b-sec">Cancelar</button><button type="button" class="b b-pri">Pedir</button></div></div></div></sc-if><sc-if value="{{e9}}" hint-placeholder-val="{{no}}"><div class="velo"><div class="dlg medio" role="dialog" aria-modal="true" aria-label="Pedir un módulo"><div class="dlg-h"><div class="mod-dh"><h2>Pedir un módulo</h2><span class="mod-prop"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 13.8 9 19.5 10.5 13.8 12 12 17.5 10.2 12 4.5 10.5 10.2 9z"></path><path d="M18.5 16v4M16.5 18h4"></path></svg>Propuesta del asistente</span></div><button type="button" class="dlg-x" aria-label="Cerrar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></button></div><div class="dlg-b una"><div class="campo2 envoltura"><span class="et">Módulo<span class="req" aria-hidden="true">*</span></span><button type="button" class="in2" aria-haspopup="listbox" aria-expanded="true"><span class="val" style="color: var(--t3);">Elegí un módulo</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button><div class="mod-lista" role="listbox"><div class="op apag" role="option" aria-selected="false" aria-disabled="true">Asistente<span class="mod-tip arriba" role="tooltip">Plataforma no lo deja pedir.</span></div><div class="op apag" role="option" aria-selected="false" aria-disabled="true">Formularios</div><div class="op apag" role="option" aria-selected="false" aria-disabled="true">WhatsApp</div></div></div><div class="mod-av " role="status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg><span class="tx">Le mandamos el pedido a la plataforma. Te avisamos por correo cuando lo resuelva.</span></div></div><div class="dlg-f"><button type="button" class="b b-sec">Cancelar</button><span class="mod-btn-apag"><button type="button" class="b b-pri" aria-disabled="true">Pedir</button></span></div></div></div></sc-if><sc-if value="{{e10}}" hint-placeholder-val="{{no}}"><div class="velo"><div class="dlg medio" role="dialog" aria-modal="true" aria-label="Pedir un módulo"><div class="dlg-h"><div class="mod-dh"><h2>Pedir un módulo</h2><span class="mod-prop"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 13.8 9 19.5 10.5 13.8 12 12 17.5 10.2 12 4.5 10.5 10.2 9z"></path><path d="M18.5 16v4M16.5 18h4"></path></svg>Propuesta del asistente</span></div><button type="button" class="dlg-x" aria-label="Cerrar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></button></div><div class="dlg-b una"><div class="campo2 envoltura"><span class="et">Módulo<span class="req" aria-hidden="true">*</span></span><button type="button" class="in2" aria-haspopup="listbox" aria-expanded="false"><span class="val">Formularios</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button></div><div class="mod-av " role="status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg><span class="tx">Le mandamos el pedido a la plataforma. Te avisamos por correo cuando lo resuelva.</span></div></div><div class="dlg-f"><button type="button" class="b b-sec" disabled>Cancelar</button><button type="button" class="b b-pri" aria-disabled="true"><span class="mod-aro" aria-hidden="true"></span>Pidiendo…</button></div></div></div></sc-if><sc-if value="{{e11}}" hint-placeholder-val="{{no}}"><div class="velo"><div class="dlg medio" role="dialog" aria-modal="true" aria-label="Pedir un módulo"><div class="dlg-h"><div class="mod-dh"><h2>Pedir un módulo</h2><span class="mod-prop"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 13.8 9 19.5 10.5 13.8 12 12 17.5 10.2 12 4.5 10.5 10.2 9z"></path><path d="M18.5 16v4M16.5 18h4"></path></svg>Propuesta del asistente</span></div><button type="button" class="dlg-x" aria-label="Cerrar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></button></div><div class="dlg-b una"><div class="mod-av ok" role="status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8.5 12 2.4 2.4 4.6-4.8"/></svg><span class="tx">Ya se guardó.</span></div><div class="campo2 envoltura"><span class="et">Módulo<span class="req" aria-hidden="true">*</span></span><button type="button" class="in2" aria-haspopup="listbox" aria-expanded="false"><span class="val">Formularios</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button></div></div><div class="dlg-f"><button type="button" class="b b-sec">Cerrar</button><a class="b b-pri" href="MOD-Modulos.dc.html" style="text-decoration: none;">Ver en Módulos</a></div></div></div></sc-if><sc-if value="{{e12}}" hint-placeholder-val="{{no}}"><div class="velo"><div class="dlg medio" role="dialog" aria-modal="true" aria-label="Pedir un módulo"><div class="dlg-h"><div class="mod-dh"><h2>Pedir un módulo</h2><span class="mod-prop"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 13.8 9 19.5 10.5 13.8 12 12 17.5 10.2 12 4.5 10.5 10.2 9z"></path><path d="M18.5 16v4M16.5 18h4"></path></svg>Propuesta del asistente</span></div><button type="button" class="dlg-x" aria-label="Cerrar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg></button></div><div class="dlg-b una"><div class="mod-av mal" role="alert"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.2 3h7.6L21 8.2v7.6L15.8 21H8.2L3 15.8V8.2Z"/><path d="M12 8v4.5"/><path d="M12 16h.01"/></svg><span class="tx">Ya no tenés permiso para administrar los módulos.</span></div><div class="campo2 envoltura"><span class="et">Módulo<span class="req" aria-hidden="true">*</span></span><button type="button" class="in2" aria-haspopup="listbox" aria-expanded="false"><span class="val">Formularios</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"/></svg></button></div><div class="mod-av " role="status"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.6v.4"/></svg><span class="tx">Le mandamos el pedido a la plataforma. Te avisamos por correo cuando lo resuelva.</span></div></div><div class="dlg-f"><button type="button" class="b b-pri">Cerrar</button></div></div></div></sc-if></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Pedir","Pidiendo","Otra persona ya lo pidió","No se pudo pedir","Pedir un módulo suspendido","Cancelar el pedido","Propuesta del asistente","Propuesta: el módulo, abierto","Propuesta: cargando los módulos","Propuesta: ningún módulo para pedir","Propuesta: pidiendo","Propuesta: ya se guardó","Propuesta: sin el permiso","Pedido enviado","Pedido rechazado: el motivo"],"default":"Pedir","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
+// t10-correos · 174: un correo baja de renglón después de la «@», nunca a mitad de palabra (traspaso10_piezas_1004.py).
+if (typeof document !== 'undefined' && !window.__t10Correos) {
+  window.__t10Correos = true;
+  const t10Arroba = /([^\s@])@(?=[\w-]+\.[\w-])/g;
+  const t10Saltar = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'TITLE', 'OPTION']);
+  const t10Cortar = (n) => {
+    if (n.nodeType === 3) {
+      if (n.parentNode && !t10Saltar.has(n.parentNode.nodeName) && n.data.indexOf('@') >= 0) {
+        const nuevo = n.data.replace(t10Arroba, '$1@​');
+        if (nuevo !== n.data) n.data = nuevo;
+      }
+      return;
+    }
+    if (n.nodeType !== 1 || t10Saltar.has(n.nodeName)) return;
+    const w = document.createTreeWalker(n, NodeFilter.SHOW_TEXT);
+    for (let x = w.nextNode(); x; x = w.nextNode()) t10Cortar(x);
+  };
+  const t10Mirar = () => {
+    t10Cortar(document.body);
+    new MutationObserver((ms) => ms.forEach((m) => (m.type === 'characterData' ? t10Cortar(m.target) : m.addedNodes.forEach(t10Cortar))))
+      .observe(document.body, { childList: true, subtree: true, characterData: true });
+  };
+  if (document.body) t10Mirar(); else document.addEventListener('DOMContentLoaded', t10Mirar);
+}
+// t10-correos · fin
+
+class Component extends DCLogic {
+  renderVals() {
+    const k = ["Pedir", "Pidiendo", "Otra persona ya lo pidió", "No se pudo pedir", "Pedir un módulo suspendido", "Cancelar el pedido", "Propuesta del asistente", "Propuesta: el módulo, abierto", "Propuesta: cargando los módulos", "Propuesta: ningún módulo para pedir", "Propuesta: pidiendo", "Propuesta: ya se guardó", "Propuesta: sin el permiso", "Pedido enviado", "Pedido rechazado: el motivo"].indexOf(this.props.estado ?? "Pedir");
+    return { si: true, no: false, e0: k === 0, e1: k === 1, e2: k === 2, e3: k === 3, e4: k === 4, e5: k === 5, e6: k === 6, e7: k === 7, e8: k === 8, e9: k === 9, e10: k === 10, e11: k === 11, e12: k === 12, e13: k === 13, e14: k === 14 };
+  }
+}
+</script>
+</body>
+</html>

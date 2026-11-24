@@ -192,6 +192,18 @@ La versión 156, del 3/11, redibuja la 22 con `generadores/formularios_22_biblio
 
 La versión 157, del 3/11, dibuja la 23 con `generadores/formularios_23_asistente_1004.py` y `generadores/formularios_23_chats_1004.py`: la pantalla «Asistente» de WhatsApp, como el editor de un formulario (elegido por el usuario), con Perfil, Conocimiento, Casos, Límites y Atención, un solo Guardar y «Probar» al costado; los casos en el chat de Clientes, con «Por qué respondió esto», «Necesita una persona», la ráfaga y el borrador; las preguntas sin respuesta; «Cuándo lo ofrece», la pestaña «Sugerencias» y «Armar desde un texto» en el formulario; el catálogo «Por aprobar»; lo que deja de pasar al dar de baja; de dónde vino una respuesta, y los máximos de Plataforma. Los chats, los audios, las sugerencias y el conocimiento siguen al front real de ArquitecturaBase.
 
+**Lienzo aparte, para aprobar: «Propuesta · Módulos y suscripciones»** (23/11): <https://claude.ai/artifact/TWmqhEkZ3KmLr2pRXgr4HR>, en la versión 2 del artefacto, privado del dueño. Son los tableros de la etapa «Módulos y suscripciones» (ADR 0069 del back; spec `docs/plans/formularios/modulos-y-suscripciones.md`), que va después de la E25. Van aparte porque el principal quedó en 507 de los 512 archivos que admite una versión, y son 25; el usuario eligió el lienzo aparte ese día. Lo hace `generadores/modulos_suscripciones_1004.py`:
+- parte de la copia de la v179 en `generadores/modulos_suscripciones_1004/` (la arma `capturar.mjs`);
+- escribe los tableros en esta carpeta y su índice en `canvas-propuesta-modulos.json`, que se publica como `project/canvas.json` del lienzo aparte, con los cuatro archivos de `ds/ab/` copiados del principal;
+- después corre la pasada de las piezas con `--tableros` sobre los 25.
+
+Qué tableros son:
+- en la organización: `MOD-Modulos` (Administración › Módulos, con cada estado de un módulo y sus acciones en el ⋮), `MOD-Suscribir` (el precio, lo que incluye, la tarjeta de MercadoPago.js y el consentimiento; también cambiar la tarjeta), `MOD-Pedir` (también con «Propuesta del asistente»), `MOD-Confirmar` (probar gratis y dar de baja) y `MOD-Exportar`;
+- en Plataforma: `Plat-MOD-Catalogo`, `Plat-MOD-Modulo`, `Plat-MOD-Precio`, `Plat-MOD-Pedidos`, `Plat-MOD-Suscripciones`, `Plat-Org-Modulos` (la pestaña «Módulos» de una organización, con las filas por origen y los topes) y `Config-Plat-Modulos`;
+- los ocho avisos, en `Mensajes-Modulos`, y cada pantalla con su teléfono.
+
+Sus 307 estados abren sin errores. No están en el `canvas.json` del principal, ni en la guía ni en los índices: entran cuando el usuario los apruebe y se les haga lugar en el principal. En el lienzo aparte, los enlaces a pantallas del principal no llevan a ningún lado.
+
 La versión 181, del 23/11, registra que el usuario aprobó ese día los 41 tableros de la segunda parte de la base de la v180 («Aprobados los tableros de la base 2»), así que ya se pueden programar la F4, la F5 y la F10 a la F13:
 - sus títulos pierden «· para aprobar», y la página pasa a llamarse «Segunda parte de la base» (conserva su id, `propuesta-base2`, para que sigan andando los enlaces de antes). Sus notas dicen que están aprobados (`base2_comun.py` y `base2_1004.py`);
 - cada `-Base2` manda sobre su tablero de siempre en lo que dibuja, y el de siempre conserva sus demás estados. Por ejemplo, la matriz de permisos de `Rol` queda reemplazada por las áreas plegables de `Rol-Base2`, y «Guardar: demasiados pedidos» sigue en `Rol`;

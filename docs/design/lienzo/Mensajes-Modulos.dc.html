@@ -1,0 +1,1145 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Los avisos de los módulos · para aprobar</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="ds/ab/components/bundle.css">
+<script src="ds/ab/components/bundle.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <style>
+    :root { --t1: oklch(0.24 0.014 78); --t2: oklch(0.46 0.014 78); --t3: oklch(0.6 0.01 78); --borde: oklch(0.91 0.009 95); --borde2: oklch(0.83 0.013 95); --fondo: oklch(0.975 0.004 95); --s2: oklch(0.975 0.004 95); --s3: oklch(0.95 0.005 95); --marca: oklch(0.48 0.115 140); --marca-h: oklch(0.43 0.115 140); --marca-t: oklch(0.96 0.032 95); --marca-tx: oklch(0.41 0.1 140); --peligro: oklch(0.57 0.2 25); --peligro-t: oklch(0.97 0.02 25); --ok: oklch(0.44 0.12 155); --ok-t: oklch(0.95 0.05 155); --alerta: oklch(0.5 0.12 70); --alerta-t: oklch(0.96 0.06 85); }
+    body { margin: 0; background: var(--fondo); -webkit-font-smoothing: antialiased; font-family: Inter, system-ui, sans-serif; }
+    button, input, textarea, select { font-family: inherit; }
+    .sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .brand { display: block; width: 23.7px/*32px*/; height: 23.7px/*32px*/; border-radius: 3px/*9px*/; background: var(--marca); }
+    .avatar { display: inline-flex; width: 23.7px/*32px*/; height: 23.7px/*32px*/; align-items: center; justify-content: center; border-radius: 3px/*999px*/; background: var(--marca); color: #fff; font-size: 11.5px/*14px*/; font-weight: 600; flex-shrink: 0; }
+    .avatar.gris { background: var(--s3); color: var(--t2); }
+    .icon-btn { display: inline-flex; width: 26.6px/*36px*/; height: 26.6px/*36px*/; align-items: center; justify-content: center; border: 0; border-radius: 3px/*8px*/; background: transparent; color: var(--t2); cursor: pointer; }
+    .icon-btn:hover { background: var(--s3); color: var(--t1); }
+    .scope { border-bottom: 1px solid var(--borde); padding: 10.1px/*14px*/ 8.6px/*12px*/; }
+    .scope-name { margin: 0; font-size: 12.3px/*15px*/; line-height: 14.8px/*20px*/; font-weight: 600; color: var(--t1); }
+    .scope-detail { margin: 2px 0 0; font-size: 10.7px/*13px*/; line-height: 13.3px/*18px*/; color: var(--t3); }
+
+    /* Página */
+    .pagina { padding: 20.2px/*28px*/ 23px/*32px*/ 17.3px/*24px*/; display: flex; flex-direction: column; gap: 14.4px/*20px*/; font-size: 11.5px/*14px*/; line-height: 1.5; color: var(--t1); }
+    .ph { display: flex; align-items: flex-start; justify-content: space-between; gap: 11.5px/*16px*/; }
+    .ph h1, .hero h1 { margin: 0; font-size: 21.3px/*26px*/; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; color: var(--t1); }
+    .ph .res { margin: 4.3px/*6px*/ 0 0; font-size: 11.5px/*14px*/; color: var(--t2); }
+    .ph .tit { display: flex; align-items: center; gap: 8.6px/*12px*/; flex-wrap: wrap; }
+    .sucio { font-size: 11.5px/*14px*/; color: var(--alerta); font-weight: 500; }
+    .acciones { display: flex; align-items: center; gap: 7.2px/*10px*/; flex-shrink: 0; }
+    .b { height: 29.6px/*40px*/; box-sizing: border-box; padding: 0 13px/*18px*/; border-radius: 3px/*10px*/; border: 1px solid transparent; font-size: 11.5px/*14px*/; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 5.8px/*8px*/; cursor: pointer; text-decoration: none; white-space: nowrap; }
+    .b-pri { background: var(--marca); color: #fff; }
+    .b-pri:hover { background: var(--marca-h); }
+    .b-sec { background: #fff; border-color: var(--borde); color: var(--t1); }
+    .b-sec:hover { border-color: var(--borde2); background: var(--s2); }
+    .b-pel { background: var(--peligro); color: #fff; }
+    .b-gho { background: transparent; color: var(--t2); }
+    .b-gho:hover { background: var(--s3); color: var(--t1); }
+    .b-lg, .b.lg { height: 35.5px/*48px*/; padding: 0 15.8px/*22px*/; font-size: 12.3px/*15px*/; border-radius: 3px/*12px*/; }
+    .b-full { width: 100%; }
+    .b:disabled { opacity: 0.5; cursor: default; }
+    .lnk { border: 0; background: transparent; padding: 0; font-size: inherit; font-weight: 600; color: var(--marca-tx); cursor: pointer; text-decoration: none; }
+    .lnk:hover { text-decoration: underline; text-underline-offset: 3px; }
+    .lnk:disabled { color: var(--t3); cursor: default; text-decoration: none; font-weight: 500; }
+
+    /* Barra de filtros */
+    .fb { background: #fff; border: 1px solid var(--borde); border-radius: 3px/*14px*/; padding: 10.1px/*14px*/ 11.5px/*16px*/; display: flex; align-items: center; gap: 7.2px/*10px*/; flex-wrap: wrap; }
+    .fb-bus { position: relative; flex: 1 1 280px; max-width: 360px; }
+    .fb-bus input { width: 100%; height: 29.6px/*40px*/; box-sizing: border-box; padding: 0 8.6px/*12px*/ 0 27.4px/*38px*/; border: 1px solid var(--borde); border-radius: 3px/*10px*/; background: var(--s2); font-size: 11.5px/*14px*/; color: var(--t1); }
+    .fb-bus input::placeholder { color: var(--t3); }
+    .fb-bus input:focus { outline: none; border-color: var(--marca); background: #fff; box-shadow: 0 0 0 3px oklch(0.48 0.115 140 / 0.15); }
+    .fb-bus svg { position: absolute; left: 8.6px/*12px*/; top: 50%; transform: translateY(-50%); color: var(--t3); pointer-events: none; }
+    .envoltura { position: relative; }
+    .pill-sel { height: 29.6px/*40px*/; box-sizing: border-box; padding: 0 10.1px/*14px*/; border-radius: 3px/*999px*/; border: 1px solid var(--borde); background: #fff; font-size: 11.5px/*14px*/; color: var(--t2); display: inline-flex; align-items: center; gap: 5.8px/*8px*/; cursor: pointer; white-space: nowrap; }
+    .pill-sel:hover { border-color: var(--borde2); }
+    .pill-sel.con { color: var(--marca-tx); border-color: oklch(0.48 0.115 140 / 0.35); background: var(--marca-t); font-weight: 500; }
+    .fb-limpiar { border: 0; background: transparent; font-size: 11.5px/*14px*/; color: var(--t3); cursor: pointer; padding: 5.8px/*8px*/ 7.2px/*10px*/; border-radius: 3px/*8px*/; }
+    .fb-limpiar:hover { color: var(--t1); background: var(--s2); }
+    .fb-der { margin-left: auto; display: flex; align-items: center; gap: 7.2px/*10px*/; }
+
+    /* Menús: filtros, ⋮ de las filas y menú del usuario */
+    .menu { position: absolute; z-index: 20; top: calc(100% + 4.4px/*6px*/); background: #fff; border: 1px solid var(--borde); border-radius: 3px/*12px*/; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); padding: 4.3px/*6px*/; min-width: 220px; display: flex; flex-direction: column; }
+    .menu.izq { left: 0; }
+    .menu.der { right: 0; }
+    .menu.arriba { top: auto; bottom: calc(100% + 4.4px/*6px*/); }
+    .menu-it { display: flex; align-items: center; gap: 7.2px/*10px*/; min-height: 29.6px/*40px*/; padding: 5.8px/*8px*/ 8.6px/*12px*/; border: 0; border-radius: 3px/*8px*/; background: transparent; font-size: 11.5px/*14px*/; color: var(--t1); cursor: pointer; text-align: left; width: 100%; box-sizing: border-box; text-decoration: none; white-space: nowrap; }
+    .menu-it:hover { background: var(--s2); }
+    .menu-it.on { background: var(--marca-t); color: var(--marca-tx); font-weight: 500; }
+    .menu-it svg { color: var(--t3); flex-shrink: 0; }
+    .menu-it:hover svg { color: var(--t1); }
+    .menu-it.pel, .menu-it.pel svg { color: var(--peligro); }
+    .menu-it.pel:hover { background: var(--peligro-t); }
+    .menu-it.apagado { color: var(--t3); cursor: default; }
+    .menu-it.apagado:hover { background: transparent; }
+    .menu-sep { height: 1px; background: var(--borde); margin: 2.9px/*4px*/ 0; }
+    .menu-cnt { margin-left: auto; padding-left: 11.5px/*16px*/; font-size: 10.7px/*13px*/; color: var(--t3); font-variant-numeric: tabular-nums; }
+    .menu-tit { padding: 5.8px/*8px*/ 8.6px/*12px*/ 2.9px/*4px*/; font-size: 10.7px/*13px*/; font-weight: 600; color: var(--t3); }
+    .menu-cab { display: flex; align-items: center; gap: 8.6px/*12px*/; padding: 7.2px/*10px*/ 8.6px/*12px*/; }
+    .menu-cab .n1 { font-size: 12.3px/*15px*/; font-weight: 600; color: var(--t1); }
+    .menu-cab .n2 { font-size: 10.7px/*13px*/; color: var(--t2); }
+    .perfil-t { display: flex; flex-direction: column; min-width: 0; flex-grow: 1; line-height: 1.3; }
+    .perfil-t .n1 { font-size: 11.5px/*14px*/; font-weight: 500; color: var(--t1); overflow: hidden; text-overflow: ellipsis; }
+    .perfil-t .n2 { font-size: 10.7px/*13px*/; color: var(--t3); }
+    .ico-perfil { width: 23.7px/*32px*/; height: 23.7px/*32px*/; border-radius: 3px/*9px*/; background: var(--s3); color: var(--t2); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 10.7px/*13px*/; font-weight: 700; }
+    .menu-it.on .ico-perfil { background: #fff; color: var(--marca-tx); }
+    .capa { position: absolute; inset: 0; z-index: 15; border: 0; padding: 0; background: transparent; cursor: default; }
+
+    /* Botón del usuario en la barra superior */
+    .um-btn { display: inline-flex; align-items: center; gap: 7.2px/*10px*/; height: 32.6px/*44px*/; padding: 0 7.2px/*10px*/ 0 4.3px/*6px*/; border: 1px solid transparent; border-radius: 3px/*12px*/; background: transparent; cursor: pointer; text-align: left; }
+    .um-btn:hover, .um-btn[aria-expanded="true"] { background: #fff; border-color: var(--borde); }
+    .um-txt { display: flex; flex-direction: column; line-height: 1.25; }
+    .um-txt .n1 { font-size: 11.5px/*14px*/; font-weight: 600; color: var(--t1); }
+    .um-txt .n2 { font-size: 10.7px/*13px*/; color: var(--t2); }
+    .um-btn > svg { color: var(--t3); }
+    .ab-topbar { height: 47.4px/*64px*/; }
+
+    /* Tablas */
+    .tarjeta { background: #fff; border: 1px solid var(--borde); border-radius: 3px/*14px*/; box-shadow: 0 1px 2px oklch(0.24 0.014 78 / 0.04); }
+    .tt-h { display: grid; align-items: center; gap: 11.5px/*16px*/; height: 34px/*46px*/; padding: 0 14.4px/*20px*/; border-bottom: 1px solid var(--borde); font-size: 10.7px/*13px*/; font-weight: 600; color: var(--t2); white-space: nowrap; }
+    .tt-h.gris { background: var(--s3); color: var(--t2); }
+    .tt-h.azul-claro { background: oklch(0.95 0.032 95); color: var(--marca-tx); border-bottom-color: oklch(0.88 0.048 95); }
+    .tt-h.azul { background: var(--marca); color: #fff; border-bottom-color: var(--marca); }
+    .tarjeta > .tt-h:first-child { border-radius: 3px/*13px*/ 3px/*13px*/ 0 0; }
+    .tt-f { display: grid; align-items: center; gap: 11.5px/*16px*/; min-height: 47.4px/*64px*/; padding: 7.2px/*10px*/ 14.4px/*20px*/; box-sizing: border-box; border-bottom: 1px solid var(--borde); font-size: 11.5px/*14px*/; }
+    .tt-f:hover { background: var(--s2); }
+    .tt-f.nueva { background: var(--marca-t); }
+    .tt-f > * { min-width: 0; }
+    .c1 { display: block; font-weight: 500; color: var(--t1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .c1.n { font-weight: 400; }
+    .c2 { display: block; font-size: 10.7px/*13px*/; color: var(--t3); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    a.c1 { text-decoration: none; }
+    a.c1:hover { color: var(--marca-tx); text-decoration: underline; text-underline-offset: 3px; }
+    .num { font-variant-numeric: tabular-nums; color: var(--t1); text-align: right; }
+    .tt-h .num { color: inherit; }
+    .der { display: flex; justify-content: flex-end; }
+    .pill { display: inline-flex; align-items: center; gap: 4.3px/*6px*/; padding: 3px 7.2px/*10px*/; border-radius: 3px/*999px*/; font-size: 10.5px/*12.5px*/; font-weight: 500; white-space: nowrap; }
+    .pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .pill.ok { background: var(--ok-t); color: var(--ok); }
+    .pill.off { background: var(--s3); color: var(--t2); }
+    .pill.pend { background: var(--marca-t); color: var(--marca-tx); }
+    .pill.alerta { background: var(--alerta-t); color: var(--alerta); }
+    .pill.mal { background: var(--peligro-t); color: var(--peligro); }
+    .rol { display: inline-flex; padding: 3px 7.2px/*10px*/; border-radius: 3px/*999px*/; font-size: 10.5px/*12.5px*/; font-weight: 500; background: var(--s3); color: var(--t1); white-space: nowrap; }
+    .rol.sis { background: var(--marca-t); color: var(--marca-tx); }
+    .roles { display: flex; gap: 4.3px/*6px*/; flex-wrap: nowrap; overflow: hidden; }
+    .kebab { width: 23.7px/*32px*/; height: 23.7px/*32px*/; box-sizing: border-box; border-radius: 3px/*8px*/; border: 1px solid transparent; background: transparent; color: var(--t3); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    .kebab:hover, .kebab[aria-expanded="true"] { background: #fff; border-color: var(--borde); color: var(--t1); }
+    .pie { display: flex; justify-content: space-between; align-items: center; padding: 8.6px/*12px*/ 14.4px/*20px*/; font-size: 10.7px/*13px*/; color: var(--t2); }
+    .pag { display: flex; align-items: center; gap: 7.2px/*10px*/; }
+    .pag .pill-sel { height: 23.7px/*32px*/; font-size: 10.7px/*13px*/; padding: 0 8.6px/*12px*/; }
+    .pag .ico-btn:disabled { opacity: 0.4; cursor: default; background: transparent; border-color: transparent; }
+    .pie.centro { justify-content: center; }
+    .vacio { padding: 34.6px/*48px*/ 17.3px/*24px*/; display: flex; flex-direction: column; align-items: center; gap: 8.6px/*12px*/; text-align: center; }
+    .vacio strong { font-size: 13.1px/*16px*/; font-weight: 600; color: var(--t1); }
+    .vacio span { font-size: 11.5px/*14px*/; color: var(--t2); max-width: 420px; }
+
+    /* Fichas */
+    .volver2 { display: inline-flex; align-items: center; gap: 4.3px/*6px*/; font-size: 11.5px/*14px*/; color: var(--t2); text-decoration: none; align-self: flex-start; }
+    .volver2:hover { color: var(--marca-tx); }
+    .hero { background: #fff; border: 1px solid var(--borde); border-radius: 3px/*14px*/; padding: 17.3px/*24px*/; display: flex; justify-content: space-between; gap: 17.3px/*24px*/; align-items: flex-start; }
+    .hero .tit { display: flex; align-items: center; gap: 8.6px/*12px*/; flex-wrap: wrap; }
+    .hero .sub { margin-top: 5.8px/*8px*/; font-size: 12.3px/*15px*/; color: var(--t2); }
+    .tabs2 { display: flex; gap: 4.3px/*6px*/; border-bottom: 1px solid var(--borde); }
+    .tab2 { display: inline-flex; align-items: center; gap: 5.8px/*8px*/; padding: 7.2px/*10px*/ 11.5px/*16px*/; font-size: 11.5px/*14px*/; font-weight: 500; color: var(--t2); background: var(--s2); border: 1px solid var(--borde); border-bottom-color: transparent; border-radius: 3px/*10px*/ 3px/*10px*/ 0 0; margin-bottom: -1px; cursor: pointer; }
+    .tab2:hover { color: var(--t1); background: var(--s3); }
+    .tab2[aria-selected="true"] { color: var(--marca-tx); background: #fff; border-top: 2px solid var(--marca); border-bottom-color: #fff; }
+    .tab2 .cnt { font-size: 10.5px/*12px*/; font-weight: 600; padding: 1px 5.8px/*8px*/; border-radius: 3px/*999px*/; background: var(--s3); color: var(--t2); }
+    .tab2[aria-selected="true"] .cnt { background: var(--marca-t); color: var(--marca-tx); }
+
+    /* Formularios */
+    .hoja { background: #fff; border: 1px solid var(--borde); border-radius: 3px/*14px*/; padding: 17.3px/*24px*/; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14.4px/*20px*/ 17.3px/*24px*/; }
+    .hoja h2 { grid-column: 1 / -1; margin: 5.8px/*8px*/ 0 -2.9px/*4px*/; font-size: 13.9px/*17px*/; font-weight: 600; color: var(--t1); }
+    .hoja h2:first-child { margin-top: 0; }
+    .hoja .linea { grid-column: 1 / -1; height: 1px; background: var(--borde); margin: 2.9px/*4px*/ 0; }
+    .campo2 { display: flex; flex-direction: column; gap: 5.8px/*8px*/; min-width: 0; }
+    .campo2.ancho { grid-column: 1 / -1; }
+    .et { font-size: 10.7px/*13px*/; font-weight: 600; color: var(--t2); display: flex; align-items: center; gap: 5.8px/*8px*/; }
+    .et .req { color: var(--peligro); margin-left: -4.3px/*6px*/; }
+    .et .todos { margin-left: auto; display: inline-flex; align-items: center; gap: 4.3px/*6px*/; font-weight: 500; color: var(--t2); cursor: pointer; }
+    .et .todos input { width: 16px; height: 16px; margin: 0; accent-color: var(--marca); cursor: pointer; }
+    .in2 { height: 32.6px/*44px*/; width: 100%; box-sizing: border-box; padding: 0 10.1px/*14px*/; border: 1px solid var(--borde); border-radius: 3px/*10px*/; background: #fff; font-size: 12.3px/*15px*/; color: var(--t1); }
+    .in2::placeholder { color: var(--t3); }
+    .in2:focus { outline: none; border-color: var(--marca); box-shadow: 0 0 0 3px oklch(0.48 0.115 140 / 0.15); }
+    .in2.mal { border-color: var(--peligro); }
+    .in2[readonly] { background: var(--s2); color: var(--t2); }
+    textarea.in2 { height: auto; min-height: 88px; padding: 7.2px/*10px*/ 10.1px/*14px*/; line-height: 1.5; resize: none; }
+    button.in2 { display: flex; align-items: center; justify-content: space-between; gap: 7.2px/*10px*/; cursor: pointer; text-align: left; }
+    button.in2:disabled { background: var(--s2); color: var(--t2); cursor: default; }
+    button.in2 .val { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .vacio2 { color: var(--t3); }
+    button.in2 svg { color: var(--t3); flex-shrink: 0; }
+    .err2 { font-size: 10.7px/*13px*/; color: var(--peligro); }
+    .lista { max-height: 300px; overflow-y: auto; left: 0; right: auto; min-width: 100%; width: max-content; max-width: 400px; box-sizing: border-box; }
+    .op2 { display: flex; align-items: flex-start; gap: 7.2px/*10px*/; padding: 7.2px/*10px*/ 8.6px/*12px*/; border: 0; border-radius: 3px/*8px*/; background: transparent; text-align: left; width: 100%; box-sizing: border-box; cursor: pointer; }
+    .op2:hover { background: var(--s2); }
+    .op2.on { background: var(--marca-t); }
+    .op2 input { width: 16px; height: 16px; margin: 2px 0 0; accent-color: var(--marca); cursor: pointer; flex-shrink: 0; }
+    .op2 .opn { display: block; font-size: 11.5px/*14px*/; font-weight: 500; color: var(--t1); }
+    .op2 .opd { display: block; font-size: 10.7px/*13px*/; color: var(--t2); margin-top: 1px; }
+    .fila-emp { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) 44px; gap: 8.6px/*12px*/; align-items: start; }
+    .quitar { width: 32.6px/*44px*/; height: 32.6px/*44px*/; box-sizing: border-box; border: 1px solid var(--borde); border-radius: 3px/*10px*/; background: #fff; color: var(--t3); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    .quitar:hover { color: var(--peligro); border-color: oklch(0.57 0.2 25 / 0.4); background: var(--peligro-t); }
+    .sumar { align-self: flex-start; display: inline-flex; align-items: center; gap: 5.8px/*8px*/; border: 0; background: transparent; padding: 2.9px/*4px*/ 0; font-size: 11.5px/*14px*/; font-weight: 600; color: var(--marca-tx); cursor: pointer; }
+    .aviso-linea { grid-column: 1 / -1; display: flex; align-items: flex-start; gap: 7.2px/*10px*/; padding: 8.6px/*12px*/ 10.1px/*14px*/; border-radius: 3px/*10px*/; font-size: 11.5px/*14px*/; line-height: 1.5; }
+    .aviso-linea.alerta { background: var(--alerta-t); color: oklch(0.4 0.1 70); }
+    .aviso-linea.mal { background: var(--peligro-t); color: oklch(0.45 0.17 25); }
+    .aviso-linea.info { background: var(--marca-t); color: var(--marca-tx); }
+    .aviso-linea svg { flex-shrink: 0; margin-top: 2px; }
+
+    /* Campo con prefijo (dirección pública) */
+    .in-pre { display: flex; align-items: stretch; height: 32.6px/*44px*/; border: 1px solid var(--borde); border-radius: 3px/*10px*/; background: #fff; overflow: hidden; }
+    .in-pre:focus-within { border-color: var(--marca); box-shadow: 0 0 0 3px oklch(0.48 0.115 140 / 0.15); }
+    .in-pre.mal { border-color: var(--peligro); }
+    .in-pre > span { display: inline-flex; align-items: center; padding: 0 8.6px/*12px*/; background: var(--s2); border-right: 1px solid var(--borde); font-size: 12.3px/*15px*/; color: var(--t2); white-space: nowrap; }
+    .in-pre > input { flex: 1; min-width: 0; border: 0; outline: none; padding: 0 10.1px/*14px*/; font-size: 12.3px/*15px*/; color: var(--t1); background: transparent; }
+
+    /* Inicio: indicadores, tarjetas con cabecera y pasos */
+    .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 11.5px/*16px*/; }
+    .kpi { background: #fff; border: 1px solid var(--borde); border-radius: 3px/*14px*/; padding: 14.4px/*20px*/ 17.3px/*24px*/; display: flex; flex-direction: column; gap: 4.3px/*6px*/; text-decoration: none; color: inherit; }
+    a.kpi:hover { border-color: var(--borde2); box-shadow: 0 4px 12px oklch(0.24 0.014 78 / 0.06); }
+    .kpi .k { font-size: 10.7px/*13px*/; font-weight: 600; color: var(--t2); }
+    .kpi .v { font-size: 26.2px/*32px*/; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; color: var(--t1); font-variant-numeric: tabular-nums; }
+    .kpi .p { font-size: 10.7px/*13px*/; color: var(--t3); }
+    .t-cab { display: flex; align-items: center; justify-content: space-between; gap: 11.5px/*16px*/; padding: 13px/*18px*/ 14.4px/*20px*/; border-bottom: 1px solid var(--borde); }
+    .t-cab h2 { margin: 0; font-size: 13.9px/*17px*/; font-weight: 600; color: var(--t1); }
+    .t-cab .d { font-size: 11.5px/*14px*/; color: var(--t2); }
+    .paso { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; gap: 10.1px/*14px*/; align-items: center; padding: 10.1px/*14px*/ 14.4px/*20px*/; border-bottom: 1px solid var(--borde); }
+    .paso:last-child { border-bottom: 0; }
+    .paso .ck { width: 17.8px/*24px*/; height: 17.8px/*24px*/; border-radius: 50%; border: 2px solid var(--borde2); box-sizing: border-box; display: inline-flex; align-items: center; justify-content: center; color: #fff; }
+    .paso.hecho .ck { background: var(--ok); border-color: var(--ok); }
+    .paso.hecho .c1 { color: var(--t2); text-decoration: line-through; text-decoration-color: var(--t3); }
+    .ico-btn { width: 23.7px/*32px*/; height: 23.7px/*32px*/; box-sizing: border-box; border-radius: 3px/*8px*/; border: 1px solid transparent; background: transparent; color: var(--t3); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    .ico-btn:hover { background: #fff; border-color: var(--borde); color: var(--t1); }
+    .cambios { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 7.2px/*10px*/ 11.5px/*16px*/; font-size: 11.5px/*14px*/; }
+    .cambios .k { color: var(--t2); font-weight: 500; }
+    .cambios .antes { color: var(--t3); text-decoration: line-through; }
+
+    /* Diálogos */
+    .velo { position: absolute; inset: 0; z-index: 40; background: oklch(0.2 0.014 78 / 0.42); display: flex; align-items: center; justify-content: center; }
+    .dlg { width: 640px; max-width: calc(100% - 32px); background: #fff; border-radius: 3px/*18px*/; box-shadow: 0 24px 48px oklch(0.2 0.014 78 / 0.22); display: flex; flex-direction: column; font-size: 11.5px/*14px*/; line-height: 1.5; color: var(--t1); }
+    .dlg.chico { width: 460px; }
+    .dlg-h { display: flex; justify-content: space-between; align-items: flex-start; gap: 8.6px/*12px*/; padding: 14.4px/*20px*/ 17.3px/*24px*/; border-bottom: 1px solid var(--borde); }
+    .dlg-h h2 { margin: 0; font-size: 15.6px/*19px*/; font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; color: var(--t1); }
+    .dlg-h p { margin: 2.9px/*4px*/ 0 0; font-size: 11.5px/*14px*/; color: var(--t2); }
+    .dlg-x { width: 23.7px/*32px*/; height: 23.7px/*32px*/; flex-shrink: 0; border: 0; border-radius: 3px/*8px*/; background: transparent; color: var(--t3); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    .dlg-x:hover { background: var(--s2); color: var(--t1); }
+    .dlg-b { padding: 14.4px/*20px*/ 17.3px/*24px*/; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11.5px/*16px*/; }
+    .dlg-b.una { grid-template-columns: minmax(0, 1fr); }
+    .dlg-t { padding: 14.4px/*20px*/ 17.3px/*24px*/; font-size: 12.3px/*15px*/; color: var(--t2); line-height: 1.55; }
+    .dlg-f { display: flex; justify-content: flex-end; gap: 8.6px/*12px*/; padding: 11.5px/*16px*/ 17.3px/*24px*/; border-top: 1px solid var(--borde); }
+    .toast2 { position: absolute; z-index: 41; right: 17.3px/*24px*/; bottom: 17.8px/*24px*/; display: flex; align-items: center; gap: 7.2px/*10px*/; padding: 8.6px/*12px*/ 11.5px/*16px*/; max-width: 460px; background: #fff; border: 1px solid var(--borde); border-radius: 3px/*12px*/; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); font-size: 11.5px/*14px*/; color: var(--t1); }
+    .toast2 svg { flex-shrink: 0; }
+
+    /* Compacto: medidas finales de todo el sistema (pisan las de arriba). */
+    .pagina { padding: 14.4px/*20px*/ 17.3px/*24px*/; gap: 10.1px/*14px*/; font-size: 10.7px/*13px*/; }
+    .ph h1, .hero h1 { font-size: 16.4px/*20px*/; }
+    .ph .res { margin-top: 2px; font-size: 10.7px/*13px*/; }
+    .sucio { font-size: 10.7px/*13px*/; }
+    .acciones { gap: 5.8px/*8px*/; }
+    .b { height: 25.2px/*34px*/; padding: 0 10.1px/*14px*/; border-radius: 3px/*8px*/; font-size: 10.7px/*13px*/; gap: 4.3px/*6px*/; }
+    .b svg { width: 14px; height: 14px; }
+    .b-lg, .b.lg { height: 29.6px/*40px*/; padding: 0 13px/*18px*/; font-size: 11.5px/*14px*/; border-radius: 3px/*10px*/; }
+    .b-sm { height: 20.7px/*28px*/; padding: 0 7.2px/*10px*/; font-size: 10.5px/*12.5px*/; border-radius: 3px/*7px*/; }
+    .fb { padding: 7.2px/*10px*/ 8.6px/*12px*/; border-radius: 3px/*12px*/; gap: 5.8px/*8px*/; }
+    .fb-bus { flex: 0 1 300px; }
+    .fb-bus input { height: 23.7px/*32px*/; padding-left: 23px/*32px*/; border-radius: 3px/*8px*/; font-size: 10.7px/*13px*/; }
+    .fb-bus svg { left: 7.2px/*10px*/; width: 14px; height: 14px; }
+    .pill-sel { height: 23.7px/*32px*/; padding: 0 8.6px/*12px*/; gap: 4.3px/*6px*/; font-size: 10.7px/*13px*/; }
+    .fb-limpiar { padding: 4.3px/*6px*/ 5.8px/*8px*/; font-size: 10.7px/*13px*/; }
+    .fb-der { gap: 5.8px/*8px*/; }
+    .menu { border-radius: 3px/*10px*/; padding: 2.9px/*4px*/; min-width: 200px; }
+    .menu-it { min-height: 25.2px/*34px*/; padding: 4.3px/*6px*/ 7.2px/*10px*/; gap: 5.8px/*8px*/; font-size: 10.7px/*13px*/; }
+    .menu-it svg { width: 15px; height: 15px; }
+    .menu-cnt { font-size: 10.5px/*12px*/; }
+    .menu-tit { padding: 4.3px/*6px*/ 7.2px/*10px*/ 2px; font-size: 10.5px/*12px*/; }
+    .menu-cab { padding: 5.8px/*8px*/ 7.2px/*10px*/; }
+    .ico-perfil { width: 20.7px/*28px*/; height: 20.7px/*28px*/; border-radius: 3px/*8px*/; font-size: 10.5px/*11.5px*/; }
+    .perfil-t .n1 { font-size: 10.7px/*13px*/; }
+    .perfil-t .n2 { font-size: 10.5px/*12px*/; }
+    .um-btn { height: 29.6px/*40px*/; gap: 5.8px/*8px*/; border-radius: 3px/*10px*/; }
+    .um-txt .n1 { font-size: 10.7px/*13px*/; }
+    .um-txt .n2 { font-size: 10.5px/*12px*/; }
+    .avatar { width: 20.7px/*28px*/; height: 20.7px/*28px*/; font-size: 10.5px/*12px*/; }
+    .ab-topbar { height: 38.5px/*52px*/; }
+    .scope { padding: 8.6px/*12px*/; }
+    .scope-name { font-size: 11.5px/*14px*/; }
+    .scope-detail { font-size: 10.5px/*12px*/; }
+    .tarjeta { border-radius: 3px/*12px*/; }
+    .tarjeta > .tt-h:first-child { border-radius: 3px/*11px*/ 3px/*11px*/ 0 0; }
+    .tt-h { height: 28.1px/*38px*/; padding: 0 11.5px/*16px*/; gap: 8.6px/*12px*/; font-size: 10.5px/*12px*/; }
+    .tt-f { min-height: 31.1px/*42px*/; padding: 4.3px/*6px*/ 11.5px/*16px*/; gap: 8.6px/*12px*/; font-size: 10.7px/*13px*/; }
+    .c2 { font-size: 10.5px/*12px*/; }
+    .pill { padding: 2px 5.8px/*8px*/; gap: 3.6px/*5px*/; font-size: 10.5px/*12px*/; }
+    .pill::before { width: 5px; height: 5px; }
+    .rol { padding: 2px 5.8px/*8px*/; font-size: 10.5px/*12px*/; }
+    .roles { gap: 2.9px/*4px*/; }
+    .kebab { width: 20.7px/*28px*/; height: 20.7px/*28px*/; border-radius: 3px/*7px*/; }
+    .pie { padding: 5.8px/*8px*/ 11.5px/*16px*/; font-size: 10.5px/*12px*/; }
+    .pag { gap: 5.8px/*8px*/; }
+    .pag .pill-sel { height: 20.7px/*28px*/; padding: 0 7.2px/*10px*/; font-size: 10.5px/*12px*/; }
+    .ico-btn { width: 20.7px/*28px*/; height: 20.7px/*28px*/; border-radius: 3px/*7px*/; }
+    .vacio { padding: 23px/*32px*/ 11.5px/*16px*/; gap: 7.2px/*10px*/; }
+    .vacio strong { font-size: 11.5px/*14px*/; }
+    .vacio span { font-size: 10.7px/*13px*/; }
+    .volver2 { font-size: 10.7px/*13px*/; }
+    .tab2 { padding: 5px/*7px*/ 10.1px/*14px*/; font-size: 10.7px/*13px*/; border-radius: 3px/*8px*/ 3px/*8px*/ 0 0; }
+    .tab2 .cnt { font-size: 10.5px/*11.5px*/; padding: 0 5px/*7px*/; }
+    .hoja { padding: 14.4px/*20px*/; gap: 10.1px/*14px*/ 14.4px/*20px*/; border-radius: 3px/*12px*/; }
+    .hoja h2 { margin: 2.9px/*4px*/ 0 -2.9px/*4px*/; font-size: 12.3px/*15px*/; }
+    .campo2 { gap: 4.3px/*6px*/; }
+    .et { font-size: 10.5px/*12px*/; }
+    .in2 { height: 26.6px/*36px*/; padding: 0 8.6px/*12px*/; border-radius: 3px/*8px*/; font-size: 11.1px/*13.5px*/; }
+    textarea.in2 { min-height: 47.4px/*64px*/; padding: 5.8px/*8px*/ 8.6px/*12px*/; }
+    .in-pre { height: 26.6px/*36px*/; border-radius: 3px/*8px*/; }
+    .op2 { padding: 5px/*7px*/ 7.2px/*10px*/; gap: 5.8px/*8px*/; }
+    .op2 .opn { font-size: 10.7px/*13px*/; }
+    .op2 .opd { font-size: 10.5px/*12px*/; }
+    .fila-emp { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) 36px; gap: 7.2px/*10px*/; }
+    .quitar { width: 26.6px/*36px*/; height: 26.6px/*36px*/; border-radius: 3px/*8px*/; }
+    .sumar { font-size: 10.7px/*13px*/; }
+    .aviso-linea { padding: 7.2px/*10px*/ 8.6px/*12px*/; font-size: 10.7px/*13px*/; border-radius: 3px/*8px*/; }
+    .dlg { width: 560px; border-radius: 3px/*14px*/; font-size: 10.7px/*13px*/; }
+    .dlg.chico { width: 420px; }
+    .dlg-h { padding: 11.5px/*16px*/ 14.4px/*20px*/; }
+    .dlg-h h2 { font-size: 13.1px/*16px*/; }
+    .dlg-h p { margin-top: 2px; font-size: 10.7px/*13px*/; }
+    .dlg-x { width: 20.7px/*28px*/; height: 20.7px/*28px*/; }
+    .dlg-b { padding: 11.5px/*16px*/ 14.4px/*20px*/; gap: 8.6px/*12px*/ 10.1px/*14px*/; }
+    .dlg-t { padding: 11.5px/*16px*/ 14.4px/*20px*/; font-size: 11.1px/*13.5px*/; }
+    .dlg-f { padding: 8.6px/*12px*/ 14.4px/*20px*/; gap: 5.8px/*8px*/; }
+    .toast2 { padding: 7.2px/*10px*/ 10.1px/*14px*/; font-size: 10.7px/*13px*/; border-radius: 3px/*10px*/; }
+    .cambios { gap: 5.8px/*8px*/ 10.1px/*14px*/; font-size: 10.7px/*13px*/; grid-template-columns: 140px minmax(0, 1fr); }
+
+    /* Encabezado de página: banda blanca pegada a la barra de arriba. Las acciones de la página van a la derecha:
+       la principal al final; si hay más de tres, las que sobran van al menú «Más acciones». */
+    .banda-pag { display: flex; align-items: center; justify-content: space-between; gap: 11.5px/*16px*/; min-height: 47.4px/*64px*/; box-sizing: border-box; padding: 8.6px/*12px*/ 17.3px/*24px*/; background: #fff; border-bottom: 1px solid var(--borde); font-size: 10.7px/*13px*/; color: var(--t1); }
+    .banda-pag .izq { display: flex; align-items: center; gap: 8.6px/*12px*/; min-width: 0; }
+    .banda-pag .ico { width: 26.6px/*36px*/; height: 26.6px/*36px*/; border-radius: 3px/*10px*/; background: var(--marca-t); color: var(--marca-tx); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .banda-pag .atras { width: 20.7px/*28px*/; height: 20.7px/*28px*/; box-sizing: border-box; border-radius: 3px/*7px*/; border: 1px solid var(--borde); color: var(--t2); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; text-decoration: none; }
+    .banda-pag .atras:hover { color: var(--t1); border-color: var(--borde2); background: var(--s2); }
+    .banda-pag .tit { display: flex; align-items: center; gap: 7.2px/*10px*/; flex-wrap: wrap; }
+    .banda-pag h1 { margin: 0; font-size: 14.8px/*18px*/; font-weight: 700; letter-spacing: -0.015em; line-height: 1.25; color: var(--t1); }
+    .banda-pag .res { margin: 2px 0 0; font-size: 10.7px/*13px*/; color: var(--t2); }
+    .banda-pag .mas { width: 25.2px/*34px*/; height: 25.2px/*34px*/; box-sizing: border-box; border-radius: 3px/*8px*/; border: 1px solid var(--borde); background: #fff; color: var(--t2); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+    .banda-pag .mas:hover, .banda-pag .mas[aria-expanded="true"] { border-color: var(--borde2); color: var(--t1); background: var(--s2); }
+
+    /* Pantallas públicas y landing, más compactas. */
+    .auth-form { padding: 17.3px/*24px*/ 28.8px/*40px*/ 15.8px/*22px*/; }
+    .auth-top { font-size: 12.3px/*15px*/; }
+    .auth-caja { width: 380px; gap: 11.5px/*16px*/; }
+    .auth-caja h1 { font-size: 19.7px/*24px*/; }
+    .auth-caja .sub { margin-top: 4.3px/*6px*/; font-size: 11.5px/*14px*/; }
+    .auth-marca { padding: 40.3px/*56px*/; gap: 14.4px/*20px*/; }
+    .auth-marca h2 { font-size: 26.2px/*32px*/; }
+    .auth-marca p { font-size: 12.3px/*15px*/; }
+    .auth-marca li { font-size: 11.5px/*14px*/; grid-template-columns: 34px minmax(0, 1fr); gap: 8.6px/*12px*/; }
+    .auth-marca li span:first-child { width: 25.2px/*34px*/; height: 25.2px/*34px*/; border-radius: 3px/*9px*/; }
+    .b-google { height: 29.6px/*40px*/; border-radius: 3px/*10px*/; font-size: 11.5px/*14px*/; }
+    .seg2 { padding: 3px; border-radius: 3px/*10px*/; }
+    .seg2 button { height: 23.7px/*32px*/; font-size: 10.7px/*13px*/; border-radius: 3px/*8px*/; }
+    .in2.lg { height: 29.6px/*40px*/; }
+    .otp { gap: 5.8px/*8px*/; }
+    .otp input { height: 38.5px/*52px*/; font-size: 18px/*22px*/; border-radius: 3px/*10px*/; }
+    .msj { padding: 7.2px/*10px*/ 8.6px/*12px*/; font-size: 10.7px/*13px*/; border-radius: 3px/*10px*/; }
+    .nota { font-size: 10.5px/*12px*/; }
+    .fila-links { font-size: 10.7px/*13px*/; }
+    .circulo { width: 38.5px/*52px*/; height: 38.5px/*52px*/; }
+    .cuenta-card { padding: 7.2px/*10px*/ 8.6px/*12px*/; border-radius: 3px/*10px*/; }
+    .org-av { width: 41.4px/*56px*/; height: 41.4px/*56px*/; border-radius: 3px/*14px*/; font-size: 16.4px/*20px*/; }
+    .datos-inv { padding: 8.6px/*12px*/ 10.1px/*14px*/; font-size: 10.7px/*13px*/; border-radius: 3px/*10px*/; }
+    .codigos { padding: 8.6px/*12px*/ 11.5px/*16px*/; font-size: 11.5px/*14px*/; border-radius: 3px/*10px*/; }
+    .qr { width: 140px; height: 140px; }
+    .sesion h1 { font-size: 16.4px/*20px*/; }
+    .sesion p { font-size: 11.5px/*14px*/; }
+    .metodo { padding: 7.2px/*10px*/ 0; grid-template-columns: 34px minmax(0, 1fr) auto auto; gap: 8.6px/*12px*/; }
+    .metodo .ic { width: 25.2px/*34px*/; height: 25.2px/*34px*/; border-radius: 3px/*9px*/; }
+
+    .c1.vencido { color: var(--peligro); }
+    .c1.nada { color: var(--t3); }
+
+    /* Menú lateral y barra superior, compactos. */
+    .ab-root { --size-topbar: 52px; }
+    .ab-app-shell { font-size: 10.7px/*13px*/; }
+    .ab-sidebar { width: 232px; }
+    .ab-sidebar__toggle { top: 47.4px/*64px*/; }
+    .brand { width: 20.7px/*28px*/; height: 20.7px/*28px*/; border-radius: 3px/*8px*/; }
+    .ab-sidebar__nav { padding: 5.8px/*8px*/ 5.8px/*8px*/ 7.2px/*10px*/; }
+    .ab-sidebar__list, .ab-sidebar__children { gap: 2px; }
+    .ab-sidebar__link, .ab-sidebar__branch { padding: 4.3px/*6px*/ 7.2px/*10px*/; gap: 7.2px/*10px*/; font-size: 10.7px/*13px*/; line-height: 14.8px/*20px*/; }
+    .ab-sidebar__link > svg, .ab-sidebar__branch > svg:first-child { width: 13.3px/*18px*/; height: 13.3px/*18px*/; }
+    .ab-sidebar__group--spaced { margin-top: 8.6px/*12px*/; }
+    .ab-sidebar__group-label { padding: 0 7.2px/*10px*/; font-size: 10.5px/*11px*/; }
+    .ab-sidebar__children { margin-left: 13.7px/*19px*/; padding-left: 7.2px/*10px*/; }
+    .ab-sidebar__footer { padding: 7.2px/*10px*/ 8.6px/*12px*/; }
+    .ab-sidebar__name { font-size: 10.7px/*13px*/; }
+    .ab-breadcrumbs__list { font-size: 10.7px/*13px*/; }
+    .icon-btn { width: 23.7px/*32px*/; height: 23.7px/*32px*/; }
+    .tt-h { background: var(--s3); }
+
+    button.ab-sidebar__branch { padding: 4.3px/*6px*/ 7.2px/*10px*/; gap: 7.2px/*10px*/; font-size: 10.7px/*13px*/; line-height: 14.8px/*20px*/; }
+
+    /* Tabla de permisos de un rol */
+    .t-cab { padding: 8.6px/*12px*/ 11.5px/*16px*/; }
+    .t-cab h2 { font-size: 12.3px/*15px*/; }
+    .t-cab .d { font-size: 10.7px/*13px*/; }
+    .tt-grupo { display: grid; align-items: center; gap: 8.6px/*12px*/; min-height: 28.1px/*38px*/; padding: 4.3px/*6px*/ 11.5px/*16px*/; background: var(--s2); border-bottom: 1px solid var(--borde); cursor: pointer; font-size: 10.7px/*13px*/; }
+    .tt-grupo .c1 { font-weight: 600; }
+    .tt-grupo input, .fila-perm input { width: 16px; height: 16px; margin: 0; accent-color: var(--marca); cursor: pointer; }
+    .fila-perm { cursor: pointer; }
+    .fila-perm.elegido { background: oklch(0.985 0.01 95); }
+    .tt-grupo .cnt-area { font-weight: 400; color: var(--t2); }
+    .fila-perm { min-height: 26.6px/*36px*/ !important; }
+    .tt-grupo { box-sizing: border-box; min-height: 29.6px/*40px*/; }
+
+    /* Mensajes del sistema: lista a la izquierda y vista previa del correo o del WhatsApp a la derecha. */
+    .msg-root { width: 1440px; height: 900px; display: grid; grid-template-columns: 320px minmax(0, 1fr); background: var(--fondo); font-family: Inter, system-ui, sans-serif; color: var(--t1); font-size: 10.7px/*13px*/; overflow: hidden; }
+    .msg-lado { background: var(--lado); border-right: 1px solid var(--lado-borde); display: flex; flex-direction: column; min-height: 0; }
+    .msg-lado-cab { height: 38.5px/*52px*/; box-sizing: border-box; display: flex; align-items: center; gap: 7.2px/*10px*/; padding: 0 11.5px/*16px*/; border-bottom: 1px solid var(--lado-borde); }
+    .msg-lado-cab strong { font-size: 11.5px/*14px*/; font-weight: 700; }
+    .msg-lista { list-style: none; margin: 0; padding: 5.8px/*8px*/; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }
+    .msg-it { width: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 2.9px/*4px*/; padding: 6.5px/*9px*/ 8.6px/*12px*/; border: 0; border-radius: 3px/*8px*/; background: transparent; text-align: left; cursor: pointer; font-family: inherit; }
+    .msg-it:hover { background: var(--lado-hover); }
+    .msg-it.on { background: #fff; box-shadow: 0 1px 2px oklch(0.24 0.012 60 / 0.08), 0 0 0 1px var(--borde); }
+    .msg-it .n1 { font-size: 10.7px/*13px*/; font-weight: 500; color: var(--lado-t1); }
+    .msg-it.on .n1 { color: var(--lado-activo-t); font-weight: 600; }
+    .msg-it .n2 { font-size: 10.5px/*12px*/; color: var(--lado-t3); }
+    .msg-der { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+    .msg-barra { height: 38.5px/*52px*/; box-sizing: border-box; display: flex; align-items: center; justify-content: space-between; gap: 11.5px/*16px*/; padding: 0 17.3px/*24px*/; background: var(--barra); border-bottom: 1px solid var(--lado-borde); }
+    .msg-barra h1 { margin: 0; font-size: 12.3px/*15px*/; font-weight: 600; }
+    .seg3 { display: inline-flex; padding: 3px; gap: 2px; border-radius: 3px/*10px*/; background: oklch(0.887 0.036 95); }
+    .seg3 button { height: 20.7px/*28px*/; padding: 0 10.1px/*14px*/; border: 0; border-radius: 3px/*8px*/; background: transparent; font-family: inherit; font-size: 10.7px/*13px*/; font-weight: 500; color: var(--t2); cursor: pointer; }
+    .seg3 button[aria-pressed="true"] { background: #fff; color: var(--t1); box-shadow: 0 1px 2px oklch(0.24 0.012 60 / 0.12); }
+    .seg3 button:disabled { color: var(--t3); opacity: 0.55; cursor: default; }
+    .msg-vista { flex: 1 1 auto; min-height: 0; overflow: hidden; display: flex; justify-content: center; align-items: flex-start; padding: 17.3px/*24px*/; }
+
+    /* Correo: cabecera del cliente de correo y la plantilla (copia de _Layout.html de ArquitecturaBase, con la marca). */
+    .mail { width: 780px; background: #fff; border: 1px solid var(--borde); border-radius: 3px/*16px*/; box-shadow: var(--sombra); overflow: hidden; }
+    .mail-cab { padding: 13px/*18px*/ 17.3px/*24px*/ 11.5px/*16px*/; border-bottom: 1px solid var(--borde); display: flex; flex-direction: column; gap: 8.6px/*12px*/; }
+    .mail-asunto { margin: 0; font-size: 14.8px/*18px*/; font-weight: 700; letter-spacing: -0.01em; }
+    .mail-de { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 8.6px/*12px*/; align-items: center; }
+    .mail-de .logo { width: 26.6px/*36px*/; height: 26.6px/*36px*/; border-radius: 3px/*10px*/; background: linear-gradient(135deg, var(--marca) 0%, var(--marca-2) 100%); position: relative; }
+    .mail-de .logo::after { content: ""; position: absolute; inset: 10px; border-radius: 3px; border: 2.5px solid #fff; border-right-color: transparent; transform: rotate(-45deg); }
+    .mail-de .n1 { font-size: 11.1px/*13.5px*/; font-weight: 600; }
+    .mail-de .n1 span { font-weight: 400; color: var(--t2); }
+    .mail-de .n2 { font-size: 10.5px/*12.5px*/; color: var(--t2); margin-top: 1px; }
+    .mail-de .hora { font-size: 10.5px/*12.5px*/; color: var(--t3); white-space: nowrap; }
+    .mail-cuerpo { background: #f4f5f7; padding: 17.3px/*24px*/ 8.6px/*12px*/; display: flex; justify-content: center; }
+    .plantilla { width: 560px; background: #fff; border-radius: 3px/*8px*/; font-family: Arial, Helvetica, sans-serif; }
+    .pl-cab { padding: 14.4px/*20px*/ 23px/*32px*/; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; gap: 7.2px/*10px*/; font-size: 13.1px/*16px*/; font-weight: bold; color: #111827; }
+    .pl-cab .logo { width: 17.8px/*24px*/; height: 17.8px/*24px*/; border-radius: 3px/*7px*/; background: oklch(0.48 0.115 140); position: relative; flex-shrink: 0; }
+    .pl-cab .logo::after { content: ""; position: absolute; inset: 6px; border-radius: 2px; border: 2px solid #fff; border-right-color: transparent; transform: rotate(-45deg); }
+    .pl-cont { padding: 20.2px/*28px*/ 23px/*32px*/; font-size: 12.3px/*15px*/; line-height: 16.3px/*22px*/; color: #374151; }
+    .pl-cont h2 { margin: 0 0 11.5px/*16px*/; font-size: 16.4px/*20px*/; line-height: 20.7px/*28px*/; color: #111827; }
+    .pl-cont p { margin: 0 0 11.5px/*16px*/; }
+    .pl-codigo { margin: 0 0 11.5px/*16px*/; font-family: 'Courier New', Courier, monospace; font-size: 26.2px/*32px*/; font-weight: bold; letter-spacing: 8px; color: #111827; }
+    .pl-datos { margin: 0 0 14.4px/*20px*/; display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 4.3px/*6px*/ 11.5px/*16px*/; padding: 10.1px/*14px*/ 11.5px/*16px*/; border: 1px solid #e5e7eb; border-radius: 3px/*8px*/; font-size: 11.5px/*14px*/; }
+    .pl-datos .k { color: #6b7280; }
+    .pl-datos .v { color: #111827; }
+    .pl-boton { display: inline-block; margin: 0 0 14.4px/*20px*/; padding: 7.2px/*10px*/ 14.4px/*20px*/; border-radius: 3px/*8px*/; background: oklch(0.48 0.115 140); color: #fff; font-weight: bold; text-decoration: none; }
+    .pl-nota { margin: 0 0 5.8px/*8px*/ !important; color: #6b7280; font-size: 11.5px/*14px*/; }
+    .pl-nota:last-child { margin-bottom: 0 !important; }
+    .pl-pie { padding: 10.1px/*14px*/ 23px/*32px*/; border-top: 1px solid #e5e7eb; font-size: 10.5px/*12px*/; line-height: 13.3px/*18px*/; color: #6b7280; }
+    .pl-pie p { margin: 0; }
+
+    /* WhatsApp: chat con la cuenta de la plataforma. */
+    .wa { width: 400px; height: 760px; border-radius: 3px/*28px*/; border: 8px solid oklch(0.24 0.012 60); background: #efeae2; box-shadow: var(--sombra); display: flex; flex-direction: column; overflow: hidden; font-family: Inter, system-ui, sans-serif; }
+    .wa-cab { display: flex; align-items: center; gap: 7.2px/*10px*/; padding: 8.6px/*12px*/ 10.1px/*14px*/; background: #fff; border-bottom: 1px solid #e3e3e3; }
+    .wa-cab .logo { width: 26.6px/*36px*/; height: 26.6px/*36px*/; border-radius: 50%; background: linear-gradient(135deg, var(--marca) 0%, var(--marca-2) 100%); position: relative; flex-shrink: 0; }
+    .wa-cab .logo::after { content: ""; position: absolute; inset: 11px; border-radius: 2px; border: 2px solid #fff; border-right-color: transparent; transform: rotate(-45deg); }
+    .wa-cab .n1 { font-size: 12.3px/*15px*/; font-weight: 600; color: #111b21; display: flex; align-items: center; gap: 2.9px/*4px*/; }
+    .wa-cab .n2 { font-size: 10.5px/*12px*/; color: #667781; }
+    .wa-chat { flex: 1 1 auto; padding: 10.1px/*14px*/ 8.6px/*12px*/; display: flex; flex-direction: column; gap: 4.3px/*6px*/; }
+    .wa-dia { align-self: center; padding: 2.9px/*4px*/ 7.2px/*10px*/; border-radius: 3px/*8px*/; background: #fff; font-size: 10.5px/*12px*/; color: #54656f; box-shadow: 0 1px 0.5px rgb(11 20 26 / 0.13); margin-bottom: 4.3px/*6px*/; }
+    .wa-grupo { display: flex; flex-direction: column; gap: 2px; max-width: 86%; align-self: flex-start; }
+    .wa-plantilla { align-self: flex-start; margin: 0 0 2px 2px; font-size: 10.5px/*11px*/; color: #54656f; }
+    .wa-plantilla code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 10.5px/*11px*/; }
+    .wa-burbuja { background: #fff; border-radius: 0 3px/*8px*/ 3px/*8px*/ 3px/*8px*/; padding: 5px/*7px*/ 6.5px/*9px*/ 4.3px/*6px*/; font-size: 11.6px/*14.2px*/; line-height: 14.1px/*19px*/; color: #111b21; box-shadow: 0 1px 0.5px rgb(11 20 26 / 0.13); }
+    .wa-burbuja b { font-weight: 700; }
+    .wa-pie { display: block; margin-top: 2.9px/*4px*/; font-size: 10.7px/*13px*/; color: #667781; }
+    .wa-hora { display: block; text-align: right; font-size: 10.5px/*11px*/; color: #667781; margin-top: 2px; }
+    .wa-boton { display: flex; align-items: center; justify-content: center; gap: 4.3px/*6px*/; background: #fff; border-radius: 3px/*8px*/; padding: 6.5px/*9px*/; font-size: 11.5px/*14px*/; font-weight: 500; color: #027eb5; box-shadow: 0 1px 0.5px rgb(11 20 26 / 0.13); }
+    .wa-mio { align-self: flex-end; max-width: 80%; background: #d9fdd3; border-radius: 3px/*8px*/ 0 3px/*8px*/ 3px/*8px*/; padding: 5px/*7px*/ 6.5px/*9px*/ 4.3px/*6px*/; font-size: 11.6px/*14.2px*/; line-height: 14.1px/*19px*/; color: #111b21; box-shadow: 0 1px 0.5px rgb(11 20 26 / 0.13); }
+    .wa-entrada { display: flex; align-items: center; gap: 5.8px/*8px*/; padding: 5.8px/*8px*/ 7.2px/*10px*/; background: #f0f2f5; }
+    .wa-entrada span { flex: 1 1 auto; height: 28.1px/*38px*/; border-radius: 3px/*20px*/; background: #fff; display: flex; align-items: center; padding: 0 10.1px/*14px*/; font-size: 11.5px/*14px*/; color: #8696a0; }
+  </style>
+                                <style data-tema="c2">
+/* Común a las tres direcciones: marca con nombre, rótulos sin mayúsculas, sombras suaves. */
+.ab-sidebar__head { gap: 7.2px/*10px*/; border-bottom-color: transparent; }
+.brand { position: relative; background: linear-gradient(135deg, var(--marca) 0%, var(--marca-2) 100%); box-shadow: 0 2px 6px -1px var(--marca-sombra); }
+.brand::after { content: ""; position: absolute; inset: 8px; border-radius: 3px; border: 2.5px solid #fff; border-right-color: transparent; transform: rotate(-45deg); }
+.ab-sidebar__head::after { content: "ArquitecturaBase"; font-size: 11.5px/*14px*/; font-weight: 700; letter-spacing: -0.01em; color: var(--lado-t1); }
+.ab-sidebar__group-label { text-transform: none !important; letter-spacing: 0 !important; font-size: 10.5px/*12px*/ !important; font-weight: 600; color: var(--lado-t3) !important; }
+.scope { border-bottom-color: transparent !important; padding: 4.3px/*6px*/ 8.6px/*12px*/ 8.6px/*12px*/ !important; }
+.scope-name { color: var(--lado-t1) !important; }
+.scope-detail { color: var(--lado-t3) !important; }
+.ab-sidebar { background: var(--lado) !important; border-right-color: var(--lado-borde) !important; }
+.ab-sidebar__link, .ab-sidebar__branch { color: var(--lado-t2) !important; border-radius: 3px/*8px*/ !important; }
+.ab-sidebar__link:hover, .ab-sidebar__branch:hover { background: var(--lado-hover) !important; color: var(--lado-t1) !important; }
+.ab-sidebar__link--active, .ab-sidebar__link--active:hover { background: var(--lado-activo) !important; color: var(--lado-activo-t) !important; font-weight: 600 !important; }
+.ab-sidebar__children { border-left-color: var(--lado-borde) !important; }
+.ab-sidebar__footer { border-top-color: var(--lado-borde) !important; }
+.ab-sidebar__name { color: var(--lado-t1) !important; }
+.ab-sidebar__email { color: var(--lado-t3) !important; }
+.ab-sidebar__toggle { background: var(--lado) !important; border-color: var(--lado-borde) !important; color: var(--lado-t2) !important; }
+.avatar { background: linear-gradient(135deg, var(--marca) 0%, var(--marca-2) 100%); }
+.ab-topbar { background: var(--barra) !important; border-bottom-color: var(--borde) !important; }
+.banda-pag { background: var(--banda) !important; }
+.banda-pag h1 { letter-spacing: -0.015em; }
+.banda-pag .ico { background: var(--marca-t); color: var(--marca-tx); }
+.tarjeta, .fb { border-color: var(--borde) !important; box-shadow: var(--sombra) !important; }
+.tt-h, .tt-h.gris { background: var(--cab) !important; color: var(--t2) !important; }
+.tt-f:hover { background: var(--fila-hover) !important; }
+.b-pri { background: linear-gradient(180deg, var(--marca) 0%, var(--marca-h) 100%) !important; box-shadow: 0 1px 2px var(--marca-sombra), inset 0 1px 0 rgb(255 255 255 / 0.15); }
+.b-pri:hover { filter: brightness(1.05); }
+.pill-sel { background: #fff; }
+/* Administración: desplegable al pie del menú lateral. */
+.ab-sidebar__nav { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+.admin-grupo { margin-top: auto; padding-top: 5.8px/*8px*/; border-top: 1px solid var(--lado-borde); }
+.admin-grupo > .ab-sidebar__list > li > .ab-sidebar__branch { font-weight: 600; color: var(--lado-t1) !important; }
+.ab-sidebar__branch[aria-expanded="false"] .ab-sidebar__chevron { transform: rotate(-90deg); }
+.admin-grupo .ab-sidebar__children { margin-left: 7.2px/*10px*/ !important; padding-left: 5.8px/*8px*/ !important; }
+.admin-grupo .ab-sidebar__children .ab-sidebar__link, .admin-grupo .ab-sidebar__children .ab-sidebar__branch { padding-left: 5.8px/*8px*/ !important; padding-right: 5.8px/*8px*/ !important; }
+.admin-grupo .ab-sidebar__children .ab-sidebar__children { margin-left: 11.5px/*16px*/ !important; }
+
+.brand { flex-shrink: 0; }
+/* Panel de Administración: segundo panel al lado del menú lateral (escritorio), con el mismo estilo del menú. */
+.adm-panel { width: 232px; flex-shrink: 0; height: 100%; box-sizing: border-box; display: flex; flex-direction: column; background: oklch(0.902 0.04 95); border-right: 1px solid oklch(0.845 0.047 95); position: relative; z-index: 25; }
+.ab-root:not(.adm-abierto) .adm-panel { display: none; }
+.adm-cab { height: 38.5px/*52px*/; box-sizing: border-box; display: flex; align-items: center; padding: 0 11.5px/*16px*/; border-bottom: 1px solid oklch(0.845 0.047 95); }
+.adm-cab strong { font-size: 11.5px/*14px*/; font-weight: 700; color: var(--lado-t1); }
+.adm-cerrar { padding: 0; font-family: inherit; position: absolute; right: -10.1px/*14px*/; top: 47.4px/*64px*/; width: 20.7px/*28px*/; height: 20.7px/*28px*/; border-radius: 3px/*999px*/; display: inline-flex; align-items: center; justify-content: center; background: #fff; border: 1px solid var(--borde2); box-shadow: 0 1px 3px oklch(0.24 0.012 60 / 0.15); color: var(--t1); cursor: pointer; z-index: 30; }
+.adm-cerrar:hover { color: var(--marca); }
+.adm-panel .ab-sidebar__nav { padding: 8.6px/*12px*/ 5.8px/*8px*/; }
+.adm-panel .ab-sidebar__link, .adm-panel .ab-sidebar__branch { color: var(--lado-t2) !important; }
+.adm-panel .ab-sidebar__link:hover, .adm-panel .ab-sidebar__branch:hover { background: oklch(0.872 0.043 95) !important; color: var(--lado-t1) !important; }
+.adm-panel .ab-sidebar__link--active, .adm-panel .ab-sidebar__link--active:hover { background: #fff !important; color: var(--lado-activo-t) !important; box-shadow: 0 1px 2px oklch(0.24 0.012 60 / 0.08), 0 0 0 1px var(--borde); }
+.adm-panel .ab-sidebar__children { border-left-color: oklch(0.825 0.047 95) !important; }
+.adm-btn { cursor: pointer; user-select: none; width: 100%; border: 0; background: transparent; font-family: inherit; text-align: left; }
+.adm-btn .adm-flecha { margin-left: auto; transition: transform 0.15s; }
+.ab-root.adm-abierto .adm-btn { background: var(--lado-activo) !important; color: var(--lado-activo-t) !important; font-weight: 600 !important; box-shadow: 0 1px 2px oklch(0.24 0.012 60 / 0.08), 0 0 0 1px var(--borde); }
+.ab-root.adm-abierto .adm-btn .adm-flecha { transform: rotate(180deg); }
+.ab-root.adm-abierto .ab-sidebar__toggle { display: none; }
+/* Encabezados de tabla: si no entran, bajan de línea en vez de pisarse. */
+.tt-h { white-space: normal !important; line-height: 1.25; height: auto !important; min-height: 31.1px/*42px*/; padding-top: 2.9px/*4px*/ !important; padding-bottom: 2.9px/*4px*/ !important; }
+/* C · Cálido y suave: neutros tibios, verde pasto, bordes más redondos. */
+:root { --marca: oklch(0.48 0.115 140); --marca-2: oklch(0.66 0.15 128); --marca-h: oklch(0.43 0.115 140); --marca-t: oklch(0.955 0.035 130); --marca-tx: oklch(0.41 0.1 140); --marca-sombra: oklch(0.48 0.115 140 / 0.3);
+  --fondo: oklch(0.975 0.008 95); --s2: oklch(0.97 0.009 95); --s3: oklch(0.945 0.011 95); --borde: oklch(0.915 0.013 95); --borde2: oklch(0.84 0.018 95);
+  --t1: oklch(0.24 0.012 60); --t2: oklch(0.47 0.012 60); --t3: oklch(0.62 0.01 60);
+  --lado: oklch(0.965 0.01 95); --lado-borde: oklch(0.915 0.013 95); --lado-t1: var(--t1); --lado-t2: var(--t2); --lado-t3: var(--t3); --lado-hover: oklch(0.935 0.013 95); --lado-activo: #fff; --lado-activo-t: oklch(0.41 0.1 140);
+  --barra: oklch(0.965 0.01 95); --banda: #fff; --cab: oklch(0.97 0.009 95); --fila-hover: oklch(0.978 0.009 95); --sombra: 0 1px 2px oklch(0.24 0.012 60 / 0.05), 0 8px 24px -12px oklch(0.24 0.012 60 / 0.14); }
+.ab-sidebar__link--active { box-shadow: 0 1px 2px oklch(0.24 0.012 60 / 0.08), 0 0 0 1px var(--borde); }
+.ab-topbar { border-bottom-color: transparent !important; }
+.tarjeta, .fb { border-radius: 3px/*16px*/ !important; }
+.tarjeta > .tt-h:first-child { border-radius: 3px/*15px*/ 3px/*15px*/ 0 0 !important; }
+.ab-app-shell__main { background: var(--fondo); }
+.b { border-radius: 3px/*10px*/; }
+/* C2 · Cálido con marco paja (menú lateral y barra superior en un tono más marcado). */
+:root { --lado: oklch(0.922 0.036 95); --lado-borde: oklch(0.865 0.04 95); --lado-t1: oklch(0.24 0.015 60); --lado-t2: oklch(0.42 0.02 80); --lado-t3: oklch(0.55 0.018 60); --lado-hover: oklch(0.892 0.04 95); --lado-activo: #fff; --lado-activo-t: oklch(0.41 0.1 140);
+  --barra: oklch(0.922 0.036 95); --fondo: oklch(0.985 0.005 95); }
+.ab-topbar { border-bottom-color: var(--lado-borde) !important; }
+.ab-sidebar__head { border-bottom-color: var(--lado-borde) !important; }
+.um-btn:hover { background: var(--lado-hover) !important; }
+/* Filas alternadas: la segunda de cada par con un fondo arena suave. */
+.tarjeta > .tt-f:nth-child(odd) { background: oklch(0.968 0.015 95); }
+.tt-f:hover { background: oklch(0.955 0.03 130) !important; }
+
+  </style><!-- /tema -->
+<style data-vuelta="1003-Mensajes"></style>
+<style data-regla="menus-con-lineas">
+.menu[role="menu"] { padding: 0; overflow: hidden; }
+.menu[role="menu"] .menu-it { border-radius: 0; min-height: 31.1px/*42px*/; padding: 5.8px/*8px*/ 10.1px/*14px*/; border-top: 1px solid var(--borde); margin-top: -1px; }
+.menu[role="menu"] .menu-sep { height: 6px; margin: 0; background: var(--s2); border-top: 1px solid var(--borde); }
+.o-menu { padding: 0; overflow: hidden; }
+.o-menu .it { border-radius: 0; }
+.o-menu .it + .it { border-top: 1px solid var(--borde); }
+</style>
+<style data-regla="flechita-blanca">
+.ab-sidebar__toggle { background: #fff !important; border-color: var(--lado-borde) !important; color: var(--t2) !important; }
+</style>
+<style data-regla="lineas-menu-lateral">
+.ab-sidebar__list > li + li, .ab-sidebar__children > li + li { border-top: 1px solid var(--lado-borde); padding-top: 2px; }
+.w-nav > .w-ln, .w-hijos > .w-ln, .w-abajo > .w-ln { position: relative; }
+.w-nav > .w-ln + .w-ln::before, .w-nav > .w-hijos + .w-ln::before, .w-hijos > .w-ln + .w-ln::before, .w-abajo > .w-ln + .w-ln::before {
+  content: ""; position: absolute; left: 0; right: 0; top: -2px; height: 1px; background: oklch(0.865 0.04 95); }
+</style>
+<style data-vuelta="1004-sin-revelar">
+</style>
+<style data-vuelta="1004-sin-revelar-cuenta">
+</style>
+<style data-vuelta="1004-baja-plataforma">
+</style>
+<style data-vuelta="1004-recuperar-aviso">
+</style>
+<style data-vuelta="1004-operador-invitacion">
+</style>
+<style data-vuelta="1004-operador-sin-nombre">
+</style>
+<style data-vuelta="1004-enmascarado">
+</style>
+<style data-vuelta="1004-v115">
+.err-acc { align-self: flex-start; font-size: 11.5px/*14px*/; font-weight: 600; }
+</style>
+<style data-e11>
+.wa-cab .logo.e11-org { background: var(--marca); background-image: none; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 10.7px/*13px*/; font-weight: 700; }
+.wa-cab .logo.e11-org::before, .wa-cab .logo.e11-org::after { display: none; }
+</style>
+<style data-r311="elegido">
+:is(.o-seg, .o-seg3, .ap-seg, .ap-seg2, .seg, .seg2, .seg3, .fm-seg, .p-seg, .cg-tseg, .as-seg, .as-vseg, .pb-seg, .e11-seg, .e11-vseg, .tb-seg, .md-seg, .dp-seg, .imp-seg) { background: #fff !important; box-shadow: inset 0 0 0 1px var(--borde2) !important; }
+:is(.o-seg, .o-seg3, .ap-seg, .ap-seg2, .seg, .seg2, .seg3, .fm-seg, .p-seg, .cg-tseg, .as-seg, .as-vseg, .pb-seg, .e11-seg, .e11-vseg, .tb-seg, .md-seg, .dp-seg, .imp-seg, .ab-seg) :is(span, button).on, :is(.seg2, .seg3) button[aria-pressed="true"] { background: var(--marca) !important; color: #fff !important; box-shadow: none !important; font-weight: 600 !important; }
+</style>
+<style data-mod="modulos">
+
+/* Módulos y suscripciones (ADR 0069). La (i) y su tooltip; abierta, para verla en el tablero (211). */
+.mod-i { position: relative; display: inline-flex; align-items: center; margin-left: 2.9px/*4px*/; color: var(--t3); cursor: help; vertical-align: -2px; }
+.mod-tip { position: absolute; z-index: 60; left: -8.6px/*12px*/; top: calc(100% + 5.9px/*8px*/); width: max-content; max-width: 300px; padding: 5px/*7px*/ 7.2px/*10px*/; border-radius: 3px/*6px*/; background: oklch(0.27 0.012 60); color: #fff; font-size: 10.5px/*12.5px*/; font-weight: 400; line-height: 1.4; white-space: normal; text-align: left; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); }
+.mod-tip::before { content: ""; position: absolute; left: 10.1px/*14px*/; bottom: 100%; border: 6px solid transparent; border-bottom-color: oklch(0.27 0.012 60); }
+.mod-tip.arriba { top: auto; bottom: calc(100% + 5.9px/*8px*/); }
+.mod-tip.arriba::before { bottom: auto; top: 100%; border-bottom-color: transparent; border-top-color: oklch(0.27 0.012 60); }
+.mod-tip.der { left: auto; right: -8.6px/*12px*/; }
+.mod-tip.der::before { left: auto; right: 10.1px/*14px*/; }
+.mod-apag { position: relative; display: inline-flex; }
+
+/* Los avisos según su tipo (210): blancos, con el filo de 3 px y el ícono del color de su tipo. */
+.mod-av { --mod-tipo: var(--t2); display: flex; align-items: flex-start; gap: 7.2px/*10px*/; padding: 7.2px/*10px*/ 8.6px/*12px*/; border: 1px solid var(--borde2); border-left: 3px solid var(--mod-tipo); border-radius: 3px; background: #fff; color: var(--t1); font-size: 10.7px/*13px*/; line-height: 1.45; }
+.mod-av > svg { flex: none; margin-top: 1px; color: var(--mod-tipo); }
+.mod-av .tx { flex: 1; min-width: 0; }
+.mod-av.aten { --mod-tipo: oklch(0.7 0.15 70); }
+.mod-av.ok { --mod-tipo: oklch(0.55 0.13 155); }
+.mod-av.mal { --mod-tipo: oklch(0.55 0.2 25); }
+.mod-av .acc { flex: none; display: flex; gap: 5.8px/*8px*/; align-items: center; }
+
+/* El aro: lo que carga y el botón que trabaja (115 y 160). */
+.mod-aro { display: inline-block; width: 14px; height: 14px; box-sizing: border-box; margin-right: 4.3px/*6px*/; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; vertical-align: -2px; animation: mod-girar 0.8s linear infinite; }
+.mod-aro.grande { width: 16.3px/*22px*/; height: 16.3px/*22px*/; margin: 0; border-width: 2.5px; border-color: oklch(0.89 0.031 95); border-top-color: var(--marca); }
+@keyframes mod-girar { to { transform: rotate(360deg); } }
+
+/* La compu. La primera carga de un listado: el encabezado y el aro en el alto de ocho filas, sin filas esqueleto (160). */
+.mod-carga { height: 320px; display: flex; align-items: center; justify-content: center; }
+.mod-bloque { display: flex; flex-direction: column; align-items: center; gap: 7.2px/*10px*/; padding: 23px/*32px*/ 11.5px/*16px*/; text-align: center; font-size: 11.5px/*14px*/; }
+.mod-bloque strong { font-weight: 600; color: var(--t1); }
+.mod-centro { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8.6px/*12px*/; text-align: center; }
+.mod-centro .circ { display: inline-flex; width: 38.5px/*52px*/; height: 38.5px/*52px*/; align-items: center; justify-content: center; border-radius: 3px; background: var(--s2, oklch(0.965 0.012 95)); color: var(--t2); }
+.mod-centro h2 { margin: 0; font-size: 14.8px/*18px*/; font-weight: 600; color: var(--t1); }
+.mod-pagina { position: relative; }
+.mod-espera { display: flex; flex-direction: column; align-items: center; gap: 10.1px/*14px*/; padding: 51.8px/*72px*/ 11.5px/*16px*/; text-align: center; }
+.mod-espera h2 { margin: 0; font-size: 14.8px/*18px*/; font-weight: 600; color: var(--t1); }
+
+/* Las tablas de la etapa: un dato por columna (206), con la columna ordenada marcada (264). */
+.tt-h .ord { margin-left: 2.9px/*4px*/; font-size: 10.5px/*10px*/; }
+.tt-f .mod-c { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tt-f .mod-c.t2 { color: var(--t2); }
+.tt-f .mod-c.t3 { color: var(--t3); }
+.tt-f.mod-grupo { background: oklch(0.975 0.006 95) !important; font-weight: 600; }
+.tt-f.mod-sub > span:first-child { padding-left: 20.2px/*28px*/; }
+.tt-f .mod-nombre { color: var(--t1); font-weight: 600; text-decoration: none; }
+.tt-f.mod-marcada { box-shadow: inset 3px 0 0 var(--marca); }
+.tarjeta .envoltura { position: relative; }
+.mod-menu { position: absolute; z-index: 50; top: calc(100% + 3px/*4px*/); right: 0; min-width: 220px; }
+.mod-menu .menu-it { display: flex; align-items: center; gap: 5.8px/*8px*/; width: 100%; }
+.mod-menu .menu-it svg { color: var(--t3); flex: none; }
+.mod-menu .menu-it.pel svg { color: inherit; }
+.mod-menu .menu-it.apagado { position: relative; color: var(--t3); cursor: default; }
+.mod-menu .menu-it .mod-tip { left: 5.8px/*8px*/; }
+
+/* Las zonas de una página: el encabezado con su título y, a la derecha, solo su acción (145). */
+.mod-zonas { display: flex; flex-direction: column; gap: 11.5px/*16px*/; }
+.mod-zona { background: #fff; border: 1px solid var(--borde); border-radius: 3px; }
+.mod-zona > .cab { display: flex; align-items: center; gap: 8.6px/*12px*/; min-height: 32.6px/*44px*/; padding: 0 11.5px/*16px*/; border-bottom: 1px solid var(--borde); background: oklch(0.945 0.027 95); border-radius: 3px 3px 0 0; }
+.mod-zona > .cab h2 { margin: 0 auto 0 0; font-size: 11.5px/*14px*/; font-weight: 600; color: var(--t1); }
+.mod-zona > .cuerpo { padding: 11.5px/*16px*/; }
+.mod-zona > .cuerpo.sin { padding: 0; }
+.mod-zona > .cuerpo.sin .tarjeta { border: 0; border-radius: 0; }
+.mod-zona > .campos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10.1px/*14px*/ 14.4px/*20px*/; padding: 11.5px/*16px*/; }
+.mod-zona .ancho { grid-column: 1 / -1; }
+
+/* Lo que se lee, en su grilla (138): el rótulo y el valor, cada uno en su columna. */
+.mod-dl { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 7.2px/*10px*/ 11.5px/*16px*/; font-size: 11.5px/*14px*/; }
+.mod-dl.dos { grid-template-columns: 200px minmax(0, 1fr) 200px minmax(0, 1fr); }
+.mod-dl .k { color: var(--t2); }
+.mod-dl .v { color: var(--t1); min-width: 0; overflow-wrap: anywhere; }
+.velo .mod-dl { grid-template-columns: 170px minmax(0, 1fr); font-size: 11.1px/*13.5px*/; }
+
+/* La tarjeta de Mercado Pago: sus campos los dibuja MercadoPago.js, con la forma de los nuestros. */
+.mod-mp { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10.1px/*14px*/ 14.4px/*20px*/; }
+.mod-mp .in2 { display: flex; align-items: center; justify-content: space-between; text-align: left; color: var(--t1); }
+.mod-mp .in2.vacio { color: var(--t3); }
+.mod-mp .in2.mal { border-color: oklch(0.57 0.2 25 / 0.7); }
+.mod-mp .err { display: block; margin-top: 3.6px/*5px*/; color: oklch(0.52 0.19 25); font-size: 10.5px/*12.5px*/; }
+.mod-acepto { display: flex; align-items: flex-start; gap: 7.2px/*10px*/; font-size: 11.5px/*14px*/; line-height: 1.45; color: var(--t1); }
+.mod-acepto input { width: 16px; height: 16px; margin: 2px 0 0; flex: none; accent-color: var(--marca); }
+.mod-clave { display: flex; align-items: center; gap: 8.6px/*12px*/; }
+.mod-clave .val { flex: 1; font-family: ui-monospace, Consolas, monospace; letter-spacing: 0.02em; }
+.mod-clave .val.vacio { font-family: inherit; color: var(--t3); }
+.mod-url { display: flex; align-items: center; gap: 5.8px/*8px*/; }
+.mod-url code { flex: 1; min-width: 0; padding: 0 7.2px/*10px*/; height: 26.6px/*36px*/; display: inline-flex; align-items: center; border: 1px solid var(--borde); border-radius: 3px; background: var(--s3); font-size: 10.7px/*13px*/; color: var(--t1); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+/* Los plazos (270): cada uno con su (i), su mínimo y su máximo. */
+.mod-plazos { font-size: 11.5px/*14px*/; }
+.mod-plazos .f { display: grid; grid-template-columns: minmax(0, 1fr) 150px 110px 110px; align-items: center; gap: 0 11.5px/*16px*/; min-height: 38.5px/*52px*/; padding: 0 11.5px/*16px*/; border-top: 1px solid var(--borde); }
+.mod-plazos .f.h { min-height: 29.6px/*40px*/; border-top: 0; background: oklch(0.945 0.027 95); color: var(--t2); font-weight: 600; font-size: 10.7px/*13px*/; }
+.mod-plazos .num { text-align: right; }
+.mod-plazos .in2 { width: 100%; }
+.mod-plazos .err { grid-column: 2 / -1; padding-bottom: 5.8px/*8px*/; color: oklch(0.52 0.19 25); font-size: 10.5px/*12.5px*/; }
+.mod-plazos .in2.mal { border-color: oklch(0.57 0.2 25 / 0.7); }
+
+/* Los diálogos de la etapa. */
+.velo .dlg .dlg-b .mod-av, .velo .dlg .dlg-b .mod-dl, .velo .dlg .dlg-b .mod-acepto { grid-column: 1 / -1; }
+.velo .dlg.medio { width: 560px; }
+.velo .b[aria-disabled="true"] { opacity: 0.55; cursor: default; }
+.mod-btn-apag { position: relative; display: inline-flex; }
+.mod-btn-apag .b { opacity: 0.55; cursor: default; }
+.mod-btn-apag .mod-tip { left: auto; right: 0; }
+.mod-btn-apag .mod-tip::before { left: auto; right: 13px/*18px*/; }
+.mod-campo-err { display: block; margin-top: 3.6px/*5px*/; color: oklch(0.52 0.19 25); font-size: 10.5px/*12.5px*/; }
+.in2.mal { border-color: oklch(0.57 0.2 25 / 0.7) !important; }
+.mod-pre { display: flex; align-items: center; }
+.mod-pre .pf { padding: 0 0 0 7.2px/*10px*/; color: var(--t2); }
+.mod-pre .in2 { border: 0 !important; box-shadow: none !important; flex: 1; }
+.mod-prebox { display: flex; align-items: center; border: 1px solid var(--borde2); border-radius: 3px; background: #fff; }
+.mod-prebox .uni { padding: 0 7.2px/*10px*/; color: var(--t2); white-space: nowrap; }
+.mod-prebox .in2 { border: 0 !important; flex: 1; min-width: 0; }
+.mod-lista { position: absolute; z-index: 60; left: 0; right: 0; top: calc(100% + 3px/*4px*/); padding: 2.9px/*4px*/ 0; border: 1px solid var(--borde2); border-radius: 3px; background: #fff; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); }
+.mod-lista .op { position: relative; display: flex; align-items: center; gap: 7.2px/*10px*/; min-height: 26.6px/*36px*/; padding: 0 8.6px/*12px*/; font-size: 11.5px/*14px*/; color: var(--t1); border-top: 1px solid var(--borde); }
+.mod-lista .op:first-child { border-top: 0; }
+.mod-lista .op .tl { margin-left: auto; color: var(--marca-tx); display: inline-flex; }
+.mod-lista .op.sel { font-weight: 600; box-shadow: inset 2px 0 0 var(--marca); }
+.mod-lista .op.apag { color: var(--t3); cursor: default; }
+.mod-lista .op .mod-tip { left: 28.8px/*40px*/; }
+.campo2.envoltura { position: relative; }
+.velo .mod-lista { position: static; margin-top: 2.9px/*4px*/; box-shadow: none; }
+
+/* «Confirmá que sos vos», como en Configuración de Plataforma. */
+.ra .otp { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5.8px/*8px*/; }
+.ra .otp input { height: 32.6px/*44px*/; width: 100%; box-sizing: border-box; padding: 0; border: 1px solid var(--borde2); border-radius: 3px; text-align: center; font-size: 16.4px/*20px*/; font-weight: 600; color: var(--t1); background: #fff; }
+.ra .ra-rec { justify-self: start; font-size: 11.1px/*13.5px*/; margin-top: 2.9px/*4px*/; }
+
+/* «Propuesta del asistente» junto al título (regla 9 de la 0068), como en los tableros `*-Propuesta`. */
+.mod-dh { display: flex; align-items: baseline; flex-wrap: wrap; gap: 2.9px/*4px*/ 8.6px/*12px*/; }
+.mod-prop { display: inline-flex; align-items: center; gap: 3.6px/*5px*/; color: var(--marca-tx); font-size: 10.7px/*13px*/; font-weight: 500; white-space: nowrap; }
+.mod-prop svg { width: 14px; height: 14px; flex: none; }
+
+/* El aviso de abajo: lo que salió bien, abajo a la derecha (210). */
+.mod-toast { position: absolute; z-index: 45; right: 17.3px/*24px*/; bottom: 17.8px/*24px*/; display: flex; align-items: center; gap: 7.2px/*10px*/; max-width: 460px; padding: 7.2px/*10px*/ 10.1px/*14px*/; border: 1px solid var(--borde2); border-left: 3px solid oklch(0.55 0.13 155); border-radius: 3px; background: #fff; color: var(--t1); font-size: 10.7px/*13px*/; box-shadow: 0 12px 32px oklch(0.24 0.014 78 / 0.14); }
+.mod-toast > svg:first-child { color: oklch(0.55 0.13 155); flex: none; }
+.mod-toast .x { display: inline-flex; margin-left: 4.3px/*6px*/; color: var(--t3); }
+
+/* Las pestañas de la ficha de una organización, sin cantidades (145). */
+.tabs2 .tab2 .cnt { display: none; }
+.mod-tabpanel { margin-top: 11.5px/*16px*/; display: flex; flex-direction: column; gap: 11.5px/*16px*/; }
+
+/* Los correos de los avisos. */
+.mod-mail-dl { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 4.3px/*6px*/ 10.1px/*14px*/; margin: 10.1px/*14px*/ 0; padding: 8.6px/*12px*/ 10.1px/*14px*/; border: 1px solid var(--borde); border-radius: 3px; font-size: 11.5px/*14px*/; }
+.mod-mail-dl .k { color: var(--t2); }
+</style>
+<style data-t10="piezas">
+/* 173 · La marca es el nombre, sin cuadrado ni degradé; la banda, sin ícono de la sección. */
+:root .brand, :root .w-br, :root .app .sb .br, :root .lat .sb .brand2 { display: none !important; }
+:root .ab-sidebar__head { gap: 0 !important; }
+:root .banda-pag .ico, :root .w-bnd .ic, :root .bnd .ic, :root .carril .quien .ico { display: none !important; }
+:root .ini-ico, :root .lp-ico { background: transparent !important; width: auto !important; height: auto !important; }
+
+/* 173 · El avatar, un cuadrado con la inicial, sin degradé: chico (24) en la barra de arriba y en el pie del menú. */
+:root .avatar, :root .w-av, :root .ap-nav .yo, :root .av:not(.z-f), :root .org-av, :root .mail-de .logo { background: var(--marca) !important; color: #fff; border-radius: 3px/*6px*/ !important; }
+:root .avatar.gris { background: var(--s3) !important; color: var(--t2) !important; }
+:root .w-av.g { background: oklch(0.9 0.015 95) !important; color: var(--t2) !important; }
+:root .ab-topbar .um-btn .avatar, :root .ab-sidebar__user .avatar, :root .ab-sidebar__footer .avatar, :root .w-us .w-av, :root .w-umd .um .w-av { width: 17.8px/*24px*/ !important; height: 17.8px/*24px*/ !important; font-size: 10.5px/*12px*/ !important; border-radius: 3px/*5px*/ !important; }
+:root .menu-cab .avatar, :root .w-mn-cab .w-av, :root .ap .w-av, :root .ap-cbar .w-av { border-radius: 3px/*8px*/ !important; }
+:root .ap-yo .w-av, :root .ap-perfil .w-av, :root .org-av { border-radius: 3px/*12px*/ !important; }
+
+/* 173 · El activo del menú: una barra de 2 px de la marca, sin pastilla blanca ni sombra. */
+:root .ab-sidebar__link--active, :root .ab-sidebar__link--active:hover, :root .ab-root.adm-abierto .adm-btn, :root .ab-root.wa-abierto .wa-btn, :root .w-ln.on, :root .app .sb .ln.on, :root .lat .sb .ln.on {
+  background: var(--lado-hover) !important; color: var(--marca-tx) !important; font-weight: 600 !important; box-shadow: inset 2px 0 0 var(--marca) !important; border-radius: 0 3px/*8px*/ 3px/*8px*/ 0 !important; }
+:root .adm-panel .ab-sidebar__link--active, :root .adm-panel .ab-sidebar__link--active:hover, :root .w-panel .w-ln.on, :root .lat .panel .ln.on {
+  background: oklch(0.872 0.043 95) !important; color: var(--marca-tx) !important; font-weight: 600 !important; box-shadow: inset 2px 0 0 var(--marca) !important; border-radius: 0 3px/*8px*/ 3px/*8px*/ 0 !important; }
+
+/* 173 · El principal, sólido: sin degradé ni sombra. */
+:root .b-pri, :root .cb-pri { background: var(--marca) !important; box-shadow: none !important; filter: none !important; }
+:root .b-pri:hover, :root .cb-pri:hover, :root .cb-pri.h { background: var(--marca-h) !important; filter: none !important; }
+:root .ab-btn.ab-btn--outline:not(:focus-visible) { box-shadow: none !important; }
+
+/* 173 · Los filtros y las etiquetas, con el radio de un control; los contadores, como texto. */
+:root .pill-sel, :root .filtros .pil, :root .w-pil, :root .caja.fil .pi, :root .flt .pil, :root .fb2 .pil, :root .tb .pie .pil, :root .tel .pills span, :root .ap-chips2 span, :root .ap-flt .ch, :root .pl-chip, :root .flt.r311 .chip, :root .as-chip, :root .ap-pill { border-radius: 3px/*8px*/ !important; }
+:root .pill, :root .rol, :root .pl-marca, :root .ap-fila .pl-marca, :root .auth-marca .kicker, :root .lp-kicker { border-radius: 3px/*6px*/ !important; }
+:root .tab2 .cnt, :root .ini .t-cab .cnt { background: transparent !important; padding: 0 !important; border-radius: 0 !important; color: var(--t3) !important; }
+:root .w-panel .w-ln .cnt, :root .fm-cnt, :root .ap-fila .fm-cnt, :root .ap-it .ap-cnt { background: transparent !important; padding: 0 !important; min-width: 0 !important; height: auto !important; border-radius: 0 !important; color: var(--marca-tx) !important; font-weight: 600 !important; }
+:root .w-campana .n, :root .ap-campana .n, :root .c-campana .n, :root .cmp .n, :root .c-bad, :root .pl-fil .n, :root .flt.r311 .pil .n { border-radius: 3px/*5px*/ !important; }
+
+/* 143 y 144 · Las opciones de un filtro no dicen cuántas filas traen, y la barra no lleva el total: va al pie. */
+:root .menu-cnt, :root .f-mn .cnt, :root .mf-ck small, :root .mf .esq-n, :root .tot { display: none !important; }
+
+/* 137 · Una línea fina entre columnas, del tono de la que separa las filas, en el encabezado y en el cuerpo. */
+:root .tt-h, :root .tt-f, :root .w-th:not(.k-desp *), :root .w-tr:not(.k-desp *) { position: relative; }
+/* Las filas de una tabla con columnas fijas conservan su relleno, del que sale dónde queda cada columna fija (ver TABLA_FIJA). */
+:root .k-desp .w-th, :root .k-desp .w-tr { padding-left: 16px !important; padding-right: 8px !important; }
+:root .tt-f > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.circ):not(.ck):not(.der):not(.dlg-f):not(.dlg-x):not(.e11-org):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.logo):not(.mail-cuerpo):not(.mas):not(.menu-cnt):not(.mod-carga):not(.mod-centro):not(.msg-vista):not(.quitar):not(.tl):not(.todos):not(.velo):not(.wa-boton):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.circ):not(.ck):not(.der):not(.dlg-f):not(.dlg-x):not(.e11-org):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.logo):not(.mail-cuerpo):not(.mas):not(.menu-cnt):not(.mod-carga):not(.mod-centro):not(.msg-vista):not(.quitar):not(.tl):not(.todos):not(.velo):not(.wa-boton):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.915 0.013 95 / 0.8); pointer-events: none; }
+:root .tt-h > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.circ):not(.ck):not(.der):not(.dlg-f):not(.dlg-x):not(.e11-org):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.logo):not(.mail-cuerpo):not(.mas):not(.menu-cnt):not(.mod-carga):not(.mod-centro):not(.msg-vista):not(.quitar):not(.tl):not(.todos):not(.velo):not(.wa-boton):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.circ):not(.ck):not(.der):not(.dlg-f):not(.dlg-x):not(.e11-org):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.logo):not(.mail-cuerpo):not(.mas):not(.menu-cnt):not(.mod-carga):not(.mod-centro):not(.msg-vista):not(.quitar):not(.tl):not(.todos):not(.velo):not(.wa-boton):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { content: ""; display: block; position: absolute; top: 0; bottom: 0; width: 1px; margin-left: -6.5px; background: oklch(0.89 0.031 95); pointer-events: none; }
+:root .w-tr:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.circ):not(.ck):not(.der):not(.dlg-f):not(.dlg-x):not(.e11-org):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.logo):not(.mail-cuerpo):not(.mas):not(.menu-cnt):not(.mod-carga):not(.mod-centro):not(.msg-vista):not(.quitar):not(.tl):not(.todos):not(.velo):not(.wa-boton):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after, :root .w-th:not(.k-desp *) > * + *:not(.ab-sidebar__head):not(.adm-cerrar):not(.adm-flecha):not(.atras):not(.avatar):not(.b):not(.brand):not(.centro):not(.circ):not(.ck):not(.der):not(.dlg-f):not(.dlg-x):not(.e11-org):not(.fb-der):not(.ico):not(.ico-btn):not(.ico-perfil):not(.icon-btn):not(.kebab):not(.logo):not(.mail-cuerpo):not(.mas):not(.menu-cnt):not(.mod-carga):not(.mod-centro):not(.msg-vista):not(.quitar):not(.tl):not(.todos):not(.velo):not(.wa-boton):not([class*="menu"]):not([class*="-mn"]):not([class*="tip"])::after { margin-left: -8.5px; }
+:root .w-th.pl > :first-child, :root .w-tr.pl:not(.sel) > :first-child { box-shadow: none !important; }
+
+/* 174 · El texto largo se ve entero: la celda baja de renglón en lugar de cortar con «…». */
+:root .tt-f > *, :root .tt-f .dos > *, :root .tt-f > .c2b, :root .c1, :root .c2, :root .w-tr > span, :root .w-tr .dos span, :root .w-tr .k-tc small, :root .w-tr.pl > span, :root .w-th.pl > span,
+:root .tb .tr > *, :root .tb .tr .dos > *, :root .ap-fila .l2, :root .q-it .dato b, :root .q-it .dato > span, :root .w-it .dato > b, :root .w-it .dato > span, :root .fx-n a, :root .tb-hor .h .l, :root .k-lee, :root .pl-quien .tx, :root .tr-sec .h .r, :root .ini-t .d, :root .c-p b, :root .c-p .tx > span, :root .w-tr.t .dos span, :root .lista .it .dato, :root .cg-fot .nm, :root .as-adj .n, :root .md-it .tx b, :root .md-it .tx small, :root .o-fila .dos > *, :root .o-res .dos > *, :root .dir-desc, :root .dir-emp a {
+  white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: break-word; }
+/* Las celdas que se centraban con un interlineado del alto de la fila (la planilla, la tabla de los Criterio): al bajar de renglón,
+   cada renglón ocupaba una fila entera. Se centran con su relleno, que da el mismo alto con un renglón. */
+:root .w-tr.pl > span, :root .tb .tr > * { line-height: 1.35 !important; padding-top: 9.5px/*13.2px*/ !important; padding-bottom: 9.5px/*13.2px*/ !important; }
+:root .w-th.pl > span, :root .tb .th > * { line-height: 1.35 !important; padding-top: 8.1px/*11.2px*/ !important; padding-bottom: 8.1px/*11.2px*/ !important; }
+:root .ab-sidebar__link-label, :root .w-ln { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+:root .ab-sidebar .ab-sidebar__link, :root .ab-sidebar__link, :root .w-ln { height: auto !important; min-height: 23.7px/*32px*/; box-sizing: border-box; padding-top: 4.3px/*6px*/ !important; padding-bottom: 4.3px/*6px*/ !important; line-height: 14.8px/*20px*/; }
+/* 174 · Quién sos, entero: el nombre y el correo del pie del menú y de la cabecera de tu menú bajan de renglón (el correo, después
+   de la «@», con `CORREO_JS`). */
+:root .ab-sidebar__name, :root .ab-sidebar__email, :root .perfil-t .n1, :root .perfil-t .n2, :root .w-us .tx b, :root .w-us .tx span, :root .w-mn-perf b, :root .w-mn-perf .s {
+  white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: break-word; }
+/* 174 y 188 · En las filas de dos o tres renglones (`.w-conv`), el texto se ve entero: el nombre y, en las listas de personas del
+   teléfono, el correo. La vista previa del último mensaje en la lista de chats sigue en un renglón con «…», como en WhatsApp: es la
+   única excepción a la 174 (188). */
+:root .w-conv .l1 b, :root .w-conv > a .l2 > span { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: break-word; }
+
+/* 142 y 164 · En el desplegable de un filtro, la elegida lleva la tilde a la izquierda y va en 600, sin el tinte, como en
+   «Criterio · Formularios» y «Criterio · Menús»; las demás dejan el lugar de la tilde, así los nombres quedan alineados. La planilla
+   (`.pl-op`) ya la dibuja, y la lista de personas (`.k-pers`, de dos renglones) no es un filtro. */
+:root .menu .menu-it[role="option"], :root .f-mn:not(.k-pers) > [role="option"]:not(.pl-op) { justify-content: flex-start !important; }
+:root .menu .menu-it[role="option"]::before, :root .f-mn:not(.k-pers) > [role="option"]:not(.pl-op)::before {
+  content: ""; flex: none; width: 16px; height: 14px; background: transparent; -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5'/%3E%3C/svg%3E") no-repeat left center / 14px 14px; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5'/%3E%3C/svg%3E") no-repeat left center / 14px 14px; }
+:root .menu .menu-it[role="option"]:is(.on, [aria-selected="true"]), :root .f-mn:not(.k-pers) > [role="option"]:not(.pl-op):is(.on, [aria-selected="true"]) {
+  background: transparent !important; color: var(--t1) !important; font-weight: 600 !important; }
+:root .menu .menu-it[role="option"]:is(.on, [aria-selected="true"]):hover, :root .f-mn:not(.k-pers) > [role="option"]:not(.pl-op):is(.on, [aria-selected="true"]):hover { background: var(--s2) !important; }
+:root .menu .menu-it[role="option"]:is(.on, [aria-selected="true"])::before, :root .f-mn:not(.k-pers) > [role="option"]:not(.pl-op):is(.on, [aria-selected="true"])::before { background: var(--marca-tx); }
+/* 142 · La conversación abierta del chat y el ítem abierto de una lista con su detalle: el tinte y una barra de 3 px al inicio. */
+:root .w-conv.on, :root .md-it.on { box-shadow: inset 3px 0 0 var(--marca) !important; }
+
+/* 189 · El panel verde del ingreso, liso: sin el degradé ni la cuadrícula. Lo mismo en los otros dos paneles verdes, el cierre de
+   la página de inicio y la cabecera del Inicio del teléfono (136). La paleta Pradera no cambia. */
+:root .auth-marca, :root .lp-final, :root .c-top { background: var(--marca) !important; }
+:root .auth-marca::before { display: none !important; }
+
+/* 180 · Un ícono dentro de un botón conserva su tamaño. Con la escala, un botón de ícono queda de 21 a 24 px, y el relleno que el
+   navegador le pone a todo botón (6 px por lado) aplastaba el dibujo a la mitad de su ancho. */
+:root button > svg { flex-shrink: 0; }
+
+/* 160 · La primera carga de un listado: el encabezado y el aro en el alto de ocho filas, sin filas esqueleto. */
+.t10-carga { height: 236.8px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--borde); }
+.t10-carga-tel { flex: 1; min-height: 360px; display: flex; align-items: center; justify-content: center; }
+.t10-aro { width: 16.3px/*22px*/; height: 16.3px/*22px*/; box-sizing: border-box; border-radius: 50%; border: 2.5px solid oklch(0.89 0.031 95); border-top-color: var(--marca); animation: t10-gira 0.9s linear infinite; }
+@keyframes t10-gira { to { transform: rotate(360deg); } }
+
+/* 210 · Avisos según el tipo: el fondo nunca dice el tipo; un filo de 3 px y el ícono del color de su tipo. */
+:root :is(.f-toast, .toast2, .toast3, .t-toast, .ta-toast) { --t15-tipo: oklch(0.55 0.13 155); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde2) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root :is(.toast2.mal, .toast3.mal, .ta-toast.mal), :root :is(.f-toast, .t-toast):has(> .mal) { --t15-tipo: var(--peligro); }
+/* El aviso de una página o de un diálogo (`p-aviso`): atención salvo que lleve la tilde (salió bien) o `mal` (error). */
+:root .p-aviso { --t15-tipo: var(--alerta); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde2) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root .p-aviso:has(path[d="m8.5 12 2.4 2.4 4.6-4.8"]) { --t15-tipo: oklch(0.55 0.13 155); }
+:root .p-aviso.mal { --t15-tipo: var(--peligro); }
+:root .p-aviso > svg, :root .p-aviso > span:first-child { color: var(--t15-tipo) !important; flex: none; }
+:root :is(.f-toast, .ta-toast, .t-toast):has(> .neu) { --t15-tipo: var(--t2); }
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) { --t15-tipo: var(--alerta); background: #fff !important; color: var(--t1) !important; border: 1px solid var(--borde) !important; border-left: 3px solid var(--t15-tipo) !important; }
+:root :is(.w-cartel.info, .w-cartel.o-info) { --t15-tipo: var(--t2); }
+:root :is(.w-cartel.o-prob, .cartel.prob, .aviso-mal, .imp-franja) { --t15-tipo: var(--peligro); }
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) > svg,
+:root :is(.w-cartel, .cartel, .aviso-mal, .imp-franja, .as-franja, .t-aviso, .e-sup.alerta) > .fila > svg { color: var(--t15-tipo) !important; flex: none; }
+:root :is(.f-snack, .ta-snack, .e11b-snack) { border-left: 3px solid oklch(0.78 0.14 155) !important; }
+:root :is(.f-snack, .ta-snack, .e11b-snack):has(> .mal) { border-left-color: oklch(0.75 0.15 25) !important; }
+:root :is(.f-snack, .ta-snack, .e11b-snack):has(> .neu), :root .f-snack.alto:not(:has(> .ok, > .mal)) { border-left-color: oklch(0.75 0.01 78) !important; }
+/* 173 · Sin sombras, salvo en menús, desplegables y tooltips: las de este tablero. */
+:root .tarjeta { box-shadow: none !important; }
+:root a.kpi:hover { box-shadow: none !important; }
+:root .dlg { box-shadow: none !important; }
+:root .toast2 { box-shadow: none !important; }
+:root .msg-it.on { box-shadow: 0 0 0 1px var(--borde) !important; }
+:root .seg3 button[aria-pressed="true"] { box-shadow: none !important; }
+:root .mail { box-shadow: none !important; }
+:root .wa { box-shadow: none !important; }
+:root .brand { box-shadow: none !important; }
+:root .tarjeta, :root .fb { box-shadow: none !important; }
+:root .b-pri { box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.15) !important; }
+:root .adm-cerrar { box-shadow: none !important; }
+:root .adm-panel .ab-sidebar__link--active, :root .adm-panel .ab-sidebar__link--active:hover { box-shadow: 0 0 0 1px var(--borde) !important; }
+:root .ab-root.adm-abierto .adm-btn { box-shadow: 0 0 0 1px var(--borde) !important; }
+:root .ab-sidebar__link--active { box-shadow: 0 0 0 1px var(--borde) !important; }
+:root .mod-toast { box-shadow: none !important; }
+</style>
+</helmet>
+
+<div class="msg-root">
+  <aside class="msg-lado" aria-label="Mensajes">
+    <div class="msg-lado-cab"><span class="brand" aria-hidden="true"></span><strong>Mensajes del sistema</strong></div>
+    <sc-if value="{{e0}}" hint-placeholder-val="{{si}}"><ul class="msg-lista"><li><button type="button" class="msg-it on" aria-current="true"><span class="n1">Pedido de un módulo: aprobado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">La prueba terminó</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Cobro rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Módulo suspendido</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Datos por borrar</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Precio nuevo</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Baja de una suscripción</span><span class="n2">Correo</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Exportación lista</span><span class="n2">Correo</span></button></li></ul></sc-if><sc-if value="{{e1}}" hint-placeholder-val="{{no}}"><ul class="msg-lista"><li><button type="button" class="msg-it on" aria-current="true"><span class="n1">Pedido de un módulo: aprobado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">La prueba terminó</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Cobro rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Módulo suspendido</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Datos por borrar</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Precio nuevo</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Baja de una suscripción</span><span class="n2">Correo</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Exportación lista</span><span class="n2">Correo</span></button></li></ul></sc-if><sc-if value="{{e2}}" hint-placeholder-val="{{no}}"><ul class="msg-lista"><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: aprobado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it on" aria-current="true"><span class="n1">Pedido de un módulo: rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">La prueba terminó</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Cobro rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Módulo suspendido</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Datos por borrar</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Precio nuevo</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Baja de una suscripción</span><span class="n2">Correo</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Exportación lista</span><span class="n2">Correo</span></button></li></ul></sc-if><sc-if value="{{e3}}" hint-placeholder-val="{{no}}"><ul class="msg-lista"><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: aprobado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it on" aria-current="true"><span class="n1">Pedido de un módulo: rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">La prueba terminó</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Cobro rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Módulo suspendido</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Datos por borrar</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Precio nuevo</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Baja de una suscripción</span><span class="n2">Correo</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Exportación lista</span><span class="n2">Correo</span></button></li></ul></sc-if><sc-if value="{{e4}}" hint-placeholder-val="{{no}}"><ul class="msg-lista"><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: aprobado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it on" aria-current="true"><span class="n1">La prueba terminó</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Cobro rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Módulo suspendido</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Datos por borrar</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Precio nuevo</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Baja de una suscripción</span><span class="n2">Correo</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Exportación lista</span><span class="n2">Correo</span></button></li></ul></sc-if><sc-if value="{{e5}}" hint-placeholder-val="{{no}}"><ul class="msg-lista"><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: aprobado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it on" aria-current="true"><span class="n1">La prueba terminó</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Cobro rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Módulo suspendido</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Datos por borrar</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Precio nuevo</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Baja de una suscripción</span><span class="n2">Correo</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Exportación lista</span><span class="n2">Correo</span></button></li></ul></sc-if><sc-if value="{{e6}}" hint-placeholder-val="{{no}}"><ul class="msg-lista"><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: aprobado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">La prueba terminó</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it on" aria-current="true"><span class="n1">Cobro rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Módulo suspendido</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Datos por borrar</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Precio nuevo</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Baja de una suscripción</span><span class="n2">Correo</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Exportación lista</span><span class="n2">Correo</span></button></li></ul></sc-if><sc-if value="{{e7}}" hint-placeholder-val="{{no}}"><ul class="msg-lista"><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: aprobado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">La prueba terminó</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it on" aria-current="true"><span class="n1">Cobro rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Módulo suspendido</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Datos por borrar</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Precio nuevo</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Baja de una suscripción</span><span class="n2">Correo</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Exportación lista</span><span class="n2">Correo</span></button></li></ul></sc-if><sc-if value="{{e8}}" hint-placeholder-val="{{no}}"><ul class="msg-lista"><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: aprobado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">La prueba terminó</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Cobro rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it on" aria-current="true"><span class="n1">Módulo suspendido</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Datos por borrar</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Precio nuevo</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Baja de una suscripción</span><span class="n2">Correo</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Exportación lista</span><span class="n2">Correo</span></button></li></ul></sc-if><sc-if value="{{e9}}" hint-placeholder-val="{{no}}"><ul class="msg-lista"><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: aprobado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">La prueba terminó</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Cobro rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it on" aria-current="true"><span class="n1">Módulo suspendido</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Datos por borrar</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Precio nuevo</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Baja de una suscripción</span><span class="n2">Correo</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Exportación lista</span><span class="n2">Correo</span></button></li></ul></sc-if><sc-if value="{{e10}}" hint-placeholder-val="{{no}}"><ul class="msg-lista"><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: aprobado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">La prueba terminó</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Cobro rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Módulo suspendido</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it on" aria-current="true"><span class="n1">Datos por borrar</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Precio nuevo</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Baja de una suscripción</span><span class="n2">Correo</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Exportación lista</span><span class="n2">Correo</span></button></li></ul></sc-if><sc-if value="{{e11}}" hint-placeholder-val="{{no}}"><ul class="msg-lista"><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: aprobado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">La prueba terminó</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Cobro rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Módulo suspendido</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it on" aria-current="true"><span class="n1">Datos por borrar</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Precio nuevo</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Baja de una suscripción</span><span class="n2">Correo</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Exportación lista</span><span class="n2">Correo</span></button></li></ul></sc-if><sc-if value="{{e12}}" hint-placeholder-val="{{no}}"><ul class="msg-lista"><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: aprobado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">La prueba terminó</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Cobro rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Módulo suspendido</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Datos por borrar</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it on" aria-current="true"><span class="n1">Precio nuevo</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Baja de una suscripción</span><span class="n2">Correo</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Exportación lista</span><span class="n2">Correo</span></button></li></ul></sc-if><sc-if value="{{e13}}" hint-placeholder-val="{{no}}"><ul class="msg-lista"><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: aprobado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">La prueba terminó</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Cobro rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Módulo suspendido</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Datos por borrar</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it on" aria-current="true"><span class="n1">Precio nuevo</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Baja de una suscripción</span><span class="n2">Correo</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Exportación lista</span><span class="n2">Correo</span></button></li></ul></sc-if><sc-if value="{{e14}}" hint-placeholder-val="{{no}}"><ul class="msg-lista"><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: aprobado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">La prueba terminó</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Cobro rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Módulo suspendido</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Datos por borrar</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Precio nuevo</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it on" aria-current="true"><span class="n1">Baja de una suscripción</span><span class="n2">Correo</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Exportación lista</span><span class="n2">Correo</span></button></li></ul></sc-if><sc-if value="{{e15}}" hint-placeholder-val="{{no}}"><ul class="msg-lista"><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: aprobado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Pedido de un módulo: rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">La prueba terminó</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Cobro rechazado</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Módulo suspendido</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Datos por borrar</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Precio nuevo</span><span class="n2">Correo · WhatsApp</span></button></li><li><button type="button" class="msg-it " aria-current="false"><span class="n1">Baja de una suscripción</span><span class="n2">Correo</span></button></li><li><button type="button" class="msg-it on" aria-current="true"><span class="n1">Exportación lista</span><span class="n2">Correo</span></button></li></ul></sc-if>
+  </aside>
+
+  <sc-if value="{{e0}}" hint-placeholder-val="{{si}}"><section class="msg-der"><div class="msg-barra"><h1>Pedido de un módulo: aprobado</h1><div class="seg3" role="group" aria-label="Canal"><button type="button" aria-pressed="true">Correo</button><button type="button" aria-pressed="false">WhatsApp</button></div></div><div class="msg-vista"><article class="mail" aria-label="Correo">
+          <div class="mail-cab">
+            <h2 class="mail-asunto">Aprobamos tu pedido de Formularios</h2>
+            <div class="mail-de">
+              <span class="logo" aria-hidden="true"></span>
+              <div><div class="n1">ArquitecturaBase <span>&lt;no-responder@plataforma.com&gt;</span></div><div class="n2">para lucia.fernandez@delta.ejemplo.com</div></div>
+              <span class="hora">23/11/2026, 09:30</span>
+            </div>
+          </div>
+          <div class="mail-cuerpo">
+            <div class="plantilla">
+              <div class="pl-cab"><span class="logo" aria-hidden="true"></span>ArquitecturaBase</div>
+              <div class="pl-cont"><h2>Formularios ya está prendido</h2><p>Hola, Lucía. Aprobamos el pedido de Formularios para Grupo Delta.</p><div class="mod-mail-dl"><span class="k">Módulo</span><span>Formularios</span><span class="k">Vence</span><span>31/12/2026</span><span class="k">Motivo</span><span>Pidió probarlo con su equipo de ventas antes de suscribirse.</span></div><a class="pl-boton" href="#">Ver Módulos</a><p class="pl-nota">Te llega porque administrás los módulos de Grupo Delta.</p></div><div class="pl-pie"><p>Este correo lo envió ArquitecturaBase automáticamente. No lo respondas.</p></div>
+            </div>
+          </div>
+        </article></div></section></sc-if><sc-if value="{{e1}}" hint-placeholder-val="{{no}}"><section class="msg-der"><div class="msg-barra"><h1>Pedido de un módulo: aprobado</h1><div class="seg3" role="group" aria-label="Canal"><button type="button" aria-pressed="false">Correo</button><button type="button" aria-pressed="true">WhatsApp</button></div></div><div class="msg-vista"><article class="wa" aria-label="WhatsApp">
+          <div class="wa-cab">
+            <span class="logo" aria-hidden="true"></span>
+            <div><div class="n1">ArquitecturaBase <svg width="15" height="15" viewBox="0 0 24 24" aria-label="Cuenta verificada"><path fill="#25d366" d="m12 2 2.4 1.8 3 .1.9 2.9 2.4 1.8-.9 2.9.9 2.9-2.4 1.8-.9 2.9-3 .1L12 22l-2.4-1.8-3-.1-.9-2.9-2.4-1.8.9-2.9-.9-2.9 2.4-1.8.9-2.9 3-.1Z"></path><path d="m8.5 12.2 2.3 2.3 4.7-4.8" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></div><div class="n2">Cuenta de empresa</div></div>
+          </div>
+          <div class="wa-chat">
+            <span class="wa-dia">23/11/2026</span>
+            
+            <div class="wa-grupo">
+              <span class="wa-plantilla">Plantilla: <code>modulo_pedido_resuelto</code></span>
+              <div class="wa-burbuja">Aprobamos el pedido de <b>Formularios</b> para <b>Grupo Delta</b>. Vence el 31/12/2026. Motivo: Pidió probarlo con su equipo de ventas antes de suscribirse.<span class="wa-hora">09:30</span></div><div class="wa-boton"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d='M14 4h6v6'/><path d='M20 4 10 14'/><path d='M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5'/></svg>Ver Módulos</div>
+            </div>
+          </div>
+          <div class="wa-entrada"><span>Mensaje</span></div>
+        </article></div></section></sc-if><sc-if value="{{e2}}" hint-placeholder-val="{{no}}"><section class="msg-der"><div class="msg-barra"><h1>Pedido de un módulo: rechazado</h1><div class="seg3" role="group" aria-label="Canal"><button type="button" aria-pressed="true">Correo</button><button type="button" aria-pressed="false">WhatsApp</button></div></div><div class="msg-vista"><article class="mail" aria-label="Correo">
+          <div class="mail-cab">
+            <h2 class="mail-asunto">No aprobamos tu pedido de Formularios</h2>
+            <div class="mail-de">
+              <span class="logo" aria-hidden="true"></span>
+              <div><div class="n1">ArquitecturaBase <span>&lt;no-responder@plataforma.com&gt;</span></div><div class="n2">para lucia.fernandez@delta.ejemplo.com</div></div>
+              <span class="hora">23/11/2026, 09:30</span>
+            </div>
+          </div>
+          <div class="mail-cuerpo">
+            <div class="plantilla">
+              <div class="pl-cab"><span class="logo" aria-hidden="true"></span>ArquitecturaBase</div>
+              <div class="pl-cont"><h2>No aprobamos tu pedido</h2><p>Hola, Lucía. No aprobamos el pedido de Formularios para Grupo Delta.</p><div class="mod-mail-dl"><span class="k">Módulo</span><span>Formularios</span><span class="k">Motivo</span><span>Por ahora Formularios se ofrece solo a organizaciones con más de un mes de uso.</span></div><a class="pl-boton" href="#">Ver Módulos</a><p class="pl-nota">Te llega porque administrás los módulos de Grupo Delta.</p></div><div class="pl-pie"><p>Este correo lo envió ArquitecturaBase automáticamente. No lo respondas.</p></div>
+            </div>
+          </div>
+        </article></div></section></sc-if><sc-if value="{{e3}}" hint-placeholder-val="{{no}}"><section class="msg-der"><div class="msg-barra"><h1>Pedido de un módulo: rechazado</h1><div class="seg3" role="group" aria-label="Canal"><button type="button" aria-pressed="false">Correo</button><button type="button" aria-pressed="true">WhatsApp</button></div></div><div class="msg-vista"><article class="wa" aria-label="WhatsApp">
+          <div class="wa-cab">
+            <span class="logo" aria-hidden="true"></span>
+            <div><div class="n1">ArquitecturaBase <svg width="15" height="15" viewBox="0 0 24 24" aria-label="Cuenta verificada"><path fill="#25d366" d="m12 2 2.4 1.8 3 .1.9 2.9 2.4 1.8-.9 2.9.9 2.9-2.4 1.8-.9 2.9-3 .1L12 22l-2.4-1.8-3-.1-.9-2.9-2.4-1.8.9-2.9-.9-2.9 2.4-1.8.9-2.9 3-.1Z"></path><path d="m8.5 12.2 2.3 2.3 4.7-4.8" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></div><div class="n2">Cuenta de empresa</div></div>
+          </div>
+          <div class="wa-chat">
+            <span class="wa-dia">23/11/2026</span>
+            
+            <div class="wa-grupo">
+              <span class="wa-plantilla">Plantilla: <code>modulo_pedido_resuelto</code></span>
+              <div class="wa-burbuja">No aprobamos el pedido de <b>Formularios</b> para <b>Grupo Delta</b>. Motivo: Por ahora Formularios se ofrece solo a organizaciones con más de un mes de uso.<span class="wa-hora">09:30</span></div><div class="wa-boton"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d='M14 4h6v6'/><path d='M20 4 10 14'/><path d='M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5'/></svg>Ver Módulos</div>
+            </div>
+          </div>
+          <div class="wa-entrada"><span>Mensaje</span></div>
+        </article></div></section></sc-if><sc-if value="{{e4}}" hint-placeholder-val="{{no}}"><section class="msg-der"><div class="msg-barra"><h1>La prueba terminó</h1><div class="seg3" role="group" aria-label="Canal"><button type="button" aria-pressed="true">Correo</button><button type="button" aria-pressed="false">WhatsApp</button></div></div><div class="msg-vista"><article class="mail" aria-label="Correo">
+          <div class="mail-cab">
+            <h2 class="mail-asunto">Terminó la prueba de Formularios</h2>
+            <div class="mail-de">
+              <span class="logo" aria-hidden="true"></span>
+              <div><div class="n1">ArquitecturaBase <span>&lt;no-responder@plataforma.com&gt;</span></div><div class="n2">para lucia.fernandez@delta.ejemplo.com</div></div>
+              <span class="hora">23/11/2026, 09:30</span>
+            </div>
+          </div>
+          <div class="mail-cuerpo">
+            <div class="plantilla">
+              <div class="pl-cab"><span class="logo" aria-hidden="true"></span>ArquitecturaBase</div>
+              <div class="pl-cont"><h2>Terminó la prueba gratis</h2><p>Hola, Lucía. Terminó la prueba gratis de Formularios en Grupo Delta y el módulo se apagó. Tus datos se guardan; si te suscribís, siguen ahí.</p><div class="mod-mail-dl"><span class="k">Módulo</span><span>Formularios</span><span class="k">Terminó</span><span>07/12/2026</span><span class="k">Tus datos se guardan hasta</span><span>07/03/2027</span></div><a class="pl-boton" href="#">Suscribirme</a><p class="pl-nota">Te llega porque administrás los módulos de Grupo Delta.</p></div><div class="pl-pie"><p>Este correo lo envió ArquitecturaBase automáticamente. No lo respondas.</p></div>
+            </div>
+          </div>
+        </article></div></section></sc-if><sc-if value="{{e5}}" hint-placeholder-val="{{no}}"><section class="msg-der"><div class="msg-barra"><h1>La prueba terminó</h1><div class="seg3" role="group" aria-label="Canal"><button type="button" aria-pressed="false">Correo</button><button type="button" aria-pressed="true">WhatsApp</button></div></div><div class="msg-vista"><article class="wa" aria-label="WhatsApp">
+          <div class="wa-cab">
+            <span class="logo" aria-hidden="true"></span>
+            <div><div class="n1">ArquitecturaBase <svg width="15" height="15" viewBox="0 0 24 24" aria-label="Cuenta verificada"><path fill="#25d366" d="m12 2 2.4 1.8 3 .1.9 2.9 2.4 1.8-.9 2.9.9 2.9-2.4 1.8-.9 2.9-3 .1L12 22l-2.4-1.8-3-.1-.9-2.9-2.4-1.8.9-2.9-.9-2.9 2.4-1.8.9-2.9 3-.1Z"></path><path d="m8.5 12.2 2.3 2.3 4.7-4.8" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></div><div class="n2">Cuenta de empresa</div></div>
+          </div>
+          <div class="wa-chat">
+            <span class="wa-dia">23/11/2026</span>
+            
+            <div class="wa-grupo">
+              <span class="wa-plantilla">Plantilla: <code>modulo_prueba_terminada</code></span>
+              <div class="wa-burbuja">Terminó la prueba gratis de <b>Formularios</b> en <b>Grupo Delta</b> y el módulo se apagó. Tus datos se guardan hasta el 07/03/2027.<span class="wa-hora">09:30</span></div><div class="wa-boton"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d='M14 4h6v6'/><path d='M20 4 10 14'/><path d='M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5'/></svg>Suscribirme</div>
+            </div>
+          </div>
+          <div class="wa-entrada"><span>Mensaje</span></div>
+        </article></div></section></sc-if><sc-if value="{{e6}}" hint-placeholder-val="{{no}}"><section class="msg-der"><div class="msg-barra"><h1>Cobro rechazado</h1><div class="seg3" role="group" aria-label="Canal"><button type="button" aria-pressed="true">Correo</button><button type="button" aria-pressed="false">WhatsApp</button></div></div><div class="msg-vista"><article class="mail" aria-label="Correo">
+          <div class="mail-cab">
+            <h2 class="mail-asunto">No pudimos cobrar Formularios</h2>
+            <div class="mail-de">
+              <span class="logo" aria-hidden="true"></span>
+              <div><div class="n1">ArquitecturaBase <span>&lt;no-responder@plataforma.com&gt;</span></div><div class="n2">para lucia.fernandez@delta.ejemplo.com</div></div>
+              <span class="hora">23/11/2026, 09:30</span>
+            </div>
+          </div>
+          <div class="mail-cuerpo">
+            <div class="plantilla">
+              <div class="pl-cab"><span class="logo" aria-hidden="true"></span>ArquitecturaBase</div>
+              <div class="pl-cont"><h2>No pudimos cobrar Formularios</h2><p>Hola, Lucía. Mercado Pago rechazó el cobro de Formularios de Grupo Delta. El módulo sigue funcionando hasta que se cumpla el plazo.</p><div class="mod-mail-dl"><span class="k">Módulo</span><span>Formularios</span><span class="k">Monto</span><span>$ 25.000,00</span><span class="k">Cambiá la tarjeta antes del</span><span>03/12/2026</span></div><a class="pl-boton" href="#">Cambiar tarjeta</a><p class="pl-nota">Te llega porque administrás los módulos de Grupo Delta.</p></div><div class="pl-pie"><p>Este correo lo envió ArquitecturaBase automáticamente. No lo respondas.</p></div>
+            </div>
+          </div>
+        </article></div></section></sc-if><sc-if value="{{e7}}" hint-placeholder-val="{{no}}"><section class="msg-der"><div class="msg-barra"><h1>Cobro rechazado</h1><div class="seg3" role="group" aria-label="Canal"><button type="button" aria-pressed="false">Correo</button><button type="button" aria-pressed="true">WhatsApp</button></div></div><div class="msg-vista"><article class="wa" aria-label="WhatsApp">
+          <div class="wa-cab">
+            <span class="logo" aria-hidden="true"></span>
+            <div><div class="n1">ArquitecturaBase <svg width="15" height="15" viewBox="0 0 24 24" aria-label="Cuenta verificada"><path fill="#25d366" d="m12 2 2.4 1.8 3 .1.9 2.9 2.4 1.8-.9 2.9.9 2.9-2.4 1.8-.9 2.9-3 .1L12 22l-2.4-1.8-3-.1-.9-2.9-2.4-1.8.9-2.9-.9-2.9 2.4-1.8.9-2.9 3-.1Z"></path><path d="m8.5 12.2 2.3 2.3 4.7-4.8" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></div><div class="n2">Cuenta de empresa</div></div>
+          </div>
+          <div class="wa-chat">
+            <span class="wa-dia">23/11/2026</span>
+            
+            <div class="wa-grupo">
+              <span class="wa-plantilla">Plantilla: <code>modulo_cobro_rechazado</code></span>
+              <div class="wa-burbuja">Mercado Pago rechazó el cobro de <b>Formularios</b> de <b>Grupo Delta</b> ($ 25.000,00). Cambiá la tarjeta antes del 03/12/2026 para que siga funcionando.<span class="wa-hora">09:30</span></div><div class="wa-boton"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d='M14 4h6v6'/><path d='M20 4 10 14'/><path d='M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5'/></svg>Cambiar tarjeta</div>
+            </div>
+          </div>
+          <div class="wa-entrada"><span>Mensaje</span></div>
+        </article></div></section></sc-if><sc-if value="{{e8}}" hint-placeholder-val="{{no}}"><section class="msg-der"><div class="msg-barra"><h1>Módulo suspendido</h1><div class="seg3" role="group" aria-label="Canal"><button type="button" aria-pressed="true">Correo</button><button type="button" aria-pressed="false">WhatsApp</button></div></div><div class="msg-vista"><article class="mail" aria-label="Correo">
+          <div class="mail-cab">
+            <h2 class="mail-asunto">Formularios se suspendió</h2>
+            <div class="mail-de">
+              <span class="logo" aria-hidden="true"></span>
+              <div><div class="n1">ArquitecturaBase <span>&lt;no-responder@plataforma.com&gt;</span></div><div class="n2">para lucia.fernandez@delta.ejemplo.com</div></div>
+              <span class="hora">23/11/2026, 09:30</span>
+            </div>
+          </div>
+          <div class="mail-cuerpo">
+            <div class="plantilla">
+              <div class="pl-cab"><span class="logo" aria-hidden="true"></span>ArquitecturaBase</div>
+              <div class="pl-cont"><h2>Formularios se suspendió</h2><p>Hola, Lucía. Formularios se suspendió en Grupo Delta porque venció el plazo para cambiar la tarjeta. Tus datos se guardan y los podés exportar.</p><div class="mod-mail-dl"><span class="k">Módulo</span><span>Formularios</span><span class="k">Se suspendió</span><span>03/12/2026</span><span class="k">Se borran los datos el</span><span>21/02/2027</span></div><a class="pl-boton" href="#">Ver Módulos</a><p class="pl-nota">Te llega porque administrás los módulos de Grupo Delta.</p></div><div class="pl-pie"><p>Este correo lo envió ArquitecturaBase automáticamente. No lo respondas.</p></div>
+            </div>
+          </div>
+        </article></div></section></sc-if><sc-if value="{{e9}}" hint-placeholder-val="{{no}}"><section class="msg-der"><div class="msg-barra"><h1>Módulo suspendido</h1><div class="seg3" role="group" aria-label="Canal"><button type="button" aria-pressed="false">Correo</button><button type="button" aria-pressed="true">WhatsApp</button></div></div><div class="msg-vista"><article class="wa" aria-label="WhatsApp">
+          <div class="wa-cab">
+            <span class="logo" aria-hidden="true"></span>
+            <div><div class="n1">ArquitecturaBase <svg width="15" height="15" viewBox="0 0 24 24" aria-label="Cuenta verificada"><path fill="#25d366" d="m12 2 2.4 1.8 3 .1.9 2.9 2.4 1.8-.9 2.9.9 2.9-2.4 1.8-.9 2.9-3 .1L12 22l-2.4-1.8-3-.1-.9-2.9-2.4-1.8.9-2.9-.9-2.9 2.4-1.8.9-2.9 3-.1Z"></path><path d="m8.5 12.2 2.3 2.3 4.7-4.8" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></div><div class="n2">Cuenta de empresa</div></div>
+          </div>
+          <div class="wa-chat">
+            <span class="wa-dia">23/11/2026</span>
+            
+            <div class="wa-grupo">
+              <span class="wa-plantilla">Plantilla: <code>modulo_suspendido</code></span>
+              <div class="wa-burbuja"><b>Formularios</b> se suspendió en <b>Grupo Delta</b>. Tus datos se guardan hasta el 21/02/2027: los podés exportar o volver a suscribirte.<span class="wa-hora">09:30</span></div><div class="wa-boton"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d='M14 4h6v6'/><path d='M20 4 10 14'/><path d='M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5'/></svg>Ver Módulos</div>
+            </div>
+          </div>
+          <div class="wa-entrada"><span>Mensaje</span></div>
+        </article></div></section></sc-if><sc-if value="{{e10}}" hint-placeholder-val="{{no}}"><section class="msg-der"><div class="msg-barra"><h1>Datos por borrar</h1><div class="seg3" role="group" aria-label="Canal"><button type="button" aria-pressed="true">Correo</button><button type="button" aria-pressed="false">WhatsApp</button></div></div><div class="msg-vista"><article class="mail" aria-label="Correo">
+          <div class="mail-cab">
+            <h2 class="mail-asunto">Los datos de Formularios se borran en 7 días</h2>
+            <div class="mail-de">
+              <span class="logo" aria-hidden="true"></span>
+              <div><div class="n1">ArquitecturaBase <span>&lt;no-responder@plataforma.com&gt;</span></div><div class="n2">para lucia.fernandez@delta.ejemplo.com</div></div>
+              <span class="hora">23/11/2026, 09:30</span>
+            </div>
+          </div>
+          <div class="mail-cuerpo">
+            <div class="plantilla">
+              <div class="pl-cab"><span class="logo" aria-hidden="true"></span>ArquitecturaBase</div>
+              <div class="pl-cont"><h2>Se borran los datos de Formularios</h2><p>Hola, Lucía. Formularios está apagado en Grupo Delta y sus datos se borran en 7 días. Si los querés, exportalos antes.</p><div class="mod-mail-dl"><span class="k">Módulo</span><span>Formularios</span><span class="k">Se borran el</span><span>21/02/2027</span></div><a class="pl-boton" href="#">Exportar datos</a><p class="pl-nota">Te llega porque administrás los módulos de Grupo Delta.</p></div><div class="pl-pie"><p>Este correo lo envió ArquitecturaBase automáticamente. No lo respondas.</p></div>
+            </div>
+          </div>
+        </article></div></section></sc-if><sc-if value="{{e11}}" hint-placeholder-val="{{no}}"><section class="msg-der"><div class="msg-barra"><h1>Datos por borrar</h1><div class="seg3" role="group" aria-label="Canal"><button type="button" aria-pressed="false">Correo</button><button type="button" aria-pressed="true">WhatsApp</button></div></div><div class="msg-vista"><article class="wa" aria-label="WhatsApp">
+          <div class="wa-cab">
+            <span class="logo" aria-hidden="true"></span>
+            <div><div class="n1">ArquitecturaBase <svg width="15" height="15" viewBox="0 0 24 24" aria-label="Cuenta verificada"><path fill="#25d366" d="m12 2 2.4 1.8 3 .1.9 2.9 2.4 1.8-.9 2.9.9 2.9-2.4 1.8-.9 2.9-3 .1L12 22l-2.4-1.8-3-.1-.9-2.9-2.4-1.8.9-2.9-.9-2.9 2.4-1.8.9-2.9 3-.1Z"></path><path d="m8.5 12.2 2.3 2.3 4.7-4.8" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></div><div class="n2">Cuenta de empresa</div></div>
+          </div>
+          <div class="wa-chat">
+            <span class="wa-dia">23/11/2026</span>
+            
+            <div class="wa-grupo">
+              <span class="wa-plantilla">Plantilla: <code>modulo_datos_por_borrar</code></span>
+              <div class="wa-burbuja">Los datos de <b>Formularios</b> de <b>Grupo Delta</b> se borran el 21/02/2027. Si los querés, exportalos antes desde Módulos.<span class="wa-hora">09:30</span></div><div class="wa-boton"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d='M14 4h6v6'/><path d='M20 4 10 14'/><path d='M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5'/></svg>Exportar datos</div>
+            </div>
+          </div>
+          <div class="wa-entrada"><span>Mensaje</span></div>
+        </article></div></section></sc-if><sc-if value="{{e12}}" hint-placeholder-val="{{no}}"><section class="msg-der"><div class="msg-barra"><h1>Precio nuevo</h1><div class="seg3" role="group" aria-label="Canal"><button type="button" aria-pressed="true">Correo</button><button type="button" aria-pressed="false">WhatsApp</button></div></div><div class="msg-vista"><article class="mail" aria-label="Correo">
+          <div class="mail-cab">
+            <h2 class="mail-asunto">Formularios cambia de precio</h2>
+            <div class="mail-de">
+              <span class="logo" aria-hidden="true"></span>
+              <div><div class="n1">ArquitecturaBase <span>&lt;no-responder@plataforma.com&gt;</span></div><div class="n2">para lucia.fernandez@delta.ejemplo.com</div></div>
+              <span class="hora">23/11/2026, 09:30</span>
+            </div>
+          </div>
+          <div class="mail-cuerpo">
+            <div class="plantilla">
+              <div class="pl-cab"><span class="logo" aria-hidden="true"></span>ArquitecturaBase</div>
+              <div class="pl-cont"><h2>Formularios cambia de precio</h2><p>Hola, Lucía. El precio de Formularios cambia. Desde esa fecha, tu suscripción cobra el precio nuevo en el próximo cobro.</p><div class="mod-mail-dl"><span class="k">Módulo</span><span>Formularios</span><span class="k">Precio de ahora</span><span>$ 25.000,00 por mes</span><span class="k">Precio nuevo</span><span>$ 28.000,00 por mes</span><span class="k">Desde</span><span>01/01/2027</span></div><a class="pl-boton" href="#">Ver Módulos</a><p class="pl-nota">Te llega porque administrás los módulos de Grupo Delta.</p></div><div class="pl-pie"><p>Este correo lo envió ArquitecturaBase automáticamente. No lo respondas.</p></div>
+            </div>
+          </div>
+        </article></div></section></sc-if><sc-if value="{{e13}}" hint-placeholder-val="{{no}}"><section class="msg-der"><div class="msg-barra"><h1>Precio nuevo</h1><div class="seg3" role="group" aria-label="Canal"><button type="button" aria-pressed="false">Correo</button><button type="button" aria-pressed="true">WhatsApp</button></div></div><div class="msg-vista"><article class="wa" aria-label="WhatsApp">
+          <div class="wa-cab">
+            <span class="logo" aria-hidden="true"></span>
+            <div><div class="n1">ArquitecturaBase <svg width="15" height="15" viewBox="0 0 24 24" aria-label="Cuenta verificada"><path fill="#25d366" d="m12 2 2.4 1.8 3 .1.9 2.9 2.4 1.8-.9 2.9.9 2.9-2.4 1.8-.9 2.9-3 .1L12 22l-2.4-1.8-3-.1-.9-2.9-2.4-1.8.9-2.9-.9-2.9 2.4-1.8.9-2.9 3-.1Z"></path><path d="m8.5 12.2 2.3 2.3 4.7-4.8" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></div><div class="n2">Cuenta de empresa</div></div>
+          </div>
+          <div class="wa-chat">
+            <span class="wa-dia">23/11/2026</span>
+            
+            <div class="wa-grupo">
+              <span class="wa-plantilla">Plantilla: <code>modulo_precio_nuevo</code></span>
+              <div class="wa-burbuja">El precio de <b>Formularios</b> para <b>Grupo Delta</b> pasa a $ 28.000,00 por mes desde el 01/01/2027, en el próximo cobro.<span class="wa-hora">09:30</span></div><div class="wa-boton"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d='M14 4h6v6'/><path d='M20 4 10 14'/><path d='M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5'/></svg>Ver Módulos</div>
+            </div>
+          </div>
+          <div class="wa-entrada"><span>Mensaje</span></div>
+        </article></div></section></sc-if><sc-if value="{{e14}}" hint-placeholder-val="{{no}}"><section class="msg-der"><div class="msg-barra"><h1>Baja de una suscripción</h1><div class="seg3" role="group" aria-label="Canal"><button type="button" aria-pressed="true">Correo</button><button type="button" aria-pressed="false" disabled>WhatsApp</button></div></div><div class="msg-vista"><article class="mail" aria-label="Correo">
+          <div class="mail-cab">
+            <h2 class="mail-asunto">Diste de baja Formularios</h2>
+            <div class="mail-de">
+              <span class="logo" aria-hidden="true"></span>
+              <div><div class="n1">ArquitecturaBase <span>&lt;no-responder@plataforma.com&gt;</span></div><div class="n2">para lucia.fernandez@delta.ejemplo.com</div></div>
+              <span class="hora">23/11/2026, 09:30</span>
+            </div>
+          </div>
+          <div class="mail-cuerpo">
+            <div class="plantilla">
+              <div class="pl-cab"><span class="logo" aria-hidden="true"></span>ArquitecturaBase</div>
+              <div class="pl-cont"><h2>Diste de baja Formularios</h2><p>Hola, Lucía. Grupo Delta dio de baja Formularios. No sale otro cobro y el módulo funciona hasta el fin del período pagado, sin reembolso.</p><div class="mod-mail-dl"><span class="k">Módulo</span><span>Formularios</span><span class="k">Funciona hasta</span><span>05/12/2026</span><span class="k">Tus datos se guardan hasta</span><span>05/03/2027</span></div><a class="pl-boton" href="#">Ver Módulos</a><p class="pl-nota">Te llega porque administrás los módulos de Grupo Delta.</p></div><div class="pl-pie"><p>Este correo lo envió ArquitecturaBase automáticamente. No lo respondas.</p></div>
+            </div>
+          </div>
+        </article></div></section></sc-if><sc-if value="{{e15}}" hint-placeholder-val="{{no}}"><section class="msg-der"><div class="msg-barra"><h1>Exportación lista</h1><div class="seg3" role="group" aria-label="Canal"><button type="button" aria-pressed="true">Correo</button><button type="button" aria-pressed="false" disabled>WhatsApp</button></div></div><div class="msg-vista"><article class="mail" aria-label="Correo">
+          <div class="mail-cab">
+            <h2 class="mail-asunto">Los datos de Formularios están listos</h2>
+            <div class="mail-de">
+              <span class="logo" aria-hidden="true"></span>
+              <div><div class="n1">ArquitecturaBase <span>&lt;no-responder@plataforma.com&gt;</span></div><div class="n2">para lucia.fernandez@delta.ejemplo.com</div></div>
+              <span class="hora">23/11/2026, 09:30</span>
+            </div>
+          </div>
+          <div class="mail-cuerpo">
+            <div class="plantilla">
+              <div class="pl-cab"><span class="logo" aria-hidden="true"></span>ArquitecturaBase</div>
+              <div class="pl-cont"><h2>Tus datos están listos</h2><p>Hola, Lucía. Preparamos el archivo con los datos de Formularios de Grupo Delta. Se descarga desde Módulos.</p><div class="mod-mail-dl"><span class="k">Módulo</span><span>Formularios</span><span class="k">Se puede descargar hasta</span><span>21/02/2027</span></div><a class="pl-boton" href="#">Ir a Módulos</a><p class="pl-nota">Te llega porque pediste esta exportación.</p></div><div class="pl-pie"><p>Este correo lo envió ArquitecturaBase automáticamente. No lo respondas.</p></div>
+            </div>
+          </div>
+        </article></div></section></sc-if></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"estado":{"editor":"enum","options":["Pedido de un módulo: aprobado","Pedido de un módulo: aprobado · WhatsApp","Pedido de un módulo: rechazado","Pedido de un módulo: rechazado · WhatsApp","La prueba terminó","La prueba terminó · WhatsApp","Cobro rechazado","Cobro rechazado · WhatsApp","Módulo suspendido","Módulo suspendido · WhatsApp","Datos por borrar","Datos por borrar · WhatsApp","Precio nuevo","Precio nuevo · WhatsApp","Baja de una suscripción","Exportación lista"],"default":"Pedido de un módulo: aprobado","section":"Estado"},"$preview":{"width":1440,"height":900}}'>
+// t10-correos · 174: un correo baja de renglón después de la «@», nunca a mitad de palabra (traspaso10_piezas_1004.py).
+if (typeof document !== 'undefined' && !window.__t10Correos) {
+  window.__t10Correos = true;
+  const t10Arroba = /([^\s@])@(?=[\w-]+\.[\w-])/g;
+  const t10Saltar = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'TITLE', 'OPTION']);
+  const t10Cortar = (n) => {
+    if (n.nodeType === 3) {
+      if (n.parentNode && !t10Saltar.has(n.parentNode.nodeName) && n.data.indexOf('@') >= 0) {
+        const nuevo = n.data.replace(t10Arroba, '$1@​');
+        if (nuevo !== n.data) n.data = nuevo;
+      }
+      return;
+    }
+    if (n.nodeType !== 1 || t10Saltar.has(n.nodeName)) return;
+    const w = document.createTreeWalker(n, NodeFilter.SHOW_TEXT);
+    for (let x = w.nextNode(); x; x = w.nextNode()) t10Cortar(x);
+  };
+  const t10Mirar = () => {
+    t10Cortar(document.body);
+    new MutationObserver((ms) => ms.forEach((m) => (m.type === 'characterData' ? t10Cortar(m.target) : m.addedNodes.forEach(t10Cortar))))
+      .observe(document.body, { childList: true, subtree: true, characterData: true });
+  };
+  if (document.body) t10Mirar(); else document.addEventListener('DOMContentLoaded', t10Mirar);
+}
+// t10-correos · fin
+
+class Component extends DCLogic {
+  renderVals() {
+    const k = ["Pedido de un módulo: aprobado", "Pedido de un módulo: aprobado · WhatsApp", "Pedido de un módulo: rechazado", "Pedido de un módulo: rechazado · WhatsApp", "La prueba terminó", "La prueba terminó · WhatsApp", "Cobro rechazado", "Cobro rechazado · WhatsApp", "Módulo suspendido", "Módulo suspendido · WhatsApp", "Datos por borrar", "Datos por borrar · WhatsApp", "Precio nuevo", "Precio nuevo · WhatsApp", "Baja de una suscripción", "Exportación lista"].indexOf(this.props.estado ?? "Pedido de un módulo: aprobado");
+    return { si: true, no: false, e0: k === 0, e1: k === 1, e2: k === 2, e3: k === 3, e4: k === 4, e5: k === 5, e6: k === 6, e7: k === 7, e8: k === 8, e9: k === 9, e10: k === 10, e11: k === 11, e12: k === 12, e13: k === 13, e14: k === 14, e15: k === 15 };
+  }
+}
+</script>
+</body>
+</html>
