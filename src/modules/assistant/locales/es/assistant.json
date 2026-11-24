@@ -190,6 +190,8 @@
   "key": "Clave de Anthropic",
   "maskedKey": "•••• {{suffix}}",
   "changeKey": "Cambiar",
+  "replaceKey": "Reemplazar clave",
+  "selectProvider": "Elegí un proveedor",
   "model": "Modelo",
   "defaultModel": "Modelo por defecto",
   "selectModel": "Elegí un modelo",
@@ -233,8 +235,24 @@
   "allModels": "Todos",
   "emptyModels": "No hay modelos",
   "perMillion": "por millón",
+  "steps": {
+    "step": "Paso {{current}} de {{total}}",
+    "next": "Siguiente",
+    "back": "Atrás"
+  },
+  "issues": {
+    "credentialRejected": "El proveedor rechazó la clave. Reemplazala.",
+    "keyUnreadable": "No pudimos leer la clave guardada: reemplazala.",
+    "modelRejected": "El proveedor no aceptó el modelo configurado. Elegí otro.",
+    "limited": "La cuenta del proveedor llegó a su cupo o a su límite de uso. Revisalo en el proveedor.",
+    "unavailable": "No pudimos conectarnos con el proveedor. No se envió nada.",
+    "platformUnavailable": "El asistente no está disponible por ahora. Lo está resolviendo la plataforma.",
+    "unsupportedProvider": "La conexión quedó en pausa: esta versión no reconoce el proveedor guardado. Guardá para elegir uno y cargar la clave."
+  },
   "technical": {
-    "advanced": "Avanzado: datos técnicos",
+    "title": "Datos técnicos",
+    "change": "Cambiar datos técnicos",
+    "list": "{{items}} y {{last}}",
     "capabilities": "Capacidades",
     "supportsText": "Texto",
     "supportsTools": "Herramientas",

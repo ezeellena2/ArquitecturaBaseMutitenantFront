@@ -25,7 +25,9 @@ export type SettingsValues = z.infer<ReturnType<typeof settingsSchema>>;
 export type SettingsRead = OrganizationAssistantSettingsResponse | PlatformAssistantSettingsResponse;
 export function settingsValues(settings: SettingsRead): SettingsValues {
   const platform = "defaultModelId" in settings;
-  return { mode: platform ? "PlatformKey" : settings.mode, modelId: platform ? settings.defaultModelId : settings.modelId,
+  // Con un proveedor que esta versión no conoce (0064 §6), el modelo guardado es de ese proveedor: se elige otro.
+  const paused = settings.unsupportedProvider && (platform || settings.mode === "OwnKey");
+  return { mode: platform ? "PlatformKey" : settings.mode, modelId: paused ? "" : platform ? settings.defaultModelId : settings.modelId,
     effort: settings.effort, dailyMessageLimit: settings.dailyMessageLimit,
     monthlyBudget: platform ? settings.monthlyOrganizationBudget : settings.monthlyBudget ?? null,
     allowedModelIds: platform ? settings.allowedModelIds : [], personalEnabled: platform ? settings.personalEnabled : false,

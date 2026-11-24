@@ -176,10 +176,23 @@ describe("catálogo y configuración de plataforma", () => {
     const app = mountSettings(platformManager, catalogPath);
     const add = await screen.findByRole("button", { name: "Agregar modelo" }); await app.user.click(add);
     const dialog = await screen.findByRole("dialog", { name: "Agregar modelo" });
-    expect(within(dialog).getByRole("button", { name: "Agregar modelo" })).toBeEnabled();
+    // 254: los datos son el primer paso; los técnicos, el segundo, después de «Siguiente».
+    expect(within(dialog).getByText("Paso 1 de 2")).toBeVisible();
+    expect(within(dialog).queryByRole("checkbox", { name: "Texto" })).not.toBeInTheDocument();
+    expect(within(dialog).queryByRole("button", { name: "Agregar modelo" })).not.toBeInTheDocument();
     fireEvent.change(within(dialog).getByRole("textbox", { name: "Nombre" }), { target: { value: "Nuevo modelo" } });
     fireEvent.change(within(dialog).getByRole("textbox", { name: "ID" }), { target: { value: "new-model" } });
-    await app.user.click(within(dialog).getByRole("button", { name: "Avanzado: datos técnicos" }));
+    const input = within(dialog).getByRole("textbox", { name: "Precio de entrada por millón" });
+    const output = within(dialog).getByRole("textbox", { name: "Precio de salida por millón" });
+    await waitFor(() => expect(input).toBeEnabled());
+    fireEvent.change(input, { target: { value: "0,125" } }); fireEvent.blur(input); expect(input).toHaveValue("0,125000");
+    fireEvent.change(output, { target: { value: "0,1234567" } }); fireEvent.blur(output);
+    await app.user.click(within(dialog).getByRole("button", { name: "Siguiente" }));
+    expect(screen.getByRole("dialog", { name: "Agregar modelo" })).toBe(dialog); expect(wire).toHaveLength(0);
+    fireEvent.change(output, { target: { value: "0,123456" } }); fireEvent.blur(output); expect(output).toHaveValue("0,123456");
+    await app.user.click(within(dialog).getByRole("button", { name: "Siguiente" }));
+    await waitFor(() => expect(screen.getByRole("dialog", { name: "Datos técnicos" })).toBe(dialog));
+    expect(within(dialog).getByText("Paso 2 de 2")).toBeVisible();
     await app.user.click(within(dialog).getByRole("checkbox", { name: "Texto" }));
     await app.user.click(within(dialog).getByRole("checkbox", { name: "Medio" }));
     const cache = within(dialog).getByRole("group", { name: "Caché · por millón de tokens" });
@@ -188,13 +201,6 @@ describe("catálogo y configuración de plataforma", () => {
       const field = within(name.endsWith("(tokens)") ? dialog : cache).getByRole("textbox", { name });
       fireEvent.change(field, { target: { value } }); fireEvent.blur(field);
     }
-    const input = within(dialog).getByRole("textbox", { name: "Precio de entrada por millón" });
-    const output = within(dialog).getByRole("textbox", { name: "Precio de salida por millón" });
-    await waitFor(() => expect(input).toBeEnabled());
-    fireEvent.change(input, { target: { value: "0,125" } }); fireEvent.blur(input); expect(input).toHaveValue("0,125000");
-    fireEvent.change(output, { target: { value: "0,1234567" } }); fireEvent.blur(output);
-    await app.user.click(within(dialog).getByRole("button", { name: "Agregar modelo" })); expect(wire).toHaveLength(0);
-    fireEvent.change(output, { target: { value: "0,123456" } }); fireEvent.blur(output); expect(output).toHaveValue("0,123456");
     await app.user.click(within(dialog).getByRole("button", { name: "Agregar modelo" }));
     await waitFor(() => expect(app.client.getMutationCache().getAll().at(-1)?.state.status).toBe("error"));
     const mutation = app.client.getMutationCache().getAll().at(-1)!;
@@ -284,6 +290,41 @@ describe("catálogo y configuración de plataforma", () => {
     await app.user.click(screen.getByRole("tab", { name: "General" }));
     expect(await screen.findByRole("textbox", { name: "Consultas por persona por día" })).toHaveValue("50");
   });
+  it("390: agregar va en cuatro pasos que entran en la hoja, y Atrás conserva lo cargado (254)", async () => {
+    asPhone(); let body: CreateAssistantModelRequest | undefined;
+    server.use(http.post("/api/platform/assistant/models", async ({ request }) => { body = await request.json() as CreateAssistantModelRequest; return HttpResponse.json({ id: "new", version: 1 }); }));
+    const app = mountSettings(platformManager, catalogPath);
+    await app.user.click(await screen.findByRole("button", { name: "Agregar modelo" }));
+    const dialog = await screen.findByRole("dialog", { name: "Agregar modelo" });
+    expect(within(dialog).getByText("Paso 1 de 4")).toBeVisible();
+    await app.user.click(within(dialog).getByRole("button", { name: "Siguiente" }));
+    expect(await within(dialog).findAllByRole("alert")).not.toHaveLength(0);
+    expect(within(dialog).getByText("Paso 1 de 4")).toBeVisible();
+    fireEvent.change(within(dialog).getByRole("textbox", { name: "Nombre" }), { target: { value: "Modelo del teléfono" } });
+    fireEvent.change(within(dialog).getByRole("textbox", { name: "ID" }), { target: { value: "phone-model" } });
+    for (const name of ["Precio de entrada por millón", "Precio de salida por millón"]) { const field = within(dialog).getByRole("textbox", { name }); await waitFor(() => expect(field).toBeEnabled()); fireEvent.change(field, { target: { value: "1" } }); fireEvent.blur(field); }
+    await app.user.click(within(dialog).getByRole("button", { name: "Siguiente" }));
+    await waitFor(() => expect(within(dialog).getByText("Paso 2 de 4")).toBeVisible());
+    expect(screen.getByRole("dialog", { name: "Datos técnicos" })).toBe(dialog);
+    expect(within(dialog).queryByRole("textbox", { name: "Contexto (tokens)" })).not.toBeInTheDocument();
+    await app.user.click(within(dialog).getByRole("checkbox", { name: "Texto" })); await app.user.click(within(dialog).getByRole("checkbox", { name: "Bajo" }));
+    await app.user.click(within(dialog).getByRole("button", { name: "Atrás" }));
+    expect(within(dialog).getByRole("textbox", { name: "Nombre" })).toHaveValue("Modelo del teléfono");
+    await app.user.click(within(dialog).getByRole("button", { name: "Siguiente" }));
+    await waitFor(() => expect(within(dialog).getByRole("checkbox", { name: "Texto" })).toBeChecked());
+    await app.user.click(within(dialog).getByRole("button", { name: "Siguiente" }));
+    expect(within(dialog).getByText("Paso 3 de 4")).toBeVisible();
+    for (const [name, value] of [["Contexto (tokens)", "1000"], ["Salida máxima (tokens)", "100"], ["Lectura de caché", "0,1"], ["Escritura de 5 minutos", "0,2"], ["Escritura de 1 hora", "0,3"]]) {
+      const field = within(dialog).getByRole("textbox", { name }); fireEvent.change(field, { target: { value } }); fireEvent.blur(field);
+    }
+    await app.user.click(within(dialog).getByRole("button", { name: "Siguiente" }));
+    await waitFor(() => expect(within(dialog).getByText("Paso 4 de 4")).toBeVisible());
+    expect(within(dialog).getByRole("group", { name: "Contexto largo Opcional" })).toBeVisible();
+    expect(await axe(dialog)).toHaveNoViolations();
+    await app.user.click(within(dialog).getByRole("button", { name: "Agregar modelo" }));
+    await waitFor(() => expect(body).toBeDefined());
+    expect(body).toMatchObject({ name: "Modelo del teléfono", providerModelId: "phone-model", technical: { supportsText: true, efforts: ["low"], maxInputTokens: 1000, maxOutputTokens: 100, longContext: null } });
+  }, 15_000);
   it("390: una sola hoja de edición, foco al cerrar y axe", async () => {
     asPhone(); const app = mountSettings(platformManager, catalogPath);
     const actions = await screen.findByRole("button", { name: `Acciones de ${firstModel.name}` }); await app.user.click(actions);

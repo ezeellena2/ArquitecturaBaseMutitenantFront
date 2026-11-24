@@ -150,11 +150,18 @@ function galleryAdvancedModelScenario(board: string, state: string): GalleryApp 
     } };
   const page: AssistantModelPricePageResponse = { ...galleryModelPage, items: [model], totalCount: 1 };
   app.responses.push(api("GET", "/api/platform/assistant/settings", galleryPlatformSettings), api("GET", "/api/platform/assistant/models", page));
-  app.actions = adding ? [click("Agregar modelo")] : [open(`Acciones de ${model.name}`, "button"), click(`Editar ${model.name}`, "menuitem")];
-  app.actions.push(click("Avanzado: datos técnicos"));
-  app.readySelector = '[role="dialog"] input';
+  // 254: el diálogo va en pasos. Agregar llega a los datos técnicos con «Siguiente»; editar los lee en una grilla y
+  // «Cambiar datos técnicos» abre su paso (en el teléfono, desde la fila «Datos técnicos» y en zonas).
+  const phone = board.startsWith("M-");
+  app.actions = adding
+    ? [click("Agregar modelo"), fill("Nombre", model.name), fill("ID", model.providerModelId), fill("Precio de entrada por millón", "0,1"), fill("Precio de salida por millón", "0,5"), click("Siguiente")]
+    : [open(`Acciones de ${model.name}`, "button"), click(`Editar ${model.name}`, "menuitem")];
+  // Los pasos que no se ven quedan montados y ocultos: lo listo es el título del paso y su texto.
+  app.readySelector = adding || invalid ? '[role="dialog"] h2' : '[role="dialog"] input';
+  if (adding) app.readyText = phone ? "Paso 2 de 4" : "Paso 2 de 2";
   if (invalid) {
-    app.actions.push(fill("Salida máxima (tokens)", "1.280.000"), click("Guardar cambios"));
+    app.actions.push(...(phone ? [click("Datos técnicos")] : []), click("Cambiar datos técnicos"), ...(phone ? [click("Siguiente")] : []),
+      fill("Salida máxima (tokens)", "1.280.000"), click(phone ? "Siguiente" : "Guardar cambios"));
     app.readyText = "La salida máxima no puede superar el contexto.";
   }
   return app;

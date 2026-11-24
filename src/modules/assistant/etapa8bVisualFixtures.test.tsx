@@ -334,20 +334,26 @@ it.each(["Plat-Asistente-Config", "M-Plat-Asistente-Config"].flatMap((board) =>
       const app = configurationScenario(board, state)!; const mounted = mount(app);
       await actions(app, mounted.user);
       const adding = state === "Agregar un modelo: avanzado"; const invalid = state === "Editar un modelo: error en un dato técnico";
-      const dialog = within(screen.getByRole("dialog", { name: adding ? "Agregar modelo" : "Editar modelo" }));
-      expect(dialog.getByRole("button", { name: "Avanzado: datos técnicos" })).toHaveAttribute("aria-expanded", "true");
-      expect(dialog.getByRole("textbox", { name: "Contexto (tokens)" })).toHaveValue(adding ? "" : "1.000.000");
-      for (const name of ["Texto", "Herramientas", "Imágenes en los adjuntos", "PDF en los adjuntos", "Pensamiento adaptativo", "Bajo", "Medio", "Alto"])
-        expect(dialog.getByRole("checkbox", { name })).toHaveAttribute("aria-checked", adding ? "false" : "true");
-      const cache = within(dialog.getByRole("group", { name: "Caché · por millón de tokens" }));
-      expect(cache.getByRole("textbox", { name: "Escritura de 5 minutos" })).toHaveValue(adding ? "" : invalid ? "2,500000" : "0,125000");
-      expect(dialog.getByRole("textbox", { name: "Desde (tokens)" })).toHaveValue(adding || invalid ? "" : "100.000");
-      const output = dialog.getByRole("textbox", { name: "Salida máxima (tokens)" });
-      expect(output).toHaveValue(adding ? "" : invalid ? "1.280.000" : "128.000");
-      if (invalid) {
+      const phone = board.startsWith("M-");
+      // 254: agregar llega a los datos técnicos (en el teléfono, a capacidades y esfuerzos); editar los lee en una grilla.
+      const dialog = within(screen.getByRole("dialog", { name: adding || invalid ? "Datos técnicos" : "Editar modelo" }));
+      expect(dialog.queryByRole("button", { name: /Avanzado/u })).not.toBeInTheDocument();
+      if (adding) {
+        for (const name of ["Texto", "Herramientas", "Imágenes en los adjuntos", "PDF en los adjuntos", "Pensamiento adaptativo", "Bajo", "Medio", "Alto"])
+          expect(dialog.getByRole("checkbox", { name })).toHaveAttribute("aria-checked", "false");
+        if (!phone) expect(dialog.getByRole("textbox", { name: "Contexto (tokens)" })).toHaveValue("");
+      } else if (!invalid) {
+        if (phone) expect(dialog.getByRole("button", { name: "Datos técnicos" })).toBeVisible();
+        else expect(dialog.getByRole("group", { name: "Datos técnicos" })).toHaveTextContent("1.000.000");
+        expect(dialog.queryByRole("alert")).not.toBeInTheDocument();
+      } else {
+        const cache = within(dialog.getByRole("group", { name: "Caché · por millón de tokens" }));
+        expect(cache.getByRole("textbox", { name: "Escritura de 5 minutos" })).toHaveValue("2,500000");
+        const output = dialog.getByRole("textbox", { name: "Salida máxima (tokens)" });
+        expect(output).toHaveValue("1.280.000");
         expect(output).toHaveAttribute("aria-invalid", "true");
         expect(output).toHaveAccessibleDescription("La salida máxima no puede superar el contexto.");
-      } else expect(dialog.queryByRole("alert")).not.toBeInTheDocument();
+      }
       expect(mounted.calls).toContain("GET /api/platform/assistant/models");
       expect(mounted.calls.some((call) => /^(POST|PUT) /.test(call))).toBe(false);
     } finally { restore(); }

@@ -190,6 +190,8 @@
   "key": "Anthropic key",
   "maskedKey": "•••• {{suffix}}",
   "changeKey": "Change",
+  "replaceKey": "Replace key",
+  "selectProvider": "Choose a provider",
   "model": "Model",
   "defaultModel": "Default model",
   "selectModel": "Choose a model",
@@ -233,8 +235,24 @@
   "allModels": "All",
   "emptyModels": "No models",
   "perMillion": "per million",
+  "steps": {
+    "step": "Step {{current}} of {{total}}",
+    "next": "Next",
+    "back": "Back"
+  },
+  "issues": {
+    "credentialRejected": "The provider rejected the key. Replace it.",
+    "keyUnreadable": "We couldn't read the saved key: replace it.",
+    "modelRejected": "The provider didn't accept the configured model. Choose another one.",
+    "limited": "The provider account reached its quota or usage limit. Check it with the provider.",
+    "unavailable": "We couldn't connect to the provider. Nothing was sent.",
+    "platformUnavailable": "The assistant isn't available right now. The platform is working on it.",
+    "unsupportedProvider": "The connection is paused: this version doesn't recognize the saved provider. Save to choose one and load the key."
+  },
   "technical": {
-    "advanced": "Advanced: technical data",
+    "title": "Technical data",
+    "change": "Change technical data",
+    "list": "{{items}} and {{last}}",
     "capabilities": "Capabilities",
     "supportsText": "Text",
     "supportsTools": "Tools",

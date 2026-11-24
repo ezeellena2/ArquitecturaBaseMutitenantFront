@@ -33,6 +33,8 @@ import { InfoButton } from "@/shared/ui/InfoButton";
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import { Section, SectionFields } from "@/shared/ui/Section";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
+import { StatusDot } from "@/shared/ui/StatusDot";
 import { activeOrganization } from "@/tenancy/access";
 import { assistantModelsRoot, fetchAssistantModelOptions } from "../api/models";
 import { assistantSettingsKey, updateAssistantSettings } from "../api/settings";
@@ -45,6 +47,11 @@ import { usePrivateSettingsOperation } from "./usePrivateSettingsOperation";
 const tabKeys = ["tab"] as const;
 const fieldMap: Record<string, keyof SettingsValues> = { mode: "mode", modelId: "modelId", defaultModelId: "modelId", effort: "effort", dailyMessageLimit: "dailyMessageLimit",
   monthlyBudget: "monthlyBudget", monthlyOrganizationBudget: "monthlyBudget", allowedModelIds: "allowedModelIds", personalEnabled: "personalEnabled", retentionDays: "retentionDays", keyAction: "keyAction", apiKey: "keyAction" };
+/// Cada falla del proveedor en su lugar (0064 §6 y §7, Asistente-Config-Org y Plat-Asistente-Config): la clave rechazada
+/// o ilegible, en la clave; el modelo no aceptado, en el modelo; lo demás, en la banda. El back manda solo la que arregla
+/// quien mira, según quién paga; un código que esta versión no conoce no se muestra.
+const bandIssues: Readonly<Record<string, string>> = { "Assistant.Provider.Limited": "limited", "Assistant.Provider.Unavailable": "unavailable", "Assistant.Provider.PlatformUnavailable": "platformUnavailable" };
+const keyIssues: Readonly<Record<string, string>> = { "Assistant.Provider.CredentialRejected": "credentialRejected", "Assistant.Provider.KeyUnreadable": "keyUnreadable" };
 type SettingsOperation = { request: UpdateOrganizationAssistantSettingsRequest | UpdatePlatformAssistantSettingsRequest; values: SettingsValues; read: SettingsRead };
 
 export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
@@ -87,7 +94,14 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
   const keyRead = ownRead?.saved ?? settings;
   const savedHasKey = keyRead.hasKey;
   const modeChanged = !platform && "mode" in keyRead && values.mode !== keyRead.mode;
-  const inputKey = changingKey || !savedHasKey || values.keyAction === "replace" || modeChanged;
+  // Un proveedor guardado que esta versión no conoce deja la conexión en pausa: se elige otro, con su clave y su modelo.
+  const paused = settings.unsupportedProvider && (platform || ("mode" in settings && settings.mode === "OwnKey"));
+  const issue = settings.providerIssue ?? null;
+  const bandIssue = paused ? "unsupportedProvider" : issue ? bandIssues[issue] : undefined;
+  const keyIssue = issue ? keyIssues[issue] : undefined;
+  const modelIssue = issue === "Assistant.Provider.ModelRejected" && !form.formState.dirtyFields.modelId ? t("assistant:settings.issues.modelRejected") : undefined;
+  const [provider, setProvider] = useState("");
+  const inputKey = changingKey || !savedHasKey || values.keyAction === "replace" || modeChanged || paused;
   function fieldError(name: keyof SettingsValues, message: string) { form.setError(name, { type: "server", message }); }
 
   function policyAllows(sent?: SettingsOperation) {
@@ -183,7 +197,11 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
   // El tope que fija la plataforma, apagado como MoneyField: la moneda adelante y el monto con los decimales de esa moneda.
   const budget = "monthlyBudget" in settings ? settings.monthlyBudget ?? null : null;
   const budgetDigits = budget ? format.referenceData?.currencies.find((row) => row.code === budget.currency)?.minorUnits ?? 2 : 2;
+  const band = bandIssue ? <StatusDot role="status" tone={paused ? "warning" : "danger"} label={t(`assistant:settings.issues.${bandIssue}`)}
+    className={paused ? undefined : "text-[var(--peligro)]"} /> : null;
   const general = <form id="assistant-settings" autoComplete="off" noValidate aria-label={t("assistant:settings.title")} onSubmit={submit} className="flex flex-col gap-3.5">
+    {/* En el teléfono la falla va arriba del cuerpo (M-Asistente-Config-Org, M-Plat-Asistente-Config); en la compu, en la banda. */}
+    {phone && band ? <div>{band}</div> : null}
     {loadError ? <FormError message={apiErrorMessage(loadError, t)} /> : null}{edit.formError}
     <Section title={t("assistant:settings.keyAndModel")} phone="inset"><SectionFields className="grid gap-3.5 md:grid-cols-2 md:gap-x-5">
       {!platform ? settings.allowOwnKey || ownKey ? <div>
@@ -194,18 +212,23 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
         </FormField>
         {ownKey && (!settings.hasAlertRecipient || errors.mode?.type === "alertRecipient") ? <>{!errors.mode ? <p role="alert" className="mt-1 text-[0.8125rem] text-[var(--peligro)]">{t("assistant:settings.recipientRequired", { organization: activeOrganization(me)?.name })}</p> : null}<Button type="button" variant="link" onClick={() => setAddEmailOpen(true)}>{t("assistant:settings.addEmail")}</Button></> : null}
       </div> : <ReadOnlyField label={t("assistant:settings.mode")}><span className="inline-flex items-center gap-1.5">{t("assistant:settings.modeLabels.PlatformKey")}<InfoButton label={t("assistant:settings.ownKeyUnavailable", { organization: activeOrganization(me)?.name })} onClick={() => setInfo("ownKey")} /></span></ReadOnlyField> : null}
-      <ReadOnlyField label={t("assistant:settings.provider")}>{t("enums:AssistantProvider.Anthropic")}</ReadOnlyField>
+      {paused ? <FormField label={t("assistant:settings.provider")}><Select value={provider} onValueChange={(value) => { changed(); setProvider(value); }}>
+        <SelectTrigger className="w-full"><SelectValue placeholder={t("assistant:settings.selectProvider")} /></SelectTrigger>
+        <SelectContent><SelectItem value="Anthropic">{t("enums:AssistantProvider.Anthropic")}</SelectItem></SelectContent>
+      </Select></FormField> : <ReadOnlyField label={t("assistant:settings.provider")}>{t("enums:AssistantProvider.Anthropic")}</ReadOnlyField>}
       {platform || ownKey ? <div>
         {inputKey ? <FormField label={t(platform ? "assistant:settings.platformKey" : "assistant:settings.key")} required error={errors.keyAction?.message}>
           <Input ref={password} type="text" autoComplete="off" spellCheck={false} autoCapitalize="none" autoCorrect="off"
             data-1p-ignore="true" data-lpignore="true" data-bwignore="true" className="[-webkit-text-security:disc]" maxLength={assistantKeyMaxLength}
             onChange={() => { changed("keyAction", false); form.setValue("keyAction", "replace", { shouldDirty: true }); }} />
         </FormField> : <ReadOnlyField label={t(platform ? "assistant:settings.platformKey" : "assistant:settings.key")}
-          action={<Button type="button" variant="link" className="h-auto p-0" onClick={() => { changed("keyAction"); setChangingKey(true); }}>{t("assistant:settings.changeKey")}</Button>}>
+          action={keyIssue ? <Button type="button" size="sm" onClick={() => { changed("keyAction"); setChangingKey(true); }}>{t("assistant:settings.replaceKey")}</Button>
+            : <Button type="button" variant="link" className="h-auto p-0" onClick={() => { changed("keyAction"); setChangingKey(true); }}>{t("assistant:settings.changeKey")}</Button>}>
           {t("assistant:settings.maskedKey", { suffix: settings.maskedKeySuffix ?? "" })}
         </ReadOnlyField>}
+        {keyIssue && !inputKey ? <p role="alert" className="mt-1.5 text-[0.78125rem] text-[var(--peligro)]">{t(`assistant:settings.issues.${keyIssue}`)}</p> : null}
       </div> : null}
-      <FormField label={t(platform ? "assistant:settings.defaultModel" : "assistant:settings.model")} error={errors.modelId?.message}>
+      <FormField label={t(platform ? "assistant:settings.defaultModel" : "assistant:settings.model")} error={errors.modelId?.message ?? modelIssue}>
         <ModelSelect models={models} value={values.modelId ?? ""} onChange={(value) => { changed("modelId"); form.setValue("modelId", value, { shouldDirty: true }); }} />
       </FormField>
       {platform ? <>
@@ -239,7 +262,8 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
   </form>;
   const actions = tab === "general" ? <><Button type="button" variant="outline" onClick={discard}>{t("assistant:settings.discard")}</Button><Button type="submit" form="assistant-settings" disabled={!form.formState.isDirty} pending={pending} pendingLabel={t("assistant:settings.saving")}>{t("assistant:settings.save")}</Button></> : <Button onClick={(event) => setModelDialog({ trigger: event.currentTarget })}>{t("assistant:settings.addModel")}</Button>;
   return <>
-    <Page title={t("assistant:settings.title")} summary={platform && !savedHasKey ? <span className="font-medium text-[var(--alerta)]">{t("assistant:settings.unconfigured")}</span> : null} phoneSubtitle={t("assistant:title")} backTo={phone ? { to: platform ? "/plataforma/mas" : "/mas", label: t("assistant:settings.back") } : undefined}
+    <Page title={t("assistant:settings.title")} summary={(platform && !savedHasKey) || (band && !phone) ? <span className="inline-flex flex-wrap items-center gap-x-3 gap-y-1">
+      {platform && !savedHasKey ? <span className="font-medium text-[var(--alerta)]">{t("assistant:settings.unconfigured")}</span> : null}{phone ? null : band}</span> : null} phoneSubtitle={t("assistant:title")} backTo={phone ? { to: platform ? "/plataforma/mas" : "/mas", label: t("assistant:settings.back") } : undefined}
       banner={edit.banner} actions={actions} phoneBody={tab === "catalog" ? "flush" : "padded"}
       tabs={platform ? { label: t("assistant:settings.title"), value: tab, onValueChange: (value) => updateQuery({ tab: value }), items: [
         { value: "general", label: t("assistant:settings.general"), content: general },

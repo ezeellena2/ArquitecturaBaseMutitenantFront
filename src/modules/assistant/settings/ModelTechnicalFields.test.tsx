@@ -23,6 +23,10 @@ async function openEditor() {
   await app.user.click(await screen.findByRole("menuitem", { name: `Editar ${firstModel.name}` }));
   return { app, dialog: await screen.findByRole("dialog", { name: "Editar modelo" }) };
 }
+/// El paso técnico de un modelo que se edita (254): en la compu, «Cambiar datos técnicos» desde la lectura.
+async function changeTechnical(app: ReturnType<typeof mountSettings>, dialog: HTMLElement) {
+  await app.user.click(within(dialog).getByRole("button", { name: "Cambiar datos técnicos" }));
+}
 function write(group: HTMLElement, name: string, value: string) {
   const field = within(group).getByRole("textbox", { name });
   fireEvent.change(field, { target: { value } }); fireEvent.blur(field);
@@ -33,19 +37,29 @@ function readWithTier() {
   server.use(http.get("/api/platform/assistant/models", () => HttpResponse.json({ items: [{ ...firstModel, technical: { ...firstModel.technical, longContext: completeTier } }], page: 1, pageSize: 100, totalCount: 1 })));
 }
 describe("metadatos editables del catálogo", () => {
-  it.each([false, true])("precarga datos publicados, conserva versión y envía técnico sin revisión sintetizada (390px %s)", async (phone) => {
+  it.each([false, true])("precarga datos publicados, los lee en grilla, conserva versión y envía técnico sin revisión sintetizada (390px %s)", async (phone) => {
     if (phone) asPhone();
     let body: UpdateAssistantModelRequest | undefined;
     server.use(http.put(`/api/platform/assistant/models/${firstModel.id}`, async ({ request }) => {
       body = await request.json() as UpdateAssistantModelRequest; return HttpResponse.json({ version: 4 });
     }));
     const { app, dialog } = await openEditor();
-    const advanced = within(dialog).getByRole("button", { name: "Avanzado: datos técnicos" });
-    expect(advanced).toHaveAttribute("aria-expanded", "false");
+    expect(within(dialog).queryByRole("button", { name: /Avanzado/u })).not.toBeInTheDocument();
     expect(within(dialog).queryByRole("textbox", { name: "Contexto (tokens)" })).not.toBeInTheDocument();
-    await app.user.click(advanced);
+    write(dialog, "Nombre", "Modelo editado");
+    if (phone) await app.user.click(within(dialog).getByRole("button", { name: "Datos técnicos" }));
+    const reading = phone ? dialog : within(dialog).getByRole("group", { name: "Datos técnicos" });
+    expect(reading).toHaveTextContent("Texto, Herramientas, Imágenes en los adjuntos, PDF en los adjuntos y Pensamiento adaptativo");
+    expect(reading).toHaveTextContent("Bajo, Medio y Alto");
+    expect(reading).toHaveTextContent("200.000"); expect(reading).toHaveTextContent("USD 0,010000");
+    if (phone) expect(screen.getByRole("dialog", { name: "Datos técnicos" })).toBe(dialog);
+    await app.user.click(within(dialog).getByRole("button", { name: "Cambiar datos técnicos" }));
     for (const name of ["Texto", "Herramientas", "Imágenes en los adjuntos", "PDF en los adjuntos", "Pensamiento adaptativo", "Bajo", "Medio", "Alto"])
       expect(within(dialog).getByRole("checkbox", { name })).toBeChecked();
+    if (phone) {
+      expect(within(dialog).queryByRole("textbox", { name: "Contexto (tokens)" })).not.toBeInTheDocument();
+      await app.user.click(within(dialog).getByRole("button", { name: "Siguiente" }));
+    }
     expect(within(dialog).getByRole("textbox", { name: "Contexto (tokens)" })).toHaveValue("200.000");
     expect(within(dialog).getByRole("textbox", { name: "Salida máxima (tokens)" })).toHaveValue("4.096");
     const cache = within(dialog).getByRole("group", { name: "Caché · por millón de tokens" });
@@ -53,21 +67,23 @@ describe("metadatos editables del catálogo", () => {
     expect(within(cache).getByRole("textbox", { name: "Escritura de 5 minutos" })).toHaveValue("0,150000");
     expect(within(cache).getByRole("textbox", { name: "Escritura de 1 hora" })).toHaveValue("0,250000");
     expect(await axe(dialog)).toHaveNoViolations();
-    write(dialog, "Nombre", "Modelo editado");
+    if (phone) await app.user.click(within(dialog).getByRole("button", { name: "Siguiente" }));
     await app.user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
     await waitFor(() => expect(body).toBeDefined());
+    expect(body?.name).toBe("Modelo editado");
     expect(body?.technical).toEqual(firstModel.technical);
     expect(body?.version).toBe(firstModel.version);
     expect(body).not.toHaveProperty("technicalRevision");
-  });
-  it("datos legacy quedan vacíos y el intento de guardar abre Avanzado sin escribir", async () => {
+  }, 15_000);
+  it("datos legacy quedan vacíos y el intento de guardar lleva al paso técnico sin escribir", async () => {
     let writes = 0;
     server.use(http.get("/api/platform/assistant/models", () => HttpResponse.json({ items: [{ ...firstModel, technical: null, technicalRevision: null }], page: 1, pageSize: 100, totalCount: 1 })),
       http.put(`/api/platform/assistant/models/${firstModel.id}`, () => { writes++; return HttpResponse.json({ version: 4 }); }));
     const { app, dialog } = await openEditor();
+    expect(within(dialog).getByRole("group", { name: "Datos técnicos" })).toHaveTextContent("Capacidades—");
     write(dialog, "Nombre", "Herencia explícita");
     await app.user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
-    await waitFor(() => expect(within(dialog).getByRole("button", { name: "Avanzado: datos técnicos" })).toHaveAttribute("aria-expanded", "true"));
+    await waitFor(() => expect(screen.getByRole("dialog", { name: "Datos técnicos" })).toBe(dialog));
     expect(within(dialog).getByRole("textbox", { name: "Contexto (tokens)" })).toHaveValue("");
     expect(within(dialog).getByRole("textbox", { name: "Salida máxima (tokens)" })).toHaveValue("");
     expect(await within(dialog).findByText("Elegí al menos un esfuerzo.")).toBeVisible();
@@ -77,7 +93,7 @@ describe("metadatos editables del catálogo", () => {
     let writes = 0;
     server.use(http.put(`/api/platform/assistant/models/${firstModel.id}`, () => { writes++; return HttpResponse.json({ version: 4 }); }));
     const { app, dialog } = await openEditor();
-    await app.user.click(within(dialog).getByRole("button", { name: "Avanzado: datos técnicos" }));
+    await changeTechnical(app, dialog);
     write(dialog, "Salida máxima (tokens)", "2147483647");
     await app.user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
     expect(await within(dialog).findByText("La salida máxima no puede superar el contexto.")).toBeVisible();
@@ -90,42 +106,41 @@ describe("metadatos editables del catálogo", () => {
     expect(within(tier).getAllByText("Ingresá una tarifa mayor que cero en USD.")).not.toHaveLength(0);
     expect(writes).toBe(0);
   });
-  it("un error anidado del servidor abre el grupo y queda en su campo", async () => {
+  it("un error anidado del servidor lleva al paso técnico y queda en su campo", async () => {
     server.use(http.put(`/api/platform/assistant/models/${firstModel.id}`, () => HttpResponse.json({ code: "General.ValidationError", detail: "Revisá los datos.",
       errors: { "technical.cacheReadPricePerMillion": ["Tarifa rechazada por el servicio."] } }, { status: 400 })));
     const { app, dialog } = await openEditor();
     write(dialog, "Nombre", "Cambio validado");
     await app.user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
     expect(await within(dialog).findByText("Tarifa rechazada por el servicio.")).toBeVisible();
-    expect(within(dialog).getByRole("button", { name: "Avanzado: datos técnicos" })).toHaveAttribute("aria-expanded", "true");
+    expect(screen.getByRole("dialog", { name: "Datos técnicos" })).toBe(dialog);
     const cache = within(dialog).getByRole("group", { name: "Caché · por millón de tokens" });
     expect(within(cache).getByRole("textbox", { name: "Lectura de caché" })).toHaveAccessibleDescription("Tarifa rechazada por el servicio.");
     expect(within(dialog).queryByText("Revisá los datos.")).not.toBeInTheDocument();
     expect(await axe(dialog)).toHaveNoViolations();
   });
-  it("un borrador opcional inválido permite validar, sobrevive al plegado y no se confunde con tramo vacío", async () => {
+  it("un borrador opcional inválido permite validar, sobrevive a ir y volver entre pasos y no se confunde con tramo vacío", async () => {
     let writes = 0;
     server.use(http.put(`/api/platform/assistant/models/${firstModel.id}`, () => { writes++; return HttpResponse.json({ version: 4 }); }));
     const { app, dialog } = await openEditor();
-    const advanced = within(dialog).getByRole("button", { name: "Avanzado: datos técnicos" });
-    await app.user.click(advanced);
+    await changeTechnical(app, dialog);
     const tier = within(dialog).getByRole("group", { name: "Contexto largo Opcional" });
     write(tier, "Lectura de caché", "0,1234567");
-    const save = within(dialog).getByRole("button", { name: "Guardar cambios" });
-    expect(save).toBeEnabled();
-    await app.user.click(advanced); await app.user.click(save);
-    await waitFor(() => expect(advanced).toHaveAttribute("aria-expanded", "true"));
+    expect(within(dialog).getByRole("button", { name: "Guardar cambios" })).toBeEnabled();
+    await app.user.click(within(dialog).getByRole("button", { name: "Atrás" }));
+    await app.user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
+    await waitFor(() => expect(screen.getByRole("dialog", { name: "Datos técnicos" })).toBe(dialog));
     expect(within(tier).getByRole("textbox", { name: "Lectura de caché" })).toHaveValue("0,1234567");
     expect(await within(tier).findByText("Ingresá una tarifa mayor que cero en USD.")).toBeVisible();
     expect(writes).toBe(0);
     write(tier, "Lectura de caché", "");
-    expect(save).toBeDisabled();
+    expect(within(dialog).getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
   });
   it("precarga los seis valores de contexto largo y al vaciarlos envía null", async () => {
     readWithTier(); let body: UpdateAssistantModelRequest | undefined;
     server.use(http.put(`/api/platform/assistant/models/${firstModel.id}`, async ({ request }) => { body = await request.json() as UpdateAssistantModelRequest; return HttpResponse.json({ version: 4 }); }));
     const { app, dialog } = await openEditor();
-    await app.user.click(within(dialog).getByRole("button", { name: "Avanzado: datos técnicos" }));
+    await changeTechnical(app, dialog);
     const tier = within(dialog).getByRole("group", { name: "Contexto largo Opcional" });
     expect(within(tier).getByRole("textbox", { name: "Desde (tokens)" })).toHaveValue("100.000");
     expect(within(tier).getByRole("textbox", { name: "Lectura de caché" })).toHaveValue("0,100000");
@@ -140,8 +155,8 @@ describe("metadatos editables del catálogo", () => {
     const { app, dialog } = await openEditor(); write(dialog, "Nombre", "Cambio profundo");
     await app.user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
     expect(await within(dialog).findByText("Error general del catálogo.")).toBeVisible();
+    expect(screen.getByRole("dialog", { name: "Datos técnicos" })).toBe(dialog);
     const tier = within(dialog).getByRole("group", { name: "Contexto largo Opcional" });
     expect(within(tier).getByRole("textbox", { name: "Lectura de caché" })).toHaveAccessibleDescription("Tarifa larga rechazada.");
-    expect(within(dialog).getByRole("button", { name: "Avanzado: datos técnicos" })).toHaveAttribute("aria-expanded", "true");
   });
 });

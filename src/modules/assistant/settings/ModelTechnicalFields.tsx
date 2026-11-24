@@ -7,14 +7,20 @@ import { MoneyField } from "@/shared/ui/fields/MoneyField";
 import { NumberField } from "@/shared/ui/fields/NumberField";
 import type { ModelFormOutput, ModelFormValues } from "./modelForm";
 
-export function ModelTechnicalFields({ form, currency, changed, validity }: {
+/** Lo que muestra cada paso del diálogo de un modelo (254): en la compu, todo junto; en el teléfono, en tres zonas que
+ * entran en la hoja (capacidades y esfuerzos, límites y caché, contexto largo). */
+export type ModelTechnicalPart = "all" | "capabilities" | "limits" | "longContext";
+
+export function ModelTechnicalFields({ form, currency, changed, validity, part = "all" }: {
   form: UseFormReturn<ModelFormValues, unknown, ModelFormOutput>; currency: string; changed: () => void;
-  validity: (name: FieldPath<ModelFormValues>, valid: boolean) => void;
+  validity: (name: FieldPath<ModelFormValues>, valid: boolean) => void; part?: ModelTechnicalPart;
 }) {
+  const shows = (zone: Exclude<ModelTechnicalPart, "all">) => part === "all" || part === zone;
   const { t } = useTranslation(["assistant", "enums"]);
   const effortsErrorId = useId();
   const errors = form.formState.errors.technical;
   return <div className="flex flex-col gap-4">
+    {shows("capabilities") ? <>
     <fieldset className="min-w-0"><legend className="mb-1 font-semibold">{t("assistant:settings.technical.capabilities")}</legend>
       <div className="flex flex-wrap gap-x-2">
         {(["supportsText", "supportsTools", "supportsImages", "supportsPdf", "supportsAdaptiveThinking"] as const).map((name) =>
@@ -36,6 +42,8 @@ export function ModelTechnicalFields({ form, currency, changed, validity }: {
         </div>
         {errors?.efforts?.message ? <p id={effortsErrorId} role="alert" className="text-[0.8125rem] text-[var(--peligro)]">{errors.efforts.message}</p> : null}
       </fieldset>} />
+    </> : null}
+    {shows("limits") ? <>
     <fieldset className="min-w-0"><legend className="mb-3 font-semibold">{t("assistant:settings.technical.limits")}</legend>
       <div className="grid gap-3.5 md:grid-cols-2 md:gap-x-5">
         {(["maxInputTokens", "maxOutputTokens"] as const).map((name) =>
@@ -54,7 +62,8 @@ export function ModelTechnicalFields({ form, currency, changed, validity }: {
             </FormField>} />)}
       </div>
     </fieldset>
-    <fieldset className="min-w-0"><legend className="mb-3 flex items-center gap-2 font-semibold">{t("assistant:settings.technical.longContext")} <span className="text-xs font-normal text-[var(--t2)]">{t("assistant:settings.technical.optional")}</span></legend>
+    </> : null}
+    {shows("longContext") ? <fieldset className="min-w-0"><legend className="mb-3 flex items-center gap-2 font-semibold">{t("assistant:settings.technical.longContext")} <span className="text-xs font-normal text-[var(--t2)]">{t("assistant:settings.technical.optional")}</span></legend>
       <div className="grid gap-3.5 md:grid-cols-3 md:gap-x-5">
         <Controller control={form.control} name="technical.longContext.inputTokensThreshold" render={({ field }) =>
           <FormField label={t("assistant:settings.technical.inputTokensThreshold")} error={errors?.longContext?.inputTokensThreshold?.message}>
@@ -66,6 +75,6 @@ export function ModelTechnicalFields({ form, currency, changed, validity }: {
               <MoneyField fixedCurrency precision="technical-tariff" currencyCode={currency} value={field.value} onValidityChange={(valid) => validity(`technical.longContext.${name}`, valid)} onChange={(value) => { changed(); field.onChange(value); }} />
             </FormField>} />)}
       </div>
-    </fieldset>
+    </fieldset> : null}
   </div>;
 }
