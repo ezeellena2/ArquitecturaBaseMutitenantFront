@@ -436,7 +436,9 @@ describe("Cuentas de Plataforma", () => {
     await user.click(screen.getByRole("button", { name: "Cancelar" })); await user.click(screen.getByRole("button", { name: "Invitar operador" }));
     await act(async () => { fireEvent.click(oldRetry); }); expect(requests).toHaveLength(2); expect(screen.getByRole("dialog")).toBeVisible(); expect(screen.getByRole("textbox", { name: "Correo" })).toHaveValue("");
     await user.type(screen.getByRole("textbox", { name: "Correo" }), "b@example.com"); await user.click(screen.getByRole("button", { name: "Invitar" })); await waitFor(() => expect(requests).toHaveLength(3)); expect(requests[2].key).not.toBe(requests[1].key);
-  });
+  // Límite de 10 s: escribe tres correos letra por letra con las nueve áreas de permisos en el diálogo (260); solo tarda
+  // unos 2 s, pero con la suite entera pasaba los 5.
+  }, 10_000);
   it("un POST de invitar cancelado no avisa ni cierra una nueva invitación", async () => {
     const user = userEvent.setup(); let release: (() => void) | undefined;
     server.use(http.post("/api/platform/operators/invitations", async () => { await new Promise<void>((resolve) => { release = resolve; }); return HttpResponse.json({ id: "new", expiresAtUtc: "2026-10-08T12:00:00Z" }, { status: 201 }); }));

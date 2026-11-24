@@ -99,6 +99,19 @@ describe("PermissionPicker", () => {
     expect(onChange).toHaveBeenLastCalledWith([]);
   });
 
+  it("la casilla de un permiso va encima de su nombre, que cubre la fila: el puntero da en ella, y tocar el nombre también la marca", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    renderWithProviders(<Editor initial={["audit.read"]} onChange={onChange} />);
+
+    // jsdom no apila capas: se mira que el nombre cubra la fila y que la casilla tenga su capa encima.
+    const name = screen.getByText("Ver la auditoría", { selector: "label" });
+    expect(name).toHaveClass("after:absolute", "after:inset-0");
+    expect(screen.getByRole("checkbox", { name: "Ver la auditoría" })).toHaveClass("relative", "z-[1]");
+    await user.click(name);
+    expect(onChange).toHaveBeenLastCalledWith([]);
+  });
+
   it("la casilla del área elige el área entera con lo incluido, y la vuelve a vaciar", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();

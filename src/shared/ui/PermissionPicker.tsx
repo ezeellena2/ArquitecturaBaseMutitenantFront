@@ -46,8 +46,9 @@ interface PermissionPickerProps {
 const showOnly = (event: { preventDefault: () => void }) => event.preventDefault();
 
 // Tablero Rol-Base2 (.acc-cb): 16 en la compu; M-Rol-Base2, 22 con radio 6 y borde de 1,5. Marcada y apagada (lo incluido o
-// lo que no se puede dar), en el verde claro de la marca.
-const checkClass = "border-[var(--t2)] max-md:size-5.5 max-md:rounded-[0.375rem] max-md:border-[1.5px] max-md:border-[var(--borde2)]"
+// lo que no se puede dar), en el verde claro de la marca. Va encima del nombre, que cubre la fila para tocarla entera: así el
+// puntero sobre la casilla da en ella (su borde al pasar, y el clic de Playwright en el E2E real) y no en el nombre.
+const checkClass = "relative z-[1] border-[var(--t2)] max-md:size-5.5 max-md:rounded-[0.375rem] max-md:border-[1.5px] max-md:border-[var(--borde2)]"
   + " aria-disabled:data-[state=checked]:border-[var(--casilla-incluida)] aria-disabled:data-[state=checked]:bg-[var(--casilla-incluida)]"
   + " aria-disabled:data-[state=indeterminate]:border-[var(--casilla-incluida)] aria-disabled:data-[state=indeterminate]:bg-[var(--casilla-incluida)]";
 
