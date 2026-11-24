@@ -1,5 +1,7 @@
 {
   "title": "Auditoría",
+  "retention_one": "Los ingresos se guardan {{count}} mes.",
+  "retention_other": "Los ingresos se guardan {{count}} meses.",
   "details": "Ver detalle",
   "openDetails": "Ver el detalle: {{summary}}",
   "empty": "No hay movimientos para mostrar",

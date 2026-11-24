@@ -1,5 +1,7 @@
 {
   "title": "Audit",
+  "retention_one": "Sign-ins are kept for {{count}} month.",
+  "retention_other": "Sign-ins are kept for {{count}} months.",
   "details": "View details",
   "openDetails": "View details: {{summary}}",
   "empty": "No activity to display",

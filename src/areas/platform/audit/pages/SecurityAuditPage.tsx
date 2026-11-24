@@ -49,6 +49,9 @@ export function SecurityAuditPage() {
   const select = (event: PlatformAuditEventResponse) => setSelection({ scope, event });
   const { phone } = useAppChrome();
   const filtered = Boolean(type || tenantId || accountId || pagination.search || period !== "30");
+  // Tablero Auditoria-Plat-Base2 (272): la (i) del título dice cuánto se guardan los ingresos, con los meses de la
+  // configuración de Plataforma que manda cada tanda.
+  const months = audit.data?.pages[0]?.loginAuditRetentionMonths;
 
   const columns: Column<PlatformAuditEventResponse>[] = [
     // Fecha copiada de AuditPage; las otras columnas usan la distribución común de DataTable.
@@ -65,7 +68,7 @@ export function SecurityAuditPage() {
   ];
 
   return <>
-    <Page title={t("title")} phoneBody="flush">
+    <Page title={t("title")} help={months ? t("retention", { count: months }) : undefined} phoneBody="flush">
       <div className="flex flex-col gap-3 md:gap-3.5">
         <FilterBar phoneTools="filter" screen={t("title")} label={t("filters.label")} searchLabel={t("filters.search")}
           searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch}

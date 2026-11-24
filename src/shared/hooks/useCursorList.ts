@@ -19,10 +19,11 @@ interface CursorListOptions {
 /// La única forma de listar por cursor (paginado-y-listados.md): lo que solo crece, como la auditoría, de a tandas con el
 /// cursor opaco del back, sin total ni número de página, para «Cargar más» (`LoadMore`). El cursor no vive en la URL:
 /// quien lo llama pone sus filtros en `queryKey`, y al cambiarlos vuelve a la primera tanda conservando la lista
-/// anterior mientras llega la nueva (`placeholderData: keepPreviousData`, como `usePagedQuery`).
-export function useCursorList<T>(
+/// anterior mientras llega la nueva (`placeholderData: keepPreviousData`, como `usePagedQuery`). Cada tanda conserva su
+/// tipo, con lo que el back suma junto a las filas (los meses de los ingresos de la auditoría de Plataforma, 272).
+export function useCursorList<TPage extends CursorPage<unknown>>(
   queryKey: QueryKey,
-  fetchPage: (after: string | null, signal: AbortSignal) => Promise<CursorPage<T>>,
+  fetchPage: (after: string | null, signal: AbortSignal) => Promise<TPage>,
   { meta, enabled, retainPreviousData = true }: CursorListOptions = {},
 ) {
   const query = useInfiniteQuery({
@@ -34,7 +35,7 @@ export function useCursorList<T>(
     enabled,
     meta,
   });
-  const items = useMemo(() => query.data?.pages.flatMap((page) => page.items) ?? [], [query.data]);
+  const items = useMemo((): TPage["items"][number][] => query.data?.pages.flatMap((page) => page.items) ?? [], [query.data]);
 
   return { ...query, items };
 }

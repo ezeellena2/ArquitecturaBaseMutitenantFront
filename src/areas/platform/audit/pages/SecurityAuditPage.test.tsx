@@ -22,7 +22,7 @@ const event: PlatformAuditEventResponse = {
   summary: "Suspendió la cuenta", target: "Ana Gómez", targetTenantId: null, targetAccountId: "account-1",
   actor: "Laura Díaz", actorRole: "Operador", reason: "Denuncia de uso indebido.", ipAddress: "181.45.178.•••",
 };
-const page = (items: PlatformAuditEventResponse[] = [event], nextCursor: string | null = null) => ({ items, nextCursor, hasMore: nextCursor !== null });
+const page = (items: PlatformAuditEventResponse[] = [event], nextCursor: string | null = null) => ({ items, nextCursor, hasMore: nextCursor !== null, loginAuditRetentionMonths: 12 });
 const auditOnly = { ...platformOperator, effectivePermissions: { ...platformOperator.effectivePermissions, platform: ["platform.audit.read"] } };
 
 beforeAll(async () => { await import("./SecurityAuditPage"); });
@@ -65,6 +65,19 @@ describe("SecurityAuditPage", () => {
     for (const summary of ["Confirmó con el autenticador", "Confirmó con un código de recuperación", "Ingresó con un código de recuperación"]) expect(screen.getByRole("button", { name: new RegExp(summary, "u") })).toBeVisible();
     expect(queries.at(-1)?.searchParams.get("type")).toBe("signins");
     expect(screen.getAllByText("26/09/2026, 17:30").length).toBeGreaterThan(0);
+  });
+
+  // F10 (Auditoria-Plat-Base2 y M-Auditoria-Plat-Base2, 272): la (i) del título dice cuánto se guardan los ingresos, con los
+  // meses que manda el back desde la configuración de Plataforma.
+  it("la (i) del título dice los meses que se guardan los ingresos, de la configuración", async () => {
+    const user = userEvent.setup();
+    server.use(http.get("/api/platform/audit", () => HttpResponse.json({ ...page(), loginAuditRetentionMonths: 18 })));
+    const { container } = mount();
+    const info = await screen.findByRole("button", { name: "Más información sobre Auditoría" });
+    expect(screen.getByRole("heading", { level: 1, name: "Auditoría" })).toHaveAccessibleDescription("Los ingresos se guardan 18 meses.");
+    await user.click(info);
+    expect(await screen.findByRole("tooltip")).toHaveTextContent("Los ingresos se guardan 18 meses.");
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   it("restablecer el autenticador va en Cuentas, sobre la cuenta restablecida y con el motivo del operador", async () => {
