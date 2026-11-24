@@ -115,7 +115,7 @@ export async function runE9Journey({ platformPage: page, width, env, base, recor
       const expired = await env.command("recent-proof", { kind: "expire", email: operator });
       assert.ok(expired?.expired >= 1, "El preparador vence la prueba reciente de la sesión del operador.");
       await openAccount();
-      const { form } = await preparePermissions(page, name, 0, "Recorrido E9: atiende otra área.");
+      const { form } = await preparePermissions(page, name, "Ver la auditoría", "Recorrido E9: atiende otra área.");
       writes.seen.length = 0;
       await form.getByRole("button", { name: "Guardar cambios", exact: true }).click();
       const confirm = page.getByRole("dialog", { name: "Confirmá que sos vos", exact: true });

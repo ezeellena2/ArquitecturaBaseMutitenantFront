@@ -7,6 +7,7 @@ import { nationalPhone } from "./recorrido-usuario-e11.mjs";
 import { assertPlatformProblem } from "./e2e-completo-plataforma.mjs";
 import { requireExclusivePlatformActor } from "./e2e-completo-seguridad-complemento.mjs";
 import { confirmRecentAuthentication, stopConfirmingRecentAuthentication } from "./platform-factor-real.mjs";
+import { choosePlatformPermissions, platformPermissionTable } from "./test-e2e-real-e9.mjs";
 import { openBarMenu, chooseBarAction } from "./e2e-completo-menu-barra.mjs";
 import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
 
@@ -143,22 +144,15 @@ async function uiWrite(page, button, route, method, status, email, { requireProo
   }
   if (status !== null) assert.equal(response.status(), status); return response;
 }
-async function choosePermissions(page, dialog, labels) {
-  const picker = dialog.getByRole("button", { name: "Permisos de plataforma", exact: true });
-  await picker.focus(); await picker.press("ArrowDown");
-  for (const label of labels) {
-    const option = page.getByRole("menuitemcheckbox", { name: label, exact: true });
-    if (await option.getAttribute("aria-checked") !== "true") await option.click();
-  }
-  await page.keyboard.press("Escape");
-}
+// Cuentas-Base2 y Cuenta-Plat-Base2 (260): los permisos en áreas plegables, elegidos por su nombre.
+const choosePermissions = (dialog, labels) => choosePlatformPermissions(platformPermissionTable(dialog), labels);
 async function inviteOperator(h, page, fullEmail, label, permissionLabel, permission) {
   const email = syntheticEmail(label);
   await page.goto(new URL("/plataforma/cuentas", h.base).href);
   await page.getByRole("button", { name: "Invitar operador", exact: true }).filter({ visible: true }).first().click();
   const dialog = page.getByRole("dialog", { name: "Invitar operador", exact: true });
   await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(email);
-  await choosePermissions(page, dialog, [permissionLabel]);
+  await choosePermissions(dialog, [permissionLabel]);
   const issued = await uiWrite(page, dialog.getByRole("button", { name: "Invitar", exact: true }), "/api/platform/operators/invitations", "POST", 201, fullEmail);
   const account = await issued.json(); assert.ok(account.id); await dialog.waitFor({ state: "hidden" });
   const detail = await read(h, page, "/api/platform/accounts/" + account.id);
@@ -366,7 +360,7 @@ async function runPlatformWhatsAppPlan(h, mobile) {
         const account = await read(h, fullPage, "/api/platform/accounts/" + agent.id);
         await fullPage.goto(new URL("/plataforma/cuentas/" + agent.id, h.base).href);
         const permissions = await openPlatformWhatsAppPermissions(fullPage, account, agent.id);
-        await choosePermissions(fullPage, permissions, ["Ver cuentas"]); await permissions.getByRole("textbox", { name: /^Motivo/u }).fill("Verificar cuenta asociada de una consulta propia.");
+        await choosePermissions(permissions, ["Ver cuentas"]); await permissions.getByRole("textbox", { name: /^Motivo/u }).fill("Verificar cuenta asociada de una consulta propia.");
         await uiWrite(fullPage, permissions.getByRole("button", { name: "Guardar cambios", exact: true }), "/api/platform/accounts/" + agent.id + "/operator", "PUT", 200, fullEmail);
         await permissions.waitFor({ state: "hidden" });
         me = await attend(true); assert.equal(me.id, agent.id);

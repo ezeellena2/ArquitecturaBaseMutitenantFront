@@ -3,7 +3,7 @@ import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs";
 import { syntheticEmail, requireSyntheticEmail } from "./e2e-completo-soporte.mjs";
 import { completeOperatorFactor, confirmRecentAuthentication, factorKeeper, stopConfirmingRecentAuthentication } from "./platform-factor-real.mjs";
-import { preparePermissions, watchResponses, isOperatorWrite } from "./test-e2e-real-e9.mjs";
+import { chooseAllPlatformPermissions, permissionChoices, platformPermissionTable, preparePermissions, selectedPermissions, togglePlatformPermission, watchResponses, isOperatorWrite } from "./test-e2e-real-e9.mjs";
 
 const source = "scripts/e2e-completo-seguridad-complemento.mjs";
 const definition = (number, actor, action, route, expected, covers = []) => ({ id: `SEC-${String(number).padStart(2, "0")}`, area: "Complemento de seguridad", actor, action, route, expected, covers, critical: true, source });
@@ -11,7 +11,7 @@ export const securitySupplementDefinitions = [
   definition(1, "Operador nuevo con todos los permisos", "Configurar MFA y comprobar el uso único de los códigos de recuperación", "/login · /plataforma", "El primer código permite ingresar; reutilizarlo responde400 RecoveryInvalid y conserva el ingreso; otro código completa la misma puerta.", ["BACK-PL-002"]),
   definition(2, "Operador con todos los permisos", "Cancelar dos veces Confirmá que sos vos con la prueba vencida", "/plataforma/cuentas/:id", "Ambos intentos responden403 con la misma Idempotency-Key, sin replay ni confirmación; cancelar conserva el motivo y la selección, y el destino no cambia.", ["BACK-PL-005"]),
   definition(3, "Operador nuevo con MFA", "Agotar diez intentos, recargar e intentar el código correcto", "/login", "Nueve400 Invalid y el décimo429 LockedOut; Retry-After coincide con retryAfter; tras F5 el código correcto recibe el mismo bloqueo y Verificar queda apagado.", ["BACK-ID-025"]),
-  definition(4, "Operador sólo de Auditoría y operador sin pantalla permitida", "Abrir Inicio con cada permiso individual", "/plataforma · /plataforma/auditoria", "audit.read llega a la primera sección Auditoría; accounts.manage sin lectura permanece en Inicio con Sin permiso; ambos son operadores sin Personal ni organizaciones."),
+  definition(4, "Operador sólo de Auditoría y operador sin pantalla permitida", "Abrir Inicio con cada permiso individual", "/plataforma · /plataforma/auditoria", "audit.read llega a la primera sección Auditoría; operators.manage, que no tiene pantalla, permanece en Inicio con Sin permiso; ambos son operadores sin Personal ni organizaciones."),
 ];
 export const securityStepUpRepairDefinitions = securitySupplementDefinitions.filter((entry) => entry.id === "SEC-02");
 
@@ -54,14 +54,14 @@ export function requireExclusivePlatformActor(me, permissions) {
   assert.deepEqual(me.effectivePermissions.organization, []); assert.deepEqual(me.effectivePermissions.companies, {});
 }
 
-export async function prepareSecurityPermissions(page, name, toggle, reason) {
+export async function prepareSecurityPermissions(page, name, permission, reason) {
   // La lectura HTTP del arnés no espera que la ficha renderice sus acciones.
   // Acciones puede aparecer antes del botón de escritorio: no se usa como barrera alternativa.
   const change = page.getByRole("button", { name: "Cambiar permisos", exact: true });
   const actions = page.getByRole("button", { name: `Acciones de ${name}`, exact: true });
   const width = page.viewportSize()?.width; assert.ok([1440, 390].includes(width));
   await (width === 1440 ? change : actions).waitFor();
-  return preparePermissions(page, name, toggle, reason);
+  return preparePermissions(page, name, permission, reason);
 }
 
 const matches = (route, method = "POST") => (response) => new URL(response.url()).pathname === route && response.request().method() === method;
@@ -126,13 +126,12 @@ async function runSecurityCases(h, selected) {
     await page.getByRole("button", { name: "Invitar operador", exact: true }).filter({ visible: true }).first().click();
     const dialog = page.getByRole("dialog", { name: "Invitar operador", exact: true });
     await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(email);
-    const picker = dialog.getByRole("button", { name: "Permisos de plataforma", exact: true });
-    await picker.focus(); await picker.press("ArrowDown");
-    const options = page.getByRole("menuitemcheckbox"); const count = await options.count(); assert.ok(count >= 14);
+    // Cuentas-Base2 (260): los permisos en áreas plegables; «all» marca la casilla de cada área.
+    const permissions = platformPermissionTable(dialog);
+    const count = await (await permissionChoices(permissions)).count(); assert.ok(count >= 14);
     if (permissionLabel === "all") {
-      for (let index = 0; index < count; index++) if (await options.nth(index).getAttribute("aria-checked") !== "true") await options.nth(index).click();
-    } else await page.getByRole("menuitemcheckbox", { name: permissionLabel, exact: true }).click();
-    await page.keyboard.press("Escape");
+      await chooseAllPlatformPermissions(permissions); assert.equal(await (await permissionChoices(permissions, { checked: true })).count(), count);
+    } else await togglePlatformPermission(permissions, permissionLabel);
     await stopConfirmingRecentAuthentication(page);
     const send = () => clickResponse(page, dialog.getByRole("button", { name: "Invitar", exact: true }), "/api/platform/operators/invitations");
     let response = await send();
@@ -146,7 +145,7 @@ async function runSecurityCases(h, selected) {
     const detail = await read(h, page, `/api/platform/accounts/${issued.id}`);
     assert.equal(detail.kind, "Operator"); assert.equal(detail.state, "Invited"); assert.equal(detail.hasPersonalSpace, false); assert.deepEqual(detail.organizations, []);
     if (permissionLabel === "all") assert.equal(detail.operatorPermissions.length, count);
-    else assert.deepEqual(detail.operatorPermissions, [permissionLabel === "Ver la auditoría" ? "platform.audit.read" : "platform.accounts.manage"]);
+    else assert.deepEqual(detail.operatorPermissions, [{ "Ver la auditoría": "platform.audit.read", "Administrar operadores": "platform.operators.manage" }[permissionLabel]]);
     return { email, id: issued.id, permissions: detail.operatorPermissions, activated: false };
   };
   const ensureLockout = async () => {
@@ -188,7 +187,7 @@ async function runSecurityCases(h, selected) {
       await stopConfirmingRecentAuthentication(page);
       const expired = await h.env.command("recent-proof", { kind: "expire", email: currentEmail }); assert.ok(expired.expired >= 1);
       const reason = "Prueba propia: cancelar la confirmación sin guardar permisos.";
-      const { form, picker, selection } = await prepareSecurityPermissions(page, before.displayName || lockout.email, 0, reason);
+      const { form, picker, selection } = await prepareSecurityPermissions(page, before.displayName || lockout.email, "Ver organizaciones", reason);
       const proofs = watchResponses(page, (method, path) => method === "POST" && path === "/api/platform/reauthentication");
       const writes = watchResponses(page, isOperatorWrite); const attempts = [];
       try {
@@ -198,7 +197,7 @@ async function runSecurityCases(h, selected) {
           const confirm = page.getByRole("dialog", { name: "Confirmá que sos vos", exact: true }); await confirm.waitFor();
           assert.equal(await form.isVisible(), false);
           await confirm.getByRole("button", { name: "Cancelar", exact: true }).click(); await confirm.waitFor({ state: "hidden" }); await form.waitFor();
-          assert.equal(await form.getByRole("textbox", { name: /^Motivo/u }).inputValue(), reason); assert.equal(await picker.innerText(), selection);
+          assert.equal(await form.getByRole("textbox", { name: /^Motivo/u }).inputValue(), reason); assert.deepEqual(await selectedPermissions(picker), selection);
           attempts.push({ status: response.status(), code: problem.code, key: response.request().headers()["idempotency-key"], replayed: response.headers()["idempotent-replayed"] });
         }
         const after = await read(h, page, `/api/platform/accounts/${lockout.id}`);
@@ -226,7 +225,7 @@ async function runSecurityCases(h, selected) {
       return "Diez fallos propios bloquearon la cuenta; 429 LockedOut y Retry-After válido también tras F5 usando un código correcto; Verificar quedó apagado.";
     });
     await run(4, async () => {
-      await admin(); audit = await invite("solo-auditoria", "Ver la auditoría"); screenless = await invite("sin-pantalla", "Administrar cuentas");
+      await admin(); audit = await invite("solo-auditoria", "Ver la auditoría"); screenless = await invite("sin-pantalla", "Administrar operadores");
       const auditMe = await login(audit.email); requireExclusivePlatformActor(auditMe, ["platform.audit.read"]);
       const [auditResponse] = await Promise.all([
         page.waitForResponse(matches("/api/platform/audit", "GET")), page.goto(url("/plataforma")),
@@ -235,12 +234,13 @@ async function runSecurityCases(h, selected) {
       await page.waitForURL((location) => location.pathname === "/plataforma/auditoria");
       await page.getByRole("heading", { name: "Auditoría", exact: true }).waitFor();
       requireExclusivePlatformActor(await read(h, page, "/api/me"), ["platform.audit.read"]); await leave();
-      const screenlessMe = await login(screenless.email); requireExclusivePlatformActor(screenlessMe, ["platform.accounts.manage"]);
+      // «Administrar cuentas» ya no sirve: incluye «Ver cuentas» (260). «Administrar operadores» no abre ninguna pantalla.
+      const screenlessMe = await login(screenless.email); requireExclusivePlatformActor(screenlessMe, ["platform.operators.manage"]);
       await page.goto(url("/plataforma")); await page.getByRole("heading", { name: "No tenés permiso para ver esta página", exact: true }).waitFor();
       assert.equal(new URL(page.url()).pathname, "/plataforma");
-      requireExclusivePlatformActor(await read(h, page, "/api/me"), ["platform.accounts.manage"]);
+      requireExclusivePlatformActor(await read(h, page, "/api/me"), ["platform.operators.manage"]);
       assert.equal(await page.locator('a[href="/plataforma/cuentas"], a[href="/plataforma/organizaciones"], a[href="/plataforma/auditoria"], a[href="/plataforma/recuperaciones"], a[href="/plataforma/legales"], a[href="/plataforma/configuracion"]').filter({ visible: true }).count(), 0);
-      return "audit.read sin otros permisos llevó de Inicio a Auditoría con lectura200; accounts.manage sin lectura quedó en Sin permiso, sin enlaces de sección; ambos operadores carecen de Personal y organizaciones.";
+      return "audit.read sin otros permisos llevó de Inicio a Auditoría con lectura200; operators.manage, sin pantalla propia, quedó en Sin permiso, sin enlaces de sección; ambos operadores carecen de Personal y organizaciones.";
     });
   } finally {
     try { await leave(); } finally { await page.close(); }

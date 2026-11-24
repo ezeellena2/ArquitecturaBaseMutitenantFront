@@ -884,6 +884,89 @@
           },
           {
             "method": "GET",
+            "path": "/api/platform/permissions",
+            "status": 200,
+            "body": [
+              {
+                "code": "platform.tenants.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.tenants.manage",
+                "includes": [
+                  "platform.tenants.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.manage",
+                "includes": [
+                  "platform.accounts.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.recoveries.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.legal.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.operators.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.audit.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.attend",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.use",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.configure",
+                "includes": [
+                  "platform.assistant.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.settings.manage",
+                "includes": [],
+                "grantable": true
+              }
+            ]
+          },
+          {
+            "method": "GET",
             "path": "/api/me",
             "status": 200,
             "body": {
@@ -1016,6 +1099,89 @@
           },
           {
             "method": "GET",
+            "path": "/api/platform/permissions",
+            "status": 200,
+            "body": [
+              {
+                "code": "platform.tenants.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.tenants.manage",
+                "includes": [
+                  "platform.tenants.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.manage",
+                "includes": [
+                  "platform.accounts.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.recoveries.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.legal.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.operators.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.audit.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.attend",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.use",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.configure",
+                "includes": [
+                  "platform.assistant.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.settings.manage",
+                "includes": [],
+                "grantable": true
+              }
+            ]
+          },
+          {
+            "method": "GET",
             "path": "/api/me",
             "status": 200,
             "body": {
@@ -1087,30 +1253,44 @@
             "exact": true
           },
           {
-            "type": "press",
+            "type": "click",
             "role": "button",
-            "name": "Permisos de plataforma",
+            "name": "Abrir o cerrar Cuentas",
             "exact": true,
-            "key": "ArrowDown"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
+            "role": "checkbox",
             "name": "Administrar cuentas",
-            "exact": true
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
-            "name": "Ver la auditoría",
-            "exact": true
+            "role": "button",
+            "name": "Abrir o cerrar Auditoría",
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
-            "type": "press",
-            "role": "menuitemcheckbox",
+            "type": "click",
+            "role": "checkbox",
             "name": "Ver la auditoría",
             "exact": true,
-            "key": "Escape"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "fill",
@@ -1174,6 +1354,89 @@
               ],
               "organizations": []
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/permissions",
+            "status": 200,
+            "body": [
+              {
+                "code": "platform.tenants.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.tenants.manage",
+                "includes": [
+                  "platform.tenants.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.manage",
+                "includes": [
+                  "platform.accounts.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.recoveries.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.legal.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.operators.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.audit.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.attend",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.use",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.configure",
+                "includes": [
+                  "platform.assistant.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.settings.manage",
+                "includes": [],
+                "grantable": true
+              }
+            ]
           },
           {
             "method": "GET",
@@ -1257,30 +1520,44 @@
             "exact": true
           },
           {
-            "type": "press",
+            "type": "click",
             "role": "button",
-            "name": "Permisos de plataforma",
+            "name": "Abrir o cerrar Cuentas",
             "exact": true,
-            "key": "ArrowDown"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
+            "role": "checkbox",
             "name": "Administrar cuentas",
-            "exact": true
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
-            "name": "Ver la auditoría",
-            "exact": true
+            "role": "button",
+            "name": "Abrir o cerrar Auditoría",
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
-            "type": "press",
-            "role": "menuitemcheckbox",
+            "type": "click",
+            "role": "checkbox",
             "name": "Ver la auditoría",
             "exact": true,
-            "key": "Escape"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "fill",
@@ -1358,6 +1635,89 @@
               ],
               "organizations": []
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/permissions",
+            "status": 200,
+            "body": [
+              {
+                "code": "platform.tenants.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.tenants.manage",
+                "includes": [
+                  "platform.tenants.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.manage",
+                "includes": [
+                  "platform.accounts.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.recoveries.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.legal.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.operators.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.audit.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.attend",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.use",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.configure",
+                "includes": [
+                  "platform.assistant.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.settings.manage",
+                "includes": [],
+                "grantable": true
+              }
+            ]
           },
           {
             "method": "GET",
@@ -1449,30 +1809,44 @@
             "exact": true
           },
           {
-            "type": "press",
+            "type": "click",
             "role": "button",
-            "name": "Permisos de plataforma",
+            "name": "Abrir o cerrar Cuentas",
             "exact": true,
-            "key": "ArrowDown"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
+            "role": "checkbox",
             "name": "Administrar cuentas",
-            "exact": true
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
-            "name": "Ver la auditoría",
-            "exact": true
+            "role": "button",
+            "name": "Abrir o cerrar Auditoría",
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
-            "type": "press",
-            "role": "menuitemcheckbox",
+            "type": "click",
+            "role": "checkbox",
             "name": "Ver la auditoría",
             "exact": true,
-            "key": "Escape"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "fill",
@@ -1546,6 +1920,89 @@
               ],
               "organizations": []
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/permissions",
+            "status": 200,
+            "body": [
+              {
+                "code": "platform.tenants.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.tenants.manage",
+                "includes": [
+                  "platform.tenants.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.manage",
+                "includes": [
+                  "platform.accounts.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.recoveries.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.legal.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.operators.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.audit.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.attend",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.use",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.configure",
+                "includes": [
+                  "platform.assistant.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.settings.manage",
+                "includes": [],
+                "grantable": true
+              }
+            ]
           },
           {
             "method": "GET",
@@ -1629,30 +2086,44 @@
             "exact": true
           },
           {
-            "type": "press",
+            "type": "click",
             "role": "button",
-            "name": "Permisos de plataforma",
+            "name": "Abrir o cerrar Cuentas",
             "exact": true,
-            "key": "ArrowDown"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
+            "role": "checkbox",
             "name": "Administrar cuentas",
-            "exact": true
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
-            "name": "Ver la auditoría",
-            "exact": true
+            "role": "button",
+            "name": "Abrir o cerrar Auditoría",
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
-            "type": "press",
-            "role": "menuitemcheckbox",
+            "type": "click",
+            "role": "checkbox",
             "name": "Ver la auditoría",
             "exact": true,
-            "key": "Escape"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "fill",
@@ -1750,6 +2221,89 @@
           },
           {
             "method": "GET",
+            "path": "/api/platform/permissions",
+            "status": 200,
+            "body": [
+              {
+                "code": "platform.tenants.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.tenants.manage",
+                "includes": [
+                  "platform.tenants.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.manage",
+                "includes": [
+                  "platform.accounts.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.recoveries.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.legal.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.operators.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.audit.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.attend",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.use",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.configure",
+                "includes": [
+                  "platform.assistant.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.settings.manage",
+                "includes": [],
+                "grantable": true
+              }
+            ]
+          },
+          {
+            "method": "GET",
             "path": "/api/me",
             "status": 200,
             "body": {
@@ -1838,30 +2392,44 @@
             "exact": true
           },
           {
-            "type": "press",
+            "type": "click",
             "role": "button",
-            "name": "Permisos de plataforma",
+            "name": "Abrir o cerrar Cuentas",
             "exact": true,
-            "key": "ArrowDown"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
+            "role": "checkbox",
             "name": "Administrar cuentas",
-            "exact": true
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
-            "name": "Ver la auditoría",
-            "exact": true
+            "role": "button",
+            "name": "Abrir o cerrar Auditoría",
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
-            "type": "press",
-            "role": "menuitemcheckbox",
+            "type": "click",
+            "role": "checkbox",
             "name": "Ver la auditoría",
             "exact": true,
-            "key": "Escape"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "fill",
@@ -1939,6 +2507,89 @@
               ],
               "organizations": []
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/permissions",
+            "status": 200,
+            "body": [
+              {
+                "code": "platform.tenants.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.tenants.manage",
+                "includes": [
+                  "platform.tenants.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.manage",
+                "includes": [
+                  "platform.accounts.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.recoveries.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.legal.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.operators.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.audit.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.attend",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.use",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.configure",
+                "includes": [
+                  "platform.assistant.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.settings.manage",
+                "includes": [],
+                "grantable": true
+              }
+            ]
           },
           {
             "method": "GET",
@@ -2031,30 +2682,44 @@
             "exact": true
           },
           {
-            "type": "press",
+            "type": "click",
             "role": "button",
-            "name": "Permisos de plataforma",
+            "name": "Abrir o cerrar Cuentas",
             "exact": true,
-            "key": "ArrowDown"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
+            "role": "checkbox",
             "name": "Administrar cuentas",
-            "exact": true
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
-            "name": "Ver la auditoría",
-            "exact": true
+            "role": "button",
+            "name": "Abrir o cerrar Auditoría",
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
-            "type": "press",
-            "role": "menuitemcheckbox",
+            "type": "click",
+            "role": "checkbox",
             "name": "Ver la auditoría",
             "exact": true,
-            "key": "Escape"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "fill",
@@ -2128,6 +2793,89 @@
               ],
               "organizations": []
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/permissions",
+            "status": 200,
+            "body": [
+              {
+                "code": "platform.tenants.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.tenants.manage",
+                "includes": [
+                  "platform.tenants.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.manage",
+                "includes": [
+                  "platform.accounts.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.recoveries.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.legal.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.operators.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.audit.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.attend",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.use",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.configure",
+                "includes": [
+                  "platform.assistant.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.settings.manage",
+                "includes": [],
+                "grantable": true
+              }
+            ]
           },
           {
             "method": "GET",
@@ -2250,6 +2998,89 @@
               ],
               "organizations": []
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/permissions",
+            "status": 200,
+            "body": [
+              {
+                "code": "platform.tenants.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.tenants.manage",
+                "includes": [
+                  "platform.tenants.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.manage",
+                "includes": [
+                  "platform.accounts.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.recoveries.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.legal.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.operators.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.audit.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.attend",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.use",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.configure",
+                "includes": [
+                  "platform.assistant.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.settings.manage",
+                "includes": [],
+                "grantable": true
+              }
+            ]
           },
           {
             "method": "GET",
@@ -2383,6 +3214,89 @@
           },
           {
             "method": "GET",
+            "path": "/api/platform/permissions",
+            "status": 200,
+            "body": [
+              {
+                "code": "platform.tenants.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.tenants.manage",
+                "includes": [
+                  "platform.tenants.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.manage",
+                "includes": [
+                  "platform.accounts.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.recoveries.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.legal.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.operators.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.audit.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.attend",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.use",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.configure",
+                "includes": [
+                  "platform.assistant.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.settings.manage",
+                "includes": [],
+                "grantable": true
+              }
+            ]
+          },
+          {
+            "method": "GET",
             "path": "/api/me",
             "status": 200,
             "body": {
@@ -2459,30 +3373,44 @@
             "exact": true
           },
           {
-            "type": "press",
+            "type": "click",
             "role": "button",
-            "name": "Permisos de plataforma",
+            "name": "Abrir o cerrar Cuentas",
             "exact": true,
-            "key": "ArrowDown"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
+            "role": "checkbox",
             "name": "Administrar cuentas",
-            "exact": true
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
-            "name": "Ver la auditoría",
-            "exact": true
+            "role": "button",
+            "name": "Abrir o cerrar Auditoría",
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
-            "type": "press",
-            "role": "menuitemcheckbox",
+            "type": "click",
+            "role": "checkbox",
             "name": "Ver la auditoría",
             "exact": true,
-            "key": "Escape"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "fill",
@@ -2546,6 +3474,89 @@
               ],
               "organizations": []
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/permissions",
+            "status": 200,
+            "body": [
+              {
+                "code": "platform.tenants.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.tenants.manage",
+                "includes": [
+                  "platform.tenants.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.manage",
+                "includes": [
+                  "platform.accounts.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.recoveries.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.legal.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.operators.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.audit.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.attend",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.use",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.configure",
+                "includes": [
+                  "platform.assistant.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.settings.manage",
+                "includes": [],
+                "grantable": true
+              }
+            ]
           },
           {
             "method": "GET",
@@ -2634,30 +3645,44 @@
             "exact": true
           },
           {
-            "type": "press",
+            "type": "click",
             "role": "button",
-            "name": "Permisos de plataforma",
+            "name": "Abrir o cerrar Cuentas",
             "exact": true,
-            "key": "ArrowDown"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
+            "role": "checkbox",
             "name": "Administrar cuentas",
-            "exact": true
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
-            "name": "Ver la auditoría",
-            "exact": true
+            "role": "button",
+            "name": "Abrir o cerrar Auditoría",
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
-            "type": "press",
-            "role": "menuitemcheckbox",
+            "type": "click",
+            "role": "checkbox",
             "name": "Ver la auditoría",
             "exact": true,
-            "key": "Escape"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "fill",
@@ -2735,6 +3760,89 @@
               ],
               "organizations": []
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/permissions",
+            "status": 200,
+            "body": [
+              {
+                "code": "platform.tenants.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.tenants.manage",
+                "includes": [
+                  "platform.tenants.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.manage",
+                "includes": [
+                  "platform.accounts.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.recoveries.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.legal.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.operators.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.audit.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.attend",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.use",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.configure",
+                "includes": [
+                  "platform.assistant.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.settings.manage",
+                "includes": [],
+                "grantable": true
+              }
+            ]
           },
           {
             "method": "GET",
@@ -2831,30 +3939,44 @@
             "exact": true
           },
           {
-            "type": "press",
+            "type": "click",
             "role": "button",
-            "name": "Permisos de plataforma",
+            "name": "Abrir o cerrar Cuentas",
             "exact": true,
-            "key": "ArrowDown"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
+            "role": "checkbox",
             "name": "Administrar cuentas",
-            "exact": true
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
-            "name": "Ver la auditoría",
-            "exact": true
+            "role": "button",
+            "name": "Abrir o cerrar Auditoría",
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
-            "type": "press",
-            "role": "menuitemcheckbox",
+            "type": "click",
+            "role": "checkbox",
             "name": "Ver la auditoría",
             "exact": true,
-            "key": "Escape"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "fill",
@@ -2928,6 +4050,89 @@
               ],
               "organizations": []
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/permissions",
+            "status": 200,
+            "body": [
+              {
+                "code": "platform.tenants.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.tenants.manage",
+                "includes": [
+                  "platform.tenants.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.manage",
+                "includes": [
+                  "platform.accounts.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.recoveries.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.legal.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.operators.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.audit.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.attend",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.use",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.configure",
+                "includes": [
+                  "platform.assistant.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.settings.manage",
+                "includes": [],
+                "grantable": true
+              }
+            ]
           },
           {
             "method": "GET",
@@ -3016,30 +4221,44 @@
             "exact": true
           },
           {
-            "type": "press",
+            "type": "click",
             "role": "button",
-            "name": "Permisos de plataforma",
+            "name": "Abrir o cerrar Cuentas",
             "exact": true,
-            "key": "ArrowDown"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
+            "role": "checkbox",
             "name": "Administrar cuentas",
-            "exact": true
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
-            "name": "Ver la auditoría",
-            "exact": true
+            "role": "button",
+            "name": "Abrir o cerrar Auditoría",
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
-            "type": "press",
-            "role": "menuitemcheckbox",
+            "type": "click",
+            "role": "checkbox",
             "name": "Ver la auditoría",
             "exact": true,
-            "key": "Escape"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "fill",
@@ -3137,6 +4356,89 @@
           },
           {
             "method": "GET",
+            "path": "/api/platform/permissions",
+            "status": 200,
+            "body": [
+              {
+                "code": "platform.tenants.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.tenants.manage",
+                "includes": [
+                  "platform.tenants.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.manage",
+                "includes": [
+                  "platform.accounts.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.recoveries.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.legal.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.operators.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.audit.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.attend",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.use",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.configure",
+                "includes": [
+                  "platform.assistant.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.settings.manage",
+                "includes": [],
+                "grantable": true
+              }
+            ]
+          },
+          {
+            "method": "GET",
             "path": "/api/me",
             "status": 200,
             "body": {
@@ -3230,30 +4532,44 @@
             "exact": true
           },
           {
-            "type": "press",
+            "type": "click",
             "role": "button",
-            "name": "Permisos de plataforma",
+            "name": "Abrir o cerrar Cuentas",
             "exact": true,
-            "key": "ArrowDown"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
+            "role": "checkbox",
             "name": "Administrar cuentas",
-            "exact": true
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
-            "name": "Ver la auditoría",
-            "exact": true
+            "role": "button",
+            "name": "Abrir o cerrar Auditoría",
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
-            "type": "press",
-            "role": "menuitemcheckbox",
+            "type": "click",
+            "role": "checkbox",
             "name": "Ver la auditoría",
             "exact": true,
-            "key": "Escape"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "fill",
@@ -3331,6 +4647,89 @@
               ],
               "organizations": []
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/permissions",
+            "status": 200,
+            "body": [
+              {
+                "code": "platform.tenants.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.tenants.manage",
+                "includes": [
+                  "platform.tenants.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.manage",
+                "includes": [
+                  "platform.accounts.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.recoveries.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.legal.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.operators.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.audit.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.attend",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.use",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.configure",
+                "includes": [
+                  "platform.assistant.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.settings.manage",
+                "includes": [],
+                "grantable": true
+              }
+            ]
           },
           {
             "method": "GET",
@@ -3428,30 +4827,44 @@
             "exact": true
           },
           {
-            "type": "press",
+            "type": "click",
             "role": "button",
-            "name": "Permisos de plataforma",
+            "name": "Abrir o cerrar Cuentas",
             "exact": true,
-            "key": "ArrowDown"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
+            "role": "checkbox",
             "name": "Administrar cuentas",
-            "exact": true
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "click",
-            "role": "menuitemcheckbox",
-            "name": "Ver la auditoría",
-            "exact": true
+            "role": "button",
+            "name": "Abrir o cerrar Auditoría",
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
-            "type": "press",
-            "role": "menuitemcheckbox",
+            "type": "click",
+            "role": "checkbox",
             "name": "Ver la auditoría",
             "exact": true,
-            "key": "Escape"
+            "within": {
+              "role": "dialog",
+              "name": "Cambiar permisos de Laura Díaz"
+            }
           },
           {
             "type": "fill",
@@ -3525,6 +4938,89 @@
               ],
               "organizations": []
             }
+          },
+          {
+            "method": "GET",
+            "path": "/api/platform/permissions",
+            "status": 200,
+            "body": [
+              {
+                "code": "platform.tenants.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.tenants.manage",
+                "includes": [
+                  "platform.tenants.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.accounts.manage",
+                "includes": [
+                  "platform.accounts.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.recoveries.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.legal.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.operators.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.audit.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.manage",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.whatsapp.attend",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.use",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.configure",
+                "includes": [
+                  "platform.assistant.read"
+                ],
+                "grantable": true
+              },
+              {
+                "code": "platform.assistant.read",
+                "includes": [],
+                "grantable": true
+              },
+              {
+                "code": "platform.settings.manage",
+                "includes": [],
+                "grantable": true
+              }
+            ]
           },
           {
             "method": "GET",
@@ -4242,6 +5738,12 @@
               "salesEmail": "ventas@ejemplo.com",
               "supportEmail": "soporte@ejemplo.com",
               "version": 1,
+              "loginAuditRetentionMonths": 12,
+              "loginCodeRetentionDays": 30,
+              "closedInvitationRetentionDays": 30,
+              "appName": "ArquitecturaBase",
+              "senderName": "ArquitecturaBase",
+              "emailLogoUrl": null,
               "rateLimits": {
                 "ip": {
                   "permitLimit": 300,
@@ -4392,6 +5894,12 @@
               "salesEmail": "ventas@ejemplo.com",
               "supportEmail": "soporte@ejemplo.com",
               "version": 1,
+              "loginAuditRetentionMonths": 12,
+              "loginCodeRetentionDays": 30,
+              "closedInvitationRetentionDays": 30,
+              "appName": "ArquitecturaBase",
+              "senderName": "ArquitecturaBase",
+              "emailLogoUrl": null,
               "rateLimits": {
                 "ip": {
                   "permitLimit": 300,
@@ -4568,6 +6076,12 @@
               "salesEmail": "ventas@ejemplo.com",
               "supportEmail": "soporte@ejemplo.com",
               "version": 1,
+              "loginAuditRetentionMonths": 12,
+              "loginCodeRetentionDays": 30,
+              "closedInvitationRetentionDays": 30,
+              "appName": "ArquitecturaBase",
+              "senderName": "ArquitecturaBase",
+              "emailLogoUrl": null,
               "rateLimits": {
                 "ip": {
                   "permitLimit": 300,
@@ -4732,6 +6246,12 @@
               "salesEmail": "ventas@ejemplo.com",
               "supportEmail": "soporte@ejemplo.com",
               "version": 1,
+              "loginAuditRetentionMonths": 12,
+              "loginCodeRetentionDays": 30,
+              "closedInvitationRetentionDays": 30,
+              "appName": "ArquitecturaBase",
+              "senderName": "ArquitecturaBase",
+              "emailLogoUrl": null,
               "rateLimits": {
                 "ip": {
                   "permitLimit": 300,
@@ -4915,6 +6435,12 @@
               "salesEmail": "ventas@ejemplo.com",
               "supportEmail": "soporte@ejemplo.com",
               "version": 1,
+              "loginAuditRetentionMonths": 12,
+              "loginCodeRetentionDays": 30,
+              "closedInvitationRetentionDays": 30,
+              "appName": "ArquitecturaBase",
+              "senderName": "ArquitecturaBase",
+              "emailLogoUrl": null,
               "rateLimits": {
                 "ip": {
                   "permitLimit": 300,
@@ -5089,6 +6615,12 @@
               "salesEmail": "ventas@ejemplo.com",
               "supportEmail": "soporte@ejemplo.com",
               "version": 1,
+              "loginAuditRetentionMonths": 12,
+              "loginCodeRetentionDays": 30,
+              "closedInvitationRetentionDays": 30,
+              "appName": "ArquitecturaBase",
+              "senderName": "ArquitecturaBase",
+              "emailLogoUrl": null,
               "rateLimits": {
                 "ip": {
                   "permitLimit": 300,
@@ -5232,6 +6764,12 @@
               "salesEmail": "ventas@ejemplo.com",
               "supportEmail": "soporte@ejemplo.com",
               "version": 1,
+              "loginAuditRetentionMonths": 12,
+              "loginCodeRetentionDays": 30,
+              "closedInvitationRetentionDays": 30,
+              "appName": "ArquitecturaBase",
+              "senderName": "ArquitecturaBase",
+              "emailLogoUrl": null,
               "rateLimits": {
                 "ip": {
                   "permitLimit": 300,
@@ -5382,6 +6920,12 @@
               "salesEmail": "ventas@ejemplo.com",
               "supportEmail": "soporte@ejemplo.com",
               "version": 1,
+              "loginAuditRetentionMonths": 12,
+              "loginCodeRetentionDays": 30,
+              "closedInvitationRetentionDays": 30,
+              "appName": "ArquitecturaBase",
+              "senderName": "ArquitecturaBase",
+              "emailLogoUrl": null,
               "rateLimits": {
                 "ip": {
                   "permitLimit": 300,
@@ -5565,6 +7109,12 @@
               "salesEmail": "ventas@ejemplo.com",
               "supportEmail": "soporte@ejemplo.com",
               "version": 1,
+              "loginAuditRetentionMonths": 12,
+              "loginCodeRetentionDays": 30,
+              "closedInvitationRetentionDays": 30,
+              "appName": "ArquitecturaBase",
+              "senderName": "ArquitecturaBase",
+              "emailLogoUrl": null,
               "rateLimits": {
                 "ip": {
                   "permitLimit": 300,
@@ -5729,6 +7279,12 @@
               "salesEmail": "ventas@ejemplo.com",
               "supportEmail": "soporte@ejemplo.com",
               "version": 1,
+              "loginAuditRetentionMonths": 12,
+              "loginCodeRetentionDays": 30,
+              "closedInvitationRetentionDays": 30,
+              "appName": "ArquitecturaBase",
+              "senderName": "ArquitecturaBase",
+              "emailLogoUrl": null,
               "rateLimits": {
                 "ip": {
                   "permitLimit": 300,
@@ -5912,6 +7468,12 @@
               "salesEmail": "ventas@ejemplo.com",
               "supportEmail": "soporte@ejemplo.com",
               "version": 1,
+              "loginAuditRetentionMonths": 12,
+              "loginCodeRetentionDays": 30,
+              "closedInvitationRetentionDays": 30,
+              "appName": "ArquitecturaBase",
+              "senderName": "ArquitecturaBase",
+              "emailLogoUrl": null,
               "rateLimits": {
                 "ip": {
                   "permitLimit": 300,
@@ -6089,6 +7651,12 @@
               "salesEmail": "ventas@ejemplo.com",
               "supportEmail": "soporte@ejemplo.com",
               "version": 1,
+              "loginAuditRetentionMonths": 12,
+              "loginCodeRetentionDays": 30,
+              "closedInvitationRetentionDays": 30,
+              "appName": "ArquitecturaBase",
+              "senderName": "ArquitecturaBase",
+              "emailLogoUrl": null,
               "rateLimits": {
                 "ip": {
                   "permitLimit": 300,
@@ -6998,6 +8566,7 @@
               "companyId": "company-delta",
               "companyName": "Delta S.A.",
               "isSystemRole": false,
+              "grantable": true,
               "userCount": 4,
               "permissions": [
                 "company.members.read"
@@ -7225,6 +8794,7 @@
               "companyId": "company-delta",
               "companyName": "Delta S.A.",
               "isSystemRole": false,
+              "grantable": true,
               "userCount": 4,
               "permissions": [
                 "company.members.read"
@@ -7832,6 +9402,7 @@
                   "companyId": null,
                   "companyName": null,
                   "isSystemRole": true,
+                  "grantable": true,
                   "userCount": 1,
                   "permissions": [
                     "users.read",
@@ -7858,6 +9429,7 @@
                   "companyId": null,
                   "companyName": null,
                   "isSystemRole": false,
+                  "grantable": true,
                   "userCount": 0,
                   "permissions": [
                     "users.read",
@@ -7875,6 +9447,7 @@
                   "companyId": null,
                   "companyName": null,
                   "isSystemRole": false,
+                  "grantable": true,
                   "userCount": 1,
                   "permissions": [
                     "users.read",
@@ -7891,6 +9464,7 @@
                   "companyId": null,
                   "companyName": null,
                   "isSystemRole": true,
+                  "grantable": true,
                   "userCount": 2,
                   "permissions": [
                     "company.members.read",
@@ -7907,6 +9481,7 @@
                   "companyId": "company-delta",
                   "companyName": "Delta S.A.",
                   "isSystemRole": false,
+                  "grantable": true,
                   "userCount": 4,
                   "permissions": [
                     "company.members.read"
@@ -7922,6 +9497,7 @@
                   "companyId": "company-delta-sur",
                   "companyName": "Delta Sur S.R.L.",
                   "isSystemRole": false,
+                  "grantable": true,
                   "userCount": 1,
                   "permissions": [
                     "company.members.read"
@@ -7937,6 +9513,7 @@
                   "companyId": "company-delta-norte",
                   "companyName": "Delta Norte S.A.",
                   "isSystemRole": false,
+                  "grantable": true,
                   "userCount": 0,
                   "permissions": [
                     "company.members.read"

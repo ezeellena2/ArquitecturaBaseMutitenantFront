@@ -70,28 +70,35 @@ test("preparar permisos espera ficha antes del botón desktop o la hoja móvil y
       isVisible: async () => { assert.equal(ready, true, "No se puede decidir el tipo de acción durante la carga."); return !mobile; },
       click: async () => { assert.equal(mobile, false); calls.push("directo"); opened = true; },
     };
-    const picker = { focus: async () => calls.push("picker"), press: async (key) => assert.equal(key, "ArrowDown"), innerText: async () => "Ver organizaciones, Ver la auditoría" };
+    // Cuenta-Plat-Base2 (260): la tabla de permisos con un área cerrada; se abre y se marca el permiso por su nombre.
+    let expanded = "false"; let checked = "false";
+    const area = { getAttribute: async (name) => { assert.equal(name, "aria-expanded"); return expanded; }, click: async () => { calls.push("área"); expanded = "true"; } };
+    const box = { getAttribute: async (name) => ({ "aria-disabled": null, "aria-checked": checked })[name], click: async () => { assert.equal(expanded, "true"); calls.push("selección"); checked = "true"; } };
+    const picker = { getByRole: (role, options) => {
+      if (role === "button") { assert.match("Abrir o cerrar Organizaciones", options.name); return { first: () => ({ waitFor: async () => {} }), all: async () => [area] }; }
+      assert.equal(role, "checkbox");
+      if (options.checked) { assert.doesNotMatch("Todos los permisos de Organizaciones", options.name); return { evaluateAll: async () => ["Ver organizaciones", "Ver la auditoría"] }; }
+      assert.deepEqual(options, { name: "Ver organizaciones", exact: true }); return box;
+    } };
     const form = { waitFor: async () => assert.equal(opened, true), getByRole: (role, options) => {
-      if (role === "button") { assert.equal(options.name, "Permisos de plataforma"); return picker; }
+      if (role === "table") { assert.deepEqual(options, { name: "Permisos de plataforma", exact: true }); return picker; }
       assert.equal(role, "textbox"); return { fill: async (value) => { text = value; } };
     } };
     const page = {
       viewportSize: () => ({ width: mobile ? 390 : 1440 }),
-      keyboard: { press: async (key) => assert.equal(key, "Escape") },
       getByRole: (role, { name } = {}) => {
         if (role === "button" && name === "Cambiar permisos") return direct;
         if (role === "button") { assert.equal(name, "Acciones de Cuenta propia"); return { waitFor: async () => { assert.equal(mobile, true); await waitForAction(); }, getAttribute: async () => "dialog", click: async () => { assert.equal(mobile, true); calls.push("hoja"); } }; }
         if (role === "menuitem") { assert.equal(name, "Cambiar permisos"); return { click: async () => { assert.equal(mobile, true); opened = true; } }; }
-        if (role === "dialog") { assert.equal(name, "Cambiar permisos de Cuenta propia"); return form; }
-        if (role === "menu") return { isVisible: async () => true };
-        assert.equal(role, "menuitemcheckbox"); return { nth: (index) => { assert.equal(index, 0); return { click: async () => calls.push("selección") }; } };
+        assert.equal(role, "dialog"); assert.equal(name, "Cambiar permisos de Cuenta propia"); return form;
       },
     };
-    const pending = security.prepareSecurityPermissions(page, "Cuenta propia", 0, "Motivo conservado."); void pending.catch(() => {});
+    const pending = security.prepareSecurityPermissions(page, "Cuenta propia", "Ver organizaciones", "Motivo conservado."); void pending.catch(() => {});
     await Promise.race([waiting.promise, pending]); assert.deepEqual(calls, []);
     ready = true; loaded.resolve(); const prepared = await pending;
-    assert.deepEqual(calls, [mobile ? "hoja" : "directo", "picker", "selección"]);
-    assert.equal(text, "Motivo conservado."); assert.equal(prepared.form, form); assert.equal(prepared.picker, picker); assert.equal(prepared.selection, "Ver organizaciones, Ver la auditoría");
+    assert.deepEqual(calls, [mobile ? "hoja" : "directo", "área", "selección"]);
+    assert.equal(text, "Motivo conservado."); assert.equal(prepared.form, form); assert.equal(prepared.picker, picker);
+    assert.deepEqual(prepared.selection, ["Ver organizaciones", "Ver la auditoría"]);
   }
 });
 

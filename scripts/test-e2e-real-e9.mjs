@@ -79,10 +79,69 @@ export async function openAccountActions(page, name) {
 }
 
 /**
- * «Cambiar permisos»: cambia una casilla del catálogo, escribe el motivo y deja el formulario listo para guardar. En la
- * compu es un botón de la ficha; en el teléfono, una opción de «Acciones de …».
+ * Los permisos de un operador al invitarlo o cambiarlos (260, Cuentas-Base2 y Cuenta-Plat-Base2): la tabla «Permisos de
+ * plataforma», con un área plegable por banda. La casilla de un área se llama «Todos los permisos de …»; la de un permiso,
+ * como el permiso.
  */
-export async function preparePermissions(page, name, toggle, reason) {
+export const platformPermissionTable = (scope) => scope.getByRole("table", { name: "Permisos de plataforma", exact: true });
+const permissionChoice = /^(?!Todos los permisos de )/u;
+
+/** Abre las áreas cerradas: así cada permiso se elige por su nombre, sin saber de qué área es. */
+export async function openPermissionAreas(table) {
+  const areas = table.getByRole("button", { name: /^Abrir o cerrar /u });
+  await areas.first().waitFor();
+  for (const area of await areas.all()) if (await area.getAttribute("aria-expanded") !== "true") await area.click();
+}
+
+/** Las casillas de los permisos, sin las de las áreas, con todas las áreas abiertas. */
+export async function permissionChoices(table, options = {}) {
+  await openPermissionAreas(table);
+  return table.getByRole("checkbox", { ...options, name: permissionChoice });
+}
+
+/** Lo marcado, también lo incluido, en el orden de la tabla: así se compara la selección antes y después. */
+export async function selectedPermissions(table) {
+  return (await permissionChoices(table, { checked: true })).evaluateAll((boxes) => boxes.map((box) => box.labels?.[0]?.textContent ?? ""));
+}
+
+/**
+ * Marca o desmarca un permiso por su nombre. Si está apagado (lo incluye otro marcado o quien edita no lo tiene), tocarlo
+ * solo muestra el motivo: falla en vez de seguir sin el cambio.
+ */
+export async function togglePlatformPermission(table, name) {
+  await openPermissionAreas(table);
+  const box = table.getByRole("checkbox", { name, exact: true });
+  assert.notEqual(await box.getAttribute("aria-disabled"), "true", `«${name}» está apagado: lo incluye otro permiso o no se puede dar.`);
+  const before = await box.getAttribute("aria-checked");
+  await box.click();
+  for (let wait = 0; wait < 20 && await box.getAttribute("aria-checked") === before; wait++) await delay(100);
+  assert.notEqual(await box.getAttribute("aria-checked"), before, `«${name}» no cambió.`);
+}
+
+/** Deja marcados estos permisos; los que ya lo están, también por lo incluido, quedan como están. */
+export async function choosePlatformPermissions(table, names) {
+  await openPermissionAreas(table);
+  for (const name of names) {
+    if (await table.getByRole("checkbox", { name, exact: true }).getAttribute("aria-checked") !== "true") await togglePlatformPermission(table, name);
+  }
+}
+
+/** Marca todos: la casilla de cada área que no está completa, que suma lo que falta. */
+export async function chooseAllPlatformPermissions(table) {
+  const areas = table.getByRole("checkbox", { name: /^Todos los permisos de /u });
+  await areas.first().waitFor();
+  for (const area of await areas.all()) {
+    if (await area.getAttribute("aria-checked") === "true") continue;
+    assert.notEqual(await area.getAttribute("aria-disabled"), "true", "Un área con algo que quien invita no tiene queda apagada.");
+    await area.click();
+  }
+}
+
+/**
+ * «Cambiar permisos»: marca o desmarca un permiso por su nombre, escribe el motivo y deja el formulario listo para guardar.
+ * En la compu es un botón de la ficha; en el teléfono, una opción de «Acciones de …».
+ */
+export async function preparePermissions(page, name, permission, reason) {
   const change = page.getByRole("button", { name: "Cambiar permisos", exact: true });
   if (await change.isVisible()) await change.click();
   else {
@@ -91,13 +150,10 @@ export async function preparePermissions(page, name, toggle, reason) {
   }
   const form = page.getByRole("dialog", { name: `Cambiar permisos de ${name}`, exact: true });
   await form.waitFor();
-  const picker = form.getByRole("button", { name: "Permisos de plataforma", exact: true });
-  await picker.focus();
-  await picker.press("ArrowDown");
-  await page.getByRole("menuitemcheckbox").nth(toggle).click();
-  if (await page.getByRole("menu").isVisible()) await page.keyboard.press("Escape");
+  const picker = platformPermissionTable(form);
+  await togglePlatformPermission(picker, permission);
   await form.getByRole("textbox", { name: /^Motivo/u }).fill(reason);
-  return { form, picker, selection: await picker.innerText() };
+  return { form, picker, selection: await selectedPermissions(picker) };
 }
 
 /** Configuración: escribe los valores, guarda con motivo y confirma si la prueba venció. Devuelve si pidió confirmar. */
@@ -268,7 +324,7 @@ export function etapa9Cases(env) {
         setStage("vence la prueba reciente de e9a");
         await expireRecentProof(readyFile, e9.a);
         setStage("guardar los permisos pide «Confirmá que sos vos»");
-        const { form, picker, selection } = await preparePermissions(page, target, 0, "E2E E9: confirmación reciente.");
+        const { form, picker, selection } = await preparePermissions(page, target, "Administrar organizaciones", "E2E E9: confirmación reciente.");
         await form.getByRole("button", { name: "Guardar cambios", exact: true }).click();
         await confirm.waitFor();
         await page.getByText(`Para guardar los permisos de ${target}, escribí el código de tu app de autenticación.`, { exact: true }).waitFor();
@@ -278,7 +334,7 @@ export function etapa9Cases(env) {
         await confirm.waitFor({ state: "hidden" });
         await form.waitFor();
         assert.equal(await form.getByRole("textbox", { name: /^Motivo/u }).inputValue(), "E2E E9: confirmación reciente.");
-        assert.equal(await picker.innerText(), selection);
+        assert.deepEqual(await selectedPermissions(picker), selection);
         setStage("guarda otra vez y confirma con la app");
         await form.getByRole("button", { name: "Guardar cambios", exact: true }).click();
         await confirmRecentAuthentication(page, e9.a);
@@ -291,7 +347,7 @@ export function etapa9Cases(env) {
         setStage("variante: vence la prueba otra vez y abre «Cambiar permisos»");
         await expireRecentProof(readyFile, e9.a);
         const first = writes.seen.length;
-        const stale = await preparePermissions(page, target, 0, "E2E E9: la otra pestaña gana.");
+        const stale = await preparePermissions(page, target, "Administrar organizaciones", "E2E E9: la otra pestaña gana.");
         await stale.form.getByRole("button", { name: "Guardar cambios", exact: true }).click();
         await confirm.waitFor();
         setStage("otra pestaña cambia los permisos antes de confirmar");
@@ -300,7 +356,7 @@ export function etapa9Cases(env) {
           other.setDefaultTimeout(30_000);
           await other.goto(page.url());
           await other.getByRole("heading", { name: target, exact: true }).waitFor();
-          const winner = await preparePermissions(other, target, 1, "E2E E9: cambio desde otra pestaña.");
+          const winner = await preparePermissions(other, target, "Ver la auditoría", "E2E E9: cambio desde otra pestaña.");
           await winner.form.getByRole("button", { name: "Guardar cambios", exact: true }).click();
           await confirmRecentAuthentication(other, e9.a);
           await other.getByText(`Cambiamos los permisos de ${target}.`, { exact: true }).waitFor();
@@ -381,16 +437,12 @@ export function etapa9Cases(env) {
       await env.platformNavigate(page, "Gestión", "Cuentas");
       await page.getByRole("button", { name: "Invitar operador", exact: true }).click();
       const dialog = page.getByRole("dialog", { name: "Invitar operador", exact: true });
-      const picker = dialog.getByRole("button", { name: "Permisos de plataforma", exact: true });
-      await picker.focus();
-      await picker.press("ArrowDown");
-      const options = page.getByRole("menuitemcheckbox");
-      await options.first().waitFor();
-      assert.equal(await options.count(), 14, "El catálogo de Plataforma tiene 14 permisos.");
+      // Cuentas-Base2 (260): los permisos en áreas plegables; con todas abiertas, una casilla por permiso.
+      const permissions = platformPermissionTable(dialog);
+      assert.equal(await (await permissionChoices(permissions)).count(), 14, "El catálogo de Plataforma tiene 14 permisos.");
       for (const name of ["Ver organizaciones", "Administrar operadores", "Usar el asistente de Plataforma", "Administrar el WhatsApp de Plataforma", "Cambiar la configuración"]) {
-        assert.equal(await page.getByRole("menuitemcheckbox", { name: new RegExp(`^${name}`, "u") }).count(), 1, `Falta el permiso «${name}».`);
+        assert.equal(await permissions.getByRole("checkbox", { name, exact: true }).count(), 1, `Falta el permiso «${name}».`);
       }
-      await page.keyboard.press("Escape");
       await dialog.getByRole("button", { name: "Cancelar", exact: true }).click();
       await dialog.waitFor({ state: "hidden" });
     }],
