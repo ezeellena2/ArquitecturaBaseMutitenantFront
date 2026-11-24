@@ -30,6 +30,7 @@
       }
     }
   },
+  "platformPermissionArea": "WhatsApp",
   "platformPermissions": {
     "platform.whatsapp.manage": {
       "name": "Manage Platform WhatsApp",

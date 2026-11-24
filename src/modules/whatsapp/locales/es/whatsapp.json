@@ -30,6 +30,7 @@
       }
     }
   },
+  "platformPermissionArea": "WhatsApp",
   "platformPermissions": {
     "platform.whatsapp.manage": {
       "name": "Administrar el WhatsApp de Plataforma",

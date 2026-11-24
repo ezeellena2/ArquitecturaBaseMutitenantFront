@@ -54,7 +54,6 @@
     "title": "Invite operator",
     "email": "Email",
     "permissions": "Platform permissions",
-    "none": "None",
     "send": "Invite",
     "sending": "Inviting…",
     "emailRequired": "Enter the email.",
@@ -100,6 +99,15 @@
       "name": "Change settings",
       "description": "Personal registration and organization creation."
     }
+  },
+  "permissionAreas": {
+    "platform.tenants": "Organizations",
+    "platform.accounts": "Accounts",
+    "platform.recoveries": "Recoveries",
+    "platform.legal": "Legal documents",
+    "platform.operators": "Operators",
+    "platform.audit": "Audit",
+    "platform.settings": "Settings"
   },
   "errors": {
     "alreadyPending": "This account is already scheduled for deletion."
@@ -182,7 +190,6 @@
     "membershipInvited": "Invited",
     "membershipEnded": "Ended",
     "owner": "Owner",
-    "permissionGranted": "Granted",
     "permissionCount_one": "permission",
     "permissionCount_other": "permissions",
     "created": "Created on",

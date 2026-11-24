@@ -1,6 +1,7 @@
 import { http, HttpResponse, type RequestHandler } from "msw";
 import type { ReferenceData } from "@/shared/referenceData/referenceData";
 import type { MeResponse } from "@/shared/api/types";
+import { platformPermissionsFixture } from "./platformPermissions";
 
 export function meHandlerFor(user: MeResponse): RequestHandler {
   return http.get("/api/me", () => HttpResponse.json(user));
@@ -61,6 +62,8 @@ export const handlers: RequestHandler[] = [
   http.get("/api/home", () => HttpResponse.json({ organization: null, companies: [], pending: [] })),
   // La campana de los tres accesos, como la responde el back hasta la B1: sin avisos. Cada test con avisos la reemplaza.
   http.get("/api/notifications", () => HttpResponse.json({ items: [], unread: 0 })),
+  // Los permisos de un operador con lo que incluye cada uno (260); quien pide los tiene todos.
+  http.get("/api/platform/permissions", () => HttpResponse.json(platformPermissionsFixture())),
   // Como el back de hoy, sin el módulo de WhatsApp: se entra con correo y con Google.
   http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "email", countries: [] }, { key: "google", countries: [] }] })),
   http.get("/api/me/login-methods", () => HttpResponse.json({ methods: [

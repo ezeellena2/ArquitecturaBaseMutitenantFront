@@ -185,15 +185,20 @@ describe("Cuentas de Plataforma", () => {
     const email = screen.getByRole("textbox", { name: "Correo" }); await user.type(email, "NUEVO@EXAMPLE.COM"); await user.click(screen.getByRole("button", { name: "Invitar" }));
     expect(await screen.findByText("Ese correo ya tiene una invitación. Reenviala desde la lista.")).toBeVisible(); expect(email).toHaveAttribute("aria-invalid", "true");
     code = "Platform.Operator.AccountExists"; await user.click(screen.getByRole("button", { name: "Invitar" })); expect(await screen.findByText("Ese correo ya tiene una cuenta. Un operador no puede tener perfiles de persona.")).toBeVisible();
-    code = "Platform.Operator.PermissionsRequired"; await user.click(screen.getByRole("button", { name: "Invitar" })); expect(await screen.findByText("Elegí al menos un permiso de plataforma.")).toBeVisible(); expect(screen.getByRole("button", { name: "Permisos de plataforma" })).toHaveAttribute("aria-invalid", "true");
+    code = "Platform.Operator.PermissionsRequired"; await user.click(screen.getByRole("button", { name: "Invitar" })); expect(await screen.findByText("Elegí al menos un permiso de plataforma.")).toBeVisible(); expect(screen.getByRole("table", { name: "Permisos de plataforma" })).toHaveAccessibleDescription("Elegí al menos un permiso de plataforma.");
     expect(requests).toEqual(Array.from({ length: 3 }, () => ({ email: "nuevo@example.com", permissions: [] })));
   });
-  it("invitar tiene los catorce permisos con descripción y reintenta red con igual clave y aviso", async () => {
+  // Cuentas-Base2 (260): los permisos en áreas plegables, todas cerradas al empezar; qué permite cada uno es su descripción.
+  it("invitar tiene los catorce permisos en áreas, con su descripción, y reintenta red con igual clave y aviso", async () => {
     const user = userEvent.setup(); const keys: (string | null)[] = []; const bodies: unknown[] = [];
     server.use(http.post("/api/platform/operators/invitations", async ({ request }) => { keys.push(request.headers.get("Idempotency-Key")); bodies.push(await request.json()); return keys.length === 1 ? HttpResponse.error() : HttpResponse.json({ id: "new", expiresAtUtc: "2026-10-04T12:00:00Z" }, { status: 201 }); }));
     renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" }); await user.click(await screen.findByRole("button", { name: "Invitar operador" }));
-    await user.type(screen.getByRole("textbox", { name: "Correo" }), "new@example.com"); const permissions = screen.getByRole("button", { name: "Permisos de plataforma" }); permissions.focus(); await user.keyboard("{ArrowDown}");
-    expect(await screen.findAllByRole("menuitemcheckbox")).toHaveLength(14); expect(screen.getByText("Buscar cuentas y ver su ficha.")).toBeVisible(); await user.click(screen.getByRole("menuitemcheckbox", { name: "Ver cuentas" })); await user.click(screen.getByRole("menuitemcheckbox", { name: "Atender consultas" })); await user.keyboard("{Escape}");
+    await user.type(screen.getByRole("textbox", { name: "Correo" }), "new@example.com");
+    const areas = await screen.findAllByRole("button", { name: /^Abrir o cerrar / });
+    expect(areas).toHaveLength(9); for (const area of areas) expect(area).toHaveAttribute("aria-expanded", "false");
+    await user.click(screen.getByRole("button", { name: "Abrir o cerrar Cuentas" })); await user.click(screen.getByRole("button", { name: "Abrir o cerrar WhatsApp" }));
+    expect(screen.getByRole("checkbox", { name: "Ver cuentas" })).toHaveAccessibleDescription("Buscar cuentas y ver su ficha.");
+    await user.click(screen.getByRole("checkbox", { name: "Ver cuentas" })); await user.click(screen.getByRole("checkbox", { name: "Atender consultas" }));
     await user.click(screen.getByRole("button", { name: "Invitar" })); fireEvent.click(await screen.findByRole("button", { name: "Reintentar" }));
     expect(await screen.findByText("Invitamos a new@example.com como operador.")).toBeVisible(); expect(keys).toHaveLength(2); expect(keys[0]).toBe(keys[1]); expect(bodies).toEqual(Array.from({ length: 2 }, () => ({ email: "new@example.com", permissions: ["platform.accounts.read", "platform.whatsapp.attend"] })));
   });
@@ -464,7 +469,11 @@ describe("Cuentas de Plataforma", () => {
   });
   it("invitar a390 mantiene formulario y catorce descripciones accesibles", async () => {
     asPhone(); const user = userEvent.setup(); renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" }); await user.click(await screen.findByRole("button", { name: "Invitar operador" }));
-    expect(await axe(document.body)).toHaveNoViolations(); const permissions = screen.getByRole("button", { name: "Permisos de plataforma" }); permissions.focus(); await user.keyboard("{ArrowDown}"); expect(await screen.findAllByRole("menuitemcheckbox")).toHaveLength(14); expect(await axe(screen.getByRole("menu"))).toHaveNoViolations();
+    const areas = await screen.findAllByRole("button", { name: /^Abrir o cerrar / }); expect(await axe(document.body)).toHaveNoViolations();
+    for (const area of areas) await user.click(area);
+    const permissions = screen.getAllByRole("checkbox").filter((box) => !box.getAttribute("aria-label")?.startsWith("Todos los permisos de"));
+    expect(permissions).toHaveLength(14); for (const permission of permissions) expect(permission).not.toHaveAccessibleDescription("");
+    expect(await axe(screen.getByRole("dialog"))).toHaveNoViolations();
   });
   it("dejar de estar invitada retira para siempre Retry viejo aunque la fila vuelva a Invited", async () => {
     const user = userEvent.setup(); let state: Account["state"] = "Invited"; let calls = 0;
@@ -486,7 +495,7 @@ describe("Cuentas de Plataforma", () => {
     const user = userEvent.setup(); let release: (() => void) | undefined;
     server.use(http.post("/api/platform/operators/invitations", async () => { await new Promise<void>((resolve) => { release = resolve; }); return failed ? HttpResponse.json({ code: "Platform.Operator.PermissionsRequired" }, { status: 400 }) : HttpResponse.json({ id: "new", expiresAtUtc: "2026-10-08T12:00:00Z" }, { status: 201 }); }));
     renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" }); await user.click(await screen.findByRole("button", { name: "Invitar operador" })); await user.type(screen.getByRole("textbox", { name: "Correo" }), "a@example.com"); await user.click(screen.getByRole("button", { name: "Invitar" })); await waitFor(() => expect(release).toBeDefined());
-    screen.getByRole("button", { name: "Permisos de plataforma" }).focus(); await user.keyboard("{ArrowDown}"); await user.click(screen.getByRole("menuitemcheckbox", { name: "Ver cuentas" })); await user.keyboard("{Escape}");
+    await user.click(screen.getByRole("button", { name: "Abrir o cerrar Cuentas" })); await user.click(screen.getByRole("checkbox", { name: "Ver cuentas" }));
     await act(async () => { release?.(); }); expect(screen.getByRole("dialog")).toBeVisible(); expect(screen.queryByText("Invitamos a a@example.com como operador.")).not.toBeInTheDocument(); expect(screen.queryByText("Elegí al menos un permiso de plataforma.")).not.toBeInTheDocument();
   });
 });

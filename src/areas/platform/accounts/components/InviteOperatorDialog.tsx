@@ -4,7 +4,7 @@ import type { TFunction } from "i18next";
 import { useMemo, useState } from "react";
 import { useController, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { usePlatformPermissionCatalog } from "../lib/permissionCatalog";
+import { usePlatformPermissionGroups } from "../lib/permissionCatalog";
 import { toast } from "sonner";
 import { z } from "zod";
 import { actionErrorMessage } from "@/shared/api/errorMessage";
@@ -18,7 +18,7 @@ import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTi
 import { EmailField } from "@/shared/ui/fields/EmailField";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
-import { MultiSelect } from "@/shared/ui/MultiSelect";
+import { PermissionPicker } from "@/shared/ui/PermissionPicker";
 import { inviteOperator } from "../api/operators";
 import { operatorInvitationError } from "../errors";
 
@@ -34,7 +34,7 @@ function sameInvitation(previous: InvitePlatformOperatorRequest, next: InvitePla
 }
 export function InviteOperatorDialog({ onClose, onInvited }: { onClose: () => void; onInvited: () => Promise<unknown> }) {
   const { t } = useTranslation(["platformAccounts", "common"]);
-  const catalog = usePlatformPermissionCatalog();
+  const permissionGroups = usePlatformPermissionGroups();
   const restoreFocus = useRestoreFocusOnClose();
   const schema = useMemo(() => inviteSchema(t), [t]);
   const form = useForm<InviteForm>({ resolver: zodResolver(schema), defaultValues: { email: "", permissions: [] } });
@@ -67,9 +67,14 @@ export function InviteOperatorDialog({ onClose, onInvited }: { onClose: () => vo
         <FormField label={t("platformAccounts:invite.email")} required error={form.formState.errors.email?.message}>
           <EmailField name={emailName} ref={emailRef} value={emailValue} onBlur={emailBlur} onChange={(value) => { emailChange(value ?? ""); clear("email"); }} maxLength={validationConstraints.InvitePlatformOperatorHttpRequest.email.maxLength} disabled={busy} />
         </FormField>
+        {/* Cuentas-Base2 (260 y 269): los permisos en áreas plegables, todas cerradas al empezar, con lo incluido y lo que quien
+            invita no puede dar apagados con su motivo. */}
         <FormField label={t("platformAccounts:invite.permissions")} error={form.formState.errors.permissions?.message}>
-          <MultiSelect options={catalog.map((permission) => ({ value: permission.code, label: t(permission.nameKey), description: t(permission.descriptionKey) }))}
-            value={permissions.field.value} onChange={(value) => { permissions.field.onChange(value); clear("permissions"); }} placeholder={t("platformAccounts:invite.none")} />
+          <PermissionPicker label={t("platformAccounts:invite.permissions")} className="max-h-[29.375rem] overflow-auto"
+            groups={permissionGroups.isPending ? [] : permissionGroups.groups} picked={permissions.field.value}
+            onChange={(value) => { permissions.field.onChange(value); clear("permissions"); }}>
+            {permissionGroups.isPending ? <p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p> : null}
+          </PermissionPicker>
         </FormField>
         <FormError message={actionErrorMessage(failure, t)} />
       </DialogBody>

@@ -1,5 +1,5 @@
 import { api } from "@/shared/api/httpClient";
-import type { ChangePlatformOperatorRequest, InvitePlatformOperatorRequest, PlatformAccountActionRequest, PlatformOperatorInvitationResponse, VersionResponse } from "@/shared/api/types";
+import type { ApiSchemas, ChangePlatformOperatorRequest, InvitePlatformOperatorRequest, PlatformAccountActionRequest, PlatformOperatorInvitationResponse, VersionResponse } from "@/shared/api/types";
 
 export function inviteOperator(request: InvitePlatformOperatorRequest, key: string): Promise<PlatformOperatorInvitationResponse> {
   return api.post("/api/platform/operators/invitations", request, { headers: { "Idempotency-Key": key } });
@@ -17,4 +17,10 @@ export function resetOperatorAuthenticator(id: string, request: PlatformAccountA
 }
 export function removeOperator(id: string, request: PlatformAccountActionRequest, key: string): Promise<void> {
   return api.delete(`/api/platform/accounts/${encodeURIComponent(id)}/operator`, { body: JSON.stringify(request), headers: { "Idempotency-Key": key } });
+}
+
+/** Lo que incluye cada permiso de Plataforma (260) y si quien pide lo puede dar (269); los nombres y el orden son del front. */
+export const platformPermissionsQueryKey = ["platform", "permissions"] as const;
+export function fetchPlatformPermissions(): Promise<ApiSchemas["PlatformPermissionItem"][]> {
+  return api.get("/api/platform/permissions");
 }

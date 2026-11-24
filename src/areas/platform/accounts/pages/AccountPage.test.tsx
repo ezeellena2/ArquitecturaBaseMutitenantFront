@@ -13,6 +13,7 @@ import { server } from "@/test/mocks/server";
 import { asPhone, cardData } from "@/test/utils/phone";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
 import { accountQueryKey } from "../api/accounts";
+import { platformPermissionsFixture } from "@/test/mocks/platformPermissions";
 
 type Detail = ApiSchemas["PlatformAccountDetailResponse"];
 let data: Detail;
@@ -204,27 +205,39 @@ describe("Ficha de Cuenta de Plataforma", () => {
     expect(screen.queryByRole("tab", { name: /Métodos/ })).not.toBeInTheDocument();
     expect(screen.getAllByText(/Ver organizaciones/)).not.toHaveLength(0);
     await user.click(screen.getByRole("button", { name: "Cambiar permisos" }));
-    expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
+    expect(await screen.findByRole("button", { name: "Guardar cambios" })).toBeDisabled();
     await user.type(screen.getByRole("textbox", { name: "Motivo" }), "Revisión");
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument()); await waitFor(() => expect(reads).toBeGreaterThan(1));
     await menu(user, "Quitar operador"); await reason(user, "Quitar");
     expect(await screen.findByText("Tiene que quedar al menos un operador activo que pueda administrar operadores.")).toBeVisible();
-    expect(received.map((r) => r.body)).toEqual([{ version: 1, reason: "Revisión", permissions: data.operatorPermissions }, { version: 2, reason: "Revisión" }]);
+    expect(received.map((r) => r.body)).toEqual([{ version: 1, reason: "Revisión", permissions: [...(data.operatorPermissions ?? [])].sort() }, { version: 2, reason: "Revisión" }]);
     expect(received.every((r) => r.key)).toBe(true);
   });
-  // R03 (ADR 0048): «Cambiar permisos» ofrece el catálogo compuesto, núcleo y módulos instalados, y guarda los de un módulo.
-  it("cambiar permisos ofrece los catorce y guarda uno de un módulo", async () => {
+  // R03 (ADR 0048) y 260 (Cuenta-Plat-Base2): «Cambiar permisos» ofrece el catálogo compuesto, núcleo y módulos instalados, en
+  // áreas plegables (abiertas las que tienen algo), con lo incluido y lo que quien edita no puede dar apagados con su motivo.
+  it("cambiar permisos ofrece los catorce en áreas y guarda uno de un módulo", async () => {
     data = platformAccountDetailFixture({ kind: "Operador" }); const bodies: unknown[] = [];
-    server.use(http.put("/api/platform/accounts/:id/operator", async ({ request }) => { bodies.push(await request.json()); return HttpResponse.json({ version: 2 }); }));
+    server.use(http.put("/api/platform/accounts/:id/operator", async ({ request }) => { bodies.push(await request.json()); return HttpResponse.json({ version: 2 }); }),
+      http.get("/api/platform/permissions", () => HttpResponse.json(platformPermissionsFixture(["platform.assistant.configure"]))));
     const user = userEvent.setup(); open(); await user.click(await screen.findByRole("button", { name: "Cambiar permisos" }));
-    const permissions = screen.getByRole("button", { name: "Permisos de plataforma" }); permissions.focus(); await user.keyboard("{ArrowDown}");
-    const options = await screen.findAllByRole("menuitemcheckbox");
-    expect(options).toHaveLength(14); expect(options.at(-1)).toHaveAccessibleName("Cambiar la configuración");
-    await user.click(screen.getByRole("menuitemcheckbox", { name: "Usar el asistente de Plataforma" })); await user.keyboard("{Escape}");
+    const table = await screen.findByRole("table", { name: "Permisos de plataforma" });
+    const areas = within(table).getAllByRole("button", { name: /^Abrir o cerrar / }).map((area) => area.getAttribute("aria-label"));
+    expect(areas).toEqual(["Organizaciones", "Cuentas", "Recuperaciones", "Documentos legales", "Operadores", "Auditoría", "WhatsApp", "Asistente", "Configuración"].map((name) => "Abrir o cerrar " + name));
+    expect(within(table).getByRole("button", { name: "Abrir o cerrar Organizaciones" })).toHaveAttribute("aria-expanded", "true");
+    expect(within(table).getByRole("button", { name: "Abrir o cerrar Cuentas" })).toHaveAttribute("aria-expanded", "false");
+    await user.click(within(table).getByRole("button", { name: "Abrir o cerrar Cuentas" }));
+    await user.click(within(table).getByRole("checkbox", { name: "Administrar cuentas" }));
+    expect(within(table).getByRole("checkbox", { name: "Ver cuentas" })).toHaveAccessibleDescription("Buscar cuentas y ver su ficha. Lo incluye «Administrar cuentas».");
+    await user.click(within(table).getByRole("checkbox", { name: "Administrar cuentas" }));
+    await user.click(within(table).getByRole("checkbox", { name: "Ver cuentas" }));
+    await user.click(within(table).getByRole("button", { name: "Abrir o cerrar Asistente" }));
+    expect(within(table).getByRole("checkbox", { name: "Configurar el asistente de Plataforma" })).toHaveAttribute("aria-disabled", "true");
+    expect(within(table).getByRole("checkbox", { name: "Todos los permisos de Asistente" })).toHaveAccessibleDescription("Tiene permisos que no tenés.");
+    await user.click(within(table).getByRole("checkbox", { name: "Usar el asistente de Plataforma" }));
     await reason(user, "Guardar cambios");
     await waitFor(() => expect(bodies).toHaveLength(1));
-    expect(bodies[0]).toEqual({ version: 1, reason: "Revisión", permissions: [...(data.operatorPermissions ?? []), "platform.assistant.use"] });
+    expect(bodies[0]).toEqual({ version: 1, reason: "Revisión", permissions: ["platform.assistant.use", "platform.recoveries.manage", "platform.tenants.read"] });
   });
   // M-Cuenta-Plat («Operador: acciones»): en el teléfono el ⋮ de la ficha abre una hoja desde abajo con el nombre de título,
   // como el ⋮ de una fila (RowActions); las de peligro van al final, después de la franja.
@@ -404,8 +417,12 @@ describe("Ficha de Cuenta de Plataforma", () => {
   it("operador sin audit.read conserva los catorce permisos (núcleo y módulos) con una sola caja y sin barra", async () => {
     data = platformAccountDetailFixture({ kind: "Operador" }); const { queryClient } = open(); await screen.findByRole("heading", { name: "Laura Díaz", level: 1 });
     await act(async () => { queryClient.setQueryData(currentUserQueryKey, { ...platformOperator, effectivePermissions: { ...platformOperator.effectivePermissions, platform: ["platform.accounts.read"] } }); });
-    await waitFor(() => expect(screen.queryByRole("tablist")).not.toBeInTheDocument()); expect(screen.getByRole("list", { name: "Permisos" }).children).toHaveLength(14);
-    expect(screen.getByText("Ver y responder las consultas que llegan al número de Plataforma.")).toBeVisible(); expect(screen.getByText("Ver el uso del asistente")).toBeVisible();
+    // Cuenta-Plat-Base2 (260): sus permisos se leen en áreas, solo las que tienen algo y abiertas, cada uno con su tilde.
+    await waitFor(() => expect(screen.queryByRole("tablist")).not.toBeInTheDocument());
+    const table = await screen.findByRole("table", { name: "Permisos" });
+    expect(within(table).getAllByRole("button", { name: /^Abrir o cerrar / }).map((area) => area.getAttribute("aria-label"))).toEqual(["Abrir o cerrar Organizaciones", "Abrir o cerrar Recuperaciones"]);
+    expect(await within(table).findAllByRole("img", { name: "Tiene este permiso" })).toHaveLength(2);
+    expect(within(table).getByText("Ver organizaciones")).toBeVisible(); expect(within(table).queryByRole("checkbox")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Cambiar permisos" })).not.toBeInTheDocument();
   });
   it("en-US localiza métodos, fecha, Dueño y grupos de la ficha", async () => {
@@ -442,8 +459,7 @@ describe("Ficha de Cuenta de Plataforma", () => {
   });
   it("quitar y volver a poner un permiso no cambia la selección ni habilita Guardar", async () => {
     data = platformAccountDetailFixture({ kind: "Operador" }); const user = userEvent.setup(); open(); await user.click(await screen.findByRole("button", { name: "Cambiar permisos" }));
-    const select = screen.getByRole("button", { name: "Permisos de plataforma" }); select.focus(); await user.keyboard("{ArrowDown}");
-    await user.click(screen.getByRole("menuitemcheckbox", { name: "Ver organizaciones" })); await user.click(screen.getByRole("menuitemcheckbox", { name: "Ver organizaciones" })); await user.keyboard("{Escape}");
+    await user.click(await screen.findByRole("checkbox", { name: "Ver organizaciones" })); await user.click(screen.getByRole("checkbox", { name: "Ver organizaciones" }));
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
   });
   it("Organizaciones vacío conserva grupo y texto compartido de la caja", async () => {

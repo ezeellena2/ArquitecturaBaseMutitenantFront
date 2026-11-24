@@ -9,7 +9,9 @@ import en from "@/locales/en/platformAccounts.json";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
 import { AccountPermissionsTab } from "../tabs/AccountPermissionsTab";
-import { platformPermissionCatalog } from "./permissionCatalog";
+import i18n from "i18next";
+import { platformPermissionsFixture } from "@/test/mocks/platformPermissions";
+import { platformPermissionCatalog, platformPermissionGroups } from "./permissionCatalog";
 
 beforeEach(async () => {
   await configureI18n(referenceDataFixture().cultures);
@@ -33,8 +35,21 @@ describe("catálogo de permisos de un operador", () => {
     for (const catalog of [es.permissions, en.permissions]) expect(Object.keys(catalog).sort()).toEqual([...platformPermissions].sort());
 
     renderWithProviders(<ModuleRegistryProvider value={withoutWhatsApp}><AccountPermissionsTab permissions={["platform.whatsapp.attend"]} /></ModuleRegistryProvider>);
-    expect(await screen.findByText("Ver el uso del asistente")).toBeVisible();
-    expect(screen.getByRole("list", { name: "Permisos" }).children).toHaveLength(12);
+    // Sin el módulo, la ficha no nombra sus permisos ni su área, aunque el operador los tenga guardados.
+    expect(await screen.findByRole("table", { name: "Permisos" })).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Abrir o cerrar WhatsApp" })).not.toBeInTheDocument();
     expect(screen.queryByText("Atender consultas")).not.toBeInTheDocument();
+  });
+
+  // 260 (Cuentas-Base2 y Cuenta-Plat-Base2): las áreas, en el orden del catálogo, con los nombres del front y, del back, solo
+  // lo que incluye cada permiso y si quien pide lo puede dar.
+  it("arma las áreas de un operador con lo incluido y lo que se puede dar", () => {
+    const groups = platformPermissionGroups(platformPermissionCatalog(moduleComposition), platformPermissionsFixture(["platform.settings.manage"]), i18n.t);
+    expect(groups.map((group) => group.name)).toEqual(["Organizaciones", "Cuentas", "Recuperaciones", "Documentos legales", "Operadores", "Auditoría", "WhatsApp", "Asistente", "Configuración"]);
+    const accounts = groups.find((group) => group.area === "platform.accounts")!;
+    expect(accounts.permissions.map((permission) => [permission.name, permission.includes])).toEqual([["Ver cuentas", []], ["Administrar cuentas", ["platform.accounts.read"]]]);
+    expect(groups.at(-1)!.permissions[0]).toMatchObject({ code: "platform.settings.manage", grantable: false });
+    // Sin la respuesta del back, nada incluye nada y el back decide al guardar.
+    expect(platformPermissionGroups(platformPermissionCatalog(moduleComposition), undefined, i18n.t)[1].permissions[1]).toMatchObject({ includes: [], grantable: true });
   });
 });

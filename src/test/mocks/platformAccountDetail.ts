@@ -1,4 +1,5 @@
 import type { ApiSchemas } from "@/shared/api/types";
+import { platformPermissionsFixture } from "./platformPermissions";
 
 type Detail = ApiSchemas["PlatformAccountDetailResponse"];
 type Event = ApiSchemas["PlatformAuditEventResponse"];
@@ -80,6 +81,7 @@ export function platformAccountDetailCaptureResponses(options: { state?: string;
   return [
     { method: "GET", path: `/api/platform/accounts/${detail.id}`, status: 200, body: detail },
     { method: "GET", path: "/api/platform/audit", query: { accountId: detail.id, period: "all" }, status: 200, body: history(detail) },
+    { method: "GET", path: "/api/platform/permissions", status: 200, body: platformPermissionsFixture() },
     { method: "PUT", path: `/api/platform/accounts/${detail.id}/operator`, status: 200, body: { version: 2 } },
     { method: "DELETE", path: `/api/platform/accounts/${detail.id}/operator`, status: options.lastManager ? 409 : 204,
       ...(options.lastManager ? { body: { code: "Platform.Operator.LastManager", detail: "Tiene que quedar al menos un operador activo que pueda administrar operadores.", traceId: "capture" } } : {}) },

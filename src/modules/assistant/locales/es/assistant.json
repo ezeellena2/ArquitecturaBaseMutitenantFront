@@ -370,6 +370,7 @@
     },
     "companiesAndUsers": "Consultó Empresas y Usuarios"
   },
+  "platformPermissionArea": "Asistente",
   "platformPermissions": {
     "platform.assistant.use": {
       "name": "Usar el asistente de Plataforma",

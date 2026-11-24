@@ -54,7 +54,6 @@
     "title": "Invitar operador",
     "email": "Correo",
     "permissions": "Permisos de plataforma",
-    "none": "Ninguno",
     "send": "Invitar",
     "sending": "Invitando…",
     "emailRequired": "Escribí el correo.",
@@ -100,6 +99,15 @@
       "name": "Cambiar la configuración",
       "description": "Registro de personas y alta de organizaciones."
     }
+  },
+  "permissionAreas": {
+    "platform.tenants": "Organizaciones",
+    "platform.accounts": "Cuentas",
+    "platform.recoveries": "Recuperaciones",
+    "platform.legal": "Documentos legales",
+    "platform.operators": "Operadores",
+    "platform.audit": "Auditoría",
+    "platform.settings": "Configuración"
   },
   "errors": {
     "alreadyPending": "Esa cuenta ya está por borrarse."
@@ -182,7 +190,6 @@
     "membershipInvited": "Invitada",
     "membershipEnded": "Terminada",
     "owner": "Dueño",
-    "permissionGranted": "Asignado",
     "permissionCount_one": "permiso",
     "permissionCount_other": "permisos",
     "created": "Alta el",

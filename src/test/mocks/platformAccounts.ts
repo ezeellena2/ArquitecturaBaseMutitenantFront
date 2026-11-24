@@ -1,4 +1,5 @@
 import type { ApiSchemas } from "@/shared/api/types";
+import { platformPermissionsFixture } from "./platformPermissions";
 
 type Account = ApiSchemas["PlatformAccountResponse"];
 const person = { kind: "Person", hasPersonalSpace: true, invitationExpiresAtUtc: null } as const;
@@ -48,6 +49,7 @@ export function platformAccountsCaptureResponses({ invitationError, mobile = fal
     { method: "GET", path: "/api/platform/accounts/paged", query: { pageSize: "20" }, status: 200, body: accountPage(rows, 1, 20) },
     { method: "GET", path: "/api/platform/accounts/paged", status: 200, body: accountPage(rows) },
     { method: "GET", path: "/api/platform/accounts/filter-counts", status: 200, body: accountCounts(rows) },
+    { method: "GET", path: "/api/platform/permissions", status: 200, body: platformPermissionsFixture() },
     ...platformAccountRows.map((row) => ({ method: "GET", path: `/api/platform/accounts/${row.id}`, status: 200, body: deletionDetail(row) })),
     { method: "POST", path: "/api/platform/operators/invitations", status: invitationError ? 409 : 201,
       body: invitationError ? { code: `Platform.Operator.${invitationError}`, traceId: "capture" } : { id: "new-operator", expiresAtUtc: "2026-10-04T20:35:00Z" } },

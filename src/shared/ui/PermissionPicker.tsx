@@ -35,6 +35,11 @@ interface PermissionPickerProps {
   readonly framed?: boolean;
   /** Lo que va debajo del encabezado, antes de las áreas: un aviso o «Elegí dónde vale». */
   readonly children?: ReactNode;
+  /** Adentro de `FormField` (un diálogo): el id que ata su rótulo y la descripción con su error. */
+  readonly id?: string;
+  readonly "aria-describedby"?: string;
+  /** El alto del marco, si va adentro de un diálogo (Cuentas-Base2: 470 y se desplaza). */
+  readonly className?: string;
 }
 
 /// El clic solo muestra el motivo: Radix saltea el cambio de la casilla después de un `preventDefault` (211).
@@ -64,15 +69,16 @@ const permissionRow = "relative flex min-h-9 items-center gap-2.5 border-t borde
 /// dar (`grantable`, 269 y 0061), apagado con el suyo, en lugar de esperar el 403. El selector solo guarda qué áreas abrió o
 /// cerró la persona; lo elegido lo guarda la pantalla. Igual en los roles de la organización, en los de una empresa y en los
 /// permisos de un operador de Plataforma.
-export function PermissionPicker({ groups, picked, saved = [], onChange, readOnly = false, openWhenRead = false, label, framed = true, children }: PermissionPickerProps): ReactNode {
+export function PermissionPicker({ groups, picked, saved = [], onChange, readOnly = false, openWhenRead = false, label, framed = true, children, id,
+  "aria-describedby": describedBy, className }: PermissionPickerProps): ReactNode {
   const { t } = useTranslation();
   // Las áreas que la persona abrió o cerró; las demás siguen a lo que tienen (`areaStartsOpen`).
   const [toggled, setToggled] = useState<Readonly<Record<string, boolean>>>({});
   // Al leer van solo las áreas con algo, y en cada una solo lo que tiene.
   const visible = readOnly ? groups.filter((group) => group.permissions.some((permission) => picked.includes(permission.code))) : groups;
 
-  return <div className={cn("min-w-0", framed && "overflow-hidden rounded-[0.75rem] border border-[var(--borde)] bg-[var(--superficie)] max-md:rounded-[0.625rem]")}>
-    <table aria-label={label} className="w-full border-collapse text-[0.8125rem] text-[var(--t1)] max-md:text-[0.9375rem]">
+  return <div className={cn("min-w-0", framed && "overflow-hidden rounded-[0.75rem] border border-[var(--borde)] bg-[var(--superficie)] max-md:rounded-[0.625rem]", className)}>
+    <table id={id} aria-label={label} aria-describedby={describedBy} className="w-full border-collapse text-[0.8125rem] text-[var(--t1)] max-md:text-[0.9375rem]">
       <thead>
         <tr><th scope="col" className="bg-[var(--cab)] px-3.5 py-2 text-left font-semibold text-[var(--t2)]">{t("permissionPicker.permission")}</th></tr>
       </thead>
