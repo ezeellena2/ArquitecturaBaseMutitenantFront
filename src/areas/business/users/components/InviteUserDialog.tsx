@@ -1,7 +1,6 @@
 import { validationConstraints } from "@/shared/api/generated/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { TFunction } from "i18next";
-import { ChevronDown } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useController, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -21,8 +20,7 @@ import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTi
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { Input } from "@/shared/ui/input";
-import { MultiSelect } from "@/shared/ui/MultiSelect";
-import { SearchSelect } from "@/shared/ui/SearchSelect";
+import { Picker } from "@/shared/ui/Picker";
 import { inviteUser } from "../api/users";
 import { companyOptions, roleOptions } from "@/shared/api/resourceOptions";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
@@ -110,19 +108,23 @@ export function InviteUserDialog({ onClose, onInvited }: {
             <Input autoComplete="email" type="email" maxLength={validationConstraints.InviteOrganizationUserHttpRequest.email.maxLength} placeholder={t("users:invite.emailPlaceholder")} {...form.register("email")} />
           </FormField>
           <FormField label={t("users:invite.organizationRoles")}>
-            <MultiSelect remote={orgOptions.remote} selectedOptions={orgOptions.knownItems.map((role) => ({ value: role.id, label: role.name }))} options={organizationRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined, disabledReason: role.grantable === false ? t("common:roleChoice.notGrantable") : undefined }))} value={roleIds.field.value} onChange={roleIds.field.onChange} placeholder={t("users:invite.noRoles")} />
+            <Picker multiple remote={orgOptions.remote} selectedOptions={orgOptions.knownItems.map((role) => ({ value: role.id, label: role.name }))} options={organizationRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined, disabledReason: role.grantable === false ? t("common:roleChoice.notGrantable") : undefined }))} value={roleIds.field.value} onChange={roleIds.field.onChange} placeholder={t("users:invite.noRoles")} />
           </FormField>
           <div className="grid gap-3.5 md:grid-cols-2">
             <FormField label={t("users:invite.company")}>
-              <SearchSelect value={company.field.value || noCompany} onChange={(value) => { company.field.onChange(value === noCompany ? "" : value); companyRoleIds.field.onChange([]); }}
-                remote={companies.remote} selectedLabel={companies.knownItems.find((item) => item.id === company.field.value)?.name}
-                placeholder={t("users:invite.noCompany")} searchLabel={t("common:actions.search")} aria-label={t("users:invite.company")}
-                options={[{ value: noCompany, label: t("users:invite.noCompany") }, ...companies.items.filter((item) => item.status === "Active").map((option) => ({ value: option.id, label: option.name }))]} />
+              <Picker value={company.field.value || noCompany} onChange={(value) => {
+                const next = value === noCompany ? "" : value;
+                if (next === company.field.value) return;
+                company.field.onChange(next);
+                companyRoleIds.field.onChange([]);
+              }} remote={companies.remote} first={{ value: noCompany, label: t("users:invite.noCompany") }}
+                selectedOptions={companies.knownItems.filter((item) => item.id === company.field.value).map((item) => ({ value: item.id, label: item.name }))}
+                options={companies.items.filter((item) => item.status === "Active").map((option) => ({ value: option.id, label: option.name }))} />
             </FormField>
             <FormField label={t("users:invite.companyRoles")}>
               {company.field.value
-                ? <MultiSelect remote={companyOptionsQuery.remote} selectedOptions={companyOptionsQuery.knownItems.map((role) => ({ value: role.id, label: role.name }))} options={companyRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined, disabledReason: role.grantable === false ? t("common:roleChoice.notGrantableIn", { company: companies.knownItems.find((item) => item.id === company.field.value)?.name ?? "" }) : undefined }))} value={companyRoleIds.field.value} onChange={companyRoleIds.field.onChange} placeholder={t("users:invite.noRoles")} />
-                : <button type="button" disabled className="flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-[0.5rem] border border-[var(--borde2)] bg-[var(--s2)] px-3 text-left text-[0.8125rem] text-[var(--t3)] max-md:h-12 max-md:rounded-[0.75rem] max-md:text-[1rem]">{t("users:invite.chooseCompanyFirst")}<ChevronDown aria-hidden="true" className="size-4 shrink-0" /></button>}
+                ? <Picker multiple remote={companyOptionsQuery.remote} selectedOptions={companyOptionsQuery.knownItems.map((role) => ({ value: role.id, label: role.name }))} options={companyRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined, disabledReason: role.grantable === false ? t("common:roleChoice.notGrantableIn", { company: companies.knownItems.find((item) => item.id === company.field.value)?.name ?? "" }) : undefined }))} value={companyRoleIds.field.value} onChange={companyRoleIds.field.onChange} placeholder={t("users:invite.noRoles")} />
+                : <Picker multiple disabled value={[]} options={[]} onChange={() => {}} placeholder={t("users:invite.chooseCompanyFirst")} />}
             </FormField>
           </div>
           {/* «Criterio · Diálogos»: el error general, en la franja arriba de los botones. */}

@@ -71,16 +71,16 @@ async function openRolesDialog(user: ReturnType<typeof userEvent.setup>) {
   await user.keyboard("{Enter}");
   await user.click(await screen.findByRole("menuitem", { name: "Cambiar roles" }));
   const dialog = await screen.findByRole("dialog", { name: "Roles de Lucía Fernández" });
-  await user.click(within(dialog).getByRole("button", { name: "Roles en la empresa" }));
+  await user.click(within(dialog).getByRole("button", { name: /^Roles en la empresa( |$)/ }));
   // Tablero Empresa: cada rol del desplegable, con su descripción debajo.
-  expect(await screen.findByRole("menuitemcheckbox", { name: "Administrador" })).toHaveAccessibleDescription("Administra la empresa: sus miembros y sus roles.");
-  await user.click(screen.getByRole("menuitemcheckbox", { name: "Administrador" }));
+  expect(await screen.findByRole("option", { name: "Administrador" })).toHaveAccessibleDescription("Administra la empresa: sus miembros y sus roles.");
+  await user.click(screen.getByRole("option", { name: "Administrador" }));
   await user.keyboard("{Escape}");
   return dialog;
 }
 
 // «Criterio · Diálogos»: la franja va después del último campo y antes de «Cancelar».
-function expectAboveButtons(dialog: HTMLElement, alert: HTMLElement, lastField: string) {
+function expectAboveButtons(dialog: HTMLElement, alert: HTMLElement, lastField: RegExp) {
   const following = (from: Node, to: Node) => Boolean(from.compareDocumentPosition(to) & Node.DOCUMENT_POSITION_FOLLOWING);
   expect(following(within(dialog).getByRole("button", { name: lastField }), alert)).toBe(true);
   expect(following(alert, within(dialog).getByRole("button", { name: "Cancelar" }))).toBe(true);
@@ -163,7 +163,7 @@ describe("CompanyDetailPage", () => {
     const roles = await screen.findByRole("dialog", { name: "Roles de Lucía Fernández" });
     expect(roles).toHaveClass("md:max-w-105");
     expect(within(roles).queryByText("Delta S.A.")).not.toBeInTheDocument();
-    expect(within(roles).getByRole("button", { name: "Roles en la empresa" })).toHaveTextContent("Sin roles");
+    expect(within(roles).getByRole("button", { name: /^Roles en la empresa( |$)/ })).toHaveTextContent("Sin roles");
     await user.click(within(roles).getByRole("button", { name: "Cancelar" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
 
@@ -171,7 +171,7 @@ describe("CompanyDetailPage", () => {
     const add = await screen.findByRole("dialog", { name: "Agregar miembro" });
     expect(add).toHaveClass("md:max-w-105");
     expect(within(add).queryByText("Delta S.A.")).not.toBeInTheDocument();
-    expect(within(add).getByRole("button", { name: "Roles en la empresa" })).toHaveTextContent("Sin roles");
+    expect(within(add).getByRole("button", { name: /^Roles en la empresa( |$)/ })).toHaveTextContent("Sin roles");
     await user.click(within(add).getByRole("button", { name: "Cancelar" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
 
@@ -194,14 +194,14 @@ describe("CompanyDetailPage", () => {
     const roles = await screen.findByRole("dialog", { name: "Roles de Lucía Fernández" });
     expect(roles).toHaveClass("bottom-0", "rounded-t-[1.25rem]");
     expect(roles).not.toHaveClass("min-h-[calc(100dvh-1rem)]");
-    expect(within(roles).getByRole("button", { name: "Roles en la empresa" }).closest("[data-slot='dialog-body']")).not.toBeNull();
+    expect(within(roles).getByRole("button", { name: /^Roles en la empresa( |$)/ }).closest("[data-slot='dialog-body']")).not.toBeNull();
     await user.click(within(roles).getByRole("button", { name: "Cancelar" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
 
     await user.click(screen.getByRole("button", { name: "Agregar miembro" }));
     const add = await screen.findByRole("dialog", { name: "Agregar miembro" });
     expect(add).not.toHaveClass("min-h-[calc(100dvh-1rem)]");
-    expect(within(add).getByRole("combobox", { name: "Usuario" }).closest("[data-slot='dialog-body']")).not.toBeNull();
+    expect(within(add).getByRole("button", { name: /^Usuario( |$)/ }).closest("[data-slot='dialog-body']")).not.toBeNull();
     await user.click(within(add).getByRole("button", { name: "Cancelar" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
 
@@ -398,10 +398,10 @@ describe("CompanyDetailPage", () => {
 
     const save = within(dialog).getByRole("button", { name: "Guardar cambios" });
     expect(save).toBeDisabled();
-    await user.click(within(dialog).getByRole("button", { name: "Roles en la empresa" }));
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Administrador" }));
+    await user.click(within(dialog).getByRole("button", { name: /^Roles en la empresa( |$)/ }));
+    await user.click(await screen.findByRole("option", { name: "Administrador" }));
     expect(save).toBeEnabled();
-    await user.click(screen.getByRole("menuitemcheckbox", { name: "Administrador" }));
+    await user.click(screen.getByRole("option", { name: "Administrador" }));
     await user.keyboard("{Escape}");
     expect(save).toBeDisabled();
   });
@@ -512,8 +512,8 @@ describe("CompanyDetailPage", () => {
     (await screen.findByRole("button", { name: "Acciones para Lucía Fernández" })).focus();
     await user.keyboard("{Enter}");
     await user.click(await screen.findByRole("menuitem", { name: "Cambiar roles" }));
-    await user.click(screen.getByRole("button", { name: "Roles en la empresa" }));
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Administrador" }));
+    await user.click(screen.getByRole("button", { name: /^Roles en la empresa( |$)/ }));
+    await user.click(await screen.findByRole("option", { name: "Administrador" }));
     await user.keyboard("{Escape}");
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
 
@@ -532,7 +532,7 @@ describe("CompanyDetailPage", () => {
 
     const alert = await within(dialog).findByRole("alert");
     expect(alert).toHaveTextContent("Otra persona cambió esto. Revisá la versión más reciente antes de guardar.");
-    expectAboveButtons(dialog, alert, "Roles en la empresa");
+    expectAboveButtons(dialog, alert, /^Roles en la empresa( |$)/);
     expect(screen.getAllByRole("alert", { hidden: true })).toHaveLength(1);
     expect(screen.queryByText("Otra persona cambió esto mientras lo editabas.")).not.toBeInTheDocument();
   });
@@ -550,7 +550,7 @@ describe("CompanyDetailPage", () => {
     const alert = await within(dialog).findByRole("alert");
     expect(alert).toHaveTextContent("Tiene que quedar al menos un administrador en la empresa.");
     expect(alert.querySelector("svg")).not.toBeNull();
-    expectAboveButtons(dialog, alert, "Roles en la empresa");
+    expectAboveButtons(dialog, alert, /^Roles en la empresa( |$)/);
     expect(screen.getAllByRole("alert", { hidden: true })).toHaveLength(1);
   });
 
@@ -564,7 +564,7 @@ describe("CompanyDetailPage", () => {
     const dialog = await openRolesDialog(user);
     await user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
 
-    const roles = within(dialog).getByRole("button", { name: "Roles en la empresa" });
+    const roles = within(dialog).getByRole("button", { name: /^Roles en la empresa( |$)/ });
     await waitFor(() => expect(roles).toHaveAccessibleDescription("No encontramos el rol."));
     expect(roles).toHaveAttribute("aria-invalid", "true");
     expect(screen.getAllByRole("alert", { hidden: true })).toHaveLength(1);
@@ -607,7 +607,7 @@ describe("CompanyDetailPage", () => {
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
     await user.click(await screen.findByRole("button", { name: "Agregar miembro" }));
     const dialog = await screen.findByRole("dialog", { name: "Agregar miembro" });
-    const member = within(dialog).getByRole("combobox", { name: "Usuario" });
+    const member = within(dialog).getByRole("button", { name: /^Usuario( |$)/ });
     await waitFor(() => expect(member).toHaveTextContent("Elegí un usuario de la organización"));
     const add = within(dialog).getByRole("button", { name: "Agregar miembro" });
     expect(add).toBeEnabled();
@@ -646,7 +646,7 @@ describe("CompanyDetailPage", () => {
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
     await user.click(await screen.findByRole("button", { name: "Agregar miembro" }));
     const dialog = await screen.findByRole("dialog", { name: "Agregar miembro" });
-    const choose = async (name: RegExp) => { await user.click(within(dialog).getByRole("combobox", { name: "Usuario" })); await user.click(await screen.findByRole("option", { name })); };
+    const choose = async (name: RegExp) => { await user.click(within(dialog).getByRole("button", { name: /^Usuario( |$)/ })); await user.click(await screen.findByRole("option", { name })); };
     const add = () => user.click(within(dialog).getByRole("button", { name: "Agregar miembro" }));
     await choose(/Tomás Acosta/);
     await add();
@@ -737,7 +737,7 @@ describe("CompanyDetailPage", () => {
     const user = userEvent.setup();
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
     await user.click(await screen.findByRole("button", { name: "Agregar miembro" }).then((buttons) => buttons));
-    await user.click(await screen.findByRole("combobox", { name: "Usuario" }));
+    await user.click(await screen.findByRole("button", { name: /^Usuario( |$)/ }));
     await user.click(await screen.findByRole("option", { name: /Tomás Acosta/ }));
     await user.click(screen.getAllByRole("button", { name: "Agregar miembro" }).at(-1)!);
 
@@ -763,7 +763,7 @@ describe("CompanyDetailPage", () => {
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
     await user.click(await screen.findByRole("button", { name: "Agregar miembro" }));
     const dialog = await screen.findByRole("dialog", { name: "Agregar miembro" });
-    const member = within(dialog).getByRole("combobox", { name: "Usuario" });
+    const member = within(dialog).getByRole("button", { name: /^Usuario( |$)/ });
     await user.click(member);
     await user.click(await screen.findByRole("option", { name: /Tomás Acosta/ }));
     await user.click(within(dialog).getByRole("button", { name: "Agregar miembro" }));
@@ -791,15 +791,15 @@ describe("CompanyDetailPage", () => {
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
     await user.click(await screen.findByRole("button", { name: "Agregar miembro" }));
     const dialog = await screen.findByRole("dialog", { name: "Agregar miembro" });
-    const person = within(dialog).getByRole("combobox", { name: "Usuario" });
+    const person = within(dialog).getByRole("button", { name: /^Usuario( |$)/ });
     await waitFor(() => expect(person).toBeEnabled());
     await user.click(person);
     await user.click(await screen.findByRole("option", { name: /Tomás Acosta/ }));
     await user.click(within(dialog).getByRole("button", { name: "Agregar miembro" }));
     expect(await within(dialog).findByRole("alert")).toHaveTextContent("Activá la empresa antes de administrar sus miembros.");
 
-    await user.click(within(dialog).getByRole("button", { name: "Roles en la empresa" }));
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Administrador" }));
+    await user.click(within(dialog).getByRole("button", { name: /^Roles en la empresa( |$)/ }));
+    await user.click(await screen.findByRole("option", { name: "Administrador" }));
     await user.keyboard("{Escape}");
     expect(within(dialog).queryByRole("alert")).not.toBeInTheDocument();
 

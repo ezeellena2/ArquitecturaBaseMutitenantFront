@@ -17,11 +17,6 @@ const twoViews = new Map([
 // Lo que todavía no pasó a la pieza (F11 de la segunda parte de la base, a medias): cada archivo sale de la lista cuando
 // se migra, y el test falla si uno de la lista ya no usa la pieza vieja.
 const pending = new Set([
-  "areas/business/companies/components/AddMemberDialog.tsx",
-  "areas/business/companies/components/MemberRolesDialog.tsx",
-  "areas/business/users/components/InviteUserDialog.tsx",
-  "areas/business/users/components/UserCompanyDialog.tsx",
-  "areas/business/users/pages/UserDetailPage.tsx",
   "areas/platform/legal/pages/PublishLegalVersionPage.tsx",
   "areas/platform/settings/components/RateLimitsSection.tsx",
   "areas/platform/settings/pages/PlatformSettingsPage.tsx",

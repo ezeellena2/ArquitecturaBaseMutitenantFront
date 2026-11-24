@@ -36,7 +36,7 @@ import { Page, SublineSeparator } from "@/shared/ui/Page";
 import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Section, SectionFields } from "@/shared/ui/Section";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
+import { Picker } from "@/shared/ui/Picker";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { SettingsItem } from "@/shared/ui/app/SettingsGroup";
 import { DateText } from "@/shared/ui/format/DateText";
@@ -346,13 +346,9 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
               <SettingsItem title={t("users:detail.organizationRoles")} detail={roleNames || t("users:detail.noRoles")} onClick={editable ? () => setSheet("roles") : undefined} />
             </ul> : <SectionFields className="grid gap-4 md:grid-cols-2">
               {editable && isMember ? <FormField label={t("users:detail.status")}>
-                <Select value={current.isActive ? "Active" : "Inactive"} onValueChange={(value) => changeAccess({ isActive: value === "Active" })}>
-                  <SelectTrigger className="w-full" aria-label={t("users:detail.status")}><SelectValue /></SelectTrigger>
-                  <SelectContent position="popper">
-                    <SelectItem value="Active" description={t("users:detail.statusActiveDescription")}>{t("users:states.Active")}</SelectItem>
-                    <SelectItem value="Inactive" description={t("users:detail.statusInactiveDescription")}>{t("users:states.Inactive")}</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Picker value={current.isActive ? "Active" : "Inactive"} onChange={(value) => { if ((value === "Active") !== current.isActive) changeAccess({ isActive: value === "Active" }); }}
+                  options={[{ value: "Active", label: t("users:states.Active"), description: t("users:detail.statusActiveDescription") },
+                    { value: "Inactive", label: t("users:states.Inactive"), description: t("users:detail.statusInactiveDescription") }]} />
               </FormField> : null}
               {editable ? <RolesField label={t("users:detail.organizationRoles")} allLabel={t("users:detail.allRoles")}
                 remote={orgOptions.remote} allCount={orgOptions.allCount} allOptions={async () => (await orgOptions.allItems()).map((role) => ({ value: role.id, label: role.name, disabledReason: role.grantable === false ? t("common:roleChoice.notGrantable") : undefined }))}

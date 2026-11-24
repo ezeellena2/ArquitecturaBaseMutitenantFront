@@ -11,7 +11,7 @@ import { Button } from "@/shared/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
-import { SearchSelect } from "@/shared/ui/SearchSelect";
+import { Picker } from "@/shared/ui/Picker";
 import { companyOptions, roleOptions } from "@/shared/api/resourceOptions";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 import type { CompanyAssignment } from "../lib/access";
@@ -72,9 +72,11 @@ export function UserCompanyDialog({ mode, assignment, companyName, companies, ro
       <form noValidate onSubmit={(event) => { void submit(event); }} className="flex min-h-0 flex-col">
         <DialogBody>
           {mode === "add" ? <FormField label={t("users:invite.company")} required error={form.formState.errors.companyId?.message}>
-            <SearchSelect value={company.field.value} onChange={(companyId) => { company.field.onChange(companyId); form.clearErrors("companyId"); roleIds.field.onChange([]); onEdit(); }}
-              remote={companyQuery.remote} selectedLabel={[...companies, ...companyQuery.knownItems].find((item) => item.id === company.field.value)?.name}
-              placeholder={t("users:invite.chooseCompany")} searchLabel={t("common:actions.search")} aria-label={t("users:invite.company")}
+            <Picker value={company.field.value || null} onChange={(companyId) => {
+              if (companyId === company.field.value) return;
+              company.field.onChange(companyId); form.clearErrors("companyId"); roleIds.field.onChange([]); onEdit();
+            }} remote={companyQuery.remote} placeholder={t("users:invite.chooseCompany")}
+              selectedOptions={[...companies, ...companyQuery.knownItems].filter((item, index, all) => item.id === company.field.value && all.findIndex((other) => other.id === item.id) === index).map((item) => ({ value: item.id, label: item.name }))}
               options={companyQuery.items.filter((item) => item.status === "Active" && !excludedCompanyIds.includes(item.id)).map((option) => ({ value: option.id, label: option.name }))} />
           </FormField> : null}
           {company.field.value ? <RolesField key={company.field.value} label={t("users:invite.companyRoles")} allLabel={t("users:detail.allRoles")}

@@ -181,7 +181,7 @@ describe("RoleEditorPage", () => {
     // Desde una empresa llega elegida; sin un campo «Empresa» aparte.
     const valeEn = screen.getByRole("button", { name: /^Vale en / });
     await waitFor(() => expect(valeEn).toHaveTextContent("Delta S.A."));
-    expect(screen.queryByRole("combobox", { name: "Empresa" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^Empresa( |$)/ })).not.toBeInTheDocument();
     valeEn.focus();
     await user.keyboard("{Enter}");
     expect((await screen.findAllByRole("option")).map((option) => option.textContent))

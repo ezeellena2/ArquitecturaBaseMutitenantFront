@@ -415,15 +415,15 @@ describe("UsersPage", () => {
     await user.click(await screen.findByRole("button", { name: "Invitar usuario" }));
     const dialog = await screen.findByRole("dialog", { name: "Invitar usuario" });
 
-    within(dialog).getByRole("button", { name: "Roles de la organización" }).focus();
+    within(dialog).getByRole("button", { name: /^Roles de la organización( |$)/ }).focus();
     await user.keyboard("{Enter}");
-    const owner = await screen.findByRole("menuitemcheckbox", { name: "Dueño" });
+    const owner = await screen.findByRole("option", { name: "Dueño" });
     expect(owner).toHaveAttribute("aria-disabled", "true");
     expect(owner).toHaveAccessibleDescription("Tiene permisos que no tenés.");
     await user.click(owner);
-    expect(owner).toHaveAttribute("aria-checked", "false");
-    await user.click(screen.getByRole("menuitemcheckbox", { name: "Ventas" }));
-    expect(screen.getByRole("menuitemcheckbox", { name: "Ventas" })).toHaveAttribute("aria-checked", "true");
+    expect(owner).toHaveAttribute("aria-selected", "false");
+    await user.click(screen.getByRole("option", { name: "Ventas" }));
+    expect(screen.getByRole("option", { name: "Ventas" })).toHaveAttribute("aria-selected", "true");
   });
 
   it("tablero Usuarios, Invitar: una empresa con sus roles, todo opcional salvo el correo, e idempotente", async () => {
@@ -451,7 +451,7 @@ describe("UsersPage", () => {
     expect(within(dialog).getByRole("textbox", { name: "Correo" }).closest("[data-slot='dialog-body']")).not.toBeNull();
     expect(dialog).not.toHaveTextContent("Enviamos un enlace");
     expect(within(dialog).queryByRole("button", { name: /Agregar empresa/ })).not.toBeInTheDocument();
-    expect(within(dialog).getByRole("button", { name: "Roles en la empresa" })).toBeDisabled();
+    expect(within(dialog).getByRole("button", { name: /^Roles en la empresa( |$)/ })).toBeDisabled();
     expect(await axe(container)).toHaveNoViolations();
 
     // Solo el correo alcanza.
@@ -465,17 +465,17 @@ describe("UsersPage", () => {
     await user.click(screen.getByRole("button", { name: "Invitar usuario" }));
     const again = await screen.findByRole("dialog", { name: "Invitar usuario" });
     await user.type(within(again).getByRole("textbox", { name: "Correo" }), "otra@example.com");
-    await user.click(within(again).getByRole("button", { name: "Roles de la organización" }));
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Dueño" }));
+    await user.click(within(again).getByRole("button", { name: /^Roles de la organización( |$)/ }));
+    await user.click(await screen.findByRole("option", { name: "Dueño" }));
     await user.keyboard("{Escape}");
-    const company = within(again).getByRole("combobox", { name: "Empresa" });
+    const company = within(again).getByRole("button", { name: /^Empresa( |$)/ });
     company.focus();
     await user.keyboard("{Enter}");
     await user.click(await screen.findByRole("option", { name: "Delta S.A." }));
-    await user.click(within(again).getByRole("button", { name: "Roles en la empresa" }));
+    await user.click(within(again).getByRole("button", { name: /^Roles en la empresa( |$)/ }));
     // Tablero Usuarios: cada rol del desplegable, con su descripción debajo.
-    expect(await screen.findByRole("menuitemcheckbox", { name: "Administrador" })).toHaveAccessibleDescription("Administra la empresa: sus miembros y sus roles.");
-    await user.click(screen.getByRole("menuitemcheckbox", { name: "Administrador" }));
+    expect(await screen.findByRole("option", { name: "Administrador" })).toHaveAccessibleDescription("Administra la empresa: sus miembros y sus roles.");
+    await user.click(screen.getByRole("option", { name: "Administrador" }));
     await user.keyboard("{Escape}");
     await user.click(within(again).getByRole("button", { name: "Invitar" }));
     await waitFor(() => expect(bodies.at(-1)).toEqual({ email: "otra@example.com", roleIds: ["role-owner"], companies: [{ companyId: "company-1", roleIds: ["role-company-admin"] }] }));
@@ -503,7 +503,7 @@ describe("UsersPage", () => {
     const alert = await within(dialog).findByRole("alert");
     expect(alert).toHaveTextContent("Esa persona tiene el acceso deshabilitado. Habilitala en vez de invitarla.");
     const following = (from: Node, to: Node) => Boolean(from.compareDocumentPosition(to) & Node.DOCUMENT_POSITION_FOLLOWING);
-    expect(following(within(dialog).getByRole("combobox", { name: "Empresa" }), alert)).toBe(true);
+    expect(following(within(dialog).getByRole("button", { name: /^Empresa( |$)/ }), alert)).toBe(true);
     expect(following(alert, within(dialog).getByRole("button", { name: "Cancelar" }))).toBe(true);
   }, 10_000);
 

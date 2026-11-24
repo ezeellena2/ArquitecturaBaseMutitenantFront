@@ -18,8 +18,7 @@ import { Button } from "@/shared/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
-import { MultiSelect } from "@/shared/ui/MultiSelect";
-import { SearchSelect } from "@/shared/ui/SearchSelect";
+import { Picker } from "@/shared/ui/Picker";
 import { companyCandidateOptions, companyRoleOptions } from "@/shared/api/resourceOptions";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 import { addCompanyMember, companiesQueryRoot } from "../api/companies";
@@ -97,15 +96,14 @@ export function AddMemberDialog({ companyId, companyName, roles, onClose }: {
       <form noValidate onSubmit={(event) => { void submit(event); }} className="flex min-h-0 flex-col">
         <DialogBody>
           <FormField label={t("companies:addMember.user")} required error={form.formState.errors.memberId?.message}>
-            <SearchSelect value={member.field.value} onChange={(memberId) => { member.field.onChange(memberId); clear(); }}
-              remote={candidateQuery.remote} selectedLabel={candidateQuery.knownItems.find((candidate) => candidate.memberId === member.field.value)?.displayName}
-              placeholder={t("companies:addMember.chooseUser")} searchLabel={t("common:actions.search")} aria-label={t("companies:addMember.user")}
+            <Picker value={member.field.value || null} onChange={(memberId) => { if (memberId === member.field.value) return; member.field.onChange(memberId); clear(); }}
+              remote={candidateQuery.remote} placeholder={t("companies:addMember.chooseUser")}
+              selectedOptions={candidateQuery.knownItems.filter((candidate) => candidate.memberId === member.field.value).map((candidate) => ({ value: candidate.memberId, label: candidate.displayName }))}
               options={candidates.map((candidate) => ({ value: candidate.memberId, label: candidate.displayName,
-                descriptionClassName: "text-[var(--t2)]",
                 description: candidate.maskedEmailAddress === candidate.displayName ? undefined : candidate.maskedEmailAddress ?? t("companies:addMember.withoutEmail") }))} />
           </FormField>
           <FormField label={t("companies:addMember.roles")} error={form.formState.errors.roleIds?.message}>
-            <MultiSelect remote={roleQuery.remote} selectedOptions={[...roles, ...roleQuery.knownItems].map((role) => ({ value: role.id, label: role.name }))} options={roleQuery.items.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined, disabledReason: role.grantable === false ? t("common:roleChoice.notGrantableIn", { company: companyName }) : undefined }))} value={roleIds.field.value} onChange={(next) => { roleIds.field.onChange(next); clear(); }} placeholder={t("companies:addMember.noRoles")} />
+            <Picker multiple remote={roleQuery.remote} selectedOptions={[...roles, ...roleQuery.knownItems].map((role) => ({ value: role.id, label: role.name }))} options={roleQuery.items.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined, disabledReason: role.grantable === false ? t("common:roleChoice.notGrantableIn", { company: companyName }) : undefined }))} value={roleIds.field.value} onChange={(next) => { roleIds.field.onChange(next); clear(); }} placeholder={t("companies:addMember.noRoles")} />
           </FormField>
           {/* «Criterio · Diálogos»: el error general, también el 409, en la franja arriba de los botones. */}
           <FormError message={actionErrorMessage(failure, t)} />

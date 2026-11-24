@@ -227,7 +227,7 @@ describe("CompanyDetailPage: las invitaciones de la empresa (6e)", () => {
 
     await user.click(await screen.findByRole("button", { name: "Agregar miembro" }));
     const dialog = await screen.findByRole("dialog", { name: "Agregar miembro" });
-    const person = within(dialog).getByRole("combobox", { name: "Usuario" });
+    const person = within(dialog).getByRole("button", { name: /^Usuario( |$)/ });
     await waitFor(() => expect(person).toBeEnabled());
     await user.click(person);
     const julieta = await screen.findByRole("option", { name: /Julieta Sosa/ });

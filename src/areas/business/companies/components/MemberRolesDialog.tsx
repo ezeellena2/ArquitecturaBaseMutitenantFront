@@ -16,7 +16,7 @@ import { Button } from "@/shared/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
-import { MultiSelect } from "@/shared/ui/MultiSelect";
+import { Picker } from "@/shared/ui/Picker";
 import { companiesQueryRoot, updateCompanyMemberRoles } from "../api/companies";
 import { memberErrorField } from "../errors";
 import { useDialogFailure } from "@/shared/hooks/useDialogFailure";
@@ -81,7 +81,7 @@ export function MemberRolesDialog({ companyId, companyName, member, roles, onClo
       <form noValidate onSubmit={(event) => { void submit(event); }} className="flex min-h-0 flex-col">
         <DialogBody>
           <FormField label={t("companies:editMemberRoles.roles")} error={form.formState.errors.roleIds?.message}>
-            <MultiSelect remote={roleQuery.remote} selectedOptions={[...roles, ...member.roles, ...roleQuery.knownItems].map((role) => ({ value: role.id, label: role.name }))} options={roleQuery.items.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined, disabledReason: role.grantable === false ? t("common:roleChoice.notGrantableIn", { company: companyName }) : undefined }))} value={roleIds.field.value}
+            <Picker multiple remote={roleQuery.remote} selectedOptions={[...roles, ...member.roles, ...roleQuery.knownItems].map((role) => ({ value: role.id, label: role.name }))} options={roleQuery.items.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined, disabledReason: role.grantable === false ? t("common:roleChoice.notGrantableIn", { company: companyName }) : undefined }))} value={roleIds.field.value}
               onChange={(next) => { roleIds.field.onChange(orderLike(form.formState.defaultValues?.roleIds, next)); clear(); }} placeholder={t("companies:addMember.noRoles")} />
           </FormField>
           {/* Tablero Empresa (v97): el error, una sola vez, en la franja con su ícono arriba de los botones. */}
