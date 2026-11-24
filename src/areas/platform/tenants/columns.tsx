@@ -5,7 +5,7 @@ import type { PlatformTenantDetailResponse, PlatformTenantHistoryResponse, Platf
 import { tenantStatusTones, type StatusTones } from "@/shared/format/statusTones";
 export { tenantStatusTones } from "@/shared/format/statusTones";
 import type { Column } from "@/shared/ui/DataTable";
-import { ListCard, ListRow } from "@/shared/ui/app/ListRow";
+import { ListCard } from "@/shared/ui/app/ListRow";
 import { DateText } from "@/shared/ui/format/DateText";
 import { EmailText } from "@/shared/ui/format/EmailText";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
@@ -36,10 +36,14 @@ export function createOrganizationOwnerColumns(t: TFunction): Column<OwnerRow>[]
     { id: "state", header: t("platformTenants:columns.status"), type: "status", mobile: "status", tones: ownerStatusTones, value: (row) => row.state },
   ];
 }
+/// 263: en el teléfono cada Dueño es una tarjeta con el estado, el último ingreso y el correo, cada dato con el nombre de su
+/// columna.
 export function organizationOwnerPhoneRow(row: OwnerRow, t: TFunction): ReactNode {
-  return <ListRow key={row.id} title={row.name || <EmptyValue />}
-    meta={row.lastSignInAtUtc ? <DateText value={row.lastSignInAtUtc} kind="dateTime" /> : t("platformTenants:detail.phoneNever")}
-    lines={[row.email || <EmptyValue key="email" />, <StatusBadge key="state" tones={ownerStatusTones} value={row.state} />]} />;
+  return <ListCard key={row.id} title={row.name || <EmptyValue />} fields={[
+    { label: t("platformTenants:columns.status"), value: <StatusBadge tones={ownerStatusTones} value={row.state} /> },
+    { label: t("platformTenants:detail.lastSignIn"), value: row.lastSignInAtUtc ? <DateText value={row.lastSignInAtUtc} kind="dateTime" /> : t("platformTenants:detail.never") },
+    { label: t("platformTenants:detail.email"), value: row.email ? <EmailText value={row.email} /> : <EmptyValue />, wide: true },
+  ]} />;
 }
 export function createOrganizationHistoryColumns(t: TFunction): Column<PlatformTenantHistoryResponse>[] {
   return [

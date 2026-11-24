@@ -9,7 +9,7 @@ import { changeCulture, configureI18n } from "@/shared/i18n";
 import { platformOperator } from "@/test/mocks/currentUsers";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
-import { asPhone } from "@/test/utils/phone";
+import { asPhone, cardData } from "@/test/utils/phone";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
 import { tenantQueryKey, tenantsQueryRoot } from "../api/tenants";
 
@@ -130,9 +130,11 @@ describe("Ficha de Organización", () => {
   it("403 principal y falta de read bloquean la ficha", async () => {
     server.use(http.get("/api/platform/tenants/delta", () => HttpResponse.json({ code: "Auth.Forbidden" }, { status: 403 }))); render(); expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
   });
-  it("a 390 el ⋮ abre la hoja con menuitem, fecha corta y actor/motivo; axe", async () => {
+  // 263: cada evento del historial es una tarjeta con la fecha y hora, quién y el motivo, cada dato con su nombre.
+  it("a 390 el ⋮ abre la hoja con menuitem y el historial va en tarjetas con sus datos nombrados; axe", async () => {
     asPhone(); const user = userEvent.setup(); const { container } = render(); expect(await screen.findByRole("heading", { name: "Grupo Delta" })).toBeVisible();
-    expect(screen.getByText(/3 empresas · 11 miembros/)).toBeVisible(); expect(await screen.findByText("20/09/2026, 11:02")).toBeVisible(); expect(screen.getByText("Martín Sosa · Se resolvió el reclamo")).toBeVisible();
+    expect(screen.getByText(/3 empresas · 11 miembros/)).toBeVisible(); const card = (await screen.findByText(history.action)).closest("li")!;
+    expect(cardData(card)).toEqual([["Fecha y hora", "20/09/2026, 11:02"], ["Quién", "Martín Sosa"], ["Motivo", "Se resolvió el reclamo"]]); expect(card.textContent).not.toContain("·");
     expect(screen.getByText(history.action)).toBeVisible(); expect(screen.queryByText(history.summary)).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Suspender" })).not.toBeInTheDocument(); const trigger = screen.getByRole("button", { name: "Acciones de Grupo Delta" }); await user.click(trigger); expect(within(await screen.findByRole("dialog", { name: "Grupo Delta" })).getByRole("menuitem", { name: "Suspender" })).toBeVisible(); await user.keyboard("{Escape}"); expect(await axe(container)).toHaveNoViolations();
   });
@@ -141,10 +143,11 @@ describe("Ficha de Organización", () => {
     await act(async () => { queryClient.setQueryData(currentUserQueryKey, { ...platformOperator, culture: "en-US" }); });
     expect(await screen.findByRole("tab", { name: "History" })).toBeVisible(); expect(screen.getByRole("button", { name: "Suspend" })).toBeVisible(); expect(screen.getByText(/01\/12\/2026/)).toBeVisible();
   });
-  it("Dueños a 390 es una fila sin avatar con último ingreso y estado; axe", async () => {
+  // 263: cada Dueño es una tarjeta con el estado, el último ingreso y el correo, cada dato con su nombre.
+  it("Dueños a 390 es una tarjeta sin avatar con estado, último ingreso y correo; axe", async () => {
     asPhone(); const user = userEvent.setup(); const { container } = render(); await user.click(await screen.findByRole("tab", { name: "Dueños 1" }));
     const panel = screen.getByRole("tabpanel"); expect(within(panel).queryByRole("table")).not.toBeInTheDocument();
-    expect(within(panel).getByRole("listitem")).toHaveTextContent("Lucía FernándezÚltimo ingreso: nuncalucia@example.comActivo");
+    expect(cardData(within(panel).getByRole("listitem"))).toEqual([["Estado", "Activo"], ["Último ingreso", "Nunca"], ["Correo", "lucia@example.com"]]);
     expect(panel.querySelector("[data-slot=avatar]")).toBeNull(); expect(await axe(container)).toHaveNoViolations();
   });
   it("la versión propia habilita Reactivar antes del GET y otra lectura no la pisa ni inventa fecha", async () => {

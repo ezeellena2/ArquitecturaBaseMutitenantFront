@@ -77,7 +77,6 @@
     "readOnly": "Read-only.",
     "owners": "Owners",
     "loading": "Organization",
-    "title": "Organization",
-    "phoneNever": "Last sign-in: never"
+    "title": "Organization"
   }
 }

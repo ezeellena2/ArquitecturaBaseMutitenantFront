@@ -7,7 +7,7 @@ import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import type { ModuleContentProps } from "@/shared/modules/types";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
-import { ListRow } from "@/shared/ui/app/ListRow";
+import { ListCard } from "@/shared/ui/app/ListRow";
 import { Button } from "@/shared/ui/button";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
 import { FilterBar } from "@/shared/ui/FilterBar";
@@ -102,9 +102,13 @@ export function BroadcastPage({ me }: ModuleContentProps) {
           clearLabel={t("common:actions.clearFilters")} onClear={filters.clear} />
         <Surface className="overflow-hidden" phoneFlush>
           <DataTable columns={columns} rows={detail.data?.items ?? []} rowKey={(recipient) => recipient.contactId}
-            mobileRow={(recipient) => <ListRow key={recipient.contactId} title={name(recipient)} meta={<DateText value={recipient.changedAtUtc} kind="dateTime" />}
-              lines={[recipient.contactName ? <PhoneText key="number" value={recipient.displayNumber} /> : null, status(recipient)]}
-              trailing={canSeeContacts ? recipientActions(recipient) : undefined} />}
+            // M-WA-Difusion-Resultados-Base2 (263): cada destinatario es una tarjeta con el número, el estado y el último cambio,
+            // cada dato con el nombre de su columna. Sin nombre, el número es el título y no se repite.
+            mobileRow={(recipient) => <ListCard key={recipient.contactId} title={name(recipient)} fields={[
+              ...(recipient.contactName ? [{ label: t("whatsapp:broadcasts.recipients.columns.number"), value: <PhoneText value={recipient.displayNumber} /> }] : []),
+              { label: t("whatsapp:broadcasts.recipients.columns.status"), value: status(recipient) },
+              { label: t("whatsapp:broadcasts.recipients.columns.changed"), value: <DateText value={recipient.changedAtUtc} kind="dateTime" />, wide: true },
+            ]} trailing={canSeeContacts ? recipientActions(recipient) : undefined} />}
             isFetching={detail.isFetching} error={detail.error ? apiErrorMessage(detail.error, t) : undefined} onRetry={() => { void detail.refetch(); }}
             emptyTitle={filtered ? t("whatsapp:broadcasts.recipients.empty.filtered") : t("whatsapp:broadcasts.recipients.empty.all")}
             emptyAction={filtered ? <Button type="button" variant="outline" onClick={filters.clear}>{t("common:actions.clearFilters")}</Button> : undefined} />

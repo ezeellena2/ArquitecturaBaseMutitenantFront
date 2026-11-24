@@ -4,7 +4,7 @@ import { http, HttpResponse } from "msw";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { server } from "@/test/mocks/server";
-import { asPhone } from "@/test/utils/phone";
+import { asPhone, cardData } from "@/test/utils/phone";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
 import { platformOperator } from "@/test/mocks/currentUsers";
 import { tenantPublicPageQueryKey, tenantQueryKey } from "../api/tenants";
@@ -77,8 +77,10 @@ describe("Página pública de Organización", () => {
   it("Closed nunca tiene ⋮", async () => {
     server.use(http.get("/api/platform/tenants/delta", () => HttpResponse.json({ ...testOrganization, status: "Closed" }))); const user = userEvent.setup(); renderTabs(); await openTab(user, "Página pública"); await screen.findByText("Publicada"); expect(screen.queryByRole("button", { name: /Acciones de/ })).not.toBeInTheDocument();
   });
-  it("390 muestra página, estado y motivo en ListRow sin tabla; axe", async () => {
-    asPhone(); server.use(http.get("/api/platform/tenants/delta/public-site", () => HttpResponse.json({ ...testPublicPage, isPublished: false, publishBlockedAtUtc: "2026-09-25T11:40:00Z", publishBlockedReason: "Contenido prohibido" }))); const user = userEvent.setup(); const { container } = renderTabs(); await openTab(user, "Página pública"); expect(await screen.findByText("Contenido prohibido")).toBeVisible(); expect(screen.queryByRole("table")).not.toBeInTheDocument(); expect(await axe(container)).toHaveNoViolations(); await menuAction(user, "delta.localtest.me:5174", "Permitir publicar"); expect(screen.getByRole("dialog")).toHaveTextContent("¿Permitir publicar delta.localtest.me:5174?");
+  // 263: la página es una tarjeta con el estado, la fecha de publicación y el motivo, cada dato con su nombre.
+  it("390 muestra la página en una tarjeta con estado, publicada y motivo, sin tabla; axe", async () => {
+    asPhone(); server.use(http.get("/api/platform/tenants/delta/public-site", () => HttpResponse.json({ ...testPublicPage, isPublished: false, publishBlockedAtUtc: "2026-09-25T11:40:00Z", publishBlockedReason: "Contenido prohibido" }))); const user = userEvent.setup(); const { container } = renderTabs(); await openTab(user, "Página pública"); expect(await screen.findByText("Contenido prohibido")).toBeVisible(); expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    expect(cardData(screen.getByText("Contenido prohibido").closest("li")!)).toEqual([["Estado", "Despublicada por la plataforma"], ["Publicada el", "—"], ["Motivo", "Contenido prohibido"]]); expect(await axe(container)).toHaveNoViolations(); await menuAction(user, "delta.localtest.me:5174", "Permitir publicar"); expect(screen.getByRole("dialog")).toHaveTextContent("¿Permitir publicar delta.localtest.me:5174?");
   });
   it("en-US fecha y textos", async () => {
     const user = userEvent.setup(); const page = renderTabs(); await screen.findByRole("heading", { name: "Grupo Delta" }); await act(async () => { page.queryClient.setQueryData(currentUserQueryKey, { ...platformOperator, culture: "en-US" }); }); await openTab(user, "Public page"); expect(await screen.findByText("Published")).toBeVisible(); expect(screen.getByText("02/15/2026")).toBeVisible(); expect(screen.getByRole("columnheader", { name: "Published on" })).toBeVisible();

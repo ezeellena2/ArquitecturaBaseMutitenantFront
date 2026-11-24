@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
 import type { PlatformAccountMembershipResponse } from "@/shared/api/types";
-import { ListRow } from "@/shared/ui/app/ListRow";
+import { ListCard } from "@/shared/ui/app/ListRow";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
 import { DateText } from "@/shared/ui/format/DateText";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
@@ -21,5 +21,11 @@ export function AccountOrganizationsTab({ organizations }: { organizations: read
     { id: "status", header: t("detail.membershipState"), type: "custom", cell: state },
   ];
   return <Surface phoneFlush><DataTable columns={columns} rows={organizations} rowKey={(row) => row.tenantId} emptyTitle={t("detail.organizationsEmpty")}
-    mobileRow={(row) => <ListRow key={row.tenantId} to={path(row.tenantId)} title={row.name} meta={<DateText value={row.joinedAtUtc} kind="date" />} lines={[role(row), state(row)]} />} /></Surface>;
+    // 263: en el teléfono cada organización es una tarjeta con el rol, el estado y desde cuándo, cada dato con el nombre de su
+    // columna.
+    mobileRow={(row) => <ListCard key={row.tenantId} to={path(row.tenantId)} title={row.name} fields={[
+      { label: t("detail.role"), value: role(row) },
+      { label: t("detail.membershipState"), value: state(row) },
+      { label: t("detail.since"), value: <DateText value={row.joinedAtUtc} kind="date" /> },
+    ]} />} /></Surface>;
 }

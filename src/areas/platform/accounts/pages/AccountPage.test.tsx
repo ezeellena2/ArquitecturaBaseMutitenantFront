@@ -10,7 +10,7 @@ import { platformOperator } from "@/test/mocks/currentUsers";
 import { meHandlerFor, referenceDataFixture } from "@/test/mocks/handlers";
 import { platformAccountDetailFixture } from "@/test/mocks/platformAccountDetail";
 import { server } from "@/test/mocks/server";
-import { asPhone } from "@/test/utils/phone";
+import { asPhone, cardData } from "@/test/utils/phone";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
 import { accountQueryKey } from "../api/accounts";
 
@@ -164,12 +164,26 @@ describe("Ficha de Cuenta de Plataforma", () => {
     await waitFor(() => expect(screen.queryByRole("tab", { name: "Historial de seguridad" })).not.toBeInTheDocument());
     expect(screen.queryByRole("button", { name: "Suspender" })).not.toBeInTheDocument(); expect(history).toBe(0);
   });
-  it("390: barra con acciones, métodos con tipo/verificación/estado, axe", async () => {
+  // 263: cada método es una tarjeta con su tipo, su estado, cuándo se verificó, si es el principal y quién lo administra, cada
+  // dato con su nombre y sin unirlos con «·».
+  it("390: barra con acciones y métodos en tarjetas con sus datos nombrados, axe", async () => {
     asPhone(); const { container } = open(); await screen.findByRole("heading", { name: "Lucía Fernández", level: 1 });
     expect(screen.getByRole("button", { name: "Acciones de Lucía Fernández" })).toBeVisible();
-    expect(screen.getByText(/Administrado por Grupo Delta · verificado el/)).toBeVisible();
-    expect(screen.getAllByText("Sirve para ingresar")).toHaveLength(2); expect(screen.getByText("Ya no sirve para ingresar")).toBeVisible(); expect(screen.getByText("WhatsApp")).toBeVisible();
+    const card = (value: string) => cardData(screen.getByText(value).closest("li")!);
+    expect(card("lu•••@delta.ejemplo.com")).toEqual([["Tipo", "Correo"], ["Estado", "Sirve para ingresar"], ["Verificado el", "12/01/2026"], ["Principal", "No"], ["Administrado por", "Grupo Delta"]]);
+    expect(card("•••• 4521")).toEqual([["Tipo", "WhatsApp"], ["Estado", "Ya no sirve para ingresar"], ["Verificado el", "03/02/2026"], ["Principal", "No"]]);
+    expect(card("lu•••@gmail.com")).toEqual([["Tipo", "Correo"], ["Estado", "Sirve para ingresar"], ["Verificado el", "10/05/2026"], ["Principal", "Sí"]]);
+    expect(within(screen.getByRole("tabpanel")).queryByText(/·/)).not.toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
+  });
+  // 263: en el teléfono, cada organización y cada evento del historial es una tarjeta con sus datos nombrados.
+  it("390: organizaciones e historial en tarjetas con sus datos nombrados", async () => {
+    asPhone(); server.use(http.get("/api/platform/audit", () => HttpResponse.json({ items: [{ id: "1", occurredAtUtc: "2026-09-27T12:02:00Z", type: "accounts", action: "Suspend", summary: "Suspendió la cuenta", target: "Lucía", actor: "Ana Gómez", actorRole: "Operador", reason: "Denuncia" }], nextCursor: null, hasMore: false })));
+    const user = userEvent.setup(); open(); await user.click(await screen.findByRole("tab", { name: "Organizaciones 2" }));
+    expect(cardData(screen.getByText("Grupo Delta").closest("li")!)).toEqual([["Rol", "Dueño"], ["Estado de la membresía", "Activa"], ["Desde", "12/01/2026"]]);
+    expect(cardData(screen.getByText("Beta S.R.L.").closest("li")!)).toEqual([["Rol", "—"], ["Estado de la membresía", "Activa"], ["Desde", "03/02/2026"]]);
+    await user.click(screen.getByRole("tab", { name: "Historial de seguridad" }));
+    expect(cardData((await screen.findByText("Suspendió la cuenta")).closest("li")!)).toEqual([["Fecha y hora", "27/09/2026, 09:02"], ["Quién", "Ana Gómez"], ["Motivo", "Denuncia"]]);
   });
   it.each([404, 500])("carga %s se muestra en su pantalla y permite volver", async (status) => {
     server.use(http.get("/api/platform/accounts/:id", () => HttpResponse.json({ code: status === 404 ? "Users.User.NotFound" : "Unexpected", traceId: "test" }, { status })));

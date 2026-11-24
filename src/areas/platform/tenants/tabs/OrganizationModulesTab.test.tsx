@@ -4,7 +4,7 @@ import { http, HttpResponse } from "msw";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { server } from "@/test/mocks/server";
-import { asPhone } from "@/test/utils/phone";
+import { asPhone, cardData } from "@/test/utils/phone";
 import { platformOperator } from "@/test/mocks/currentUsers";
 import { domainPage } from "@/test/mocks/domainPage";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
@@ -72,8 +72,10 @@ describe("Módulos de Organización", () => {
   it("organización Closed no tiene ⋮", async () => {
     server.use(http.get("/api/platform/tenants/delta", () => HttpResponse.json({ ...testOrganization, status: "Closed" }))); const user = userEvent.setup(); renderTabs(); await openTab(user, "Módulos"); await screen.findByText("WhatsApp"); expect(screen.queryByRole("button", { name: /Acciones de/ })).not.toBeInTheDocument();
   });
-  it("390 muestra módulo, estado y origen en ListRow sin tabla; axe", async () => {
-    asPhone(); const user = userEvent.setup(); const { container } = renderTabs(); await openTab(user, "Módulos"); expect(await screen.findByText("WhatsApp")).toBeVisible(); expect(screen.getByText("Plan")).toBeVisible(); expect(screen.getByText("Prueba")).toBeVisible(); expect(screen.queryByRole("table")).not.toBeInTheDocument();
+  // 263: cada módulo es una tarjeta con el estado y el origen, cada dato con su nombre, sin unirlos con «·».
+  it("390 muestra cada módulo en una tarjeta con estado y origen, sin tabla; axe", async () => {
+    asPhone(); const user = userEvent.setup(); const { container } = renderTabs(); await openTab(user, "Módulos"); const card = (await screen.findByText("WhatsApp")).closest("li")!; expect(screen.queryByRole("table")).not.toBeInTheDocument();
+    expect(cardData(card)).toEqual([["Estado", "Prendido"], ["Origen", "Plan"]]); expect(cardData(screen.getByText("Módulo B").closest("li")!)).toEqual([["Estado", "Prueba hasta 27/10/2026"], ["Origen", "Prueba"]]);
     await menuAction(user, "Módulo B", "Extender prueba"); expect(screen.getByRole("textbox", { name: "Hasta" })).toBeRequired(); expect(await axe(container)).toHaveNoViolations();
   });
   it("en-US usa fecha civil del formato y textos traducidos", async () => {

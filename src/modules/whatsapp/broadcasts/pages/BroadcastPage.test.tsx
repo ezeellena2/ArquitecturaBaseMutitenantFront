@@ -4,7 +4,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vite
 import { axe } from "vitest-axe";
 import type { CreateWhatsAppBroadcastRequest } from "../../api/types";
 import { server } from "@/test/mocks/server";
-import { asPhone } from "@/test/utils/phone";
+import { asPhone, cardData } from "@/test/utils/phone";
 import { mountWhatsApp, whatsappMember, whatsappOwner } from "../../test/support";
 import { frameHandlers, paged, recipients, scheduled, sent } from "../test/fixtures";
 
@@ -13,6 +13,18 @@ beforeEach(() => frameHandlers());
 afterEach(() => vi.unstubAllGlobals());
 
 describe("Resultados de una difusión", () => {
+  // M-WA-Difusion-Resultados-Base2 (263): en el teléfono cada destinatario es una tarjeta con el número, el estado y el último
+  // cambio, cada dato con su nombre; sin nombre, el número es el título y no se repite.
+  it("390: cada destinatario es una tarjeta con sus datos nombrados", async () => {
+    asPhone();
+    server.use(http.get("/api/organization/whatsapp/broadcasts/broadcast-sent", () => HttpResponse.json({ broadcast: sent, recipients: paged(recipients) })));
+    mountWhatsApp(whatsappOwner, "/org/whatsapp/difusiones/broadcast-sent");
+    const laura = (await screen.findByText("Laura Méndez")).closest("li")!;
+    expect(cardData(laura)).toEqual([["Número", "011 15-5555-3378"], ["Estado", "Respondió"], ["Último cambio", "25/09/2026, 10:12"]]);
+    const unknown = screen.getByText("011 15-5555-6650").closest("li")!;
+    expect(cardData(unknown)).toEqual([["Estado", "No llegó"], ["Último cambio", "25/09/2026, 09:30"]]);
+    expect(within(unknown).getByRole("button", { name: "Por qué no llegó" })).toBeVisible();
+  });
   it("muestra la banda y los contadores; «No llegó» dice por qué", async () => {
     const requests: URL[] = [];
     server.use(http.get("/api/organization/whatsapp/broadcasts/broadcast-sent", ({ request }) => {

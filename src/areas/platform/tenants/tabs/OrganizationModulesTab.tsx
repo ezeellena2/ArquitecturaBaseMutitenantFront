@@ -20,7 +20,7 @@ import { BanIcon, CalendarIcon, PowerIcon } from "@/shared/ui/icons";
 import { RowActions } from "@/shared/ui/RowActions";
 import { StatusDot } from "@/shared/ui/StatusDot";
 import { Surface } from "@/shared/ui/Surface";
-import { ListRow } from "@/shared/ui/app/ListRow";
+import { ListCard } from "@/shared/ui/app/ListRow";
 import { tenantFeaturesQueryKey, tenantQueryKey, tenantsQueryRoot, updateTenantFeature } from "../api/tenants";
 import { tenantReasonFormError } from "../errors";
 
@@ -85,7 +85,13 @@ export function OrganizationModulesTab({ organization, query, writes, onWrite, o
   ];
   return <>
     <Surface phoneFlush><DataTable columns={columns} rows={rows} rowKey={(row) => row.key} isLoading={query.isPending} isFetching={query.isFetching}
-      mobileRow={(row) => <ListRow key={row.key} title={moduleName(row.key)} meta={status(row)} lines={[<span key="source"><EnumText enum="TenantFeatureSource" value={row.source} />{contributions.get(row.key)?.description ? <>{" · "}<span>{contributions.get(row.key)?.description}</span></> : null}</span>]} trailing={rowActions(row)} />}
+      // 263: en el teléfono cada módulo es una tarjeta con el estado, el origen y, si el módulo lo aporta, su detalle, cada dato
+      // con el nombre de su columna.
+      mobileRow={(row) => <ListCard key={row.key} title={moduleName(row.key)} fields={[
+        { label: t("platformTenants:columns.status"), value: status(row) },
+        { label: t("platformTenants:modules.source"), value: <EnumText enum="TenantFeatureSource" value={row.source} /> },
+        ...(contributions.get(row.key)?.description ? [{ label: t("platformTenants:modules.detail"), value: contributions.get(row.key)?.description, wide: true }] : []),
+      ]} trailing={rowActions(row)} />}
       error={query.error ? apiErrorMessage(query.error, t) : undefined} onRetry={() => { void query.refetch(); }} /></Surface>
     {moduleUi}
     {confirmation ? <ModuleReasonDialog organization={organization} moduleLabel={moduleName(confirmation.feature.key)} confirmation={confirmation} onClose={(conflicted) => {

@@ -13,7 +13,7 @@ import { DataTable, type Column } from "@/shared/ui/DataTable";
 import { BanIcon, CheckIcon } from "@/shared/ui/icons";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
-import { ListRow } from "@/shared/ui/app/ListRow";
+import { ListCard } from "@/shared/ui/app/ListRow";
 import { DateText } from "@/shared/ui/format/DateText";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
@@ -54,8 +54,13 @@ export function OrganizationPublicPageTab({ organization, query, write, onWrite,
   ];
   return <>
     <Surface phoneFlush><DataTable columns={columns} rows={rows} rowKey={(page) => page.slug ?? organization.id} isLoading={query.isPending} isFetching={query.isFetching}
-      mobileRow={(page) => <ListRow key={page.slug ?? organization.id} title={address(page) || <EmptyValue />} meta={<StatusBadge tones={tones} value={state(page)} />}
-        lines={[<DateText key="published" value={state(page) === "Published" ? page.publishedAtUtc : null} />, reason(page) || <EmptyValue key="reason" />]} trailing={rowActions(page)} />}
+      // 263: en el teléfono la página es una tarjeta con el estado, la fecha de publicación y el motivo, cada dato con el nombre
+      // de su columna.
+      mobileRow={(page) => <ListCard key={page.slug ?? organization.id} title={address(page) || <EmptyValue />} fields={[
+        { label: t("platformTenants:columns.status"), value: <StatusBadge tones={tones} value={state(page)} /> },
+        { label: t("platformTenants:publicPage.publishedOn"), value: <DateText value={state(page) === "Published" ? page.publishedAtUtc : null} /> },
+        { label: t("platformTenants:detail.historyColumns.reason"), value: reason(page) || <EmptyValue />, wide: true },
+      ]} trailing={rowActions(page)} />}
       error={query.error ? apiErrorMessage(query.error, t) : undefined} onRetry={() => { void query.refetch(); }} /></Surface>
     {confirmation ? <PublicPageReasonDialog organization={organization} confirmation={confirmation} onClose={(conflicted) => {
       if (conflicted) onConflict(); setConfirmation((current) => current === confirmation ? null : current);
