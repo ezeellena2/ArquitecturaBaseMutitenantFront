@@ -26,6 +26,15 @@ describe("validación fiscal por catálogo y algoritmo", () => {
     expect(isValidTaxId({ ...cuit, isEnabled: false }, "33333333339")).toBe(false);
   });
 
+  // B11: once ceros nunca son una CUIT ni una CUIL. El verificador daría 0, pero «00» no es un prefijo admitido, y el
+  // back la rechaza igual (`ArgentineCuitValidator`).
+  it("rechaza los once ceros como CUIT y como CUIL", () => {
+    for (const type of [cuit, { ...cuit, code: "AR-CUIL", label: "CUIL", name: "CUIL" }]) {
+      expect(isValidTaxId(type, "00000000000")).toBe(false);
+      expect(taxIdValidationMessage(i18n.t, type, "00000000000")).toBe(`Ese ${type.label} no es válido: revisá los números.`);
+    }
+  });
+
   it("deriva el límite de la máscara y respeta las dos longitudes del algoritmo DNI", () => {
     expect(taxIdMaxLength(dni)).toBe(8);
     expect(taxIdValidationMessage(i18n.t, dni, "123456")).toBe("Revisá el DNI: son entre 7 y 8 números.");

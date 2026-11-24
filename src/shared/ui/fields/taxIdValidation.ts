@@ -2,7 +2,8 @@ import type { TFunction } from "i18next";
 import { stdnum, type Validator } from "stdnum";
 import type { TaxIdTypeReference } from "@/shared/referenceData/referenceData";
 
-// Algoritmos conocidos; países, tipos, rótulos y máscaras pertenecen al catálogo.
+// Algoritmos conocidos; países, tipos, rótulos y máscaras pertenecen al catálogo. El de la CUIT rechaza los once ceros
+// (B11): el verificador daría 0, pero «00» no es un prefijo admitido. Lo cuida taxIdValidation.test.ts.
 const validators: Record<string, Validator> = {
   "ar-cuit-mod11": stdnum.AR.cuit,
   "ar-dni-length": stdnum.AR.dni,
