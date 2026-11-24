@@ -46,8 +46,8 @@ function permissionsApi(after: (call: number) => Response = () => HttpResponse.j
 async function savePermissions(user: ReturnType<typeof userEvent.setup>) {
   await user.click(await screen.findByRole("button", { name: "Cambiar permisos" }));
   const dialog = await screen.findByRole("dialog", { name: "Cambiar permisos de Laura Díaz" });
-  const permissions = within(dialog).getByRole("button", { name: "Permisos de plataforma" }); permissions.focus(); await user.keyboard("{ArrowDown}");
-  await user.click(await screen.findByRole("menuitemcheckbox", { name: "Administrar cuentas" })); await user.keyboard("{Escape}");
+  await user.click(await within(dialog).findByRole("button", { name: "Abrir o cerrar Cuentas" }));
+  await user.click(within(dialog).getByRole("checkbox", { name: "Administrar cuentas" }));
   await user.type(within(dialog).getByRole("textbox", { name: "Motivo" }), "Va a atender las bajas de cuentas.");
   await user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
   return dialog;
@@ -75,7 +75,7 @@ describe("Confirmá que sos vos", () => {
     expect(proofs).toEqual([{ method: "authenticator", code: "123456" }]);
     expect(writes).toHaveLength(2);
     expect(writes[1]).toEqual(writes[0]);
-    expect(writes[0].body).toEqual({ version: 1, reason: "Va a atender las bajas de cuentas.", permissions: ["platform.tenants.read", "platform.recoveries.manage", "platform.accounts.manage"] });
+    expect(writes[0].body).toEqual({ version: 1, reason: "Va a atender las bajas de cuentas.", permissions: ["platform.accounts.manage", "platform.accounts.read", "platform.recoveries.manage", "platform.tenants.read"] });
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   });
 
@@ -89,7 +89,7 @@ describe("Confirmá que sos vos", () => {
     await waitFor(() => expect(screen.queryByRole("dialog", { name: "Confirmá que sos vos" })).not.toBeInTheDocument());
     expect(form).toBeVisible();
     expect(within(form).getByRole("textbox", { name: "Motivo" })).toHaveValue("Va a atender las bajas de cuentas.");
-    expect(within(form).getByRole("button", { name: "Permisos de plataforma" })).toHaveTextContent("Administrar cuentas");
+    expect(within(form).getByRole("checkbox", { name: "Administrar cuentas" })).toBeChecked();
     expect(within(form).queryByRole("alert")).not.toBeInTheDocument();
     expect(writes).toHaveLength(1); expect(proofs).toHaveLength(0);
 

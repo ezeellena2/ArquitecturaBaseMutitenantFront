@@ -474,7 +474,8 @@ describe("Cuentas de Plataforma", () => {
     const permissions = screen.getAllByRole("checkbox").filter((box) => !box.getAttribute("aria-label")?.startsWith("Todos los permisos de"));
     expect(permissions).toHaveLength(14); for (const permission of permissions) expect(permission).not.toHaveAccessibleDescription("");
     expect(await axe(screen.getByRole("dialog"))).toHaveNoViolations();
-  });
+  // Límite de 10 s: abre las nueve áreas y corre axe dos veces; solo tarda unos 1,5 s.
+  }, 10_000);
   it("dejar de estar invitada retira para siempre Retry viejo aunque la fila vuelva a Invited", async () => {
     const user = userEvent.setup(); let state: Account["state"] = "Invited"; let calls = 0;
     server.use(http.get("/api/platform/accounts/paged", () => HttpResponse.json(list([{ ...invitation, state }]))), http.post("/api/platform/operators/invite/invitation/resend", () => { calls++; return calls === 1 ? HttpResponse.error() : HttpResponse.json({ id: "invite", expiresAtUtc: "2026-10-08T12:00:00Z" }); }));

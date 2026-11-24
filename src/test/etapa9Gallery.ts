@@ -4,6 +4,7 @@ import type { PlatformAuditEventResponse, RoleResponse } from "@/shared/api/type
 import { api, click, fill, galleryApp, galleryCase, otp, press, scroll, type GalleryAction, type GalleryApiResponse, type GalleryCase, type GalleryPending } from "./gallery";
 import { currentUsers } from "./mocks/currentUsers";
 import { platformAccountDetailFixture } from "./mocks/platformAccountDetail";
+import { platformPermissionsFixture } from "./mocks/platformPermissions";
 import { platformAuditCaptureResponses } from "./mocks/platformAudit";
 import { platformLegalCaptureResponses } from "./mocks/platformLegal";
 import { platformRecoveriesCaptureResponses } from "./mocks/platformRecoveries";
@@ -56,7 +57,7 @@ function ingreso(board: "Ingreso" | "M-Ingreso"): GalleryCase[] {
 function cuentaPlat(board: "Cuenta-Plat" | "M-Cuenta-Plat"): GalleryCase[] {
   const laura = platformAccountDetailFixture({ kind: "Operador" });
   const route = `/plataforma/cuentas/${laura.id}`;
-  const responses = [api("GET", `/api/platform/accounts/${laura.id}`, laura), operator];
+  const responses = [api("GET", `/api/platform/accounts/${laura.id}`, laura), api("GET", "/api/platform/permissions", platformPermissionsFixture()), operator];
   const props = (state: string) => board === "Cuenta-Plat" ? { stateKey: "cuenta", props: { estado: "Activa", cuenta: state } } : {};
   // En la compu el ⋮ es un desplegable; en el teléfono abre la hoja de abajo con un toque (M-Cuenta-Plat).
   const open = board === "Cuenta-Plat" ? press("Acciones de Laura Díaz", "button", "ArrowDown") : click("Acciones de Laura Díaz");
@@ -65,8 +66,9 @@ function cuentaPlat(board: "Cuenta-Plat" | "M-Cuenta-Plat"): GalleryCase[] {
   // «Cambiar permisos» con «Administrar cuentas» de más y su motivo; guardar pide «Confirmá que sos vos» (tablero, v125).
   const form = { role: "dialog", name: "Cambiar permisos de Laura Díaz" } as const;
   const permissions: GalleryAction[] = [...board === "Cuenta-Plat" ? [click("Cambiar permisos")] : [open, click("Cambiar permisos", "menuitem")],
-    press("Permisos de plataforma", "button", "ArrowDown"), click("Administrar cuentas", "menuitemcheckbox"), click("Ver la auditoría", "menuitemcheckbox"),
-    press("Ver la auditoría", "menuitemcheckbox", "Escape"),
+    // Cuenta-Plat-Base2 (260): los permisos en áreas plegables.
+    click("Abrir o cerrar Cuentas", "button", form), click("Administrar cuentas", "checkbox", form),
+    click("Abrir o cerrar Auditoría", "button", form), click("Ver la auditoría", "checkbox", form),
     fill("Motivo", "Va a atender las bajas de cuentas.", form), click("Guardar cambios", "button", form)];
   const confirm = (state: string, readyText: string, actions: GalleryAction[] = [], proof: GalleryApiResponse[] = []) => galleryCase("cuenta-plat", board, state,
     galleryApp("visual-operator", route, [...responses, api("PUT", `/api/platform/accounts/${laura.id}/operator`, reauthenticationRequired, 403), ...proof],

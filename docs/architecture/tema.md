@@ -39,6 +39,7 @@ Tonos cálidos para el contenido, verde pasto como marca y un **marco arena** en
 | `--peligro-tx` / `--peligro-borde` | `oklch(0.45 0.17 25)` / `oklch(0.57 0.2 25 / 0.4)` | texto rojo de los avisos sobre fondo tenue (la franja de error, el cartel de problema, la banda «Sin conexión» del teléfono y el motivo del aviso importante) y borde del botón de peligro |
 | `--punto-ok` / `--punto-alerta` / `--punto-apagado` / `--punto-pendiente` | `oklch(0.6 0.13 155)` / `oklch(0.72 0.15 70)` / `oklch(0.75 0.01 78)` / `oklch(0.62 0.12 240)` | punto de estado: activo, atención, apagado y pendiente |
 | `--casilla-fija` | `oklch(0.78 0.006 78)` | casilla marcada y fija de un rol de sistema en el teléfono (M-Rol, v108) |
+| `--casilla-incluida` | `oklch(0.78 0.06 140)` | casilla marcada y apagada: lo incluido o lo que quien edita no puede dar (Rol-Base2, 260 y 269) |
 | `--franja` / `--franja-ok` / `--franja-mal` / `--franja-accion` | `oklch(0.27 0.012 60)` / `oklch(0.78 0.14 155)` / `oklch(0.75 0.15 25)` / `oklch(0.84 0.12 130)` | franja oscura de los avisos pasajeros del teléfono: fondo, filo e ícono de lo que salió bien, filo e ícono de lo que falló y acción («Copiar código»); la atención va en `--punto-alerta` y la información en `--punto-apagado`, el gris de `.f-snack .neu` (210) |
 | `--aviso-ok` | `oklch(0.55 0.13 155)` | filo e ícono de lo que salió bien en los avisos de la compu (210) |
 | `--foco` | `var(--marca)` | anillo de foco |
