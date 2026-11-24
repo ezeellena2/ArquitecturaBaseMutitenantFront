@@ -3,7 +3,7 @@ import { http, HttpResponse } from "msw";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { server } from "@/test/mocks/server";
-import { asPhone } from "@/test/utils/phone";
+import { asPhone, cardData } from "@/test/utils/phone";
 import { mountWhatsApp, whatsappMember, whatsappOwner } from "../../test/support";
 import { frameHandlers, paged, scheduled, sent } from "../test/fixtures";
 
@@ -25,7 +25,12 @@ describe("Difusiones", () => {
     expect(screen.getByRole("cell", { name: "Promo semanal" })).toBeVisible();
     expect(screen.getByRole("columnheader", { name: "Contactos" })).toBeVisible();
     expect(screen.getByText("Todos los que aceptan")).toBeVisible();
-    expect(screen.getByText("118 entregados · 86 leídos")).toBeVisible();
+    // WA-Difusiones-Base2 (263): entregados y leídos, cada uno en su columna de números; la programada, con una raya.
+    const sentRow = screen.getByRole("link", { name: "20 % en empanadas" }).closest("tr")!;
+    const headers = screen.getAllByRole("columnheader").map((header) => header.textContent);
+    expect(within(sentRow).getAllByRole("cell")[headers.indexOf("Entregados")]).toHaveTextContent("118");
+    expect(within(sentRow).getAllByRole("cell")[headers.indexOf("Leídos")]).toHaveTextContent("86");
+    expect(screen.queryByText(/entregados ·/)).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Nueva difusión" })).toHaveAttribute("href", "/org/whatsapp/difusiones/nueva");
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -83,7 +88,10 @@ describe("Difusiones", () => {
     const { container } = mountWhatsApp(whatsappOwner, "/org/whatsapp/difusiones");
     const row = await screen.findByRole("link", { name: /20 % en empanadas/ });
     expect(row).toHaveAttribute("href", "/org/whatsapp/difusiones/broadcast-sent");
-    expect(within(row).getByText("Promo semanal · Minorista · 124 contactos")).toBeVisible();
+    // M-Filas-Base2 (M-WA-Difusiones, 263): una tarjeta con su estado, la fecha, entregados y leídos, cada dato nombrado.
+    expect(cardData(row.closest("li")!).map(([label]) => label)).toEqual(["Estado", "Fecha", "Entregados", "Leídos"]);
+    expect(cardData(row.closest("li")!).slice(2)).toEqual([["Entregados", "118"], ["Leídos", "86"]]);
+    expect(row.closest("li")!.textContent).not.toContain("·");
     expect(screen.getByRole("link", { name: "Nueva difusión" })).toHaveAttribute("href", "/org/whatsapp/difusiones/nueva");
     await waitFor(() => expect(screen.queryByText(/programada/)).not.toBeInTheDocument());
     expect(await axe(container)).toHaveNoViolations();

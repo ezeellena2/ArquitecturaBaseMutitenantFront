@@ -46,7 +46,7 @@ export function BroadcastsPage(_props: ModuleContentProps) {
       hidden: broadcast.status !== "Scheduled", onSelect: (trigger) => actions.askCancel(broadcast, trigger) },
   ]} />;
   const columns: Column<WhatsAppBroadcastResponse>[] = [
-    ...createBroadcastColumns(t, format),
+    ...createBroadcastColumns(t),
     { id: "actions", header: t("whatsapp:broadcasts.columns.actions"), type: "actions", cell: rowActions },
   ];
   // «3 difusiones · 1 programada»: sin programadas, solo cuántas hay (tablero WA-Difusiones, «Cancelada»).
@@ -68,7 +68,7 @@ export function BroadcastsPage(_props: ModuleContentProps) {
           clearLabel={t("common:actions.clearFilters")} onClear={filters.clear} />
         <Surface className="overflow-hidden" phoneFlush>
           <DataTable columns={columns} rows={data?.items ?? []} rowKey={(broadcast) => broadcast.id}
-            mobileRow={(broadcast) => broadcastPhoneRow(broadcast, t, format, rowActions(broadcast))}
+            mobileRow={(broadcast) => broadcastPhoneRow(broadcast, t, rowActions(broadcast))}
             isLoading={broadcasts.isPending} isFetching={broadcasts.isFetching}
             error={broadcasts.error ? apiErrorMessage(broadcasts.error, t) : undefined} onRetry={() => { void broadcasts.refetch(); }}
             emptyTitle={filtered ? t("whatsapp:broadcasts.empty.filtered") : t("whatsapp:broadcasts.empty.all")}

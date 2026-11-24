@@ -1,19 +1,12 @@
 import type { ReactNode } from "react";
 import type { TFunction } from "i18next";
-import { ListRow } from "@/shared/ui/app/ListRow";
+import { ListCard } from "@/shared/ui/app/ListRow";
+import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import type { Column } from "@/shared/ui/DataTable";
 import { PhoneText } from "@/shared/ui/format/PhoneText";
 import type { WhatsAppNumberResponse } from "../api/types";
 import { NumberStatus } from "./components/NumberStatus";
 import { NumberUsage } from "./components/NumberUsage";
-
-/// Lo que aclara el número, en su segunda línea gris: el nombre verificado en Meta y, si comparte el número con la app
-/// WhatsApp Business (coexistencia), «también en la app».
-export function numberDetail(number: WhatsAppNumberResponse, t: TFunction): string | null {
-  if (number.verifiedName && number.coexistence) return t("whatsapp:numbers.detail.nameAndApp", { name: number.verifiedName });
-  if (number.coexistence) return t("whatsapp:numbers.detail.app");
-  return number.verifiedName ?? null;
-}
 
 /** «Atiende a»: la empresa o toda la organización. */
 export const numberCompany = (number: WhatsAppNumberResponse, t: TFunction): string => number.company?.name ?? t("whatsapp:numbers.wholeOrganization");
@@ -33,10 +26,13 @@ export function createNumberColumns(t: TFunction, onPaymentInfo: (number: WhatsA
   ];
 }
 
-/// M-WA-Admin: el número con lo de este mes a la derecha, lo que lo aclara y, abajo, a quién atiende y su estado.
+/// M-Filas-Base2 (M-WA-Admin, 263): una tarjeta con el estado, a quién atiende, el nombre verificado y lo de este mes, cada
+/// dato con su nombre.
 export function numberPhoneRow(number: WhatsAppNumberResponse, t: TFunction, onPaymentInfo: (number: WhatsAppNumberResponse) => void, trailing: ReactNode): ReactNode {
-  return <ListRow key={number.id} title={<PhoneText value={number.displayNumber} />}
-    meta={number.status === "Disconnected" ? undefined : <NumberUsage number={number} />}
-    lines={[numberDetail(number, t), <span key="state" className="inline-flex items-center gap-1">{numberCompany(number, t)}{" · "}<NumberStatus number={number} onPaymentInfo={onPaymentInfo} /></span>]}
-    trailing={trailing} />;
+  return <ListCard key={number.id} title={<PhoneText value={number.displayNumber} />} fields={[
+    { label: t("whatsapp:numbers.columns.status"), value: <NumberStatus number={number} onPaymentInfo={onPaymentInfo} /> },
+    { label: t("whatsapp:numbers.columns.company"), value: numberCompany(number, t) },
+    { label: t("whatsapp:numbers.columns.verifiedName"), value: number.verifiedName ?? <EmptyValue /> },
+    { label: t("whatsapp:numbers.columns.month"), value: number.status === "Disconnected" ? <EmptyValue /> : <NumberUsage number={number} /> },
+  ]} trailing={trailing} />;
 }

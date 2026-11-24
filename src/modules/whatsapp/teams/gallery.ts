@@ -46,7 +46,7 @@ const openNotice = press("Aviso por correo si nadie lo toma", "combobox");
 /** Galería de la E11 de esta área: un caso por tablero y estado que se fotografía, y lo pendiente con su motivo. */
 export const teamsGalleryCases: readonly GalleryCase[] = [
   galleryCase("equipos", "WA-Equipos", "Lista", teamsApp("business", { readyText: "Atención general" }), { props: {} }),
-  galleryCase("equipos", "M-WA-Equipos", "Lista", teamsApp("business", { readyText: "Bandeja Internos · 1 persona" }), { props: {} }),
+  galleryCase("equipos", "M-WA-Equipos", "Lista", teamsApp("business", { readyText: "Bandeja Internos" }), { props: {} }),
   ...(["WA-Equipos-Crear", "M-WA-Equipos-Crear"] as const).flatMap((board) => [
     galleryCase("equipos", board, "Crear equipo", teamsApp("business", { actions: createOrganization, readySelector: "[role='dialog']", readyText: "Carolina Vega, Paula Méndez" })),
     galleryCase("equipos", board, "Elegir el aviso", teamsApp("business", { actions: [...createOrganization, openNotice], readySelector: "[role='listbox']", readyText: "No avisar" })),

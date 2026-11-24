@@ -2,7 +2,6 @@
   "title": "Contacts",
   "back": "Back to Contacts",
   "linked": "Linked to their account",
-  "linkedShort": "Linked",
   "summaryTotal_one": "{{n}} contact",
   "summaryTotal_other": "{{n}} contacts",
   "summaryAccepting_one": "{{n}} accepts promotions",
@@ -55,8 +54,6 @@
       "messages": "Messages",
       "lastMessage": "Last message"
     },
-    "messages_one": "{{n}} message",
-    "messages_other": "{{n}} messages",
     "rowActions": "Actions for {{date}}",
     "empty": "There are no conversations yet"
   },

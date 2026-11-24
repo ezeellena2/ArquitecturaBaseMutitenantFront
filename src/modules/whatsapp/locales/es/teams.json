@@ -27,13 +27,8 @@
     "Customers": "Clientes",
     "Internal": "Internos"
   },
-  "members_one": "{{count}} persona",
-  "members_other": "{{count}} personas",
-  "operators_one": "{{count}} operador",
-  "operators_other": "{{count}} operadores",
   "notice": {
     "after": "A los {{minutes}} minutos",
-    "short": "Aviso a los {{minutes}} min",
     "none": "No avisar",
     "off": "Sin aviso"
   },

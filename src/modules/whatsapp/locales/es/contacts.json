@@ -2,7 +2,6 @@
   "title": "Contactos",
   "back": "Volver a Contactos",
   "linked": "Vinculado a su cuenta",
-  "linkedShort": "Vinculado",
   "summaryTotal_one": "{{n}} contacto",
   "summaryTotal_other": "{{n}} contactos",
   "summaryAccepting_one": "{{n}} acepta promociones",
@@ -55,8 +54,6 @@
       "messages": "Mensajes",
       "lastMessage": "Último mensaje"
     },
-    "messages_one": "{{n}} mensaje",
-    "messages_other": "{{n}} mensajes",
     "rowActions": "Acciones de {{date}}",
     "empty": "Todavía no hay conversaciones"
   },

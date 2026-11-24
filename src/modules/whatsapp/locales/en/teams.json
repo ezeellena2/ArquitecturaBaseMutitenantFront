@@ -27,13 +27,8 @@
     "Customers": "Customers",
     "Internal": "Internal"
   },
-  "members_one": "{{count}} person",
-  "members_other": "{{count}} people",
-  "operators_one": "{{count}} operator",
-  "operators_other": "{{count}} operators",
   "notice": {
     "after": "After {{minutes}} minutes",
-    "short": "Alert after {{minutes}} min",
     "none": "Don't alert",
     "off": "No alert"
   },

@@ -3,7 +3,7 @@ import { http, HttpResponse } from "msw";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { server } from "@/test/mocks/server";
-import { asPhone } from "@/test/utils/phone";
+import { asPhone, cardData } from "@/test/utils/phone";
 import type { WhatsAppTeamResponse } from "../../api/types";
 import { mountWhatsApp, whatsappMember, whatsappOperator, whatsappOwner } from "../../test/support";
 
@@ -106,13 +106,13 @@ describe("Equipos de la organización", () => {
     await waitFor(() => expect(puts).toEqual([{ name: "Ventas", memberIds: ["member-1"], notifyAfterMinutes: 30, version: 3 }]));
   });
 
-  it("en el teléfono cada equipo es una fila con el aviso a la derecha y crear es el «+»", async () => {
+  // M-Filas-Base2 (M-WA-Equipos, 263): una tarjeta con la bandeja, el aviso y quiénes lo forman, cada dato con su nombre.
+  it("en el teléfono cada equipo es una tarjeta con sus datos nombrados y crear es el «+»", async () => {
     asPhone();
     const { container } = mountWhatsApp(whatsappOwner, "/org/whatsapp/equipos");
-    expect(await screen.findByText("Ventas")).toBeVisible();
-    expect(screen.getByText("Aviso a los 10 min")).toBeVisible();
-    expect(screen.getByText("Lucía Fernández, Carolina Vega")).toBeVisible();
-    expect(screen.getByText("Bandeja Clientes · 2 personas")).toBeVisible();
+    const card = (await screen.findByText("Ventas")).closest("li")!;
+    expect(cardData(card)).toEqual([["Bandeja", "Bandeja Clientes"], ["Aviso por correo", "A los 10 minutos"], ["Personas", "Lucía Fernández, Carolina Vega"]]);
+    expect(card.textContent).not.toContain("·");
     expect(screen.getByRole("button", { name: "Crear equipo" })).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
   });

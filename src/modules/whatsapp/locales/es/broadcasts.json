@@ -9,7 +9,6 @@
   "template": "Plantilla «{{name}}»",
   "contacts_one": "{{n}} contacto",
   "contacts_other": "{{n}} contactos",
-  "results": "{{delivered}} entregados · {{read}} leídos",
   "rowActions": "Acciones de {{name}}",
   "audience": {
     "allAccepting": "Todos los que aceptan"
@@ -18,7 +17,8 @@
     "broadcast": "Difusión",
     "recipients": "Destinatarios",
     "status": "Estado",
-    "results": "Resultados",
+    "delivered": "Entregados",
+    "read": "Leídos",
     "date": "Fecha",
     "actions": "Acciones",
     "template": "Plantilla",

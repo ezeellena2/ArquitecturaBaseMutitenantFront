@@ -9,7 +9,6 @@
   "template": "Template “{{name}}”",
   "contacts_one": "{{n}} contact",
   "contacts_other": "{{n}} contacts",
-  "results": "{{delivered}} delivered · {{read}} read",
   "rowActions": "Actions for {{name}}",
   "audience": {
     "allAccepting": "Everyone who accepts"
@@ -18,7 +17,8 @@
     "broadcast": "Broadcast",
     "recipients": "Recipients",
     "status": "Status",
-    "results": "Results",
+    "delivered": "Delivered",
+    "read": "Read",
     "date": "Date",
     "actions": "Actions",
     "template": "Template",

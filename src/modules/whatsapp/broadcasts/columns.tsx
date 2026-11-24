@@ -1,17 +1,15 @@
 import type { TFunction } from "i18next";
 import type { ReactNode } from "react";
 import { Link } from "react-router";
-import type { FormatState } from "@/shared/format/useFormat";
 import { defineStatusTones } from "@/shared/format/statusTones";
-import { ListRow } from "@/shared/ui/app/ListRow";
+import { ListCard } from "@/shared/ui/app/ListRow";
+import { NumberText } from "@/shared/ui/format/NumberText";
 import type { Column } from "@/shared/ui/DataTable";
 import { DateText } from "@/shared/ui/format/DateText";
-import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { PhoneText } from "@/shared/ui/format/PhoneText";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 import type { WhatsAppBroadcastResponse, WhatsAppRecipientResponse } from "../api/types";
-import { countOf } from "../lib/values";
-import { audienceLabel, broadcastDate, resultsLabel } from "./lib/broadcastText";
+import { audienceLabel, broadcastDate, broadcastResults } from "./lib/broadcastText";
 
 /// Tableros WA-Difusiones y su M-* (.w-est): enviada en verde, programada en celeste y cancelada en gris.
 export const broadcastStatusTones = defineStatusTones("WhatsAppBroadcastStatus", { Scheduled: "pending", Sending: "pending", Sent: "success", Cancelled: "neutral" });
@@ -34,7 +32,7 @@ function dateCell(broadcast: WhatsAppBroadcastResponse): ReactNode {
   return <DateText value={value} kind={withTime ? "dateTime" : "date"} />;
 }
 
-export function createBroadcastColumns(t: TFunction, format: FormatState): Column<WhatsAppBroadcastResponse>[] {
+export function createBroadcastColumns(t: TFunction): Column<WhatsAppBroadcastResponse>[] {
   return [
     // Tablero WA-Difusiones (base de la 12): un dato por celda; la plantilla y cuántos contactos, en sus columnas.
     {
@@ -45,26 +43,23 @@ export function createBroadcastColumns(t: TFunction, format: FormatState): Colum
     { id: "audience", header: t("whatsapp:broadcasts.columns.recipients"), type: "custom", cell: (broadcast) => <span>{audienceLabel(broadcast.audience, t)}</span> },
     { id: "recipients", header: t("whatsapp:broadcasts.columns.contacts"), type: "integer", className: "w-24", value: (broadcast) => broadcast.recipients },
     { id: "status", header: t("whatsapp:broadcasts.columns.status"), type: "status", tones: broadcastStatusTones, mobile: "status", value: (broadcast) => broadcast.status },
-    {
-      id: "results", header: t("whatsapp:broadcasts.columns.results"), type: "custom",
-      cell: (broadcast) => { const results = resultsLabel(broadcast, t, format); return results ? <span>{results}</span> : <EmptyValue />; },
-    },
+    // WA-Difusiones-Base2 (263): entregados y leídos, cada uno en su columna de números; antes de salir, una raya.
+    { id: "delivered", header: t("whatsapp:broadcasts.columns.delivered"), type: "integer", className: "w-28", value: (broadcast) => broadcastResults(broadcast)?.delivered },
+    { id: "read", header: t("whatsapp:broadcasts.columns.read"), type: "integer", className: "w-24", value: (broadcast) => broadcastResults(broadcast)?.read },
     { id: "date", header: t("whatsapp:broadcasts.columns.date"), type: "custom", className: "w-37.5", cell: (broadcast) => dateCell(broadcast) },
   ];
 }
 
-/// M-WA-Difusiones: el nombre con la fecha a la derecha, la plantilla, a quiénes y cuántos, y abajo el estado con sus
-/// resultados.
-export function broadcastPhoneRow(broadcast: WhatsAppBroadcastResponse, t: TFunction, format: FormatState, trailing?: ReactNode): ReactNode {
-  const results = resultsLabel(broadcast, t, format);
-  return <ListRow key={broadcast.id} to={broadcastPath(broadcast.id)} title={broadcast.name} meta={dateCell(broadcast)}
-    lines={[
-      [broadcast.template.name, audienceLabel(broadcast.audience, t), t("whatsapp:broadcasts.contacts", countOf(format, broadcast.recipients))].join(" · "),
-      <span key="status">
-        <StatusBadge tones={broadcastStatusTones} value={broadcast.status} className="text-[0.8125rem] text-[var(--t2)]" />
-        {results ? <span>{`· ${results}`}</span> : null}
-      </span>,
-    ]} trailing={trailing} />;
+/// M-Filas-Base2 (M-WA-Difusiones, 263): una tarjeta con su estado, la fecha y, si ya salió, entregados y leídos, cada dato
+/// con su nombre. La plantilla y a quiénes se leen en la difusión.
+export function broadcastPhoneRow(broadcast: WhatsAppBroadcastResponse, t: TFunction, trailing?: ReactNode): ReactNode {
+  const results = broadcastResults(broadcast);
+  return <ListCard key={broadcast.id} to={broadcastPath(broadcast.id)} title={broadcast.name} fields={[
+    { label: t("whatsapp:broadcasts.columns.status"), value: <StatusBadge tones={broadcastStatusTones} value={broadcast.status} /> },
+    { label: t("whatsapp:broadcasts.columns.date"), value: dateCell(broadcast) },
+    { label: t("whatsapp:broadcasts.columns.delivered"), value: <NumberText value={results?.delivered} /> },
+    { label: t("whatsapp:broadcasts.columns.read"), value: <NumberText value={results?.read} /> },
+  ]} trailing={trailing} />;
 }
 
 /** Tablero WA-Difusion-Resultados (base de la 12): el contacto y su número, cada uno en su columna. */

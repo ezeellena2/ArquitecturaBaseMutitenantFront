@@ -2,9 +2,8 @@ import type { TFunction } from "i18next";
 import type { ReactNode } from "react";
 import { Link } from "react-router";
 import { defineStatusTones } from "@/shared/format/statusTones";
-import type { FormatState } from "@/shared/format/useFormat";
-import { countOf } from "../lib/values";
-import { ListRow } from "@/shared/ui/app/ListRow";
+import { ListCard, ListRow } from "@/shared/ui/app/ListRow";
+import { NumberText } from "@/shared/ui/format/NumberText";
 import type { Column } from "@/shared/ui/DataTable";
 import { DateText } from "@/shared/ui/format/DateText";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
@@ -39,18 +38,16 @@ export function createContactColumns(t: TFunction): Column<WhatsAppContactRespon
   ];
 }
 
-/// M-WA-Contactos: el círculo, el nombre con la última conversación a la derecha, el número (y si está vinculado) y, en la
-/// línea de abajo, las etiquetas y el consentimiento con su punto. Sin nombre, el número va de título.
+/// M-Filas-Base2 (M-WA-Contactos, 263): una tarjeta con el círculo y, cada dato con su nombre, el número, las promociones, las
+/// etiquetas y la última conversación. Sin nombre, el número va de título.
 export function contactPhoneRow(contact: WhatsAppContactResponse, t: TFunction, trailing?: ReactNode): ReactNode {
-  const consent = <span>
-    {contact.tags.length > 0 ? <span>{contact.tags.join(", ")}{" ·"}</span> : null}
-    <StatusBadge tones={consentTones} value={contact.consent} className="text-[0.78125rem] text-[var(--t2)]" />
-  </span>;
-  const number = contact.name ? <><PhoneText value={contact.displayNumber} />{contact.linkedToAccount ? ` · ${t("whatsapp:contacts.linkedShort")}` : null}</> : null;
-  return <ListRow key={contact.id} to={contactPath(contact.id)} leading={<ContactAvatar name={contact.name} />}
-    title={<ContactTitle contact={contact} />}
-    meta={contact.lastConversationAtUtc ? <DateText value={contact.lastConversationAtUtc} kind="dateTime" /> : undefined}
-    lines={[number, consent]} trailing={trailing} />;
+  return <ListCard key={contact.id} to={contactPath(contact.id)} leading={<ContactAvatar name={contact.name} />}
+    title={<ContactTitle contact={contact} />} fields={[
+      { label: t("whatsapp:contacts.columns.number"), value: <PhoneText value={contact.displayNumber} /> },
+      { label: t("whatsapp:contacts.columns.consent"), value: <StatusBadge tones={consentTones} value={contact.consent} /> },
+      { label: t("whatsapp:contacts.columns.tags"), value: contact.tags.join(", ") || <EmptyValue /> },
+      { label: t("whatsapp:contacts.columns.lastConversation"), value: <DateText value={contact.lastConversationAtUtc} kind="dateTime" /> },
+    ]} trailing={trailing} />;
 }
 
 export function createContactConversationColumns(t: TFunction): Column<WhatsAppContactConversationResponse>[] {
@@ -65,11 +62,15 @@ export function createContactConversationColumns(t: TFunction): Column<WhatsAppC
   ];
 }
 
-/// M-WA-Contacto: la fecha con los mensajes a la derecha, el último mensaje y debajo el equipo y quién la atendió.
-export function contactConversationPhoneRow(row: WhatsAppContactConversationResponse, t: TFunction, format: FormatState, trailing?: ReactNode): ReactNode {
-  const attended = [row.team?.name, row.assignee?.name].filter(Boolean).join(" · ");
-  return <ListRow key={row.conversationId} to={chatPath(row.conversationId)} title={<DateText value={row.startedAtUtc} kind="dateTime" />}
-    meta={t("whatsapp:contacts.conversations.messages", countOf(format, row.messageCount))} lines={[row.lastMessagePreview, attended || <EmptyValue key="empty" />]} trailing={trailing} />;
+/// M-WA-Contacto (263): cada conversación es una tarjeta con la fecha de título y, cada dato con su nombre, el último mensaje,
+/// el equipo, quién la atendió y cuántos mensajes tiene; sin datos unidos con «·».
+export function contactConversationPhoneRow(row: WhatsAppContactConversationResponse, t: TFunction, trailing?: ReactNode): ReactNode {
+  return <ListCard key={row.conversationId} to={chatPath(row.conversationId)} title={<DateText value={row.startedAtUtc} kind="dateTime" />} fields={[
+    { label: t("whatsapp:contacts.conversations.columns.lastMessage"), value: row.lastMessagePreview || <EmptyValue />, wide: true },
+    { label: t("whatsapp:contacts.conversations.columns.team"), value: row.team?.name ?? <EmptyValue /> },
+    { label: t("whatsapp:contacts.conversations.columns.assignee"), value: row.assignee?.name ?? <EmptyValue /> },
+    { label: t("whatsapp:contacts.conversations.columns.messages"), value: <NumberText value={row.messageCount} /> },
+  ]} trailing={trailing} />;
 }
 
 export function createContactBroadcastColumns(t: TFunction): Column<WhatsAppContactBroadcastResponse>[] {

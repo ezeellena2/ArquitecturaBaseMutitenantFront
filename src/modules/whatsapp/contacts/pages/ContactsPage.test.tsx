@@ -3,7 +3,7 @@ import { http, HttpResponse } from "msw";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { server } from "@/test/mocks/server";
-import { asPhone } from "@/test/utils/phone";
+import { asPhone, cardData } from "@/test/utils/phone";
 import { mountWhatsApp, whatsappMember, whatsappOwner } from "../../test/support";
 import { carla, frameHandlers, martina, paged, unnamed, useNativeForms } from "../test/fixtures";
 
@@ -62,7 +62,9 @@ describe("Contactos", () => {
     const { container, user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/contactos");
     const row = await screen.findByRole("link", { name: /Martina López/ });
     expect(row).toHaveAttribute("href", "/org/whatsapp/contactos/contact-martina");
-    expect(within(row).getByText(/Vinculado/)).toBeVisible();
+    // M-Filas-Base2 (M-WA-Contactos, 263): una tarjeta con el número, las promociones, las etiquetas y la última conversación.
+    expect(cardData(row.closest("li")!).map(([label]) => label)).toEqual(["Número", "Promociones", "Etiquetas", "Última conversación"]);
+    expect(row.closest("li")!.textContent).not.toContain("·");
     expect(screen.getByRole("button", { name: "Filtros" })).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
     await user.click(screen.getByRole("button", { name: "Importar" }));

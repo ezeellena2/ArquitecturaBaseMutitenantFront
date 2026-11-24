@@ -18,10 +18,6 @@
     "verifiedName": "Nombre verificado"
   },
   "wholeOrganization": "Toda la organización",
-  "detail": {
-    "nameAndApp": "{{name}} · también en la app",
-    "app": "También en la app"
-  },
   "usage": {
     "free": "{{used}} de {{free}} gratis",
     "freeMonth": "{{used}} de {{free}} gratis este mes",

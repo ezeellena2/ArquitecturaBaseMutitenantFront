@@ -1,11 +1,11 @@
 import type { TFunction } from "i18next";
 import type { ReactNode } from "react";
-import { ListRow } from "@/shared/ui/app/ListRow";
+import { ListCard } from "@/shared/ui/app/ListRow";
 import type { Column } from "@/shared/ui/DataTable";
 import { DateText } from "@/shared/ui/format/DateText";
 import { EnumText } from "@/shared/ui/format/EnumText";
 import type { WhatsAppTemplateResponse } from "../api/types";
-import { OtherCategories, TemplateLanguages } from "./components/TemplateLanguages";
+import { TemplateLanguages } from "./components/TemplateLanguages";
 import { TemplateStatus } from "./components/TemplateStatus";
 
 /// El nombre visible: el `title` de una del sistema («Código de ingreso») o el nombre de las demás.
@@ -24,12 +24,13 @@ export function createTemplateColumns(t: TFunction, onWhyRejected: (template: Wh
   ];
 }
 
-/// M-WA-Plantillas y M-Plat-WA-Plantillas: el nombre con la fecha a la derecha; debajo, el tipo y los idiomas (una del
-/// sistema, su nombre técnico y el tipo), y el estado.
+/// M-Filas-Base2 (M-WA-Plantillas, 263) y M-Plat-WA-Plantillas: una tarjeta con el estado en Meta, el tipo, los idiomas y la
+/// última modificación, cada dato con su nombre, como las columnas de la compu.
 export function templatePhoneRow(template: WhatsAppTemplateResponse, t: TFunction, onWhyRejected: (template: WhatsAppTemplateResponse) => void, trailing: ReactNode): ReactNode {
-  const category = <EnumText enum="WhatsAppTemplateCategory" value={template.category} />;
-  return <ListRow key={template.id} title={templateTitle(template)} meta={<DateText value={template.updatedAtUtc} kind="date" />}
-    lines={[<span key="kind">{template.isSystem ? <>{template.name}{" · "}{category}</> : <>{category}{" · "}<TemplateLanguages languages={template.languages} /></>}</span>,
-      <span key="status" className="inline-flex flex-wrap items-center gap-x-1"><TemplateStatus template={template} t={t} onWhyRejected={onWhyRejected} />
-        {template.languages.slice(1).some((language) => language.category !== template.category) ? <>{"· "}<OtherCategories template={template} /></> : null}</span>]} trailing={trailing} />;
+  return <ListCard key={template.id} title={templateTitle(template)} fields={[
+    { label: t("whatsapp:templates.columns.status"), value: <TemplateStatus template={template} t={t} onWhyRejected={onWhyRejected} /> },
+    { label: t("whatsapp:templates.columns.category"), value: <EnumText enum="WhatsAppTemplateCategory" value={template.category} /> },
+    { label: t("whatsapp:templates.columns.languages"), value: <TemplateLanguages languages={template.languages} /> },
+    { label: t("whatsapp:templates.columns.updated"), value: <DateText value={template.updatedAtUtc} kind="date" /> },
+  ]} trailing={trailing} />;
 }
