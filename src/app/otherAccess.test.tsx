@@ -13,6 +13,7 @@ import { fixtureAuth } from "@/test/mocks/authContext";
 import { businessUser, consumerWithOrganizations } from "@/test/mocks/currentUsers";
 import { meHandlerFor } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
+import { pickerName } from "@/test/picker";
 
 beforeAll(async () => {
   await configureI18n([{ code: "es-AR", languageCode: "es", fallbackCulture: null, isEnabled: true, isDefault: true }]);
@@ -53,9 +54,12 @@ describe("Otro acceso", () => {
     const { signinSilent, user } = mount("/org/empresas", "consumer-with-organizations", me);
 
     expect(await screen.findByRole("heading", { level: 1, name: "Este link es de una empresa" })).toBeVisible();
-    expect(screen.getByRole("radio", { name: /Empresa A/ })).toBeChecked();
-    await user.click(screen.getByRole("radio", { name: /Beta S\.R\.L\./ }));
-    expect(screen.getByRole("radio", { name: /Beta S\.R\.L\./ })).toBeChecked();
+    // 262: la organización se elige en la pieza, que dice la elegida.
+    expect(screen.getByRole("button", { name: pickerName("Organización") })).toHaveAccessibleName(`Organización ${first.name}`);
+    await user.click(screen.getByRole("button", { name: pickerName("Organización") }));
+    expect(screen.getByRole("option", { name: first.name })).toHaveAttribute("aria-selected", "true");
+    await user.click(screen.getByRole("option", { name: "Beta S.R.L." }));
+    expect(screen.getByRole("button", { name: pickerName("Organización") })).toHaveAccessibleName("Organización Beta S.R.L.");
     await user.click(screen.getByRole("button", { name: "Entrar como empresa" }));
 
     await waitFor(() => expect(signinSilent).toHaveBeenCalledWith(expect.objectContaining({ extraQueryParams: { access: "business", tenant: "empresa-b" } })));

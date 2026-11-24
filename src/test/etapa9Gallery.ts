@@ -130,7 +130,7 @@ function configPlat(board: "Config-Plat" | "M-Config-Plat"): GalleryCase[] {
     settings("Sin cambios", { readyText: "Límites de uso" }),
     settings("Con cambios", { readyText: "Límites de uso", actions: [...changed, scroll()] }),
     settings("Límite fuera de rango", { readyTexts: ["Usá un número de 1 a 1.000.000.", "Usá un tiempo de 1 segundo a 24 horas."], actions: [fill(quick, "0"),
-      fill("Cada · Probar una clave nueva", "48"), press("Unidad · Probar una clave nueva", "combobox", "Enter"), click("horas", "option"), click("Guardar cambios"),
+      fill("Cada · Probar una clave nueva", "48"), { type: "press", label: "Unidad · Probar una clave nueva", exact: false, key: "Enter" }, click("horas", "option"), click("Guardar cambios"),
       ...phone ? [scroll("Pedidos · Conversaciones")] : []] }),
     settings("Guardar: motivo", { readyText: "¿Guardar la configuración?", actions: toReason }),
     settings("Guardar: confirmá que sos vos", { readyText: "Para guardar la configuración, escribí el código de tu app de autenticación.",

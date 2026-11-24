@@ -11,6 +11,7 @@ import { platformSettingsFixture } from "@/test/mocks/platformSettings";
 import { server } from "@/test/mocks/server";
 import { asPhone } from "@/test/utils/phone";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
+import { pickerName } from "@/test/picker";
 
 // F2 (Etapa 9, tableros Cuenta-Plat, Recuperaciones, Legales y Config-Plat): una escritura sensible sin confirmación reciente
 // responde 403 Auth.Platform.ReauthenticationRequired. «Confirmá que sos vos» reemplaza al diálogo de la acción, que queda
@@ -197,7 +198,7 @@ describe("Confirmá que sos vos", () => {
       http.post("/api/platform/reauthentication", () => HttpResponse.json(proven)),
     );
     const user = userEvent.setup(); renderRouteWithProviders("/plataforma/configuracion", { as: "platform-operator" });
-    const consumer = await screen.findByRole("combobox", { name: "Registro de personas" }); consumer.focus(); await user.keyboard("{Enter}");
+    const consumer = await screen.findByRole("button", { name: pickerName("Registro de personas") }); consumer.focus(); await user.keyboard("{Enter}");
     await user.click(await screen.findByRole("option", { name: "Cerrado" }));
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
     const reason = await screen.findByRole("dialog", { name: "¿Guardar la configuración?" });

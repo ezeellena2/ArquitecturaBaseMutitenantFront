@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 const srcRoot = path.resolve(import.meta.dirname, "../..");
 
 // pantallas-y-ui.md: toda pantalla se arma solo con piezas de `shared/ui`. Una tabla es `DataTable` o `List`, elegir es
-// `SearchSelect`, `MultiSelect` o los selectores de `shared/ui/fields`, y lo que se abre encima es `Dialog`, `ConfirmDialog`,
+// `Picker` o los selectores de `shared/ui/fields` (262, picker-usage.test.ts), y lo que se abre encima es `Dialog`, `ConfirmDialog`,
 // `Sheet`, `RowActions` o el menú de `dropdown-menu`. Ninguna feature arma su propia ventana con el navegador ni con Radix.
 // Cada excepción, con el porqué.
 const rawElementAllowed = new Map([
@@ -51,7 +51,7 @@ function violations(relative: string, rawSource: string): string[] {
   if (!normalized.endsWith(".tsx")) return found;
   for (const match of source.matchAll(/<(table|select|dialog)\b/g)) {
     if (rawElementAllowed.get(normalized) === match[1]) continue;
-    found.push(`<${match[1]}> a mano: va ${match[1] === "table" ? "`DataTable` o `List`" : match[1] === "select" ? "`SearchSelect`, `MultiSelect` o un campo de shared/ui/fields" : "`Dialog` o `ConfirmDialog`"}`);
+    found.push(`<${match[1]}> a mano: va ${match[1] === "table" ? "`DataTable` o `List`" : match[1] === "select" ? "`Picker` o un campo de shared/ui/fields" : "`Dialog` o `ConfirmDialog`"}`);
   }
   for (const match of source.matchAll(/\brole=\{?["'](?:alert)?dialog["']/g)) {
     // Solo un elemento del HTML (`<div role="dialog">`): una pieza de shared/ui (`<DialogContent role="alertdialog">`) puede
