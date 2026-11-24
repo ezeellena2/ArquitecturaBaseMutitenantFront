@@ -186,7 +186,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(screen.queryByRole("button", { name: "Quitar de la organización" })).not.toBeInTheDocument();
     const access = screen.getByRole("region", { name: "Acceso a la organización" });
     expect(within(access).getByRole("combobox", { name: "Estado" })).toHaveTextContent("Activo");
-    expect(within(access).getByRole("button", { name: "Roles de la organización" })).toBeVisible();
+    expect(within(access).getByRole("button", { name: /^Roles de la organización( |$)/ })).toBeVisible();
     expect(within(access).getByRole("checkbox", { name: "Todos" })).not.toBeChecked();
     expect(within(access).queryByText("lucia@example.com")).not.toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
@@ -201,17 +201,17 @@ describe("UserDetailPage (tablero Usuario)", () => {
     renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
     await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
 
-    await open(user, await screen.findByRole("button", { name: "Roles de la organización" }));
-    expect(await screen.findByRole("menuitemcheckbox", { name: "Soporte" })).toHaveAccessibleDescription("Atiende las consultas.");
-    expect(screen.getByRole("menuitemcheckbox", { name: "Dueño" })).not.toHaveAccessibleDescription();
+    await open(user, await screen.findByRole("button", { name: /^Roles de la organización( |$)/ }));
+    expect(await screen.findByRole("option", { name: "Soporte" })).toHaveAccessibleDescription("Atiende las consultas.");
+    expect(screen.getByRole("option", { name: "Dueño" })).not.toHaveAccessibleDescription();
     await user.keyboard("{Escape}");
 
     await user.click(screen.getByRole("button", { name: "Agregar empresa" }));
     const dialog = await screen.findByRole("dialog", { name: "Agregar empresa" });
     await open(user, within(dialog).getByRole("combobox", { name: "Empresa" }));
     await user.click(await screen.findByRole("option", { name: "Delta S.A." }));
-    await open(user, within(dialog).getByRole("button", { name: "Roles en la empresa" }));
-    expect(await screen.findByRole("menuitemcheckbox", { name: "Administrador" })).toHaveAccessibleDescription("Administra la empresa: sus miembros y sus roles.");
+    await open(user, within(dialog).getByRole("button", { name: /^Roles en la empresa( |$)/ }));
+    expect(await screen.findByRole("option", { name: "Administrador" })).toHaveAccessibleDescription("Administra la empresa: sus miembros y sus roles.");
   });
 
   it("las migas siguen el camino hasta la persona", async () => {
@@ -412,7 +412,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(screen.queryByRole("button", { name: "Guardar cambios" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Descartar cambios" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Más acciones" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Roles de la organización" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^Roles de la organización( |$)/ })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Agregar empresa" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Acciones de Delta S.A." })).not.toBeInTheDocument();
   });
@@ -479,13 +479,13 @@ describe("UserDetailPage (tablero Usuario)", () => {
     const companyField = within(dialog).getByRole("combobox", { name: "Empresa" });
     expect(labels()).toContain("Empresa *");
     expect(companyField.closest("[data-slot='dialog-body']")).not.toBeNull();
-    expect(within(dialog).queryByRole("button", { name: "Roles en la empresa" })).not.toBeInTheDocument();
+    expect(within(dialog).queryByRole("button", { name: /^Roles en la empresa( |$)/ })).not.toBeInTheDocument();
     await open(user, companyField);
     await user.click(await screen.findByRole("option", { name: "Delta S.A." }));
-    expect(within(dialog).getByRole("button", { name: "Roles en la empresa" })).toBeVisible();
+    expect(within(dialog).getByRole("button", { name: /^Roles en la empresa( |$)/ })).toBeVisible();
     expect(labels()).toContain("Roles en la empresa");
-    await open(user, within(dialog).getByRole("button", { name: "Roles en la empresa" }));
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Administrador" }));
+    await open(user, within(dialog).getByRole("button", { name: /^Roles en la empresa( |$)/ }));
+    await user.click(await screen.findByRole("option", { name: "Administrador" }));
     await user.keyboard("{Escape}");
     await user.click(within(dialog).getByRole("button", { name: "Agregar" }));
 
@@ -521,7 +521,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
     await open(user, within(screen.getByRole("region", { name: "Empresas" })).getByRole("button", { name: "Acciones de Delta S.A." }));
     await user.click(await screen.findByRole("menuitem", { name: "Cambiar roles" }));
     const dialog = await screen.findByRole("dialog", { name: "Roles en Delta S.A." });
-    expect(within(dialog).getByRole("button", { name: "Roles en la empresa" })).toHaveTextContent("Rol de segunda página");
+    expect(within(dialog).getByRole("button", { name: /^Roles en la empresa( |$)/ })).toHaveTextContent("Rol de segunda página");
     expect(within(dialog).getByRole("button", { name: "Guardar" })).toBeDisabled();
   });
 
@@ -547,12 +547,12 @@ describe("UserDetailPage (tablero Usuario)", () => {
     renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
     await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
 
-    await open(user, screen.getByRole("button", { name: "Roles de la organización" }));
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Dueño" }));
+    await open(user, screen.getByRole("button", { name: /^Roles de la organización( |$)/ }));
+    await user.click(await screen.findByRole("option", { name: "Dueño" }));
     await user.keyboard("{Escape}");
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeEnabled();
-    await open(user, screen.getByRole("button", { name: "Roles de la organización" }));
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Dueño" }));
+    await open(user, screen.getByRole("button", { name: /^Roles de la organización( |$)/ }));
+    await user.click(await screen.findByRole("option", { name: "Dueño" }));
     await user.keyboard("{Escape}");
     expect(subline("Lucía Fernández")).not.toHaveTextContent(/Cambios sin guardar/);
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
@@ -567,8 +567,8 @@ describe("UserDetailPage (tablero Usuario)", () => {
     renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
     await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
 
-    await open(user, screen.getByRole("button", { name: "Roles de la organización" }));
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Soporte" }));
+    await open(user, screen.getByRole("button", { name: /^Roles de la organización( |$)/ }));
+    await user.click(await screen.findByRole("option", { name: "Soporte" }));
     await user.keyboard("{Escape}");
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeEnabled();
   });
@@ -588,10 +588,10 @@ describe("UserDetailPage (tablero Usuario)", () => {
 
     const save = within(dialog).getByRole("button", { name: "Guardar" });
     expect(save).toBeDisabled();
-    await open(user, within(dialog).getByRole("button", { name: "Roles en la empresa" }));
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Administrador" }));
+    await open(user, within(dialog).getByRole("button", { name: /^Roles en la empresa( |$)/ }));
+    await user.click(await screen.findByRole("option", { name: "Administrador" }));
     expect(save).toBeEnabled();
-    await user.click(screen.getByRole("menuitemcheckbox", { name: "Administrador" }));
+    await user.click(screen.getByRole("option", { name: "Administrador" }));
     await user.keyboard("{Escape}");
     expect(save).toBeDisabled();
   });
@@ -604,8 +604,8 @@ describe("UserDetailPage (tablero Usuario)", () => {
     renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
     await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
 
-    await open(user, screen.getByRole("button", { name: "Roles de la organización" }));
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Dueño" }));
+    await open(user, screen.getByRole("button", { name: /^Roles de la organización( |$)/ }));
+    await user.click(await screen.findByRole("option", { name: "Dueño" }));
     await user.keyboard("{Escape}");
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
     expect(await screen.findByText("Tiene que quedar al menos un Dueño activo.")).toBeVisible();
@@ -657,8 +657,8 @@ describe("UserDetailPage (tablero Usuario)", () => {
     renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
     await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
 
-    await open(user, screen.getByRole("button", { name: "Roles de la organización" }));
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Dueño" }));
+    await open(user, screen.getByRole("button", { name: /^Roles de la organización( |$)/ }));
+    await user.click(await screen.findByRole("option", { name: "Dueño" }));
     await user.keyboard("{Escape}");
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
 
@@ -723,8 +723,8 @@ describe("UserDetailPage (tablero Usuario)", () => {
     const { router } = renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
     await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
 
-    await open(user, screen.getByRole("button", { name: "Roles de la organización" }));
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Soporte" }));
+    await open(user, screen.getByRole("button", { name: /^Roles de la organización( |$)/ }));
+    await user.click(await screen.findByRole("option", { name: "Soporte" }));
     await user.keyboard("{Escape}");
     expect(subline("Lucía Fernández")).toHaveTextContent(/^Activo·lucia@example\.com/);
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeEnabled();
@@ -754,8 +754,8 @@ describe("UserDetailPage (tablero Usuario)", () => {
     const reads = conflictOnCompanies();
     renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
     await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
-    await open(user, screen.getByRole("button", { name: "Roles de la organización" }));
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Soporte" }));
+    await open(user, screen.getByRole("button", { name: /^Roles de la organización( |$)/ }));
+    await user.click(await screen.findByRole("option", { name: "Soporte" }));
     await user.keyboard("{Escape}");
 
     const dialog = await addCompanyWithConflict(user);
@@ -830,8 +830,8 @@ describe("UserDetailPage (tablero Usuario)", () => {
     const administrator = { ...ownerRole, id: "role-company-manager", name: "Administrador", isSystemRole: false };
     backend.current = { ...withDelta, companies: [{ ...withDelta.companies[0], roles: [administrator] }], version: 3 };
     await act(() => queryClient.invalidateQueries({ queryKey: userQueryKey("member-1") }));
-    await open(user, within(dialog).getByRole("button", { name: "Roles en la empresa" }));
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Vendedor" }));
+    await open(user, within(dialog).getByRole("button", { name: /^Roles en la empresa( |$)/ }));
+    await user.click(await screen.findByRole("option", { name: "Vendedor" }));
     await user.keyboard("{Escape}");
     await user.click(within(dialog).getByRole("button", { name: "Guardar" }));
 
@@ -847,8 +847,8 @@ describe("UserDetailPage (tablero Usuario)", () => {
     const backend = versionedApi(member);
     renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
     await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
-    await open(user, screen.getByRole("button", { name: "Roles de la organización" }));
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Soporte" }));
+    await open(user, screen.getByRole("button", { name: /^Roles de la organización( |$)/ }));
+    await user.click(await screen.findByRole("option", { name: "Soporte" }));
     await user.keyboard("{Escape}");
 
     await user.click(screen.getByRole("button", { name: "Agregar empresa" }));
@@ -876,8 +876,8 @@ describe("UserDetailPage (tablero Usuario)", () => {
     backend.afterWrite = () => { backend.current = { ...backend.current, version: backend.current.version + 1 }; };
     renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
     await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
-    await open(user, screen.getByRole("button", { name: "Roles de la organización" }));
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Soporte" }));
+    await open(user, screen.getByRole("button", { name: /^Roles de la organización( |$)/ }));
+    await user.click(await screen.findByRole("option", { name: "Soporte" }));
     await user.keyboard("{Escape}");
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
     expect(await screen.findByText("Guardamos los cambios de Lucía Fernández.")).toBeVisible();
@@ -904,15 +904,15 @@ describe("UserDetailPage (tablero Usuario)", () => {
     await open(user, within(screen.getByRole("region", { name: "Empresas" })).getByRole("button", { name: "Acciones de Delta S.A." }));
     await user.click(await screen.findByRole("menuitem", { name: "Cambiar roles" }));
     const dialog = await screen.findByRole("dialog", { name: "Roles en Delta S.A." });
-    await open(user, within(dialog).getByRole("button", { name: "Roles en la empresa" }));
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Vendedor" }));
+    await open(user, within(dialog).getByRole("button", { name: /^Roles en la empresa( |$)/ }));
+    await user.click(await screen.findByRole("option", { name: "Vendedor" }));
     await user.keyboard("{Escape}");
     await user.click(within(dialog).getByRole("button", { name: "Guardar" }));
     await waitFor(() => expect(screen.queryByRole("dialog", { name: "Roles en Delta S.A." })).not.toBeInTheDocument());
 
     backend.afterWrite = undefined;
-    await open(user, screen.getByRole("button", { name: "Roles de la organización" }));
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Soporte" }));
+    await open(user, screen.getByRole("button", { name: /^Roles de la organización( |$)/ }));
+    await user.click(await screen.findByRole("option", { name: "Soporte" }));
     await user.keyboard("{Escape}");
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
 

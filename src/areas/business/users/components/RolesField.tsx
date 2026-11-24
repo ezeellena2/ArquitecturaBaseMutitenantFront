@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { FormField } from "@/shared/ui/FormField";
-import { MultiSelect, type MultiSelectOption } from "@/shared/ui/MultiSelect";
+import { Picker, type PickerOption } from "@/shared/ui/Picker";
 import type { RemoteOptions } from "@/shared/hooks/useResourceOptions";
 import { toastActionError } from "@/shared/api/errorMessage";
 import { useTranslation } from "react-i18next";
@@ -11,20 +11,20 @@ import { useMountedRef } from "@/shared/hooks/useMountedRef";
 export function RolesField({ label, allLabel, options, value, onChange, placeholder, remote, selectedOptions, allOptions, allCount }: {
   label: string;
   allLabel: string;
-  options: readonly MultiSelectOption[];
+  options: readonly PickerOption[];
   value: readonly string[];
   onChange: (value: string[]) => void;
   placeholder: string;
   remote?: RemoteOptions;
-  selectedOptions?: readonly MultiSelectOption[];
-  allOptions?: () => Promise<readonly MultiSelectOption[]>;
+  selectedOptions?: readonly PickerOption[];
+  allOptions?: () => Promise<readonly PickerOption[]>;
   allCount?: number;
 }): ReactNode {
   const { t } = useTranslation();
   const [selectingAll, setSelectingAll] = useState(false);
   const mounted = useMountedRef();
   // «Todos» elige o quita solo lo que quien edita puede dar (269): lo apagado queda como está.
-  const selectable = (list: readonly MultiSelectOption[]) => list.filter((option) => option.disabledReason === undefined).map((option) => option.value);
+  const selectable = (list: readonly PickerOption[]) => list.filter((option) => option.disabledReason == null).map((option) => option.value);
   const optionValues = selectable(options);
   const lockedCount = options.length - optionValues.length;
   const allChecked = optionValues.length > 0 && value.length >= (allCount ?? options.length) - lockedCount && optionValues.every((option) => value.includes(option));
@@ -51,7 +51,7 @@ export function RolesField({ label, allLabel, options, value, onChange, placehol
         className="max-md:size-5 max-md:rounded-[0.375rem] max-md:border-[1.5px] max-md:border-[var(--borde2)]" />
       {allLabel}
     </label>}>
-      <MultiSelect disabled={selectingAll} options={options} selectedOptions={selectedOptions} remote={remote} value={value} onChange={onChange} placeholder={placeholder} />
+      <Picker multiple disabled={selectingAll} options={options} selectedOptions={selectedOptions} remote={remote} value={value} onChange={onChange} placeholder={placeholder} />
     </FormField>
   );
 }

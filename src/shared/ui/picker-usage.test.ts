@@ -20,7 +20,6 @@ const pending = new Set([
   "areas/business/companies/components/AddMemberDialog.tsx",
   "areas/business/companies/components/MemberRolesDialog.tsx",
   "areas/business/users/components/InviteUserDialog.tsx",
-  "areas/business/users/components/RolesField.tsx",
   "areas/business/users/components/UserCompanyDialog.tsx",
   "areas/business/users/pages/UserDetailPage.tsx",
   "areas/platform/legal/pages/PublishLegalVersionPage.tsx",

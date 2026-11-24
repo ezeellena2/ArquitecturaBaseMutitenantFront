@@ -57,8 +57,8 @@ describe("UserDetailPage company assignments", () => {
 
     await user.click(screen.getByRole("button", { name: "Acciones de Delta S.A." }));
     await user.click(await screen.findByRole("menuitem", { name: "Cambiar roles" }));
-    await user.click(screen.getByRole("button", { name: "Roles en la empresa" }));
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Compras" }));
+    await user.click(screen.getByRole("button", { name: /^Roles en la empresa( |$)/ }));
+    await user.click(await screen.findByRole("option", { name: "Compras" }));
     await user.keyboard("{Escape}");
     await user.click(screen.getByRole("button", { name: "Guardar" }));
 
