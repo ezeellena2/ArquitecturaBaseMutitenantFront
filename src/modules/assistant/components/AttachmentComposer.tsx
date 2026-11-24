@@ -9,6 +9,7 @@ import { FormField } from "@/shared/ui/FormField";
 import { CloseIcon } from "@/shared/ui/icons";
 import { ArrowUp, FileText, Paperclip, Square } from "lucide-react";
 import { useFormat } from "@/shared/format/useFormat";
+import { Spinner } from "@/shared/ui/Spinner";
 
 import { assistantAttachmentTypes, type AssistantAttachmentLimits, type PendingAssistantFile } from "../lib/assistantFiles";
 
@@ -24,28 +25,36 @@ function FilePreview({ file }: { file: File }) {
     : file.type === "application/pdf" ? <FileText aria-hidden="true" className="size-5 shrink-0" /> : null;
 }
 
-const FilesContext = createContext<{ files: readonly PendingAssistantFile[]; errorId?: string; pending: boolean }>({ files: [], pending: false });
+function UploadingText() {
+  const { t } = useTranslation("assistant");
+  return <span role="status" className="inline-flex shrink-0 items-center gap-1.5 text-[var(--t2)]"><Spinner decorative className="inline-flex [&>span]:size-3.5" />{t("attachments.uploading")}</span>;
+}
+
+const FilesContext = createContext<{ files: readonly PendingAssistantFile[]; errorId?: string; pending: boolean; uploadingId: string | null }>({ files: [], pending: false, uploadingId: null });
 
 function ComposerFile() {
   const attachment = useAuiState((state) => state.attachment);
-  const { files, errorId, pending } = useContext(FilesContext);
+  const { files, errorId, pending, uploadingId } = useContext(FilesContext);
   const { t } = useTranslation("assistant");
   const owned = files.find((item) => item.id === attachment.id);
   if (!owned) return null;
   const { file, invalid, id } = owned;
   return <AttachmentPrimitive.Root asChild><li aria-describedby={invalid && errorId ? `${errorId}-${id}` : undefined} className={`flex max-w-full items-center gap-2 rounded-lg border p-1.5 text-sm ${invalid ? "border-[var(--peligro)] bg-[var(--peligro-banda)] text-[var(--peligro-tx)]" : "border-[var(--borde)] bg-[var(--s2)]"}`}>
-    <FilePreview file={file} /><span className="min-w-0 wrap-anywhere">{file.name}</span><FileSizeText value={file.size} />
+    {/* «Una subida a la vez» (0064 §4): el archivo que sube dice «Subiendo…» con el aro, en lugar de su peso. */}
+    <FilePreview file={file} /><span className="min-w-0 wrap-anywhere">{file.name}</span>{uploadingId === id ? <UploadingText /> : <FileSizeText value={file.size} />}
     <AttachmentPrimitive.Remove asChild><button type="button" disabled={pending} aria-label={t("attachments.remove", { name: file.name })}><CloseIcon className="size-5" /></button></AttachmentPrimitive.Remove>
   </li></AttachmentPrimitive.Root>;
 }
 
-export function AttachmentComposer({ files, limits, errorId, placeholder, unavailable, sendBlocked = false, pending, canStop, onFiles, onStop }: {
+export function AttachmentComposer({ files, limits, errorId, placeholder, unavailable, sendBlocked = false, pending, canStop, uploadingId = null, onFiles, onStop }: {
   limits: AssistantAttachmentLimits;
   placeholder: string;
   errorId?: string;
   files: readonly PendingAssistantFile[]; unavailable: boolean; pending: boolean; canStop: boolean;
   /** Un límite de uso (E9, P2): mandar espera la cuenta del aviso; lo escrito queda y se puede seguir escribiendo. */
   sendBlocked?: boolean;
+  /** El archivo que se está subiendo, que dice «Subiendo…». */
+  uploadingId?: string | null;
   onFiles: (files: File[]) => void; onStop: () => void;
 }) {
   const { t } = useTranslation(["assistant", "common"]);
@@ -55,9 +64,14 @@ export function AttachmentComposer({ files, limits, errorId, placeholder, unavai
   const [required, setRequired] = useState(false);
   const invalid = files.some((item) => item.invalid);
   const fileInput = useRef<HTMLInputElement>(null);
+  // Mientras se manda, el SDK saca los archivos de la caja; el que sube se sigue viendo, con «Subiendo…».
+  const uploading = uploadingId ? files.find((item) => item.id === uploadingId) : undefined;
+  const uploadingInComposer = useAuiState((state) => !!uploadingId && state.composer.attachments.some((attachment) => attachment.id === uploadingId));
   return <ComposerPrimitive.Root onSubmit={(event) => { if (!text.trim() || invalid) { event.preventDefault(); if (!text.trim()) setRequired(true); } }}
     className="relative flex shrink-0 flex-col gap-2 rounded-2xl border border-[var(--borde2)] bg-[var(--superficie)] p-3 focus-within:border-[var(--marca)] max-md:rounded-[1.75rem] max-md:p-2">
-    <FilesContext.Provider value={{ files, errorId, pending }}><ul className="flex flex-wrap gap-2 empty:hidden"><ComposerPrimitive.Attachments components={{ Attachment: ComposerFile }} /></ul></FilesContext.Provider>
+    <FilesContext.Provider value={{ files, errorId, pending, uploadingId }}><ul className="flex flex-wrap gap-2 empty:hidden"><ComposerPrimitive.Attachments components={{ Attachment: ComposerFile }} />
+      {uploading && !uploadingInComposer ? <li className="flex max-w-full items-center gap-2 rounded-lg border border-[var(--borde)] bg-[var(--s2)] p-1.5 text-sm"><FilePreview file={uploading.file} /><span className="min-w-0 wrap-anywhere">{uploading.file.name}</span><UploadingText /></li> : null}
+    </ul></FilesContext.Provider>
     <div className="[&_label]:sr-only max-md:mx-9"><FormField label={t("composer.label")} error={required ? t("composer.required") : undefined}>
       <ComposerPrimitive.Input asChild addAttachmentOnPaste={false} onChange={() => setRequired(false)} onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey && (!text.trim() || invalid)) { event.preventDefault(); if (!text.trim()) setRequired(true); } }}>
         <Textarea rows={1} maxLength={validationConstraints.SendAssistantMessageHttpRequest.text.maxLength} placeholder={placeholder} disabled={unavailable || pending} className="min-h-16 resize-none border-0 shadow-none max-md:min-h-9 max-md:max-h-28 max-md:px-0 max-md:py-2 max-md:leading-5" />

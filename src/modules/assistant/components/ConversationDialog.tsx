@@ -9,6 +9,7 @@ import { Input } from "@/shared/ui/input";
 import { FormField } from "@/shared/ui/FormField";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import type { AssistantConversationSummaryResponse } from "@/modules/assistant/api/types";
+import { assistantConversationTitle } from "../lib/conversationTitle";
 
 export interface ConversationDialogState { kind: "rename" | "delete"; conversation: AssistantConversationSummaryResponse; trigger: HTMLButtonElement | null }
 export function ConversationDialog({ value, pending, error, onClose, onConfirm }: {
@@ -19,7 +20,7 @@ export function ConversationDialog({ value, pending, error, onClose, onConfirm }
   const rename = value.kind === "rename" ? value.conversation : null;
   const form = useForm({ resolver: zodResolver(z.object({ title: z.string().trim().min(1, t("history.nameRequired")).max(validationConstraints.UpdateAssistantConversationHttpRequest.title.maxLength, t("settings.validation.textLength")) })), defaultValues: { title: value.conversation.title ?? "" } });
   return <Dialog open onOpenChange={(open) => { if (!open && !pending) onClose(); }}><DialogContent size="sm" showCloseButton={value.kind === "rename"} onCloseAutoFocus={restore}>
-    <DialogHeader><DialogTitle>{value.kind === "rename" ? t("history.renameTitle") : t("history.deleteTitle", { title: value.conversation.title ?? t("history.untitled") })}</DialogTitle></DialogHeader>
+    <DialogHeader><DialogTitle>{value.kind === "rename" ? t("history.renameTitle") : t("history.deleteTitle", { title: assistantConversationTitle(value.conversation, t) })}</DialogTitle></DialogHeader>
     <form onSubmit={value.kind === "rename" ? form.handleSubmit(({ title }) => onConfirm(title)) : (event) => { event.preventDefault(); onConfirm(""); }}>
       <DialogBody>{value.kind === "rename" ? <FormField label={t("history.name")} required error={form.formState.errors.title?.message}><Input {...form.register("title")} maxLength={validationConstraints.UpdateAssistantConversationHttpRequest.title.maxLength} /></FormField> : <DialogDescription>{t("history.deleteBody")}</DialogDescription>}
         {error ? <p role="alert" className="text-[var(--peligro)]">{error}</p> : null}

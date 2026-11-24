@@ -11,6 +11,7 @@ import { useFormat } from "@/shared/format/useFormat";
 import { useCursorList } from "@/shared/hooks/useCursorList";
 import { assistantConversationsQueryKey, fetchAssistantConversations, type AssistantScope } from "../api/assistant";
 import type { AssistantLifetime } from "../runtime/assistantLifetime";
+import { assistantConversationTitle } from "../lib/conversationTitle";
 
 export interface ConversationListProps {
   scope: AssistantScope; lifetime: AssistantLifetime; enabled: boolean; selectedId: string | null; retentionDays: number;
@@ -40,11 +41,12 @@ function Group({ saved, query, ...props }: ConversationListProps & { saved: bool
     <ThreadListPrimitive.Items>{({ threadListItem }) => {
       const conversation = query.items.find((item) => item.id === threadListItem.id);
       if (!conversation) return null;
+      const title = assistantConversationTitle(conversation, t);
       return <ThreadListItemPrimitive.Root className={`flex min-w-0 items-center rounded-lg ${props.selectedId === conversation.id ? "bg-[var(--marca-t)] shadow-[inset_3px_0_0_var(--marca)]" : "hover:bg-[var(--s2)]"}`}>
       <ThreadListItemPrimitive.Trigger asChild><button type="button" aria-current={props.selectedId === conversation.id ? "true" : undefined}
         className="min-w-0 flex-1 px-2.5 py-2 text-left text-sm [overflow-wrap:anywhere] focus-visible:outline-2 focus-visible:outline-[var(--foco)]"><ThreadListItemPrimitive.Title /></button></ThreadListItemPrimitive.Trigger>
-      {props.onActions ? <button type="button" aria-label={t("history.actions", { title: conversation.title ?? t("history.untitled") })} className="flex size-11 items-center justify-center" onClick={() => props.onActions?.(conversation)}><MoreVerticalIcon className="size-5" /></button>
-        : <RowActions label={t("history.actions", { title: conversation.title ?? t("history.untitled") })} title={conversation.title ?? t("history.untitled")} actions={props.actions(conversation)} />}
+      {props.onActions ? <button type="button" aria-label={t("history.actions", { title })} className="flex size-11 items-center justify-center" onClick={() => props.onActions?.(conversation)}><MoreVerticalIcon className="size-5" /></button>
+        : <RowActions label={t("history.actions", { title })} title={title} actions={props.actions(conversation)} />}
     </ThreadListItemPrimitive.Root>;
     }}</ThreadListPrimitive.Items>
     {query.isError ? <div role="alert"><p>{apiErrorMessage(query.error, t)}</p><Button variant="link" onClick={() => void query.refetch()}>{t("retry")}</Button></div> : null}
@@ -61,7 +63,7 @@ export function ConversationList(props: ConversationListProps) {
   // del runtime de mensajes cuando el servidor asigna el primer id real.
   const runtime = useExternalStoreRuntime<ThreadMessageLike>({ messages: [], convertMessage: (message) => message, onNew: async () => {}, adapters: { threadList: {
     threadId: props.selectedId ?? undefined, isLoading: saved.isLoading || recent.isLoading,
-    threads: conversations.filter((item, index) => conversations.findIndex((other) => other.id === item.id) === index).map((item) => ({ id: item.id, remoteId: item.id, status: "regular", title: item.title ?? t("history.untitled") })),
+    threads: conversations.filter((item, index) => conversations.findIndex((other) => other.id === item.id) === index).map((item) => ({ id: item.id, remoteId: item.id, status: "regular", title: assistantConversationTitle(item, t) })),
     onSwitchToNewThread: props.onNew, onSwitchToThread: props.onSelect,
   } } });
   return <AssistantRuntimeProvider runtime={runtime}><ThreadListPrimitive.Root className="flex min-h-0 flex-col overflow-auto p-3">

@@ -21,6 +21,8 @@ import { saveAssistantDownload } from "../lib/privateDownload";
 import { assistantAttachmentTypes, validateAssistantFiles, type PendingAssistantFile } from "../lib/assistantFiles";
 import { type ConversationDialogState } from "../components/ConversationDialog";
 import type { AssistantHomeProps } from "../pages/assistantHomeProps";
+import { assistantUploadRefusal } from "../errors";
+import { assistantConversationTitle } from "../lib/conversationTitle";
 
 export function useAssistantSession(props: AssistantHomeProps) {
   const { access, tenantId, userId } = props.scope;
@@ -48,6 +50,8 @@ export function useAssistantSession(props: AssistantHomeProps) {
   const filesRef = useRef(files);
   function changeFiles(items: PendingAssistantFile[]) { filesRef.current = items; setFiles(items); }
   const [fileError, setFileError] = useState<string | null>(null);
+  // El archivo que se está subiendo dice «Subiendo…» en su lugar de la caja (0064 §4, «Una subida a la vez»).
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
   const fileErrorId = useId();
   const invalidFiles = files.filter((item) => item.invalid);
   const hasAttachmentError = invalidFiles.length > 0 || !!fileError;
@@ -87,7 +91,7 @@ export function useAssistantSession(props: AssistantHomeProps) {
   const root = assistantQueryKeyRoot(scope);
   const pendingKey = (id: string) => [...root, "pendingAttachments", id] as const;
   useEffect(() => operations.lifetime.subscribe(() => {
-    if (!operations.lifetime.getSnapshot()) { changeFiles([]); void latest.current.runtime.thread.composer.reset(); setDialog(null); dialogSubmission.current = null; setDialogPending(false); setPhoneActions(null); setFileError(null); }
+    if (!operations.lifetime.getSnapshot()) { changeFiles([]); void latest.current.runtime.thread.composer.reset(); setDialog(null); dialogSubmission.current = null; setDialogPending(false); setPhoneActions(null); setFileError(null); setUploadingId(null); }
   }), [operations.lifetime]);
   useEffect(() => () => { client.removeQueries({ queryKey: assistantQueryKeyRoot(scope) }); }, [client, scope]);
   function select(id: string | null) {
@@ -96,6 +100,7 @@ export function useAssistantSession(props: AssistantHomeProps) {
     setSelectedId(id);
     changeFiles([]);
     setFileError(null);
+    setUploadingId(null);
     setHistoryOpen(false);
     setRetentionOpen(false);
     setPhoneActions(null);
@@ -172,7 +177,8 @@ export function useAssistantSession(props: AssistantHomeProps) {
         for (const upload of uploads) {
           if (upload.attachmentId) continue;
           upload.version ??= current.conversation.version;
-          const attachment = await uploadAssistantAttachment(scope, id, { file: upload.file, conversationVersion: upload.version }, upload.key, context.signal);
+          const attachment = await uploadRefused(upload.id, () => uploadAssistantAttachment(scope, id!, { file: upload.file, conversationVersion: upload.version! }, upload.key, context.signal), context);
+          if (!attachment) return;
           context.assertActive(); upload.attachmentId = attachment.id;
           client.setQueryData<Record<string, AssistantAttachmentSummaryResponse>>(pendingKey(id), (previous) => ({ ...previous, [upload.id]: attachment }));
           current = await read(id, context);
@@ -203,6 +209,17 @@ export function useAssistantSession(props: AssistantHomeProps) {
       return delivered;
     } catch { return false; }
   }
+  /// Una subida que el back frena antes de leer el archivo (sin cupo, otra a la vez, la cola llena) se dice debajo de la
+  /// caja y no manda la consulta: el archivo queda para volver a probar. Lo demás sigue al error de la operación.
+  async function uploadRefused(fileId: string | null, upload: () => Promise<AssistantAttachmentSummaryResponse>, context: AssistantOperationContext) {
+    setUploadingId(fileId);
+    try { return await upload(); }
+    catch (error) {
+      const refusal = assistantUploadRefusal(error, t);
+      if (!refusal) throw error;
+      context.assertActive(); setFileError(refusal); return null;
+    } finally { setUploadingId((current) => current === fileId ? null : current); }
+  }
   async function removeFile(fileId: string) {
     const attachment = selectedId ? client.getQueryData<Record<string, AssistantAttachmentSummaryResponse>>(pendingKey(selectedId))?.[fileId] : undefined;
     if (!attachment || !selectedId) { changeFiles(filesRef.current.filter((item) => item.id !== fileId)); return; }
@@ -231,7 +248,8 @@ export function useAssistantSession(props: AssistantHomeProps) {
         context.assertActive();
         const file = new File([bytes], copy.attachment.fileName, { type: mediaType });
         copy.version ??= current.conversation.version;
-        const attachment = await uploadAssistantAttachment(scope, id, { file, conversationVersion: copy.version }, copy.key, context.signal);
+        const attachment = await uploadRefused(null, () => uploadAssistantAttachment(scope, id, { file, conversationVersion: copy.version! }, copy.key, context.signal), context);
+        if (!attachment) return;
         context.assertActive(); copy.uploadedId = attachment.id;
         current = await read(id, context);
       }
@@ -268,10 +286,11 @@ export function useAssistantSession(props: AssistantHomeProps) {
     }, conversation.id);
   }
   function actions(conversation: AssistantConversationSummaryResponse) {
-    const title = conversation.title ?? t("history.untitled");
+    const title = assistantConversationTitle(conversation, t);
     const edit = (kind: "rename" | "delete", trigger: HTMLButtonElement | null) => {
       setHistoryOpen(false);
-      if (kind === "rename") { setDialog({ kind, conversation, trigger }); return; }
+      // Una conversación que no se puede leer (0064 §6) se borra con la versión de su fila: su GET responde 409.
+      if (kind === "rename" || !conversation.available) { setDialog({ kind, conversation, trigger }); return; }
       // Un envío propio ya puede haber cambiado la versión aunque su fila de
       // historial todavía no se haya invalidado. La base se captura al abrir;
       // confirmar conserva esa versión y no reintenta un conflicto posterior.
@@ -280,6 +299,9 @@ export function useAssistantSession(props: AssistantHomeProps) {
         setDialog({ kind, conversation: current.conversation, trigger });
       }, conversation.id);
     };
+    const remove = { label: t("history.delete"), accessibleName: t("history.delete"), icon: TrashIcon, destructive: true, onSelect: (trigger: HTMLButtonElement | null) => edit("delete", trigger) };
+    // Lo único que se puede hacer con una conversación no disponible es borrarla (Asistente-Org, «Conversación no disponible»).
+    if (!conversation.available) return [{ ...remove, accessibleName: `${remove.accessibleName}: ${title}` }];
     return [
       { label: t(conversation.isSaved ? "history.unsave" : "history.save"), accessibleName: t(conversation.isSaved ? "history.unsave" : "history.save"), icon: CopyIcon, onSelect: () => fire(async (context) => {
         await updateAssistantConversation(scope, conversation.id, { isSaved: !conversation.isSaved, version: conversation.version }, context.signal);
@@ -288,7 +310,7 @@ export function useAssistantSession(props: AssistantHomeProps) {
       }, conversation.id) },
       { label: t("history.rename"), accessibleName: t("history.rename"), icon: PencilIcon, onSelect: (trigger: HTMLButtonElement | null) => edit("rename", trigger) },
       ...(["markdown", "pdf"] as const).map((format) => ({ label: t(`history.export.${format}`), accessibleName: t(`history.export.${format}`), icon: CopyIcon, onSelect: () => exportConversation(conversation, format) })),
-      { label: t("history.delete"), accessibleName: t("history.delete"), icon: TrashIcon, destructive: true, onSelect: (trigger: HTMLButtonElement | null) => edit("delete", trigger) },
+      remove,
     ].map((action) => ({ ...action, accessibleName: `${action.accessibleName}: ${title}` }));
   }
   function confirmDialog(title: string) {
@@ -346,5 +368,5 @@ export function useAssistantSession(props: AssistantHomeProps) {
   useEffect(() => client.getQueryCache().subscribe((event) => {
     if (event.type === "updated" && event.action.type === "error") recoverConversation(event.query.queryKey, event.query.state.error);
   }), [client]);
-  return { scope, t, format, phone, selectedId, generation, collapsed, setCollapsed, historyOpen, setHistoryOpen, retentionOpen, setRetentionOpen, phoneActions, setPhoneActions, historyTrigger, restoreHistory, restoreRetention, restoreActions, dialog, dialogPending, files, fileError, fileErrorId, invalidFiles, hasAttachmentError, operations, runtime, state, select, quick, actions, download, retryFailed, acceptNotice, confirmDialog, closeDialog, unavailable, setFileError };
+  return { scope, t, format, phone, selectedId, generation, collapsed, setCollapsed, historyOpen, setHistoryOpen, retentionOpen, setRetentionOpen, phoneActions, setPhoneActions, historyTrigger, restoreHistory, restoreRetention, restoreActions, dialog, dialogPending, files, fileError, fileErrorId, invalidFiles, hasAttachmentError, uploadingId, operations, runtime, state, select, quick, actions, download, retryFailed, acceptNotice, confirmDialog, closeDialog, unavailable, setFileError };
 }

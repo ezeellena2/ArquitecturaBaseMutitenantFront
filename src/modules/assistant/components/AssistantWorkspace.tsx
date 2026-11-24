@@ -21,14 +21,16 @@ import { ConversationDialog } from "./ConversationDialog";
 import { LimitReached } from "./LimitReached";
 import { NotConfigured } from "./NotConfigured";
 import { QuickQueries } from "./QuickQueries";
-import { assistantStreamErrorMessage, canRetryAssistantFailure } from "../errors";
+import { assistantStreamErrorMessage, canRetryAssistantFailure, isUnavailableConversation } from "../errors";
+import { assistantConversationTitle } from "../lib/conversationTitle";
+import { Surface } from "@/shared/ui/Surface";
 import type { AssistantHomeProps } from "../pages/assistantHomeProps";
 import type { AssistantStateResponse } from "../api/types";
 import type { useAssistantSession } from "../hooks/useAssistantSession";
 
 export function AssistantWorkspace({ props, session, state }: { props: AssistantHomeProps; session: ReturnType<typeof useAssistantSession>; state: AssistantStateResponse }) {
   const { t } = useTranslation("assistant");
-  const { scope, format, phone, selectedId, generation, collapsed, setCollapsed, historyOpen, setHistoryOpen, retentionOpen, setRetentionOpen, phoneActions, setPhoneActions, historyTrigger, restoreHistory, restoreRetention, restoreActions, dialog, dialogPending, files, fileError, fileErrorId, invalidFiles, hasAttachmentError, operations, runtime, select, quick, actions, download, retryFailed, acceptNotice, confirmDialog, closeDialog, setFileError } = session;
+  const { scope, format, phone, selectedId, generation, collapsed, setCollapsed, historyOpen, setHistoryOpen, retentionOpen, setRetentionOpen, phoneActions, setPhoneActions, historyTrigger, restoreHistory, restoreRetention, restoreActions, dialog, dialogPending, files, fileError, fileErrorId, invalidFiles, hasAttachmentError, uploadingId, operations, runtime, select, quick, actions, download, retryFailed, acceptNotice, confirmDialog, closeDialog, setFileError } = session;
   const code = runtime.blockedCode ?? (operations.error instanceof ApiError ? operations.error.code : null);
   const configured = state.configured && code !== "Assistant.Settings.NotConfigured";
   const monthly = state.monthlyBudgetProgress?.status === "LimitReached" || code === "Assistant.Limit.MonthlyReached";
@@ -47,8 +49,8 @@ export function AssistantWorkspace({ props, session, state }: { props: Assistant
   const canViewUsage = scope.access === "business" ? props.hasPermission("assistant.configure") : scope.access === "platform" && props.hasPermission("platform.assistant.read");
   const history = <ConversationList scope={scope} lifetime={operations.lifetime} enabled={operations.active && state.noticeAccepted && code !== "Assistant.Notice.AcceptanceRequired"} selectedId={selectedId} retentionDays={state.retentionDays} onNew={() => select(null)} onSelect={select} actions={actions}
     onRetentionInfo={() => { setHistoryOpen(false); setRetentionOpen(true); }}
-    onActions={phone ? (conversation) => { setHistoryOpen(false); setPhoneActions({ title: conversation.title ?? null, items: actions(conversation) }); } : undefined} />;
-  const composer = <><AttachmentComposer key={generation} limits={state} files={files} errorId={hasAttachmentError ? fileErrorId : undefined} placeholder={phone ? t("composer.phonePlaceholder") : t(`composer.${scope.access}Placeholder`, { organization: props.organizationName ?? t("composer.organization") })} unavailable={!configured || limited || notice || !!selectedId && !runtime.canSend && !runtime.isPending} sendBlocked={limit.isRunning} pending={busy} canStop={runtime.canStop}
+    onActions={phone ? (conversation) => { setHistoryOpen(false); setPhoneActions({ title: assistantConversationTitle(conversation, t), items: actions(conversation) }); } : undefined} />;
+  const composer = <><AttachmentComposer key={generation} limits={state} files={files} errorId={hasAttachmentError ? fileErrorId : undefined} placeholder={phone ? t("composer.phonePlaceholder") : t(`composer.${scope.access}Placeholder`, { organization: props.organizationName ?? t("composer.organization") })} unavailable={!configured || limited || notice || !!selectedId && !runtime.canSend && !runtime.isPending} sendBlocked={limit.isRunning} pending={busy} canStop={runtime.canStop} uploadingId={uploadingId}
     onFiles={(chosen) => {
       const issue = validateAssistantFiles(chosen, files.length, state);
       // El exceso permitido queda local para corregirlo; no admite un MIME
@@ -62,6 +64,8 @@ export function AssistantWorkspace({ props, session, state }: { props: Assistant
       {hasAttachmentError ? <p id={fileErrorId} role="alert" className="px-5 pb-3 text-[var(--peligro)]">{fileError ? <span className="block">{fileError}</span> : null}{invalidFiles.map(({ id, file }) =>
         <span key={id} id={`${fileErrorId}-${id}`} className="block">{t("attachments.tooLargeNamed", { name: file.name, size: format.formatFileSize(state.maxAttachmentBytes) })}</span>)}</p> : null}
     </>;
+  // «Conversación no disponible» (0064 §6): esta versión no la puede leer; se dice en el hilo, sin la caja, y se borra desde su ⋮.
+  const unreadable = !!selectedId && isUnavailableConversation(runtime.detail.error);
   const queries = <QuickQueries scope={scope} queries={state.quickQueries} disabled={busy || notice} onSelect={quick} />;
   return <AssistantRuntimeProvider runtime={runtime.runtime}><div className="relative flex min-h-0 flex-1 overflow-hidden text-[var(--t1)]">
     {!phone ? <aside aria-label={t("history.title")} className={`${collapsed ? "w-14" : "w-66"} shrink-0 border-r border-[var(--borde)] bg-[var(--superficie)]`}>
@@ -72,9 +76,12 @@ export function AssistantWorkspace({ props, session, state }: { props: Assistant
       {props.banner}
       {phone ? <><AppBarTools placement="leading"><AppIconButton ref={historyTrigger} label={t("history.title")} onClick={() => setHistoryOpen(true)}><Menu className="size-5.5" /></AppIconButton></AppBarTools><AppBarTools><AppIconButton label={t("history.new")} onClick={() => select(null)}><SquarePen className="size-5.5" /></AppIconButton></AppBarTools></> : null}
       {!configured ? <div className="min-h-0 flex-1 overflow-auto px-5 py-7 md:px-8"><div className="mx-auto flex max-w-190 flex-col gap-3.5 max-md:h-full max-md:justify-center"><NotConfigured canConfigure={state.canConfigure} onConfigure={props.onConfigure} />{props.children}</div></div> : <>
-        {selectedId ? <AssistantThread turn={runtime.turn} turnPending={runtime.isPending} messages={runtime.messages} links={{ scope, hasPermission: props.hasPermission, organizationIds: props.organizationIds, organizationNames: props.organizationNames, onOpenOrganization: props.onOpenOrganization }} canOpenLink={props.canOpenLink} pending={busy}
+        {unreadable ? <div className="flex min-h-0 flex-1 items-center justify-center overflow-auto px-5 py-7 md:px-8"><Surface role="alert" className="flex max-w-120 flex-col items-center gap-3 p-7 text-center">
+          <span className="flex size-9 items-center justify-center rounded-full bg-[var(--s2)] text-[var(--t3)]"><Sparkles className="size-5" aria-hidden="true" /></span>
+          <strong className="text-[1.0625rem] font-semibold text-balance">{t("history.unavailableBody")}</strong>
+        </Surface></div> : selectedId ? <AssistantThread turn={runtime.turn} turnPending={runtime.isPending} messages={runtime.messages} links={{ scope, hasPermission: props.hasPermission, organizationIds: props.organizationIds, organizationNames: props.organizationNames, onOpenOrganization: props.onOpenOrganization }} canOpenLink={props.canOpenLink} pending={busy}
           onDownload={download} retry={runtime.messages.at(-1)?.status === "Failed" && runtime.canSend && canRetryAssistantFailure(runtime.turn?.error) ? { messageId: runtime.messages.at(-1)!.id, retryAfter: runtime.turn?.error?.retryAfter, onRetry: retryFailed } : undefined} /> : <div className="min-h-0 flex-1 overflow-auto px-5 py-7 md:px-8"><div className="mx-auto flex max-w-190 flex-col gap-3.5 max-md:min-h-full max-md:justify-center"><div className="mb-1 flex items-center justify-center gap-3 max-md:flex-col"><span className="flex size-9 items-center justify-center rounded-full bg-[var(--marca-t)] text-[var(--marca-tx)]"><Sparkles className="size-5" aria-hidden="true" /></span><h2 className="text-center text-[1.625rem] font-semibold">{t("welcome")}</h2></div>{props.welcome}{!phone ? limited ? <LimitReached organizationName={props.organizationName} monthly={monthly} state={state} onUsage={canViewUsage ? props.onUsage : undefined} /> : <>{limitNotice}{composer}</> : null}{queries}{props.children}</div></div>}
-        {selectedId || phone ? <div className="mx-auto flex w-full max-w-206 shrink-0 flex-col gap-3 px-5 pb-4 md:px-8">{limited ? <LimitReached organizationName={props.organizationName} monthly={monthly} state={state} onUsage={canViewUsage ? props.onUsage : undefined} /> : <>{limitNotice}{composer}</>}</div> : null}
+        {(selectedId || phone) && !unreadable ? <div className="mx-auto flex w-full max-w-206 shrink-0 flex-col gap-3 px-5 pb-4 md:px-8">{limited ? <LimitReached organizationName={props.organizationName} monthly={monthly} state={state} onUsage={canViewUsage ? props.onUsage : undefined} /> : <>{limitNotice}{composer}</>}</div> : null}
       </>}
       {actionError && !dialog && !notice ? <p role="alert" className="px-5 pb-3 text-[var(--peligro)]">{actionError}</p> : null}
       {runtimeError ? <p role="alert" className="px-5 pb-3 text-[var(--peligro)]">{runtimeError}</p> : null}

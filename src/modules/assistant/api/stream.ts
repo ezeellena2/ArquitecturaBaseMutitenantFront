@@ -67,16 +67,18 @@ function validate<T>(schema: z.ZodType<T>, data: unknown): T {
   return parsed.data;
 }
 
-function parseEvent(event: string, text: string): AssistantStreamHttpResponse {
-  const data = parseJson(text);
+// Una pestaña abierta descarta lo que no conoce (0064 §6): un evento que esta versión no sabe leer no frena la consulta,
+// y los campos nuevos de un evento conocido se descartan (z.object). Un valor fuera de un enum sigue siendo un error: el
+// back lo escribe un despliegue después de la versión que lo lee.
+function parseEvent(event: string, text: string): AssistantStreamHttpResponse | null {
   switch (event) {
-    case "start": return { event, data: validate(start, data) };
-    case "delta": return { event, data: validate(delta, data) };
-    case "tool": return { event, data: validate(tool, data) };
-    case "title": return { event, data: validate(title, data) };
-    case "error": return { event, data: validate(failed, data) };
-    case "done": return { event, data: validate(turn, data) };
-    default: throw protocolError();
+    case "start": return { event, data: validate(start, parseJson(text)) };
+    case "delta": return { event, data: validate(delta, parseJson(text)) };
+    case "tool": return { event, data: validate(tool, parseJson(text)) };
+    case "title": return { event, data: validate(title, parseJson(text)) };
+    case "error": return { event, data: validate(failed, parseJson(text)) };
+    case "done": return { event, data: validate(turn, parseJson(text)) };
+    default: return null;
   }
 }
 
@@ -99,7 +101,8 @@ class SseFrames {
         const data = this.data;
         this.event = "";
         this.data = [];
-        if (data.length > 0) yield parseEvent(event, data.join("\n"));
+        const parsed = data.length > 0 ? parseEvent(event, data.join("\n")) : null;
+        if (parsed) yield parsed;
       } else if (!line.startsWith(":")) {
         const colon = line.indexOf(":");
         const field = colon < 0 ? line : line.slice(0, colon);

@@ -7,6 +7,7 @@ import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { homeOf } from "@/tenancy/access";
 import { AssistantWorkspace } from "../components/AssistantWorkspace";
 import { useAssistantSession } from "../hooks/useAssistantSession";
+import { isUnavailableConversation } from "../errors";
 import type { AssistantHomeProps } from "./assistantHomeProps";
 export type { AssistantHomeProps } from "./assistantHomeProps";
 
@@ -20,7 +21,8 @@ function AssistantSession(props: AssistantHomeProps) {
   const session = useAssistantSession(props);
   const { operations, unavailable, runtime, scope, selectedId, state } = session;
   if (!operations.active || unavailable && props.onUnavailable) return null;
-  const error = runtime.state.error ?? runtime.detail.error;
+  // Una conversación que esta versión no puede leer (0064 §6) no es un error de la pantalla: el hilo lo dice y se borra.
+  const error = runtime.state.error ?? (isUnavailableConversation(runtime.detail.error) ? null : runtime.detail.error);
   if (error instanceof ApiError && error.status === 403) return <ForbiddenPage homePath={homeOf(scope.access)} />;
   if (error instanceof ApiError && error.status === 404) return <NotFoundPage homePath={homeOf(scope.access)} />;
   if (error) return <AssistantCoreStatus {...props} title={t("title")} status={<LoadErrorPage screen={t("title")} onRetry={() => { void runtime.state.refetch(); if (selectedId) void runtime.detail.refetch(); }} />} />;

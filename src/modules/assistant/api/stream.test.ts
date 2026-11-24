@@ -74,8 +74,6 @@ describe("Assistant wire SSE", () => {
 
   it.each([
     'event: delta\ndata: private-broken-json\n\n',
-    'event: surprise\ndata: {}\n\n',
-    'data: {}\n\n',
     frame("delta", { turnId: "turn", sequence: "private-sequence", text: "private" }),
     frame("tool", { turnId: "turn", toolKey: "people", state: "unknown", labelKey: "private" }),
     frame("error", { code: "private", traceId: "trace", status: 500 }),
@@ -85,6 +83,17 @@ describe("Assistant wire SSE", () => {
     const error: unknown = await collect(response(text)).catch((caught: unknown) => caught);
     expect(error).toBeInstanceOf(AssistantStreamError);
     expect(error).toMatchObject({ code: "Assistant.Stream.Protocol", message: "Assistant.Stream.Protocol" });
+  });
+
+  it("una pestaña abierta descarta el evento y los campos que no conoce, y sigue hasta el terminal (0064 §6)", async () => {
+    const delta = { turnId: "turn", sequence: 1, text: "Hola" };
+    const source = response('event: surprise\ndata: {"private":true}\n\n' + 'data: {}\n\n' + 'event: progress\ndata: no-es-json\n\n'
+      + frame("delta", { ...delta, newField: "desconocido" }) + frame("done", { ...result, newField: 1, message: { ...result.message, newField: "x" } }));
+    await expect(collect(source)).resolves.toEqual([{ event: "delta", data: delta }, { event: "done", data: result }]);
+  });
+
+  it("un evento desconocido sin terminal sigue pidiendo releer", async () => {
+    await expect(collect(response('event: surprise\ndata: {}\n\n'))).rejects.toMatchObject({ code: "Assistant.Stream.Incomplete" });
   });
 
   it.each(["", ": heartbeat\n\n", frame("delta", { turnId: "turn", sequence: 1, text: "partial" }), frame("done", result).trimEnd()])("EOF sin terminal informa que hay que releer durable (%#)", async (text) => {
