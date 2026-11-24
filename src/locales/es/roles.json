@@ -78,12 +78,6 @@
     "permissionsRequired": "Elegí al menos un permiso."
   },
   "emptyFiltered": "Ningún rol coincide con los filtros",
-  "phone": {
-    "users_one": "{{n}} usuario",
-    "users_other": "{{n}} usuarios",
-    "permissions_one": "{{n}} permiso",
-    "permissions_other": "{{n}} permisos"
-  },
   "inUse_one": "Lo tiene {{n}} usuario. Quitáselo primero.",
   "inUse_other": "Lo tienen {{n}} usuarios. Quitáselo primero.",
   "deactivating": "Dando de baja…"

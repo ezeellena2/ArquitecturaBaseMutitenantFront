@@ -2,10 +2,9 @@ import type { Column } from "@/shared/ui/DataTable";
 import type { RoleResponse, RoleScope } from "@/shared/api/types";
 import { Link } from "react-router";
 import type { ReactNode } from "react";
-import { ListRow } from "@/shared/ui/app/ListRow";
+import { ListCard } from "@/shared/ui/app/ListRow";
+import { NumberText } from "@/shared/ui/format/NumberText";
 import { permissionCountInScope } from "./lib/permissionPicker";
-import type { FormatState } from "@/shared/format/useFormat";
-import { countOf } from "@/shared/format/countOf";
 
 type TranslateRole = (key: string) => string;
 
@@ -46,10 +45,13 @@ export function createRoleColumns(t: TranslateRole): Column<RoleResponse>[] {
   ];
 }
 
-/// Tablero M-Roles: en el teléfono cada rol es una fila con cuántos lo tienen a la derecha, dónde vale (y si es de
-/// sistema) y cuántos permisos tiene.
-export function rolePhoneRow(role: RoleResponse, t: TranslateRole & ((key: string, options: { count: number; n: string }) => string), format: FormatState, trailing: ReactNode): ReactNode {
-  const scope = roleScopeLabel(role.scope, t, role.companyName ?? undefined);
-  return <ListRow key={role.id} to={`/org/roles/${encodeURIComponent(role.id)}`} title={role.name} meta={t("roles:phone.users", countOf(format, role.userCount))}
-    lines={[role.isSystemRole ? `${t("roles:system")} · ${scope}` : scope, t("roles:phone.permissions", countOf(format, visiblePermissionCount(role)))]} trailing={trailing} />;
+/// Tablero M-Filas-Base2 (M-Roles, 263): en el teléfono cada rol es una tarjeta con su tipo, dónde vale, cuántos lo tienen y
+/// cuántos permisos tiene, cada dato con su nombre.
+export function rolePhoneRow(role: RoleResponse, t: TranslateRole, trailing: ReactNode): ReactNode {
+  return <ListCard key={role.id} to={`/org/roles/${encodeURIComponent(role.id)}`} title={role.name} fields={[
+    { label: t("roles:columns.type"), value: t(role.isSystemRole ? "roles:system" : "roles:custom") },
+    { label: t("roles:columns.scope"), value: roleScopeLabel(role.scope, t, role.companyName ?? undefined) },
+    { label: t("roles:columns.users"), value: <NumberText value={role.userCount} /> },
+    { label: t("roles:columns.permissions"), value: <NumberText value={visiblePermissionCount(role)} /> },
+  ]} trailing={trailing} />;
 }

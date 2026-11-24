@@ -5,12 +5,11 @@ import type { PlatformTenantDetailResponse, PlatformTenantHistoryResponse, Platf
 import { tenantStatusTones, type StatusTones } from "@/shared/format/statusTones";
 export { tenantStatusTones } from "@/shared/format/statusTones";
 import type { Column } from "@/shared/ui/DataTable";
-import { ListRow } from "@/shared/ui/app/ListRow";
+import { ListCard, ListRow } from "@/shared/ui/app/ListRow";
 import { DateText } from "@/shared/ui/format/DateText";
 import { EmailText } from "@/shared/ui/format/EmailText";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { EnumText } from "@/shared/ui/format/EnumText";
-import { NumberText } from "@/shared/ui/format/NumberText";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 
 export const organizationPath = (id: string) => `/plataforma/organizaciones/${encodeURIComponent(id)}`;
@@ -56,13 +55,15 @@ function ownerOf(organization: PlatformTenantResponse): ReactNode {
   return organization.ownerName || (organization.ownerEmail ? <EmailText value={organization.ownerEmail} /> : <EmptyValue />);
 }
 
+/// Tablero M-Filas-Base2 (M-Organizaciones, 263): en el teléfono cada organización es una tarjeta con su estado, el alta, el
+/// Dueño y el origen, cada dato con su nombre; las empresas y los miembros se leen en la ficha.
 export function organizationPhoneRow(organization: PlatformTenantResponse, t: TFunction, trailing: ReactNode): ReactNode {
-  return <ListRow key={organization.id} to={organizationPath(organization.id)} title={organization.name}
-    meta={<DateText value={organization.createdAtUtc} kind="date" />}
-    lines={[
-      <>{ownerOf(organization)}{" · "}{organization.companyCount === 0 ? t("platformTenants:columns.noCompanies") : <><NumberText value={organization.companyCount} /> {t("platformTenants:columns.company", { count: organization.companyCount })}{" · "}<NumberText value={organization.memberCount} /> {t("platformTenants:columns.member", { count: organization.memberCount })}</>}</>,
-      <><StatusBadge tones={tenantStatusTones} value={organization.status} />{" · "}<EnumText enum="TenantRegistrationSource" value={organization.source} /></>,
-    ]} trailing={trailing} />;
+  return <ListCard key={organization.id} to={organizationPath(organization.id)} title={organization.name} fields={[
+    { label: t("platformTenants:columns.status"), value: <StatusBadge tones={tenantStatusTones} value={organization.status} /> },
+    { label: t("platformTenants:columns.created"), value: <DateText value={organization.createdAtUtc} kind="date" /> },
+    { label: t("platformTenants:columns.owner"), value: ownerOf(organization) },
+    { label: t("platformTenants:columns.source"), value: <EnumText enum="TenantRegistrationSource" value={organization.source} /> },
+  ]} trailing={trailing} />;
 }
 export function createOrganizationColumns(t: TFunction): Column<PlatformTenantResponse>[] {
   return [

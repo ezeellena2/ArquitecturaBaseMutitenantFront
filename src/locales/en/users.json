@@ -12,8 +12,6 @@
     "expires": "Expires",
     "expiresPrefix": "Expires",
     "expiredPrefix": "Expired",
-    "expiresInline": "expires",
-    "expiredInline": "expired",
     "actions": "Actions",
     "companyAndMore": "{{company}} and {{count}} more"
   },
@@ -160,5 +158,8 @@
     "lastOwnerRemovingRole": "The organization must keep at least one Owner. Give the role to someone else before removing it from yourself.",
     "lastOwnerLeaving": "The organization must keep at least one Owner. Give the role to someone else before leaving the organization."
   },
-  "loadFailed": "We couldn't load the users."
+  "loadFailed": "We couldn't load the users.",
+  "card": {
+    "role": "Role"
+  }
 }

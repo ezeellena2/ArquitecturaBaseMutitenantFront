@@ -7,7 +7,7 @@ import { configureI18n, changeCulture } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
-import { asPhone } from "@/test/utils/phone";
+import { asPhone, cardData } from "@/test/utils/phone";
 import type { PlatformTenantResponse, TenantStatus } from "@/shared/api/types";
 import { tenantsQueryRoot } from "../api/tenants";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
@@ -272,8 +272,11 @@ describe("OrganizationsPage", () => {
     try {
       server.use(http.get("/api/platform/tenants/paged", ({ request }) => { const size = new URL(request.url).searchParams.get("pageSize") ?? "10"; pageSizes.push(size); return HttpResponse.json(list(rows, 50, Number(size))); }));
       const { container } = renderRouteWithProviders("/plataforma", { as: "platform-operator" });
-      const omega = await screen.findByRole("link", { name: /^Omega/u }); expect(omega).toHaveTextContent("12/01/2026"); expect(omega).toHaveTextContent("lucia@example.com · 1 empresa · 1 miembro");
-      expect(screen.getByRole("link", { name: /Sigma/ })).toHaveTextContent("Rosa Luna · sin empresas"); expect(screen.getByRole("link", { name: /Sigma/ })).not.toHaveTextContent("0 miembros");
+      const omega = await screen.findByRole("link", { name: /^Omega/u });
+      // M-Filas-Base2 (M-Organizaciones, 263): una tarjeta con el estado, el alta, el Dueño y el origen, cada dato nombrado.
+      expect(cardData(omega.closest("li")!).map(([label]) => label)).toEqual(["Estado", "Alta", "Dueño", "Origen"]);
+      expect(cardData(omega.closest("li")!).slice(1, 3)).toEqual([["Alta", "12/01/2026"], ["Dueño", "lucia@example.com"]]);
+      expect(cardData(screen.getByRole("link", { name: /Sigma/ }).closest("li")!)[2]).toEqual(["Dueño", "Rosa Luna"]); expect(omega.closest("li")!.textContent).not.toContain("·");
       expect(screen.queryByRole("table")).not.toBeInTheDocument(); expect(omega.closest("li")!.querySelector("[data-slot='avatar']")).toBeNull(); expect(screen.getByRole("button", { name: "Crear organización" })).toHaveClass("fixed", "size-14");
       await user.click(screen.getByRole("button", { name: "Cargar más" })); await waitFor(() => expect(pageSizes.at(-1)).toBe("20"));
       expect(await axe(container)).toHaveNoViolations();

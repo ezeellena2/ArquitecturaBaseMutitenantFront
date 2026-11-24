@@ -11,7 +11,7 @@
     "statuses": { "all": "Todas", "PendingApproval": "Espera aprobación", "Active": "Activa", "Suspended": "Suspendida", "Provisioning": "Falló el alta", "Closed": "Cerrada" },
     "sources": { "all": "Todos", "SelfService": "Autoservicio", "Platform": "Creada por la plataforma" }
   },
-  "columns": { "organization": "Organización", "owner": "Dueño", "companies": "Empresas", "members": "Miembros", "status": "Estado", "actions": "Acciones", "created": "Alta", "noCompanies": "sin empresas", "company_one": "empresa", "company_other": "empresas", "member_one": "miembro", "member_other": "miembros" },
+  "columns": { "organization": "Organización", "owner": "Dueño", "companies": "Empresas", "members": "Miembros", "status": "Estado", "actions": "Acciones", "source": "Origen", "created": "Alta", "noCompanies": "sin empresas", "company_one": "empresa", "company_other": "empresas", "member_one": "miembro", "member_other": "miembros" },
   "actions": { "view": "Ver ficha", "approve": "Aprobar", "reject": "Rechazar", "retry": "Reintentar el alta", "suspend": "Suspender", "reactivate": "Reactivar", "close": "Cerrar" },
   "empty": { "all": "Todavía no hay organizaciones", "filtered": "Ninguna organización coincide con los filtros", "clear": "Limpiar filtros" },
   "create": { "title": "Crear organización", "name": "Nombre de la organización", "firstCompany": "Primera empresa", "email": "Correo del Dueño", "zone": "Zona horaria", "culture": "Idioma y región", "submit": "Crear organización", "pending": "Creando…", "nameRequired": "Escribí el nombre de la organización.", "companyRequired": "Escribí el nombre de la primera empresa.", "emailRequired": "Escribí el correo.", "emailInvalid": "Revisá el correo: no parece válido." },

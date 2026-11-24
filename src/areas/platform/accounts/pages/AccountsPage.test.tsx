@@ -8,7 +8,7 @@ import type { ApiSchemas } from "@/shared/api/types";
 import { meHandlerFor, referenceDataFixture } from "@/test/mocks/handlers";
 import { platformOperator } from "@/test/mocks/currentUsers";
 import { server } from "@/test/mocks/server";
-import { asPhone } from "@/test/utils/phone";
+import { asPhone, cardData } from "@/test/utils/phone";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
 import { accountQueryKey, accountsQueryRoot } from "../api/accounts";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
@@ -53,13 +53,24 @@ describe("Cuentas de Plataforma", () => {
     await reason(user, "Suspender");
     expect(await screen.findByText(`Suspendimos la cuenta de ${mask}.`)).toBeVisible();
   });
-  it.each([false, true])("Phone principal con nombre: móvil=%s conserva el nombre y muestra la máscara como contacto", async (phone) => {
-    if (phone) asPhone();
+  it("Phone principal con nombre: conserva el nombre y muestra la máscara como contacto", async () => {
     server.use(http.get("/api/platform/accounts/paged", () => HttpResponse.json(list([{ ...person, maskedPrimaryPhone: "•••• 4521" }]))));
     renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" });
-    expect(await screen.findByRole("link", { name: phone ? /Lucía Fernández/u : "Lucía Fernández" })).toBeVisible();
+    expect(await screen.findByRole("link", { name: "Lucía Fernández" })).toBeVisible();
     expect(screen.getByText("•••• 4521")).toBeVisible();
     expect(screen.queryByText(person.primaryEmail!)).not.toBeInTheDocument();
+  });
+  // M-Cuentas-Base2 (263): en el teléfono cada cuenta es una tarjeta con sus perfiles, su estado y el último ingreso, cada dato
+  // con su nombre y sin el contacto.
+  it("390: la cuenta es una tarjeta con sus datos nombrados, sin el contacto", async () => {
+    asPhone();
+    server.use(http.get("/api/platform/accounts/paged", () => HttpResponse.json(list([{ ...person, maskedPrimaryPhone: "•••• 4521" }]))));
+    renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" });
+    const card = (await screen.findByRole("link", { name: /Lucía Fernández/u })).closest("li")!;
+    expect(cardData(card).map(([label]) => label)).toEqual(["Perfiles", "Estado", "Último ingreso"]);
+    expect(card.querySelectorAll("dl > div")[2]).toHaveClass("col-span-2");
+    expect(screen.queryByText("•••• 4521")).not.toBeInTheDocument();
+    expect(card.textContent).not.toContain("·");
   });
   it.each([false, true])("cuenta sin nombre ni correo: móvil=%s conserva vacío accesible, menú, confirmación y aviso", async (phone) => {
     if (phone) asPhone();

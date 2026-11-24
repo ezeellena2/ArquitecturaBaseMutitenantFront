@@ -5,7 +5,7 @@ import type { OrganizationUserResponse } from "@/shared/api/types";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { DateText } from "@/shared/ui/format/DateText";
 import type { ReactNode } from "react";
-import { ListRow, RowAvatar } from "@/shared/ui/app/ListRow";
+import { ListCard, RowAvatar } from "@/shared/ui/app/ListRow";
 import { defineStatusTones } from "@/shared/format/statusTones";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 import { EmailText } from "@/shared/ui/format/EmailText";
@@ -28,28 +28,28 @@ export const userStateTones = defineStatusTones("OrganizationUserState", {
   Active: "success", PendingDeletion: "warning", Inactive: "neutral", Invited: "pending", Expired: "warning",
 });
 
-/// Tablero M-Usuarios: en el teléfono cada persona es una fila con su círculo, el correo y, en la línea de abajo, el
-/// estado con su punto, los roles de la organización y la empresa. Una invitación sin nombre lleva «@», o el teléfono si es
-/// por teléfono.
+/// La primera empresa de la persona con «y N más» (tablero Usuarios), igual en la compu y en el teléfono.
+function companiesText(user: OrganizationUserResponse, t: TFunction): string | null {
+  const [first, ...others] = user.companies;
+  if (!first) return null;
+  return others.length > 0 ? t("users:columns.companyAndMore", { company: first.companyName, count: others.length }) : first.companyName;
+}
+
+/// Tablero M-Usuarios-Base2 (263): en el teléfono cada persona es una tarjeta con su círculo, su estado, sus roles de la
+/// organización y su empresa; una invitación lleva el estado, la empresa y hasta cuándo vale. Cada dato con su nombre, sin
+/// el correo. Una invitación sin nombre lleva «@», o el teléfono si es por teléfono, y se nombra por su correo o su número.
 export function userPhoneRow(user: OrganizationUserResponse, t: TFunction, trailing: ReactNode): ReactNode {
   const invitation = user.state === "Invited" || user.state === "Expired";
-  const organizationRoles = user.roles.filter((role) => role.scope === "Organization").map((role) => role.name);
-  const [first, ...others] = user.companies;
-  const company = first ? (others.length > 0 ? t("users:columns.companyAndMore", { company: first.companyName, count: others.length })
-    : organizationRoles.length === 0 && first.roles.length > 0 ? `${first.companyName} · ${first.roles.map((role) => role.name).join(", ")}` : first.companyName) : null;
-  const details = invitation
-    ? (user.invitationExpiresAtUtc ? [<>{t(user.state === "Expired" ? "users:columns.expiredInline" : "users:columns.expiresInline")} <DateText value={user.invitationExpiresAtUtc} kind="date" /></>] : [])
-    : [...organizationRoles, ...(company ? [company] : [])];
-  const status = <span>
-    <StatusBadge tones={userStateTones} value={user.state} className="text-[0.78125rem] text-[var(--t2)]" />
-    {details.map((detail, index) => <span key={index}>{" · "}{detail}</span>)}
-  </span>;
+  const state = { label: t("users:columns.state"), value: <StatusBadge tones={userStateTones} value={user.state} /> };
+  const company = { label: t("users:columns.companies"), value: companiesText(user, t) ?? <EmptyValue /> };
+  const roles = user.roles.filter((role) => role.scope === "Organization").map((role) => role.name).join(", ");
+  const fields = invitation
+    ? [state, company, { label: t("users:columns.expires"), value: <DateText value={user.invitationExpiresAtUtc} kind="dateTime" /> }]
+    : [state, { label: t("users:card.role"), value: roles || <EmptyValue /> }, company];
   const named = Boolean(user.displayName);
-  return <ListRow key={user.memberId} to={`/org/usuarios/${encodeURIComponent(user.memberId)}`}
+  return <ListCard key={user.memberId} to={`/org/usuarios/${encodeURIComponent(user.memberId)}`}
     leading={<RowAvatar name={user.displayName || user.email || ""} invitation={!named && invitation} phone={!user.email && Boolean(user.phone)} />}
-    title={user.displayName || userContact(user) || ""}
-    lines={named ? [userContact(user) ?? "", status] : [company ?? "", status]}
-    trailing={trailing} />;
+    title={user.displayName || userContact(user) || ""} fields={fields} trailing={trailing} />;
 }
 
 export function createUserColumns(t: TFunction): Column<OrganizationUserResponse>[] {
@@ -70,9 +70,8 @@ export function createUserColumns(t: TFunction): Column<OrganizationUserResponse
       id: "companies", header: t("users:columns.companies"), type: "custom",
       // Tablero Usuarios: la primera empresa con «y N más».
       cell: (user) => {
-        const [first, ...others] = user.companies;
-        if (!first) return <EmptyValue />;
-        return <span className="text-[var(--t1)]">{others.length > 0 ? t("users:columns.companyAndMore", { company: first.companyName, count: others.length }) : first.companyName}</span>;
+        const companies = companiesText(user, t);
+        return companies ? <span className="text-[var(--t1)]">{companies}</span> : <EmptyValue />;
       },
     },
     { id: "state", header: t("users:columns.state"), type: "status", tones: userStateTones, value: (user) => user.state, mobile: "status", className: "w-40.5 max-md:w-[38%]" },

@@ -7,7 +7,7 @@ import { configureI18n, changeCulture } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
-import { asPhone } from "@/test/utils/phone";
+import { asPhone, cardData } from "@/test/utils/phone";
 
 const ownerRole = {
   id: "role-owner", name: "Dueño", isSystemRole: true, scope: "Organization" as const, companyId: null,
@@ -70,7 +70,8 @@ describe("UsersPage", () => {
   });
 
   // Lienzo v99 («Fecha corta»): en la lista del teléfono, cuándo vence va sin el año si es del año en curso; si no, completa.
-  it("en el teléfono, la invitación del año en curso vence sin el año y la de otro año, con el año", async () => {
+  // M-Usuarios-Base2 (263): la invitación es una tarjeta con su estado, su empresa y hasta cuándo vale, cada dato nombrado.
+  it("en el teléfono, la invitación es una tarjeta que dice hasta cuándo vale, con la fecha completa", async () => {
     vi.useFakeTimers({ toFake: ["Date"] });
     vi.setSystemTime(new Date("2026-10-01T15:00:00Z"));
     const restore = asPhone();
@@ -88,11 +89,11 @@ describe("UsersPage", () => {
 
       const thisYear = (await screen.findByRole("link", { name: /Sofía Herrera/ })).closest("li")!;
       // formatos.md (base de la 12): la fecha va completa, con su año, también la del año en curso.
-      expect(within(thisYear).getByText("02/10/2026")).toHaveAttribute("datetime", "2026-10-02T12:00:00Z");
-      // Tablero M-Usuarios: después del punto, «vence» en minúscula.
-      expect(thisYear).toHaveTextContent("Invitación pendiente · vence 02/10/2026");
+      expect(within(thisYear).getByText("02/10/2026, 09:00")).toHaveAttribute("datetime", "2026-10-02T12:00:00Z");
+      expect(cardData(thisYear)).toEqual([["Estado", "Invitación pendiente"], ["Empresa", "—"], ["Vence", "02/10/2026, 09:00"]]);
+      expect(thisYear.textContent).not.toContain("·");
       const nextYear = screen.getByRole("link", { name: /Valentina Ruiz/ }).closest("li")!;
-      expect(within(nextYear).getByText("05/01/2027")).toBeInTheDocument();
+      expect(within(nextYear).getByText("05/01/2027, 09:00")).toBeInTheDocument();
     } finally {
       restore();
       vi.useRealTimers();

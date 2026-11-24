@@ -1,13 +1,12 @@
 import { Pencil } from "lucide-react";
 import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { useTranslation } from "react-i18next";
-import { useFormat } from "@/shared/format/useFormat";
-import { countOf } from "@/shared/format/countOf";
 import { Link, useNavigate } from "react-router";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
 import type { RoleResponse } from "@/shared/api/types";
-import { ListRow } from "@/shared/ui/app/ListRow";
+import { ListCard } from "@/shared/ui/app/ListRow";
 import { DataTable, type Column } from "@/shared/ui/DataTable";
+import { NumberText } from "@/shared/ui/format/NumberText";
 import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
@@ -19,7 +18,6 @@ import type { CompanyRoles } from "./useCompanyRoles";
  */
 export function CompanyRolesTab({ roles }: { roles: CompanyRoles }) {
   const { t } = useTranslation(["companies", "roles", "common"]);
-  const format = useFormat();
   const navigate = useNavigate();
   const { result: query, paginationProps } = usePagedQuery({ filterKeys: [] as const, prefix: "roles.", defaultSort: "name",
     toQuery: ({ page, pageSize }) => ({ page, pageSize, sort: "name" }),
@@ -39,8 +37,10 @@ export function CompanyRolesTab({ roles }: { roles: CompanyRoles }) {
 
   return <Surface className="overflow-hidden" phoneFlush>
     <DataTable columns={columns} rows={query.data?.items ?? []} rowKey={(role) => role.id}
-      mobileRow={(role) => <ListRow key={role.id} to={`/org/roles/${encodeURIComponent(role.id)}`} title={role.name}
-        meta={t("roles:phone.users", countOf(format, role.userCount))} lines={[t("roles:phone.permissions", countOf(format, role.permissions.length))]} trailing={roleActions(role)} />}
+      mobileRow={(role) => <ListCard key={role.id} to={`/org/roles/${encodeURIComponent(role.id)}`} title={role.name} fields={[
+        { label: t("companies:roleColumns.users"), value: <NumberText value={role.userCount} /> },
+        { label: t("companies:roleColumns.permissions"), value: <NumberText value={role.permissions.length} /> },
+      ]} trailing={roleActions(role)} />}
       isLoading={query.isPending} isFetching={query.isFetching} error={query.error ? apiErrorMessage(query.error, t) : undefined}
       onRetry={() => { void query.refetch(); }} emptyTitle={t("companies:detail.rolesEmpty")} />
     {paginationProps ? <Pagination {...paginationProps} /> : null}

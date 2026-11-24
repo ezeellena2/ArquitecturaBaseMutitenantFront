@@ -92,8 +92,6 @@
     "state": "Status",
     "expiresPrefix": "Expires",
     "expiredPrefix": "Expired",
-    "expiresInline": "expires",
-    "expiredInline": "expired",
     "expires": "Expires"
   },
   "back": "Back to Companies",
@@ -154,8 +152,7 @@
   "summaryActive_one": "{{n}} active",
   "summaryActive_other": "{{n}} active",
   "roleActions": "Actions for {{name}}",
-  "phone": {
-    "members_one": "{{n}} member",
-    "members_other": "{{n}} members"
+  "card": {
+    "roles": "Roles"
   }
 }

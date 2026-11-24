@@ -4,41 +4,52 @@ import { Link, useNavigate } from "react-router";
 import { Plus } from "lucide-react";
 import { useFormat } from "@/shared/format/useFormat";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
-import { ListRow } from "@/shared/ui/app/ListRow";
+import type { PlatformLegalDocumentGroupResponse } from "@/shared/api/types";
+import { ListCard } from "@/shared/ui/app/ListRow";
 import { Button } from "@/shared/ui/button";
+import { DataTable, type Column } from "@/shared/ui/DataTable";
+import { DateText } from "@/shared/ui/format/DateText";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
-import { List, ListItem } from "@/shared/ui/List";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { Page } from "@/shared/ui/Page";
 import { RowActions } from "@/shared/ui/RowActions";
-import { StatusDot } from "@/shared/ui/StatusDot";
 import { Surface } from "@/shared/ui/Surface";
 import { fetchLegalDocuments, legalDocumentsQueryKey } from "../api/legalDocuments";
 import { nextEffectiveVersion } from "../lib/legalVersions";
+
+type Document = PlatformLegalDocumentGroupResponse;
 
 export function LegalDocumentsPage() {
   const { t } = useTranslation(["platformLegal", "enums", "common"]); const format = useFormat(); const { phone } = useAppChrome(); const navigate = useNavigate();
   const documents = useQuery({ queryKey: legalDocumentsQueryKey, queryFn: fetchLegalDocuments, meta: { silent: true, blocksView: true } });
   if (documents.isError && !documents.data) return <LoadErrorPage onRetry={() => { void documents.refetch(); }} />;
   const rows = documents.data ?? []; const title = t("platformLegal:title"); const publish = t("platformLegal:newVersion");
+  const documentName = (document: Document) => t(`enums:LegalDocumentKind.${document.kind}`);
+  const versionText = (version: number | null | undefined) => version == null ? <EmptyValue /> : t("platformLegal:version", { version: format.formatInteger(version) });
+  const actions = (document: Document) => <RowActions label={t("platformLegal:rowActions", { name: documentName(document) })} title={documentName(document)}
+    actions={[{ label: publish, accessibleName: publish, icon: Plus, onSelect: () => { void navigate(`/plataforma/legales/nueva?documento=${document.kind}`); } }]} />;
+  const columns: Column<Document>[] = [
+    { id: "kind", header: t("platformLegal:columns.document"), type: "custom", mobile: "primary", className: "w-[28%]",
+      cell: (document) => <span className="font-medium text-[var(--t1)]">{documentName(document)}</span> },
+    { id: "currentVersion", header: t("platformLegal:columns.current"), type: "custom", cell: (document) => versionText(document.currentVersion) },
+    { id: "currentEffectiveAtUtc", header: t("platformLegal:columns.currentSince"), type: "date", value: (document) => document.currentEffectiveAtUtc },
+    { id: "scheduledVersion", header: t("platformLegal:columns.scheduled"), type: "custom", cell: (document) => versionText(nextEffectiveVersion(document)?.version) },
+    { id: "scheduledEffectiveAtUtc", header: t("platformLegal:columns.scheduledSince"), type: "date", value: (document) => nextEffectiveVersion(document)?.effectiveAtUtc },
+    { id: "actions", header: t("platformLegal:columns.actions"), type: "actions", cell: actions },
+  ];
   return <Page title={title} summary={documents.data ? t("platformLegal:summary", { documents: format.formatInteger(rows.length), versions: format.formatInteger(rows.reduce((total, document) => total + document.versions.length, 0)) }) : undefined}
     phoneSubtitle={t("common:navigation.administration")} backTo={phone ? { to: "/plataforma/mas", label: t("platformLegal:back") } : undefined} phoneBody="flush"
     actions={<Button asChild><Link to="/plataforma/legales/nueva"><Plus aria-hidden="true" />{publish}</Link></Button>} fab={{ label: publish, to: "/plataforma/legales/nueva" }}>
-    {documents.isPending ? <p role="status">{t("common:states.loading")}</p> : <Surface phoneFlush><List label={title}>
-      {rows.map((document) => {
-        const name = t(`enums:LegalDocumentKind.${document.kind}`); const future = nextEffectiveVersion(document);
-        const pending = future ? <StatusDot tone="pending" label={t("platformLegal:nextEffective", { version: format.formatInteger(future.version), date: format.formatDate(future.effectiveAtUtc) })} /> : null;
-        const actions = <RowActions label={t("platformLegal:rowActions", { name })} title={name} actions={[{ label: publish, accessibleName: publish, icon: Plus, onSelect: () => { void navigate(`/plataforma/legales/nueva?documento=${document.kind}`); } }]} />;
-        const version = document.currentVersion == null ? <EmptyValue /> : t("platformLegal:version", { version: format.formatInteger(document.currentVersion) });
-        const effective = document.currentEffectiveAtUtc ? format.formatDate(document.currentEffectiveAtUtc) : null;
-        return phone ? <ListRow key={document.kind} title={name} meta={version} lines={[
-          effective ? t("platformLegal:effectiveSince", { date: effective }) : <EmptyValue key="effective" />,
-          <span key="count">{t("platformLegal:versionCount", { count: document.versions.length })}{pending ? <>{" · "}{pending}</> : null}</span>,
-        ]} trailing={actions} /> : <ListItem key={document.kind} title={name} detail={<>
-          {document.currentVersion != null && effective ? t("platformLegal:current", { version: format.formatInteger(document.currentVersion), date: effective }) : <EmptyValue />}
-          {pending ? <span className="mt-1 block">{pending}</span> : null}
-        </>}>{actions}</ListItem>;
-      })}
-    </List></Surface>}
+    {/* Tableros Legales-Base2 y M-Filas-Base2 (M-Legales, 263): un dato por columna; la versión programada y su fecha, en sus
+        columnas, y en el teléfono una tarjeta con cada dato nombrado. */}
+    <Surface className="overflow-hidden" phoneFlush>
+      <DataTable columns={columns} rows={rows} rowKey={(document) => document.kind} isLoading={documents.isPending}
+        mobileRow={(document) => <ListCard key={document.kind} title={documentName(document)} fields={[
+          { label: t("platformLegal:card.current"), value: versionText(document.currentVersion) },
+          { label: t("platformLegal:card.currentSince"), value: <DateText value={document.currentEffectiveAtUtc} kind="date" /> },
+          { label: t("platformLegal:card.scheduled"), value: versionText(nextEffectiveVersion(document)?.version) },
+          { label: t("platformLegal:card.scheduledSince"), value: <DateText value={nextEffectiveVersion(document)?.effectiveAtUtc} kind="date" /> },
+        ]} trailing={actions(document)} />} />
+    </Surface>
   </Page>;
 }

@@ -10,7 +10,7 @@ import type { ApiSchemas } from "@/shared/api/types";
 import { meHandlerFor, referenceDataFixture } from "@/test/mocks/handlers";
 import { platformOperator } from "@/test/mocks/currentUsers";
 import { server } from "@/test/mocks/server";
-import { asPhone } from "@/test/utils/phone";
+import { asPhone, cardData } from "@/test/utils/phone";
 import { renderRouteWithProviders, renderWithProviders } from "@/test/utils/renderWithProviders";
 import { routes } from "@/app/routes";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
@@ -175,7 +175,7 @@ describe("Recuperaciones de Plataforma", () => {
   });
   it("390 tiene sólo Filtros, fecha corta y filas sin avatar; revisión con axe", async () => {
     asPhone(); const user = userEvent.setup(); const { container } = renderRouteWithProviders("/plataforma/recuperaciones", { as: "platform-operator" });
-    await screen.findByText("Pablo Ortiz"); expect(screen.queryByRole("table")).not.toBeInTheDocument(); expect(screen.getByRole("button", { name: "Filtros" })).toBeVisible(); expect(screen.queryByRole("button", { name: "Buscar por cuenta, correo o teléfono" })).not.toBeInTheDocument(); expect(screen.getAllByText("27/09/2026, 10:20").length).toBeGreaterThan(0); expect(screen.getAllByText("pa•••@kappa.ejemplo.com → pa•••@gmail.com")[0]).toBeVisible();
+    await screen.findByText("Pablo Ortiz"); expect(screen.queryByRole("table")).not.toBeInTheDocument(); expect(screen.getByRole("button", { name: "Filtros" })).toBeVisible(); expect(screen.queryByRole("button", { name: "Buscar por cuenta, correo o teléfono" })).not.toBeInTheDocument(); expect(screen.getAllByText("27/09/2026, 10:20").length).toBeGreaterThan(0); const card = screen.getByText("Pablo Ortiz").closest("li")!; expect(cardData(card)).toEqual([["Estado", "Pendiente"], ["Fecha y hora", "27/09/2026, 10:20"], ["Método de antes", "pa•••@kappa.ejemplo.com"], ["Método nuevo", "pa•••@gmail.com"]]); expect(card.textContent).not.toContain("→");
     await user.click(screen.getByRole("button", { name: "Acciones de Pablo Ortiz" })); await user.click(await screen.findByRole("menuitem", { name: "Revisar" })); await screen.findByRole("textbox", { name: "Motivo" }); expect(await axe(container)).toHaveNoViolations();
   });
   it("cambiar accountId abandona motivo, aunque siga Pendiente; volver no revive el diálogo", async () => {

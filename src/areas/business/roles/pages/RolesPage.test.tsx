@@ -8,7 +8,7 @@ import type { RoleResponse } from "@/shared/api/types";
 import { server } from "@/test/mocks/server";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
-import { asPhone } from "@/test/utils/phone";
+import { asPhone, cardData } from "@/test/utils/phone";
 
 const owner: RoleResponse = {
   id: "role-owner",
@@ -179,8 +179,8 @@ describe("RolesPage", () => {
   });
 
   // R21: el plural usa el número y la cifra pasa por el formato de la cultura, en el resumen y en la fila del teléfono.
-  it.each([["es-AR", "business-e6-admin", "1.000 roles · 1.000 de la organización · 0 de empresas", "1.000 usuarios", "1.200 permisos"],
-    ["en-US", "business-e6-admin-english", "1,000 roles · 1,000 organization · 0 companies", "1,000 users", "1,200 permissions"]] as const)(
+  it.each([["es-AR", "business-e6-admin", "1.000 roles · 1.000 de la organización · 0 de empresas", "1.000", "1.200"],
+    ["en-US", "business-e6-admin-english", "1,000 roles · 1,000 organization · 0 companies", "1,000", "1,200"]] as const)(
     "con %s, las cifras de cuatro dígitos llevan separador de miles", async (culture, as, summary, users, permissions) => {
       await changeCulture(culture);
       const crowded = { ...owner, userCount: 1_000, permissions: Array.from({ length: 1_200 }, (_, index) => `roles.p${index}`) };
@@ -190,15 +190,15 @@ describe("RolesPage", () => {
           total: { all: 1_000, organization: 1_000, company: 0 }, anyCompany: 0, companies: {} })),
         http.get("/api/roles/paged", () => HttpResponse.json({ items: [crowded], page: 1, pageSize: 10, totalCount: 1_000, totalPages: 100, hasPrevious: false, hasNext: true })),
       );
-      // El resumen va en la banda de la compu; la fila con usuarios y permisos, en el teléfono.
+      // El resumen va en la banda de la compu; la tarjeta con usuarios y permisos, en el teléfono.
       const desktop = renderRouteWithProviders("/org/roles", { as });
       expect(await screen.findByText(summary)).toBeVisible();
       desktop.unmount();
       const restore = asPhone();
       try {
         renderRouteWithProviders("/org/roles", { as });
-        expect(await screen.findByText(users)).toBeVisible();
-        expect(screen.getByText(permissions)).toBeVisible();
+        const card = (await screen.findByRole("link", { name: new RegExp(owner.name) })).closest("li")!;
+        expect(cardData(card).slice(2)).toEqual([[culture === "es-AR" ? "Usuarios" : "Users", users], [culture === "es-AR" ? "Permisos" : "Permissions", permissions]]);
       } finally { restore(); }
     });
 
@@ -264,8 +264,8 @@ describe("RolesPage", () => {
     expect(roleRequests).toBe(0);
   });
 
-  // Tablero M-Roles: en el teléfono cada rol es una fila con cuántos lo tienen a la derecha, dónde vale (y si es de
-  // sistema) y cuántos permisos tiene; los filtros van en un ícono de la barra y crear es el «+» flotante.
+  // Tablero M-Filas-Base2 (M-Roles, 263): en el teléfono cada rol es una tarjeta con su tipo, dónde vale, cuántos lo tienen y
+  // cuántos permisos tiene, cada dato con su nombre; los filtros van en un ícono de la barra y crear es el «+» flotante.
   it("en el teléfono es una lista con «+» para crear un rol", async () => {
     const restore = asPhone();
     try {
@@ -277,10 +277,9 @@ describe("RolesPage", () => {
 
       const row = await screen.findByRole("link", { name: /Dueño/ });
       expect(row).toHaveAttribute("href", "/org/roles/role-owner");
-      expect(row).toHaveTextContent("1 usuario");
-      expect(row).toHaveTextContent("De sistema · Toda la organización");
-      expect(row).toHaveTextContent("2 permisos");
-      expect(await screen.findByRole("link", { name: /Solo lectura/ })).toHaveTextContent("Delta S.A.");
+      expect(cardData(row.closest("li")!)).toEqual([["Tipo", "De sistema"], ["Vale en", "Toda la organización"], ["Usuarios", "1"], ["Permisos", "2"]]);
+      expect(row.closest("li")!.textContent).not.toContain("·");
+      expect(cardData((await screen.findByRole("link", { name: /Solo lectura/ })).closest("li")!)[1]).toEqual(["Vale en", "Delta S.A."]);
       expect(screen.queryByRole("table")).not.toBeInTheDocument();
       expect(screen.getByRole("link", { name: "Crear rol" })).toHaveClass("fixed", "size-14");
       expect(screen.getByRole("link", { name: "Crear rol" })).toHaveAttribute("href", "/org/roles/nuevo");

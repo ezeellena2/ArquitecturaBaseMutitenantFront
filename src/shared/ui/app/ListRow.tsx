@@ -45,6 +45,47 @@ export function ListRow({ leading, title, meta, lines = [], trailing, to, onClic
   </li>;
 }
 
+export interface ListCardField {
+  /** El nombre del dato, el mismo que el encabezado de su columna en la compu. */
+  label: string;
+  value: ReactNode;
+  /** Un dato largo (una fecha y hora, un motivo, varias personas) ocupa las dos columnas. */
+  wide?: boolean;
+}
+
+// Tableros M-Filas-Base2, M-Usuarios-Base2 y Criterio-Tablas-Base2 (.b2-tj, 263): en el teléfono, la fila de una lista es una
+// tarjeta con el nombre en 16 y cada dato con su nombre, de a dos, sin datos unidos con «·» debajo del nombre. Si son muchos,
+// lleva menos: los que se leen en la lista. El ⋮ va arriba a la derecha, con 44 para tocar; tocar la tarjeta abre su ficha.
+export function ListCard({ leading, title, fields, trailing, to, onClick, className }: {
+  leading?: ReactNode;
+  title: ReactNode;
+  fields: readonly ListCardField[];
+  trailing?: ReactNode;
+  to?: string;
+  onClick?: () => void;
+  className?: string;
+}) {
+  const body = <>
+    {leading ? <span className="shrink-0">{leading}</span> : null}
+    <span className="flex min-w-0 flex-1 flex-col">
+      <span className="text-base leading-[1.3] font-semibold text-[var(--t1)] [overflow-wrap:anywhere]">{title}</span>
+      {fields.length > 0 ? <dl className="m-0 mt-2 grid grid-cols-2 gap-x-3.5 gap-y-2">
+        {fields.map((field) => <div key={field.label} className={cn("min-w-0", field.wide && "col-span-2")}>
+          <dt className="text-[0.78125rem] leading-[1.3] text-[var(--t2)]">{field.label}</dt>
+          <dd className="m-0 text-[0.90625rem] leading-[1.35] text-[var(--t1)] [overflow-wrap:anywhere]">{field.value}</dd>
+        </div>)}
+      </dl> : null}
+    </span>
+  </>;
+  const bodyClass = "flex min-w-0 gap-3.5 text-left";
+  return <li className={cn("relative border-b border-[var(--borde)] bg-[var(--superficie)] py-3 pr-13 pl-4", className)}>
+    {to ? <Link to={to} className={bodyClass}>{body}</Link>
+      : onClick ? <button type="button" onClick={onClick} className={cn(bodyClass, "w-full")}>{body}</button>
+        : <span className={bodyClass}>{body}</span>}
+    {trailing ? <span className="absolute top-1 right-1 inline-flex [&>[data-slot=row-actions]]:text-[var(--t2)]">{trailing}</span> : null}
+  </li>;
+}
+
 /// El cuadrado de una persona en una fila (`Avatar`, en la marca); una invitación sin nombre, en gris: «@» si es por correo
 /// y el teléfono si es por teléfono (M-Usuarios).
 export function RowAvatar({ name, invitation, phone }: { name: string; invitation?: boolean; phone?: boolean }) {

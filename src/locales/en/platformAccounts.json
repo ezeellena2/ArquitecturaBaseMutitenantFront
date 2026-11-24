@@ -12,8 +12,8 @@
     "actions": "Actions",
     "never": "Never",
     "expiresPrefix": "Expires on",
-    "expiresInline": "expires",
-    "contact": "Email or phone"
+    "contact": "Email or phone",
+    "expires": "Expires"
   },
   "profiles": {
     "personal": "Personal",

@@ -9,7 +9,7 @@ import { FilterBar } from "../FilterBar";
 import { Page } from "../Page";
 import { Pagination } from "../Pagination";
 import { AppChromeProvider } from "./AppChrome";
-import { ListRow, RowAvatar } from "./ListRow";
+import { ListCard, ListRow, RowAvatar } from "./ListRow";
 
 beforeAll(async () => {
   await configureI18n([{ code: "es-AR", languageCode: "es", fallbackCulture: null, isEnabled: true, isDefault: true }]);
@@ -157,5 +157,34 @@ describe("listas en el teléfono", () => {
 
     await userEvent.click(screen.getByRole("button", { name: "Cargar más" }));
     expect(onPageSizeChange).toHaveBeenCalledWith(20);
+  });
+});
+
+// Tableros M-Filas-Base2, M-Usuarios-Base2 y Criterio-Tablas-Base2 (263): la fila del teléfono es una tarjeta con el nombre y
+// cada dato con su nombre, de a dos, sin datos unidos con «·» debajo del nombre; un dato largo ocupa las dos columnas y el ⋮
+// va arriba a la derecha, con 44 para tocar.
+describe("la tarjeta del teléfono", () => {
+  it("nombra cada dato, de a dos, y un dato largo ocupa las dos columnas", () => {
+    render(<MemoryRouter><ul><ListCard to="/org/roles/1" title="Recursos humanos" fields={[
+      { label: "Tipo", value: "Personalizado" }, { label: "Vale en", value: "Toda la organización" },
+      { label: "Fecha y hora", value: "27/09/2026, 10:42", wide: true },
+    ]} trailing={<button type="button" data-slot="row-actions">{"⋮"}</button>} /></ul></MemoryRouter>);
+
+    const card = screen.getByRole("listitem");
+    expect(screen.getByRole("link", { name: /Recursos humanos/ })).toHaveAttribute("href", "/org/roles/1");
+    expect(within(card).getByText("Recursos humanos")).toHaveClass("text-base", "font-semibold");
+    const terms = within(card).getAllByRole("term").map((term) => term.textContent);
+    expect(terms).toEqual(["Tipo", "Vale en", "Fecha y hora"]);
+    expect(card.querySelector("dl")).toHaveClass("grid-cols-2");
+    expect(within(card).getByText("27/09/2026, 10:42").closest("div")).toHaveClass("col-span-2");
+    expect(card.textContent).not.toContain("·");
+    expect(within(card).getByRole("button", { name: "⋮" }).parentElement).toHaveClass("absolute", "top-1", "right-1");
+  });
+
+  it("sin datos no dibuja la grilla, y con el círculo de una persona lo pone a la izquierda", () => {
+    render(<MemoryRouter><ul><ListCard leading={<RowAvatar name="Tomás Acosta" />} title="Tomás Acosta" fields={[]} /></ul></MemoryRouter>);
+
+    expect(screen.getByRole("listitem").querySelector("dl")).toBeNull();
+    expect(screen.getByText("T")).toHaveAttribute("data-slot", "avatar");
   });
 });

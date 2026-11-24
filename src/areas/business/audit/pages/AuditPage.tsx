@@ -16,7 +16,8 @@ import { DetailGrid } from "@/shared/ui/DetailGrid";
 import { FilterBar } from "@/shared/ui/FilterBar";
 import { LoadMore } from "@/shared/ui/LoadMore";
 import { Page } from "@/shared/ui/Page";
-import { ListRow } from "@/shared/ui/app/ListRow";
+import { ListCard } from "@/shared/ui/app/ListRow";
+import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { Surface } from "@/shared/ui/Surface";
 import { DateText } from "@/shared/ui/format/DateText";
@@ -114,11 +115,12 @@ export function AuditPage() {
         <Surface className="overflow-hidden" phoneFlush>
           <DataTable
             columns={columns}
-            // Tablero M-Auditoria-Org: qué pasó (en dos renglones si hace falta), cuándo a la derecha (la fecha corta, sin el año
-            // si es del año en curso), y dónde y quién abajo.
-            mobileRow={(row) => <ListRow key={row.id} title={row.actionText} onClick={() => setSelected(row)}
-              meta={<DateText value={row.occurredAtUtc} kind="dateTime" />}
-              lines={[[row.whereText, row.actorDisplayName ?? row.actorText].filter(Boolean).join(" · ")]} />}
+            // Tablero M-Filas-Base2 (M-Auditoria-Org, 263): qué pasó y, cada uno con su nombre, la fecha y hora, dónde y quién.
+            mobileRow={(row) => <ListCard key={row.id} title={row.actionText} onClick={() => setSelected(row)} fields={[
+              { label: t("audit:columns.when"), value: <DateText value={row.occurredAtUtc} kind="dateTime" />, wide: true },
+              { label: t("audit:columns.where"), value: row.whereText || <EmptyValue /> },
+              { label: t("audit:columns.who"), value: row.actorDisplayName ?? row.actorText },
+            ]} />}
             rows={audit.items}
             openRowKey={selected?.id ?? null}
             rowKey={(row) => row.id}

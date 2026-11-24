@@ -9,7 +9,7 @@ import type { MeResponse, PlatformAuditEventResponse } from "@/shared/api/types"
 import { referenceDataFixture, meHandlerFor } from "@/test/mocks/handlers";
 import { platformOperator } from "@/test/mocks/currentUsers";
 import { server } from "@/test/mocks/server";
-import { asPhone } from "@/test/utils/phone";
+import { asPhone, cardData } from "@/test/utils/phone";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
 import { routes } from "@/app/routes";
 import { AppProviders } from "@/app/providers";
@@ -217,14 +217,15 @@ describe("SecurityAuditPage", () => {
     await waitFor(() => expect(requests.at(-1)?.get("search")).toBe("Ana"));
   });
 
-  it("390 usa título envuelto, fecha corta, motivo y hoja común con vacíos", async () => {
+  // M-Filas-Base2 (M-Auditoria-Plat, 263): cada evento es una tarjeta con la fecha y hora, sobre qué y quién, cada dato nombrado.
+  it("390 usa título envuelto, la tarjeta con sus datos nombrados y hoja común con vacíos", async () => {
     asPhone(); const user = userEvent.setup();
     server.use(http.get("/api/platform/audit", () => HttpResponse.json(page([{ ...event, reason: null, ipAddress: null }]))));
     const { container } = mount();
     const title = await screen.findByText("Suspendió la cuenta");
     const row = title.closest("li")!;
-    expect(row).toHaveTextContent("26/09/2026, 17:30");
-    expect(row).toHaveTextContent("Ana Gómez · Laura Díaz");
+    expect(cardData(row)).toEqual([["Fecha y hora", "26/09/2026, 17:30"], ["Sobre", "Ana Gómez"], ["Quién", "Laura Díaz"]]);
+    expect(row.textContent).not.toContain("·");
     expect(title).not.toHaveClass("truncate");
     expect(screen.getByText("Administración")).toBeVisible();
     expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();

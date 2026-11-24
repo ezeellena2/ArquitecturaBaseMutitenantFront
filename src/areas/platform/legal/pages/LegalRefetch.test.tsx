@@ -47,13 +47,13 @@ describe("relectura legal con datos en caché", () => {
   it("lista permanece visible tras falla de fondo y reintento de lectura", async () => {
     const page = renderRouteWithProviders("/plataforma/legales", { as: "platform-operator" });
     await screen.findByText("2 documentos · 1 versiones publicadas");
-    const list = screen.getByRole("list", { name: "Documentos legales" });
+    const list = screen.getByRole("table");
     await failedRefetch(page);
-    expect(screen.getByRole("list", { name: "Documentos legales" })).toBe(list);
-    expect(screen.getByText("Versión 2 · vigente desde 01/06/2026")).toBeVisible();
+    expect(screen.getByRole("table")).toBe(list);
+    expect(screen.getByText("Versión 2")).toBeVisible(); expect(screen.getByText("01/06/2026")).toBeVisible();
     expect(screen.queryByRole("heading", { name: "No pudimos abrir esta pantalla" })).not.toBeInTheDocument();
     await retryRefetch(page);
-    expect(screen.getByRole("list", { name: "Documentos legales" })).toBe(list);
+    expect(screen.getByRole("table")).toBe(list);
   });
   it("editor sucio conserva RHF, fecha, contenidos y salida sucia al fallar/reintentar lectura", async () => {
     const user = userEvent.setup();

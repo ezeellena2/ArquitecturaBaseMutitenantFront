@@ -12,8 +12,8 @@
     "actions": "Acciones",
     "never": "Nunca",
     "expiresPrefix": "Vence el",
-    "expiresInline": "vence",
-    "contact": "Correo o teléfono"
+    "contact": "Correo o teléfono",
+    "expires": "Vence"
   },
   "profiles": {
     "personal": "Personal",

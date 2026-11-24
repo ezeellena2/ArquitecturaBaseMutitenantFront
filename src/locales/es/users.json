@@ -12,8 +12,6 @@
     "expires": "Vence",
     "expiresPrefix": "Vence",
     "expiredPrefix": "Venció",
-    "expiresInline": "vence",
-    "expiredInline": "venció",
     "actions": "Acciones",
     "companyAndMore": "{{company}} y {{count}} más"
   },
@@ -160,5 +158,8 @@
     "lastOwnerRemovingRole": "Tiene que quedar al menos un Dueño. Dale el rol a otra persona antes de quitártelo.",
     "lastOwnerLeaving": "Tiene que quedar al menos un Dueño. Dale el rol a otra persona antes de salir de la organización."
   },
-  "loadFailed": "No pudimos cargar los usuarios."
+  "loadFailed": "No pudimos cargar los usuarios.",
+  "card": {
+    "role": "Rol"
+  }
 }

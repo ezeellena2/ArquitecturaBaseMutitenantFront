@@ -11,7 +11,7 @@
     "statuses": { "all": "All", "PendingApproval": "Awaiting approval", "Active": "Active", "Suspended": "Suspended", "Provisioning": "Setup failed", "Closed": "Closed" },
     "sources": { "all": "All", "SelfService": "Self service", "Platform": "Created by the platform" }
   },
-  "columns": { "organization": "Organization", "owner": "Owner", "companies": "Companies", "members": "Members", "status": "Status", "actions": "Actions", "created": "Created", "noCompanies": "no companies", "company_one": "company", "company_other": "companies", "member_one": "member", "member_other": "members" },
+  "columns": { "organization": "Organization", "owner": "Owner", "companies": "Companies", "members": "Members", "status": "Status", "actions": "Actions", "source": "Source", "created": "Created", "noCompanies": "no companies", "company_one": "company", "company_other": "companies", "member_one": "member", "member_other": "members" },
   "actions": { "view": "View details", "approve": "Approve", "reject": "Reject", "retry": "Retry setup", "suspend": "Suspend", "reactivate": "Reactivate", "close": "Close" },
   "empty": { "all": "There are no organizations yet", "filtered": "No organization matches the filters", "clear": "Clear filters" },
   "create": { "title": "Create organization", "name": "Organization name", "firstCompany": "First company", "email": "Owner's email", "zone": "Time zone", "culture": "Language and region", "submit": "Create organization", "pending": "Creating…", "nameRequired": "Enter the organization name.", "companyRequired": "Enter the first company name.", "emailRequired": "Enter the email.", "emailInvalid": "Check the email: it doesn't look valid." },

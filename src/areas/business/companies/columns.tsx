@@ -5,14 +5,14 @@ import type { Column } from "@/shared/ui/DataTable";
 import { TaxIdText } from "@/shared/ui/format/TaxIdText";
 import { TimeZoneText } from "@/shared/ui/format/TimeZoneText";
 import type { ReactNode } from "react";
-import { ListRow, RowAvatar } from "@/shared/ui/app/ListRow";
+import { ListCard, RowAvatar } from "@/shared/ui/app/ListRow";
+import { EmptyValue } from "@/shared/ui/format/EmptyValue";
+import { NumberText } from "@/shared/ui/format/NumberText";
 import { defineStatusTones, type StatusTones } from "@/shared/format/statusTones";
 import type { CompanyMemberState } from "@/shared/api/types";
 import { DateText } from "@/shared/ui/format/DateText";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 import { isPast } from "@/shared/time/serverClock";
-import type { FormatState } from "@/shared/format/useFormat";
-import { countOf } from "@/shared/format/countOf";
 
 /// Tableros Empresas y Empresa: la empresa activa en verde y la inactiva en gris. También los usa la banda de la ficha.
 export const companyStatusTones = defineStatusTones("CompanyStatus", { Active: "success", Inactive: "neutral" });
@@ -30,15 +30,15 @@ export const companyMemberStateTones: StatusTones<CompanyMemberDisplayState> = {
   enum: contractMemberStateTones.enum, tones: { ...contractMemberStateTones.tones, Expired: "warning" },
 };
 
-/// Tablero M-Empresas: en el teléfono cada empresa es una fila con sus miembros a la derecha, el CUIT y, abajo, el
-/// estado con su punto y la zona.
-export function companyPhoneRow(company: CompanyResponse, t: TFunction, format: FormatState, trailing: ReactNode): ReactNode {
-  return <ListRow key={company.id} to={`/org/empresas/${encodeURIComponent(company.id)}`} title={company.name}
-    meta={t("companies:phone.members", countOf(format, company.memberCount))}
-    lines={[company.taxId ? <TaxIdText key="taxId" value={company.taxId} withType /> : t("companies:withoutTaxId"),
-      <span key="state"><StatusBadge tones={companyStatusTones} value={company.status} className="text-[0.8125rem] text-[var(--t2)]" />
-        <span>{" · "}<TimeZoneText value={company.timeZoneId} /></span></span>]}
-    trailing={trailing} />;
+/// Tablero M-Filas-Base2 (M-Empresas, 263): en el teléfono cada empresa es una tarjeta con su estado, sus miembros, el CUIT
+/// (sin CUIT, una raya) y la zona, cada dato con su nombre.
+export function companyPhoneRow(company: CompanyResponse, t: TFunction, trailing: ReactNode): ReactNode {
+  return <ListCard key={company.id} to={`/org/empresas/${encodeURIComponent(company.id)}`} title={company.name} fields={[
+    { label: t("companies:columns.status"), value: <StatusBadge tones={companyStatusTones} value={company.status} /> },
+    { label: t("companies:columns.members"), value: <NumberText value={company.memberCount} /> },
+    { label: t("companies:columns.taxId"), value: <TaxIdText value={company.taxId} /> },
+    { label: t("companies:columns.timeZone"), value: <TimeZoneText value={company.timeZoneId} /> },
+  ]} trailing={trailing} />;
 }
 
 type CompanyMember = import("@/shared/api/types").CompanyMemberResponse;
@@ -55,28 +55,19 @@ function memberState(member: CompanyMember): CompanyMemberDisplayState {
   return isCompanyInvitation(member) && member.invitationExpiresAtUtc && isPast(member.invitationExpiresAtUtc) ? "Expired" : member.state;
 }
 
-/// Hasta cuándo vale una invitación: en la compu, en su columna «Vence» (un dato por celda); en el teléfono, «vence …» o
-/// «venció …» al lado del estado (tableros Empresa y M-Empresa, v108).
+/// Hasta cuándo vale una invitación, en su columna «Vence» (un dato por celda) y en su dato de la tarjeta del teléfono.
 function invitationExpiresAt(member: CompanyMember): string | null {
   return isCompanyInvitation(member) ? member.invitationExpiresAtUtc ?? null : null;
 }
 
-function invitationExpiry(member: CompanyMember, t: TFunction): ReactNode {
-  const expiresAt = invitationExpiresAt(member);
-  if (!expiresAt) return null;
-  const label = memberState(member) === "Expired" ? "companies:memberColumns.expiredInline" : "companies:memberColumns.expiresInline";
-  return <>{t(label)} <DateText value={expiresAt} kind="date" /></>;
-}
-
-/// Tablero M-Empresa: en el teléfono cada miembro es una fila con su círculo, el correo y, abajo, sus roles, el estado y,
-/// si es una invitación, hasta cuándo vale. Esa línea no se corta: si no entra, sigue abajo (.w-conv .l3).
+/// Tablero M-Empresa-Base2 (263): en el teléfono cada miembro es una tarjeta con su círculo, sus roles y su estado; una
+/// invitación lleva primero el estado y suma hasta cuándo vale. Cada dato con su nombre, sin el correo.
 export function companyMemberPhoneRow(member: CompanyMember, t: TFunction, trailing: ReactNode): ReactNode {
-  const roles = member.roles.map((role) => role.name).join(", ");
-  const expiry = invitationExpiry(member, t);
-  return <ListRow key={member.memberId} leading={<RowAvatar name={member.displayName} />} title={member.displayName}
-    lines={[member.email ?? "", <span key="state">{roles ? `${roles} · ` : null}
-      <StatusBadge tones={companyMemberStateTones} value={memberState(member)} className="text-[0.78125rem] text-[var(--t2)]" />
-      {expiry ? <>{" · "}{expiry}</> : null}</span>]}
+  const roles = { label: t("companies:card.roles"), value: member.roles.map((role) => role.name).join(", ") || <EmptyValue /> };
+  const state = { label: t("companies:memberColumns.state"), value: <StatusBadge tones={companyMemberStateTones} value={memberState(member)} /> };
+  const expiresAt = invitationExpiresAt(member);
+  return <ListCard key={member.memberId} leading={<RowAvatar name={member.displayName} />} title={member.displayName}
+    fields={expiresAt ? [state, roles, { label: t("companies:memberColumns.expires"), value: <DateText value={expiresAt} kind="dateTime" /> }] : [roles, state]}
     trailing={trailing} />;
 }
 

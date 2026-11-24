@@ -120,7 +120,7 @@ export function CompaniesPage() {
         <Surface className="overflow-hidden" phoneFlush>
           <DataTable
             columns={columns}
-            mobileRow={(company) => companyPhoneRow(company, t, format, rowActions(company))}
+            mobileRow={(company) => companyPhoneRow(company, t, rowActions(company))}
             rows={companies.data?.items ?? []}
             rowKey={(company) => company.id}
             isLoading={companies.isPending}

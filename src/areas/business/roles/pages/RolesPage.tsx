@@ -126,7 +126,7 @@ export function RolesPage() {
         <Surface className="overflow-hidden" phoneFlush>
           <DataTable
             columns={columns}
-            mobileRow={(role) => rolePhoneRow(role, t, format, rowActions(role))}
+            mobileRow={(role) => rolePhoneRow(role, t, rowActions(role))}
             rows={roles.data?.items ?? []}
             rowKey={(role) => role.id}
             isLoading={roles.isPending}

@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import type { PlatformAccountResponse } from "@/shared/api/types";
 import { defineStatusTones } from "@/shared/format/statusTones";
 import { Avatar } from "@/shared/ui/Avatar";
-import { ListRow } from "@/shared/ui/app/ListRow";
+import { ListCard } from "@/shared/ui/app/ListRow";
 import { EmailText } from "@/shared/ui/format/EmailText";
 import type { Column } from "@/shared/ui/DataTable";
 import { DateText } from "@/shared/ui/format/DateText";
@@ -22,19 +22,20 @@ function profiles(account: PlatformAccountResponse, t: TFunction): ReactNode {
   if (!account.hasPersonalSpace) return account.organizationCount > 0 ? t("platformAccounts:profiles.organizations", { count: account.organizationCount }) : <EmptyValue />;
   return account.organizationCount > 0 ? t("platformAccounts:profiles.personalOrganizations", { count: account.organizationCount }) : t("platformAccounts:profiles.personal");
 }
+/// Tablero M-Cuentas-Base2 (263): en el teléfono cada cuenta es una tarjeta con su círculo, sus perfiles, su estado y el último
+/// ingreso; una invitación de operador lleva hasta cuándo vale en lugar del último ingreso. Cada dato con su nombre, sin el
+/// correo. Un correo se parte después de la @.
 export function accountPhoneRow(account: PlatformAccountResponse, t: TFunction, trailing: ReactNode): ReactNode {
   const invitation = isOperatorInvitation(account); const named = Boolean(account.displayName);
-  // Tablero M-Cuentas: el estado con su punto y los perfiles; en una invitación de operador, «Operador · vence …» arriba y el
-  // estado solo abajo. Un correo se parte después de la @.
-  const status = invitation ? <StatusBadge tones={accountStateTones} value={account.state} />
-    : <span><StatusBadge tones={accountStateTones} value={account.state} />{" · "}{profiles(account, t)}</span>;
-  const contact = account.maskedPrimaryPhone || (account.primaryEmail ? <EmailText value={account.primaryEmail} /> : "");
-  const expires = <>{t("platformAccounts:profiles.operator")}{" · "}{t("platformAccounts:columns.expiresInline")} <DateText value={account.invitationExpiresAtUtc} kind="date" /></>;
   const name = accountName(account);
-  return <ListRow key={account.id} to={accountPath(account.id)}
+  return <ListCard key={account.id} to={accountPath(account.id)}
     leading={<Avatar size="row" muted={!named} initials={named || invitation ? name.trim().charAt(0).toUpperCase() : "—"} />}
-    title={name ? <EmailText value={name} /> : <EmptyValue />} meta={invitation ? undefined : <DateText value={account.lastSignInAtUtc} kind="dateTime" />}
-    lines={[named ? contact : invitation ? expires : "", status]} trailing={trailing} />;
+    title={name ? <EmailText value={name} /> : <EmptyValue />} fields={[
+      { label: t("platformAccounts:columns.profiles"), value: profiles(account, t) },
+      { label: t("platformAccounts:columns.state"), value: <StatusBadge tones={accountStateTones} value={account.state} /> },
+      invitation ? { label: t("platformAccounts:columns.expires"), value: <DateText value={account.invitationExpiresAtUtc} kind="dateTime" /> }
+        : { label: t("platformAccounts:columns.lastSignIn"), value: <DateText value={account.lastSignInAtUtc} kind="dateTime" />, wide: true },
+    ]} trailing={trailing} />;
 }
 export function createAccountColumns(t: TFunction): Column<PlatformAccountResponse>[] {
   return [

@@ -92,8 +92,6 @@
     "state": "Estado",
     "expiresPrefix": "Vence",
     "expiredPrefix": "Venció",
-    "expiresInline": "vence",
-    "expiredInline": "venció",
     "expires": "Vence"
   },
   "back": "Volver a Empresas",
@@ -154,8 +152,7 @@
   "summaryActive_one": "{{n}} activa",
   "summaryActive_other": "{{n}} activas",
   "roleActions": "Acciones para {{name}}",
-  "phone": {
-    "members_one": "{{n}} miembro",
-    "members_other": "{{n}} miembros"
+  "card": {
+    "roles": "Roles"
   }
 }

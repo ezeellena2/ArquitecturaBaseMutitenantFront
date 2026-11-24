@@ -5,16 +5,21 @@ import { RecoveryMethodText } from "./components/RecoveryMethodText";
 import type { PlatformRecoveryResponse } from "@/shared/api/types";
 import { recoveryStatusTones } from "@/shared/format/statusTones";
 export { recoveryStatusTones } from "@/shared/format/statusTones";
-import { ListRow } from "@/shared/ui/app/ListRow";
+import { ListCard } from "@/shared/ui/app/ListRow";
 import type { Column } from "@/shared/ui/DataTable";
 import { DateText } from "@/shared/ui/format/DateText";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 
+/// Tablero M-Filas-Base2 (M-Recuperaciones, 263): en el teléfono cada pedido es una tarjeta con su estado, la fecha y hora y los
+/// dos métodos, cada dato con su nombre; tocarla lo abre.
 export function recoveryPhoneRow(recovery: PlatformRecoveryResponse, t: TFunction, trailing: ReactNode, onClick: () => void): ReactNode {
-  return <ListRow key={recovery.id} title={recovery.accountId ? recovery.accountName || <EmptyValue /> : t("platformRecoveries:noAccount")}
-    meta={<DateText value={recovery.createdAtUtc} kind="dateTime" />} lines={[(recovery.previousMethodType === "Phone" || recovery.newMethodType === "Phone") ? <span key="methods"><RecoveryMethodText type={recovery.previousMethodType} value={recovery.previousMethod} />{t("platformRecoveries:methods", { previous: "", next: "" })}<RecoveryMethodText type={recovery.newMethodType} value={recovery.newMethod} /></span> : t("platformRecoveries:methods", { previous: recovery.previousMethod, next: recovery.newMethod }), <StatusBadge key="status" tones={recoveryStatusTones} value={recovery.status} />]}
-    onClick={onClick} trailing={trailing} />;
+  return <ListCard key={recovery.id} title={recovery.accountId ? recovery.accountName || <EmptyValue /> : t("platformRecoveries:noAccount")} fields={[
+    { label: t("platformRecoveries:columns.status"), value: <StatusBadge tones={recoveryStatusTones} value={recovery.status} /> },
+    { label: t("platformRecoveries:columns.createdAt"), value: <DateText value={recovery.createdAtUtc} kind="dateTime" /> },
+    { label: t("platformRecoveries:columns.previous"), value: <RecoveryMethodText type={recovery.previousMethodType} value={recovery.previousMethod} /> },
+    { label: t("platformRecoveries:columns.new"), value: <RecoveryMethodText type={recovery.newMethodType} value={recovery.newMethod} /> },
+  ]} onClick={onClick} trailing={trailing} />;
 }
 export function createRecoveryColumns(t: TFunction): Column<PlatformRecoveryResponse>[] {
   return [

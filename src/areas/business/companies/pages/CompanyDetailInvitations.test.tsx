@@ -7,7 +7,7 @@ import type { HomeResponse } from "@/shared/api/types";
 import { changeCulture, configureI18n } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
-import { asPhone } from "@/test/utils/phone";
+import { asPhone, cardData } from "@/test/utils/phone";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
 
 // Decisiones del usuario del 2026-10-05 (6e, lienzo v108, tableros Empresa y M-Empresa) y del back (96 a 99): quien
@@ -265,19 +265,20 @@ describe("CompanyDetailPage: reenvíos por invitación (R04)", () => {
 describe("CompanyDetailPage en el teléfono: las invitaciones de la empresa (M-Empresa, 6e)", () => {
   // Tablero M-Empresa (v108): en la línea de abajo, los roles, el estado y «vence 02/10» o «venció 29/09», con la fecha
   // corta del teléfono.
-  it("la fila de la invitación dice hasta cuándo vale, con la fecha corta", async () => {
+  // M-Empresa-Base2 (263): cada miembro es una tarjeta con sus datos nombrados; la invitación lleva el estado, los roles y
+  // hasta cuándo vale, sin datos unidos con «·».
+  it("la tarjeta de la invitación dice hasta cuándo vale, cada dato con su nombre", async () => {
     asPhone();
     companyApi([valentina, sofia, martin]);
     renderRouteWithProviders("/org/empresas/company-1", { as: companyAdmin });
 
     const sofiaRow = (await screen.findByText("Sofía Herrera")).closest("li")!;
-    expect(sofiaRow).toHaveTextContent("Solo lectura · Invitación pendiente · vence 02/10");
-    expect(screen.getByText("Martín Paz").closest("li")).toHaveTextContent("Solo lectura · Invitación vencida · venció 29/09");
-    expect(screen.getByText("Valentina Ruiz").closest("li")).toHaveTextContent("Administrador · Activo");
-    // M-Empresa (.w-conv .l3): la línea del estado no se corta con «…»; si no entra, sigue en el renglón de abajo.
-    const line = within(sofiaRow).getByText(/vence/).parentElement!;
-    expect(line).not.toHaveClass("truncate");
-    expect(within(sofiaRow).getByText(/vence/)).not.toHaveClass("truncate");
+    expect(cardData(sofiaRow).map(([label]) => label)).toEqual(["Estado", "Roles", "Vence"]);
+    expect(cardData(sofiaRow).slice(0, 2)).toEqual([["Estado", "Invitación pendiente"], ["Roles", "Solo lectura"]]);
+    expect(cardData(sofiaRow)[2][1]).toMatch(/^02\/10/);
+    expect(cardData(screen.getByText("Martín Paz").closest("li")!).slice(0, 2)).toEqual([["Estado", "Invitación vencida"], ["Roles", "Solo lectura"]]);
+    expect(cardData(screen.getByText("Valentina Ruiz").closest("li")!)).toEqual([["Roles", "Administrador"], ["Estado", "Activo"]]);
+    expect(sofiaRow.textContent).not.toContain("·");
   });
 
   // Tablero M-Empresa, «Invitación: acciones»: en el teléfono el ⋮ abre una hoja desde abajo con el nombre de la persona,

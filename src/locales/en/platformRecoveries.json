@@ -8,7 +8,6 @@
   "pending_one": "{{total}} pending",
   "pending_other": "{{total}} pending",
   "noAccount": "No account",
-  "methods": "{{previous}} → {{next}}",
   "rowActions": "Actions for {{name}}",
   "columns": { "account": "Account", "createdAt": "Date and time", "previous": "Previous method", "new": "New method", "status": "Status", "actions": "Actions" },
   "filters": { "label": "Filter recovery requests", "phone": "Filters", "search": "Search by account, email or phone", "status": "Status: all", "statusMenu": "Filter by status", "statuses": { "all": "All", "Pending": "Pending", "Approved": "Approved", "Rejected": "Rejected" } },

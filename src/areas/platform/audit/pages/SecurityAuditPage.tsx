@@ -16,7 +16,7 @@ import { LoadMore } from "@/shared/ui/LoadMore";
 import { Page } from "@/shared/ui/Page";
 import { Surface } from "@/shared/ui/Surface";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
-import { ListRow } from "@/shared/ui/app/ListRow";
+import { ListCard } from "@/shared/ui/app/ListRow";
 import { DateText } from "@/shared/ui/format/DateText";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { auditOrganizationOptions, fetchSecurityEvents, securityEventsQueryRoot } from "../api/securityEvents";
@@ -83,9 +83,14 @@ export function SecurityAuditPage() {
           ]} clearLabel={t("common:actions.clear")} onClear={filters.clear} />
         <Surface className="overflow-hidden" phoneFlush>
           <DataTable columns={columns} rows={audit.items} rowKey={(row) => row.id} openRowKey={selected?.id ?? null}
-            mobileRow={(row) => <ListRow key={row.id} title={row.summary} onClick={() => select(row)}
-              meta={<DateText value={row.occurredAtUtc} kind="dateTime" />}
-              lines={[[row.target, row.actor].filter(Boolean).join(" · "), ...(row.reason ? [row.reason] : [])]} />}
+            // Tablero M-Filas-Base2 (M-Auditoria-Plat, 263): qué pasó y, cada uno con su nombre, la fecha y hora, sobre qué, quién
+            // y, si lo hay, el motivo.
+            mobileRow={(row) => <ListCard key={row.id} title={row.summary} onClick={() => select(row)} fields={[
+              { label: t("columns.when"), value: <DateText value={row.occurredAtUtc} kind="dateTime" />, wide: true },
+              { label: t("columns.target"), value: row.target || <EmptyValue /> },
+              { label: t("columns.actor"), value: row.actor || <EmptyValue /> },
+              ...(row.reason ? [{ label: t("columns.reason"), value: row.reason, wide: true }] : []),
+            ]} />}
             isLoading={audit.isPending} isFetching={audit.isFetching}
             error={audit.error ? apiErrorMessage(audit.error, t) : undefined} onRetry={() => { void audit.refetch(); }}
             emptyTitle={filtered ? t("emptyFiltered") : t("empty")}
