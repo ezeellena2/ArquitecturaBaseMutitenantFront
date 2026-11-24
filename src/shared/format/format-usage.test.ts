@@ -10,9 +10,6 @@ const srcRoot = path.resolve(import.meta.dirname, "../..");
 const cutsText = new Set([
   "modules/whatsapp/chats/components/ConversationItem.tsx",
   "shared/ui/app/AppBar.tsx",
-  "shared/ui/select.tsx",
-  "shared/ui/SearchSelect.tsx",
-  "shared/ui/MultiSelect.tsx",
   // La pieza para elegir (262): el campo nunca crece, y lo elegido se corta con «y N más».
   "shared/ui/Picker.tsx",
   "shared/ui/fields/MonthField.tsx",
@@ -79,7 +76,7 @@ describe("uso exclusivo de formatos y catálogos", () => {
     expect(violations("areas/business/audit/pages/AuditPage.tsx", '<button className="block w-full truncate text-left">')).not.toEqual([]);
     expect(violations("shared/ui/Page.tsx", '<p className="line-clamp-2">')).not.toEqual([]);
     expect(violations("shared/ui/DataTable.tsx", '"*:data-[slot=cell]:line-clamp-1"')).not.toEqual([]);
-    expect(violations("shared/ui/select.tsx", '"*:data-[slot=select-value]:line-clamp-1"')).toEqual([]);
+    expect(violations("shared/ui/Picker.tsx", '<span className="truncate">{shown.names}</span>')).toEqual([]);
     expect(violations("layouts/MorePage.tsx", '<span className="overflow-hidden text-ellipsis">')).not.toEqual([]);
     expect(violations("modules/whatsapp/chats/components/ConversationItem.tsx", '<span data-slot="chat-preview" className="truncate">')).toEqual([]);
   });

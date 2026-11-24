@@ -10,7 +10,7 @@
   ```
   (`vitest-axe/extend-expect` ya está en `test/setup.ts`).
 - **Piezas de `shared/ui` que ya lo resuelven:**
-  - `FormField` (rótulo, `aria-describedby`, `aria-invalid`, `aria-required`), también con un `Select` adentro: la raíz lo recibe y lo pasa a su botón;
+  - `FormField` (rótulo, `aria-describedby`, `aria-invalid`, `aria-required`), también con la pieza para elegir adentro (`Picker`, 262): su botón se nombra con la etiqueta y lo elegido, y lleva el error;
   - `IconButton` y `RowActions` (nombre obligatorio: `aria-label` con el dato de la fila, "Acciones de Tomás Acosta");
   - `Dialog` (foco atrapado y devuelto con `useRestoreFocusOnClose`; si lo abre una opción de un ⋮, que se va con el menú, `RowActions` y `Page` le pasan a la opción su botón y el diálogo lo recibe como `returnFocusTo`, también `ConfirmDialog`);
   - `DataTable` (encabezados, `aria-sort`, `aria-busy`);

@@ -62,9 +62,9 @@ interface PickerBase {
   "aria-describedby"?: string;
   /** Busca el servidor, sobre `useResourceOptions`: el dueño guarda lo que se escribe y trae lo que coincide. */
   remote?: RemoteOptions;
-  /** Cuántas opciones tiene el servidor para esa búsqueda. */
+  /** Cuántas opciones tiene el servidor para esa búsqueda; por defecto, lo que dice `remote`. */
   total?: number;
-  /** Cuántas trae «Mostrar N más». */
+  /** Cuántas trae «Mostrar N más»; por defecto, lo que dice `remote`. */
   pageSize?: number;
   /** Ofrece «Crear «X»» cuando lo buscado no está entre las opciones: al elegirla, ese texto queda como valor nuevo. */
   creatable?: boolean;
@@ -161,6 +161,7 @@ export function Picker(props: PickerProps) {
   const staged = phone && multiple && open;
   const chosen = new Set(staged ? picked : values);
   const remote = props.remote;
+  const total = props.total ?? remote?.total;
   const searchable = remote !== undefined || props.creatable === true || props.options.length > SEARCH_FROM;
   const search = remote ? remote.search : localSearch;
   const searching = search.trim() !== "";
@@ -372,7 +373,7 @@ export function Picker(props: PickerProps) {
 
   // La cantidad habla de las opciones: del servidor, sin ninguna, la lista dice por qué en su lugar (sin «0 opciones»).
   const countOf = (count: number) => props.countLabel?.(count) ?? t("picker.count", { count });
-  const countText = remote ? shown.length > 0 && !remote.loading && props.total !== undefined ? countOf(props.total) : null
+  const countText = remote ? shown.length > 0 && !remote.loading && total !== undefined ? countOf(total) : null
     : searchable ? (searching ? (shown.length > 0 ? countOf(shown.length) : null) : countOf(props.options.length)) : null;
   const limitText = multiple && props.max !== undefined
     ? full ? t("picker.chosenOf", { count: chosen.size, max: props.max }) : t("picker.upTo", { count: props.max }) : null;
@@ -401,7 +402,7 @@ export function Picker(props: PickerProps) {
     {rows.map((row, index) => <Fragment key={`${row.option === create ? "create:" : ""}${row.option.value}`}>
       {row.separated ? <li role="presentation" className={phone ? "h-px bg-[var(--borde2)]" : "-mx-1 my-1 h-px bg-[var(--borde2)]"} /> : null}
       <OptionRow row={row} id={optionId(index)} active={index === current && open} multiple={multiple} touch={phone}
-        position={remote && props.total !== undefined ? { index: index + 1, size: rows.length - shown.length + props.total } : undefined}
+        position={remote && total !== undefined ? { index: index + 1, size: rows.length - shown.length + total } : undefined}
         onHover={() => { if (index !== current) setActive(index); }} onChoose={() => choose(row, index)} />
     </Fragment>)}
   </ul>;
@@ -419,7 +420,7 @@ export function Picker(props: PickerProps) {
     ? <button type="button" {...keepFocus} onClick={remote.onLoadMore} disabled={remote.loading}
       className={cn("block w-full border-t border-[var(--borde)] text-left font-semibold text-[var(--marca-tx)] outline-none hover:bg-[var(--s2)] focus-visible:bg-[var(--s2)] disabled:text-[var(--t3)]",
         phone ? "min-h-14 px-4 text-[0.9375rem]" : "min-h-9 px-3 text-[0.8125rem]")}>
-      {remote.loading ? t("states.loading") : t("picker.more", { count: props.pageSize ?? 50 })}
+      {remote.loading ? t("states.loading") : t("picker.more", { count: props.pageSize ?? remote?.pageSize ?? 50 })}
     </button> : null;
 
   // El nombre y lo elegido van afuera del botón: lo nombran sin sumarse a su texto.

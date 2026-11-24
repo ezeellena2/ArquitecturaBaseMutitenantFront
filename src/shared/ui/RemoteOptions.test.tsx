@@ -7,10 +7,10 @@ import { axe } from "vitest-axe";
 import { companyCandidateOptions, companyOptions, companyRoleOptions, roleOptions, type ResourceOptions } from "@/shared/api/resourceOptions";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 import { server } from "@/test/mocks/server";
+import { pickerName } from "@/test/picker";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
 import { FormField } from "./FormField";
-import { SearchSelect } from "./SearchSelect";
-import { MultiSelect } from "./MultiSelect";
+import { Picker } from "./Picker";
 
 type Choice = { id: string; name: string; memberId: string; displayName: string };
 const choices = Array.from({ length: 101 }, (_, index): Choice => ({
@@ -24,12 +24,11 @@ function Harness<T>({ resource, id, name, multiple = false }: {
   const [value, setValue] = useState("");
   const [values, setValues] = useState<string[]>([]);
   const options = query.items.map((item) => ({ value: id(item), label: name(item) }));
+  const known = query.knownItems.map((item) => ({ value: id(item), label: name(item) }));
   return <>
     <FormField label="Recurso">{multiple
-      ? <MultiSelect options={options} selectedOptions={query.knownItems.map((item) => ({ value: id(item), label: name(item) }))}
-          value={values} onChange={setValues} placeholder="Elegí" remote={query.remote} />
-      : <SearchSelect options={options} value={value} onChange={setValue} selectedLabel={query.knownItems.find((item) => id(item) === value) ? name(query.knownItems.find((item) => id(item) === value)!) : undefined}
-          placeholder="Elegí" searchLabel="Buscar" remote={query.remote} />}</FormField>
+      ? <Picker multiple options={options} selectedOptions={known} value={values} onChange={setValues} placeholder="Elegí" remote={query.remote} />
+      : <Picker options={options} selectedOptions={known} value={value} onChange={setValue} placeholder="Elegí" remote={query.remote} />}</FormField>
     <output aria-label="Elegido">{multiple ? values.join(",") : value}</output>
     {multiple ? <button type="button" onClick={() => { void query.allItems().then((items) => setValues(items.map(id))); }}>{"Elegir todos"}</button> : null}
   </>;
@@ -50,16 +49,19 @@ function mockOptions(route: string) {
   return requests;
 }
 
+const searchBox = () => screen.getByRole("combobox", { name: "Buscar en Recurso" });
+
 async function search(value: string) {
-  act(() => screen.getByRole("searchbox", { name: "Buscar" }).focus());
+  act(() => searchBox().focus());
   vi.useFakeTimers();
-  fireEvent.change(screen.getByRole("searchbox", { name: "Buscar" }), { target: { value } });
+  fireEvent.change(searchBox(), { target: { value } });
   await act(async () => { await vi.advanceTimersByTimeAsync(300); });
   vi.useRealTimers();
 }
 
 afterEach(() => vi.useRealTimers());
 
+// 262: la pieza para elegir busca en el servidor sobre `useResourceOptions`, con las elegidas de otra página primero.
 describe("opciones remotas compartidas", () => {
   const cases = [
     { label: "empresa", route: "/api/companies/paged", element: <Harness resource={companyOptions} id={(item) => item.id} name={(item) => item.name} /> },
@@ -71,15 +73,14 @@ describe("opciones remotas compartidas", () => {
     const requests = mockOptions(testCase.route);
     const user = userEvent.setup();
     const { container } = renderWithProviders(testCase.element);
-    await user.click(screen.getByRole("combobox", { name: "Recurso" }));
+    await user.click(screen.getByRole("button", { name: pickerName("Recurso") }));
     await screen.findByRole("option", { name: "Recurso 1" });
     await search("101");
     await user.click(await screen.findByRole("option", { name: "Recurso 101" }));
     expect(screen.getByRole("status", { name: "Elegido" })).toHaveTextContent("id-101");
-    await user.click(screen.getByRole("combobox", { name: "Recurso" }));
-    await search("");
+    await user.click(screen.getByRole("button", { name: "Recurso Recurso 101" }));
     await screen.findByRole("option", { name: "Recurso 1" });
-    expect(screen.getByRole("combobox", { name: "Recurso" })).toHaveTextContent("Recurso 101");
+    expect(screen.getByRole("option", { name: "Recurso 101" })).toHaveAttribute("aria-selected", "true");
     expect(requests.some((request) => request.searchParams.get("search") === "101")).toBe(true);
     expect(requests.every((request) => request.searchParams.get("pageSize") === "10")).toBe(true);
     expect(await axe(container)).toHaveNoViolations();
@@ -89,7 +90,7 @@ describe("opciones remotas compartidas", () => {
     const requests = mockOptions("/api/companies/company-1/candidates/paged");
     const user = userEvent.setup();
     renderWithProviders(<Harness resource={companyCandidateOptions("company-1")} id={(item) => item.memberId} name={(item) => item.displayName} />);
-    await user.click(screen.getByRole("combobox", { name: "Recurso" }));
+    await user.click(screen.getByRole("button", { name: pickerName("Recurso") }));
     await screen.findByRole("option", { name: "Recurso 1" });
     await search("101");
     await user.click(await screen.findByRole("option", { name: "Recurso 101" }));
@@ -97,19 +98,21 @@ describe("opciones remotas compartidas", () => {
     expect(requests.at(-1)?.searchParams.get("sort")).toBe("displayName");
   });
 
-  it("carga otra página y conserva la selección múltiple al cambiar la búsqueda", async () => {
+  // «Mostrar N más» trae una página del servidor, y la cantidad es la del servidor, no la de la página.
+  it("dice cuántas tiene el servidor, carga otra página y conserva la selección múltiple al cambiar la búsqueda", async () => {
     mockOptions("/api/roles/paged");
     const user = userEvent.setup();
     renderWithProviders(<Harness resource={roleOptions("Organization")} id={(item) => item.id} name={(item) => item.name} multiple />);
-    screen.getByRole("button", { name: "Recurso" }).focus();
-    await user.keyboard("{Enter}");
-    await screen.findByRole("menuitemcheckbox", { name: "Recurso 1" });
-    await user.click(screen.getByRole("button", { name: "Cargar más" }));
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Recurso 11" }));
+    screen.getByRole("button", { name: pickerName("Recurso") }).focus();
+    await user.keyboard("{ArrowDown}");
+    await screen.findByRole("option", { name: "Recurso 1" });
+    expect(await screen.findByText("101 opciones")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Mostrar 10 más" }));
+    await user.click(await screen.findByRole("option", { name: "Recurso 11" }));
     await search("101");
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Recurso 101" }));
+    await user.click(await screen.findByRole("option", { name: "Recurso 101" }));
     await user.keyboard("{Escape}");
-    expect(screen.getByRole("button", { name: "Recurso" })).toHaveTextContent("Recurso 11, Recurso 101");
+    expect(screen.getByRole("button", { name: pickerName("Recurso") })).toHaveTextContent("Recurso 11, Recurso 101");
     expect(screen.getByRole("status", { name: "Elegido" })).toHaveTextContent("id-11,id-101");
   });
 
@@ -122,19 +125,19 @@ describe("opciones remotas compartidas", () => {
     expect(requests).toHaveLength(2);
   });
 
-  it("muestra el error del selector y reintenta sin perder el teclado", async () => {
+  it("muestra el error de la lista y reintenta sin perder el teclado", async () => {
     let fail = true;
     server.use(http.get("/api/companies/paged", () => fail
       ? HttpResponse.json({ status: 400, code: "Validation.Failed", detail: "No se pudo leer.", traceId: "test" }, { status: 400 })
       : HttpResponse.json({ items: [choices[0]], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })));
     const user = userEvent.setup();
     renderWithProviders(<Harness resource={companyOptions} id={(item) => item.id} name={(item) => item.name} />);
-    await user.click(screen.getByRole("combobox", { name: "Recurso" }));
+    await user.click(screen.getByRole("button", { name: pickerName("Recurso") }));
     const retry = await screen.findByRole("button", { name: "Reintentar" });
     fail = false;
     await user.click(retry);
     await screen.findByRole("option", { name: "Recurso 1" });
-    expect(screen.getByRole("searchbox", { name: "Buscar" })).toHaveFocus();
+    expect(searchBox()).toHaveFocus();
     await user.keyboard("{ArrowDown}{Enter}");
     expect(screen.getByRole("status", { name: "Elegido" })).toHaveTextContent("id-1");
   });

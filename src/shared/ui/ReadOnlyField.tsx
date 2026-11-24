@@ -3,8 +3,8 @@ import { cn } from "@/shared/lib/utils";
 import { ChevronDownIcon } from "./icons";
 
 /// «Criterio · Formularios», regla A11 (v113, 07/10): lo que no se puede cambiar (sin permiso, o porque no cambia) va en el
-/// mismo campo que al editar, apagado: fondo y texto grises (tableros: .o-txt y .ct.ro). Es el mismo trazo que SearchSelect
-/// apagado: borde, fondo `--s2`, texto `--t2`, 36 de alto (48 y radio 12 en el teléfono). Nunca un rótulo con texto suelto.
+/// mismo campo que al editar, apagado: fondo y texto grises (tableros: .o-txt y .ct.ro). Es el mismo trazo que la pieza
+/// para elegir apagada: borde, fondo `--s2`, texto `--t2`, 36 de alto (48 y radio 12 en el teléfono). Nunca un rótulo con texto suelto.
 /// - `control="select"`: un desplegable apagado, con su flechita en `--t3` («Vale en», «Estado», la moneda).
 /// - `control="area"` (o `long`): un texto largo apagado, de tres líneas como el Textarea («Descripción»).
 /// - `prefix`: lo de adelante del valor, como la moneda de MoneyField («USD»).

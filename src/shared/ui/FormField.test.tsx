@@ -4,7 +4,7 @@ import { axe } from "vitest-axe";
 import { describe, expect, it } from "vitest";
 import { FormField } from "./FormField";
 import { Input } from "./input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
+import { Picker } from "./Picker";
 
 describe("FormField", () => {
   it("links the label with the control", () => {
@@ -116,22 +116,18 @@ describe("FormField", () => {
     expect(screen.getByLabelText("Roles de la organización")).toBeInTheDocument();
   });
 
-  // accesibilidad.md: un desplegable se rotula, dice que es obligatorio y lleva su error como cualquier campo. El Select
-  // de Radix no es un elemento: lo que FormField le pasa llega a su botón.
-  it("con un Select adentro, el desplegable sabe que es obligatorio, se rotula y lleva su error", () => {
+  // accesibilidad.md: la pieza para elegir (262) se rotula con la etiqueta del campo, que dice lo elegido, y lleva su error
+  // como cualquier campo.
+  it("con la pieza para elegir adentro, se rotula con la etiqueta y lleva su error", () => {
     render(
       <FormField label="Empresa" required error="Elegí una empresa.">
-        <Select value="" onValueChange={() => {}}>
-          <SelectTrigger className="w-full"><SelectValue placeholder="Elegí una empresa" /></SelectTrigger>
-          <SelectContent><SelectItem value="company-1">{"Delta S.A."}</SelectItem></SelectContent>
-        </Select>
+        <Picker options={[{ value: "company-1", label: "Delta S.A." }]} value={null} onChange={() => {}} placeholder="Elegí una empresa" />
       </FormField>,
     );
 
-    const select = screen.getByRole("combobox", { name: "Empresa" });
-    expect(select).toHaveAttribute("aria-required", "true");
-    expect(select).toHaveAttribute("aria-invalid", "true");
-    expect(select).toHaveAccessibleDescription("Elegí una empresa.");
+    const picker = screen.getByRole("button", { name: "Empresa Elegí una empresa" });
+    expect(picker).toHaveAttribute("aria-invalid", "true");
+    expect(picker).toHaveAccessibleDescription("Elegí una empresa.");
   });
 
   it("usa la etiqueta compacta y gris del lienzo en ingreso y registro", () => {

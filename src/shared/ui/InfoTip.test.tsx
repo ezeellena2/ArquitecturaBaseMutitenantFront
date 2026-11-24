@@ -10,7 +10,6 @@ import { Dialog, DialogContent, DialogTitle } from "./dialog";
 import { FormField } from "./FormField";
 import { InfoTip } from "./InfoTip";
 import { Input } from "./input";
-import { RadioGroupField } from "./RadioGroupField";
 import { Section } from "./Section";
 
 const phoneChrome = { phone: true, parent: null, subtitle: null, hideBottomNav: () => {} };
@@ -67,20 +66,14 @@ describe("InfoTip · la ayuda en la (i) (116 y 211)", () => {
     expect(await screen.findByRole("tooltip")).toHaveTextContent("Motivo: dos meses sin pago.");
   });
 
-  // La (i) del final de una opción o de una casilla: tocarla abre su ayuda y no elige ni marca.
-  it("al final de una opción o de una casilla, tocarla no la elige ni la marca", async () => {
-    const onValueChange = vi.fn(), onCheckedChange = vi.fn();
-    render(<>
-      <RadioGroupField label="Resultado" value={undefined} onValueChange={onValueChange}
-        options={[{ value: "sent", label: "Salió", help: "La regla sigue sin volver a mandar este aviso." }, { value: "failed", label: "No salió" }]} />
-      <CheckboxField label="Aceptó recibir mensajes" checked={false} onCheckedChange={onCheckedChange} help="Sin esto, WhatsApp no permite escribirle primero." />
-    </>);
+  // La (i) del final de una casilla: tocarla abre su ayuda y no la marca. Una opción de una lista lleva su ayuda en la línea
+  // gris de la pieza para elegir (262), no en una (i).
+  it("al final de una casilla, tocarla no la marca", async () => {
+    const onCheckedChange = vi.fn();
+    render(<CheckboxField label="Aceptó recibir mensajes" checked={false} onCheckedChange={onCheckedChange} help="Sin esto, WhatsApp no permite escribirle primero." />);
 
-    await userEvent.click(screen.getByRole("button", { name: "Más información sobre Salió" }));
-    expect(await screen.findByRole("tooltip")).toHaveTextContent("La regla sigue sin volver a mandar este aviso.");
     await touch(screen.getByRole("button", { name: "Más información sobre Aceptó recibir mensajes" }));
     expect(await screen.findByRole("tooltip")).toHaveTextContent("Sin esto, WhatsApp no permite escribirle primero.");
-    expect(onValueChange).not.toHaveBeenCalled();
     expect(onCheckedChange).not.toHaveBeenCalled();
   });
 

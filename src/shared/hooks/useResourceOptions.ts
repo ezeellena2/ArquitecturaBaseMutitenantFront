@@ -11,6 +11,10 @@ export interface RemoteOptions {
   readonly error: unknown;
   readonly onLoadMore: () => void;
   readonly onRetry: () => void;
+  /** Cuántas tiene el servidor para lo buscado, si ya respondió: la lista dice «101 opciones». */
+  readonly total?: number;
+  /** Cuántas trae cada página: «Mostrar 10 más». */
+  readonly pageSize?: number;
 }
 
 /** Páginas de opciones en QueryCache: buscar y cargar más nunca descarga ni filtra todo el recurso. */
@@ -49,6 +53,7 @@ export function useResourceOptions<T>(resource: ResourceOptions<T>, enabled = tr
     hasMore: !error && (last?.hasNext ?? false), loading: isFetching || search.trim() !== term, error,
     onLoadMore: () => { if (!error && !isFetching && last?.hasNext) setLoaded({ term, pages: pageCount + 1 }); },
     onRetry: () => { for (const page of pages) if (page.isError) void page.refetch(); },
+    total: pages[0]?.data?.totalCount, pageSize: optionPage.pageSize,
   };
 
   /** «Todos» conserva su significado: se leen todas las páginas sólo cuando la persona lo solicita. */

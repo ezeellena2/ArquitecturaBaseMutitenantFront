@@ -4,7 +4,7 @@ import { axe } from "vitest-axe";
 import { ReadOnlyField } from "./ReadOnlyField";
 
 // «Criterio · Formularios», A11 (v113): lo que no se puede cambiar va en el mismo campo que al editar, apagado: fondo y texto
-// grises, como SearchSelect apagado. Nunca un rótulo con texto suelto.
+// grises, como la pieza para elegir apagada. Nunca un rótulo con texto suelto.
 describe("ReadOnlyField", () => {
   it("dibuja el campo apagado con su rótulo, y el desplegable apagado con su flechita gris", async () => {
     const { container } = render(<>
