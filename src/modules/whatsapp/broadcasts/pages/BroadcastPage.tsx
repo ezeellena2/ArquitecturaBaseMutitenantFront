@@ -72,7 +72,7 @@ export function BroadcastPage({ me }: ModuleContentProps) {
     <StatusBadge tones={recipientStatusTones} value={recipient.status} />
     {recipient.status === "Failed" ? <InfoButton label={t("whatsapp:broadcasts.failure.why")} onClick={() => setFailure(recipient)} /> : null}
     {/* WA-Difusion-Resultados-Base2 (255): «Sin confirmar» lleva su (i); no se repite solo y no cuenta como mandado ni como «No llegó». */}
-    {recipient.status === "Uncertain" ? <InfoTip className="ml-1" text={t("whatsapp:broadcasts.uncertain")} title={format.formatEnum("WhatsAppRecipientStatus", "Uncertain")} /> : null}
+    {recipient.status === "Uncertain" ? <InfoTip className="ml-1" text={t("whatsapp:broadcasts.uncertain")} title={format.formatEnum("WhatsAppRecipientStatus", recipient.status)} /> : null}
   </span>;
   // La ficha del contacto es de «Atender clientes» (D3): sin ese permiso, la fila no lleva a ella.
   const canSeeContacts = me.effectivePermissions.organization.includes("whatsapp.customers");
