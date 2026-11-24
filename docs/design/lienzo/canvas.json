@@ -354,15 +354,6 @@
       "x": 0,
       "y": 1280
     },
-    "Enlace.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "page": "archivo",
-      "title": "Enlace del bot de WhatsApp · /login/enlace · etapa 8 (hasta la v167: se retira, 179)",
-      "w": 1440,
-      "x": 3040,
-      "y": 8364
-    },
     "Error-Org.dc.html": {
       "h": 900,
       "is_interactive": true,
@@ -488,14 +479,6 @@
       "x": 10640,
       "y": 460
     },
-    "FRM-Catalogo-Filtros-v128.dc.html": {
-      "h": 900,
-      "page": "archivo",
-      "title": "Formularios · catálogo con filtros · versión 128",
-      "w": 1440,
-      "x": 6080,
-      "y": 3320
-    },
     "FRM-Catalogo-Filtros.dc.html": {
       "h": 1000,
       "is_interactive": true,
@@ -514,14 +497,6 @@
       "x": 6080,
       "y": 460
     },
-    "FRM-Catalogo-Nuevo-v128.dc.html": {
-      "h": 900,
-      "page": "archivo",
-      "title": "Formularios · nuevo catálogo · versión 128",
-      "w": 1440,
-      "x": 3040,
-      "y": 3320
-    },
     "FRM-Catalogo-Nuevo.dc.html": {
       "h": 900,
       "is_interactive": true,
@@ -530,14 +505,6 @@
       "w": 1440,
       "x": 1520,
       "y": 460
-    },
-    "FRM-Catalogo-Opcion.dc.html": {
-      "h": 900,
-      "page": "archivo",
-      "title": "Formularios · opción de un catálogo · reemplazado (E13, 17/10)",
-      "w": 1440,
-      "x": 0,
-      "y": 3320
     },
     "FRM-Catalogo-Opciones-13.dc.html": {
       "h": 1200,
@@ -584,15 +551,6 @@
       "x": 13680,
       "y": 39422
     },
-    "FRM-Catalogo-Propuesta.dc.html": {
-      "h": 1100,
-      "is_interactive": true,
-      "page": "archivo",
-      "title": "Formularios · el catálogo propuesto · etapa 23 (hasta la v167: pasó a la E25)",
-      "w": 1440,
-      "x": 1520,
-      "y": 8364
-    },
     "FRM-Catalogo-Tipo.dc.html": {
       "h": 1000,
       "is_interactive": true,
@@ -601,14 +559,6 @@
       "w": 1440,
       "x": 7600,
       "y": 460
-    },
-    "FRM-Catalogo-v128.dc.html": {
-      "h": 900,
-      "page": "archivo",
-      "title": "Formularios · catálogo a mano · versión 128",
-      "w": 1440,
-      "x": 4560,
-      "y": 3320
     },
     "FRM-Catalogo.dc.html": {
       "h": 1200,
@@ -628,15 +578,6 @@
       "x": 13680,
       "y": 6138
     },
-    "FRM-Catalogos-23.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "page": "archivo",
-      "title": "Formularios · Catálogos · «Por aprobar» · etapa 23 (hasta la v167: pasó a la E25)",
-      "w": 1440,
-      "x": 0,
-      "y": 8364
-    },
     "FRM-Catalogos-25.dc.html": {
       "h": 900,
       "is_interactive": true,
@@ -645,14 +586,6 @@
       "w": 1440,
       "x": 16720,
       "y": 39422
-    },
-    "FRM-Catalogos-v128.dc.html": {
-      "h": 900,
-      "page": "archivo",
-      "title": "Formularios · Catálogos · versión 128",
-      "w": 1440,
-      "x": 1520,
-      "y": 3320
     },
     "FRM-Catalogos.dc.html": {
       "h": 900,
@@ -924,14 +857,6 @@
       "x": 21280,
       "y": 34154
     },
-    "FRM-Ficha.dc.html": {
-      "h": 900,
-      "page": "archivo",
-      "title": "Formularios · ficha · /org/formularios/:id · reemplazado (E12, 17/10)",
-      "w": 1440,
-      "x": 1520,
-      "y": 260
-    },
     "FRM-Formularios-15.dc.html": {
       "h": 900,
       "is_interactive": true,
@@ -995,39 +920,6 @@
       "x": 0,
       "y": 6138
     },
-    "FRM-Ingles.dc.html": {
-      "h": 900,
-      "page": "archivo",
-      "title": "Formularios · ficha · Inglés · reemplazado (E12, 17/10)",
-      "w": 1440,
-      "x": 4560,
-      "y": 260
-    },
-    "FRM-Listado-v127.dc.html": {
-      "h": 900,
-      "page": "archivo",
-      "title": "Formularios · /org/formularios · versión 127",
-      "w": 1440,
-      "x": 1520,
-      "y": 1280
-    },
-    "FRM-Listado.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "page": "archivo",
-      "title": "Formularios · diseñar formularios (hasta la v140)",
-      "w": 1440,
-      "x": 0,
-      "y": 7344
-    },
-    "FRM-Nuevo.dc.html": {
-      "h": 900,
-      "page": "archivo",
-      "title": "Formularios · nuevo formulario · reemplazado (E12, 17/10)",
-      "w": 1440,
-      "x": 0,
-      "y": 260
-    },
     "FRM-Pdf.dc.html": {
       "h": 1500,
       "is_interactive": true,
@@ -1061,39 +953,6 @@
       "w": 1440,
       "x": 3040,
       "y": 30710
-    },
-    "FRM-Por-Aprobar.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "page": "archivo",
-      "title": "Formularios · por aprobar",
-      "w": 1440,
-      "x": 0,
-      "y": 5360
-    },
-    "FRM-Prefijo.dc.html": {
-      "h": 900,
-      "page": "archivo",
-      "title": "Formularios · prefijo de numeración · reemplazado (E12, 17/10)",
-      "w": 1440,
-      "x": 6080,
-      "y": 260
-    },
-    "FRM-Pregunta.dc.html": {
-      "h": 900,
-      "page": "archivo",
-      "title": "Formularios · agregar o editar una pregunta · reemplazado (E12, 17/10)",
-      "w": 1440,
-      "x": 3040,
-      "y": 260
-    },
-    "FRM-Publicacion.dc.html": {
-      "h": 900,
-      "page": "archivo",
-      "title": "Formularios · ficha · Publicación · reemplazado (E12, 17/10)",
-      "w": 1440,
-      "x": 0,
-      "y": 1280
     },
     "FRM-Publicando.dc.html": {
       "h": 1400,
@@ -1139,14 +998,6 @@
       "w": 1440,
       "x": 15200,
       "y": 24542
-    },
-    "FRM-Publicar-v127.dc.html": {
-      "h": 900,
-      "page": "archivo",
-      "title": "Formularios · publicar (comprobación) · versión 127",
-      "w": 1440,
-      "x": 3040,
-      "y": 1280
     },
     "FRM-Publicar.dc.html": {
       "h": 1400,
@@ -1902,15 +1753,6 @@
       "x": 2350,
       "y": 3320
     },
-    "M-Enlace.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "page": "archivo",
-      "title": "Enlace de WhatsApp · teléfono (hasta la v167: se retira, 179)",
-      "w": 390,
-      "x": 4560,
-      "y": 8364
-    },
     "M-Error-Org.dc.html": {
       "h": 844,
       "is_interactive": true,
@@ -2027,14 +1869,6 @@
       "x": 1880,
       "y": 1780
     },
-    "M-FRM-Catalogo-Filtros-v128.dc.html": {
-      "h": 844,
-      "page": "archivo",
-      "title": "Catálogo con filtros · teléfono · versión 128",
-      "w": 390,
-      "x": 1410,
-      "y": 4340
-    },
     "M-FRM-Catalogo-Filtros.dc.html": {
       "h": 844,
       "is_interactive": true,
@@ -2043,14 +1877,6 @@
       "w": 390,
       "x": 1410,
       "y": 1780
-    },
-    "M-FRM-Catalogo-Opcion.dc.html": {
-      "h": 844,
-      "page": "archivo",
-      "title": "Opción de un catálogo · teléfono · reemplazado (E13, 17/10)",
-      "w": 390,
-      "x": 0,
-      "y": 4340
     },
     "M-FRM-Catalogo-Opciones-13.dc.html": {
       "h": 844,
@@ -2088,14 +1914,6 @@
       "x": 2380,
       "y": 1780
     },
-    "M-FRM-Catalogo-v128.dc.html": {
-      "h": 844,
-      "page": "archivo",
-      "title": "Catálogo a mano · teléfono · versión 128",
-      "w": 390,
-      "x": 940,
-      "y": 4340
-    },
     "M-FRM-Catalogo.dc.html": {
       "h": 844,
       "is_interactive": true,
@@ -2113,14 +1931,6 @@
       "w": 390,
       "x": 3290,
       "y": 7958
-    },
-    "M-FRM-Catalogos-v128.dc.html": {
-      "h": 844,
-      "page": "archivo",
-      "title": "Catálogos · teléfono · versión 128",
-      "w": 390,
-      "x": 470,
-      "y": 4340
     },
     "M-FRM-Catalogos.dc.html": {
       "h": 844,
@@ -2266,14 +2076,6 @@
       "x": 2820,
       "y": 35674
     },
-    "M-FRM-Ficha.dc.html": {
-      "h": 844,
-      "page": "archivo",
-      "title": "Formularios · ficha · teléfono · reemplazado (E12, 17/10)",
-      "w": 390,
-      "x": 0,
-      "y": 2300
-    },
     "M-FRM-Formularios-15.dc.html": {
       "h": 844,
       "is_interactive": true,
@@ -2328,23 +2130,6 @@
       "x": 0,
       "y": 7958
     },
-    "M-FRM-Listado-v127.dc.html": {
-      "h": 844,
-      "page": "archivo",
-      "title": "Formularios · teléfono · versión 127",
-      "w": 390,
-      "x": 940,
-      "y": 2300
-    },
-    "M-FRM-Listado.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "page": "archivo",
-      "title": "Diseñar formularios · teléfono (hasta la v140)",
-      "w": 390,
-      "x": 1520,
-      "y": 7344
-    },
     "M-FRM-Plantilla-25.dc.html": {
       "h": 844,
       "is_interactive": true,
@@ -2361,23 +2146,6 @@
       "w": 390,
       "x": 940,
       "y": 32790
-    },
-    "M-FRM-Por-Aprobar.dc.html": {
-      "h": 844,
-      "is_interactive": true,
-      "page": "archivo",
-      "title": "Formularios · por aprobar · teléfono",
-      "w": 390,
-      "x": 0,
-      "y": 6380
-    },
-    "M-FRM-Pregunta.dc.html": {
-      "h": 844,
-      "page": "archivo",
-      "title": "Formularios · pregunta · teléfono · reemplazado (E12, 17/10)",
-      "w": 390,
-      "x": 470,
-      "y": 2300
     },
     "M-FRM-Publicar-20.dc.html": {
       "h": 844,
@@ -3098,14 +2866,6 @@
       "x": 2350,
       "y": 7958
     },
-    "M-WA-Chats-Formulario-v127.dc.html": {
-      "h": 844,
-      "page": "archivo",
-      "title": "WhatsApp · Internos · mandar formulario · teléfono · versión 127",
-      "w": 390,
-      "x": 1410,
-      "y": 2300
-    },
     "M-WA-Chats-Formulario.dc.html": {
       "h": 844,
       "is_interactive": true,
@@ -3240,14 +3000,6 @@
       "w": 390,
       "x": 6580,
       "y": 29346
-    },
-    "M-WA-Conversacion-Respuesta-v127.dc.html": {
-      "h": 844,
-      "page": "archivo",
-      "title": "WhatsApp · Internos · respuesta del formulario · teléfono · versión 127",
-      "w": 390,
-      "x": 1880,
-      "y": 2300
     },
     "M-WA-Conversacion-Respuesta.dc.html": {
       "h": 844,
@@ -4014,14 +3766,6 @@
       "x": 10640,
       "y": 6138
     },
-    "WA-Chats-Formulario-v127.dc.html": {
-      "h": 900,
-      "page": "archivo",
-      "title": "WhatsApp · Internos · mandar formulario · versión 127",
-      "w": 1440,
-      "x": 4560,
-      "y": 1280
-    },
     "WA-Chats-Formulario.dc.html": {
       "h": 900,
       "is_interactive": true,
@@ -4081,14 +3825,6 @@
       "w": 1440,
       "x": 22800,
       "y": 27626
-    },
-    "WA-Chats-Respuesta-v127.dc.html": {
-      "h": 900,
-      "page": "archivo",
-      "title": "WhatsApp · Internos · respuesta del formulario · versión 127",
-      "w": 1440,
-      "x": 6080,
-      "y": 1280
     },
     "WA-Chats-Respuesta.dc.html": {
       "h": 900,
@@ -4376,6 +4112,375 @@
       "w": 390,
       "x": 6860,
       "y": 1000
+    },
+    "Criterio-Tablas-Base2.dc.html": {
+      "h": 5600,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Criterio · Tablas y listas · base 2: el orden, nada debajo, el ⋮ y las áreas · para aprobar",
+      "w": 1440,
+      "x": 700,
+      "y": 0
+    },
+    "Criterio-Elegir.dc.html": {
+      "h": 3300,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Criterio · Elegir de una lista (nuevo): la pieza para elegir · para aprobar",
+      "w": 1440,
+      "x": 2240,
+      "y": 0
+    },
+    "Rol-Base2.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Editar un rol · permisos en áreas plegables · /org/roles/:id · para aprobar",
+      "w": 1440,
+      "x": 700,
+      "y": 5760
+    },
+    "M-Rol-Base2.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Editar un rol · permisos en áreas plegables · teléfono · para aprobar",
+      "w": 390,
+      "x": 2240,
+      "y": 5760
+    },
+    "Usuarios-Base2.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Usuarios · la entrega de una invitación y lo que no podés dar · /org/usuarios · para aprobar",
+      "w": 1440,
+      "x": 2730,
+      "y": 5760
+    },
+    "M-Usuarios-Base2.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Usuarios · la entrega de una invitación · teléfono · para aprobar",
+      "w": 390,
+      "x": 4270,
+      "y": 5760
+    },
+    "Usuario-Base2.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Editar usuario · la entrega de su invitación y lo que no podés dar · /org/usuarios/:id · para aprobar",
+      "w": 1440,
+      "x": 4760,
+      "y": 5760
+    },
+    "M-Usuario-Base2.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Editar usuario · la entrega de su invitación · teléfono · para aprobar",
+      "w": 390,
+      "x": 6300,
+      "y": 5760
+    },
+    "Empresa-Base2.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Ficha de empresa · la entrega de una invitación y lo que no podés dar · /org/empresas/:id · para aprobar",
+      "w": 1440,
+      "x": 6790,
+      "y": 5760
+    },
+    "M-Empresa-Base2.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Ficha de empresa · la entrega de una invitación · teléfono · para aprobar",
+      "w": 390,
+      "x": 8330,
+      "y": 5760
+    },
+    "Cuentas-Base2.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Cuentas y operadores · la entrega de una invitación y los permisos en áreas · /plataforma/cuentas · para aprobar",
+      "w": 1440,
+      "x": 700,
+      "y": 6820
+    },
+    "M-Cuentas-Base2.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Cuentas · la entrega de una invitación · teléfono · para aprobar",
+      "w": 390,
+      "x": 2240,
+      "y": 6820
+    },
+    "Cuenta-Plat-Base2.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Ficha de una cuenta · los permisos de un operador en áreas y la entrega de su invitación · para aprobar",
+      "w": 1440,
+      "x": 2730,
+      "y": 6820
+    },
+    "M-Cuenta-Plat-Base2.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Ficha de una cuenta · operador · teléfono · para aprobar",
+      "w": 390,
+      "x": 4270,
+      "y": 6820
+    },
+    "Auditoria-Plat-Base2.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Auditoría de seguridad · la (i) con el plazo de los ingresos · /plataforma/auditoria · para aprobar",
+      "w": 1440,
+      "x": 4760,
+      "y": 6820
+    },
+    "M-Auditoria-Plat-Base2.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Auditoría de seguridad · la (i) del plazo · teléfono · para aprobar",
+      "w": 390,
+      "x": 6300,
+      "y": 6820
+    },
+    "WA-Chats-Base2.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "WhatsApp · Chats · un mensaje sin confirmar y los motivos de «No se pudo mandar» · para aprobar",
+      "w": 1440,
+      "x": 700,
+      "y": 7880
+    },
+    "M-WA-Conversacion-Base2.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Conversación · un mensaje sin confirmar · teléfono · para aprobar",
+      "w": 390,
+      "x": 2240,
+      "y": 7880
+    },
+    "Plat-WA-Chats-Base2.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Plataforma · WhatsApp · Consultas · un mensaje sin confirmar y los motivos · para aprobar",
+      "w": 1440,
+      "x": 2730,
+      "y": 7880
+    },
+    "M-Plat-WA-Conversacion-Base2.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Consultas · un mensaje sin confirmar · teléfono · para aprobar",
+      "w": 390,
+      "x": 4270,
+      "y": 7880
+    },
+    "WA-Difusion-Resultados-Base2.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "WhatsApp · Resultados de una difusión · un destinatario sin confirmar · para aprobar",
+      "w": 1440,
+      "x": 4760,
+      "y": 7880
+    },
+    "M-WA-Difusion-Resultados-Base2.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Resultados de una difusión · un destinatario sin confirmar · teléfono · para aprobar",
+      "w": 390,
+      "x": 6300,
+      "y": 7880
+    },
+    "Config-Plat-Base2.dc.html": {
+      "h": 1760,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Configuración de la plataforma · nombre y correos, privacidad y retención, y WhatsApp · para aprobar",
+      "w": 1440,
+      "x": 700,
+      "y": 8940
+    },
+    "M-Config-Plat-Base2.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Configuración de la plataforma · teléfono · para aprobar",
+      "w": 390,
+      "x": 2240,
+      "y": 8940
+    },
+    "WA-Config-Base2.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Administración · WhatsApp · Configuración (nueva) · el plazo de los chats · para aprobar",
+      "w": 1440,
+      "x": 2730,
+      "y": 8940
+    },
+    "M-WA-Config-Base2.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Configuración de WhatsApp · teléfono · para aprobar",
+      "w": 390,
+      "x": 4270,
+      "y": 8940
+    },
+    "Asistente-Org-Base2.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Asistente · organización · el cupo del día · para aprobar",
+      "w": 1440,
+      "x": 4760,
+      "y": 8940
+    },
+    "M-Asistente-Org-Base2.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Asistente · organización · el cupo del día · teléfono · para aprobar",
+      "w": 390,
+      "x": 6300,
+      "y": 8940
+    },
+    "Asistente-Personal-Base2.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Asistente · personal · el cupo del día · para aprobar",
+      "w": 1440,
+      "x": 6790,
+      "y": 8940
+    },
+    "M-Asistente-Personal-Base2.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Asistente · personal · el cupo del día · teléfono · para aprobar",
+      "w": 390,
+      "x": 8330,
+      "y": 8940
+    },
+    "Asistente-Plat-Base2.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Asistente · Plataforma · el cupo del día · para aprobar",
+      "w": 1440,
+      "x": 8820,
+      "y": 8940
+    },
+    "M-Asistente-Plat-Base2.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Asistente · Plataforma · el cupo del día · teléfono · para aprobar",
+      "w": 390,
+      "x": 10360,
+      "y": 8940
+    },
+    "Cuenta-Base2.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Mi cuenta · la zona horaria y el idioma en la pieza · /cuenta · para aprobar",
+      "w": 1440,
+      "x": 700,
+      "y": 10860
+    },
+    "M-Cuenta-Base2.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Mi cuenta · la zona horaria · teléfono · para aprobar",
+      "w": 390,
+      "x": 2240,
+      "y": 10860
+    },
+    "Configuracion-Base2.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Configuración · la zona horaria y el idioma en la pieza · /org/configuracion · para aprobar",
+      "w": 1440,
+      "x": 2730,
+      "y": 10860
+    },
+    "M-Configuracion-Base2.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Configuración · la zona horaria · teléfono · para aprobar",
+      "w": 390,
+      "x": 4270,
+      "y": 10860
+    },
+    "WA-Respuestas-Base2.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Bot · «Fuera de horario» con el horario en una tabla y la pieza para elegir · para aprobar",
+      "w": 1440,
+      "x": 4760,
+      "y": 10860
+    },
+    "M-WA-Respuestas-Base2.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Bot · «Fuera de horario» · teléfono · para aprobar",
+      "w": 390,
+      "x": 6300,
+      "y": 10860
+    },
+    "Legales-Base2.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Documentos legales · un dato por columna · /plataforma/legales · para aprobar",
+      "w": 1440,
+      "x": 700,
+      "y": 11920
+    },
+    "WA-Difusiones-Base2.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "WhatsApp · Difusiones · un dato por columna · para aprobar",
+      "w": 1440,
+      "x": 2240,
+      "y": 11920
+    },
+    "M-Filas-Base2.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "propuesta-base2",
+      "title": "Las listas del núcleo en el teléfono · cada fila, una tarjeta con sus datos nombrados · para aprobar",
+      "w": 390,
+      "x": 3780,
+      "y": 11920
     }
   },
   "createdOnFiles": {
@@ -4412,7 +4517,6 @@
     "t-propuesta-whatsapp",
     "t-formularios",
     "t-plat-formularios",
-    "t-archivo",
     "t-formularios-12",
     "t-formularios-14",
     "t-formularios-15",
@@ -4427,7 +4531,15 @@
     "t-formularios-20",
     "t-formularios-24",
     "t-formularios-25",
-    "acciones-asistente"
+    "acciones-asistente",
+    "propuesta-base2",
+    "base2-criterio",
+    "base2-roles",
+    "base2-plataforma",
+    "base2-whatsapp",
+    "base2-config",
+    "base2-pieza",
+    "base2-filas"
   ],
   "notes": {
     "guia": {
@@ -4469,15 +4581,6 @@
       "w": 440,
       "x": 7600,
       "y": 260
-    },
-    "t-archivo": {
-      "kind": "title1",
-      "maxW": 8000,
-      "page": "archivo",
-      "text": "Archivo · versiones anteriores, solo de referencia",
-      "w": 1200,
-      "x": 0,
-      "y": 0
     },
     "t-criterio": {
       "kind": "title1",
@@ -4711,6 +4814,70 @@
       "w": 620,
       "x": 0,
       "y": 0
+    },
+    "propuesta-base2": {
+      "color": "blue",
+      "page": "propuesta-base2",
+      "text": "Propuesta · Base 2, para aprobar. Los tableros que esperan la segunda parte de la base (F4, F5 y F10 a F13 del plan del 19/11), con las decisiones 260 a 273 y las ADR 0061, 0062 y 0066. Va antes que las acciones del asistente y que la E12.\n\nCada uno es el tablero de siempre con lo nuevo, con «-Base2» en el nombre y «· para aprobar» en el título: el de siempre no cambia hasta que se aprueba. Cada uno muestra solo lo que existe hasta esta etapa (78), sin «Gestión de formularios» nuevo. Los estados se eligen con el Tweak «estado».\n\nQué mirar, de arriba abajo: el criterio (las tablas que ordenan y la pieza para elegir); roles y personas; Plataforma; WhatsApp; las reglas en Configuración; la pieza en pantalla, y nada debajo de otro dato. Cada fila tiene su nota a la izquierda.\n\nPara decidir: la configuración de WhatsApp de la organización va como entrada nueva, «Configuración», en Administración › WhatsApp (WA-Config-Base2).",
+      "w": 620,
+      "x": 0,
+      "y": 0
+    },
+    "base2-criterio": {
+      "color": "yellow",
+      "page": "propuesta-base2",
+      "text": "Criterio (F4, F11 y F12)\n\nCriterio-Tablas-Base2: el encabezado que ordena (↑ ↓ en el color de la marca, ↕ al pasar el mouse) y «Ordenar por» al final de la barra (264); ninguna fila con un botón con texto (261); nada debajo de otro dato, tampoco el texto en gris (263); los permisos en áreas plegables (260) y el teléfono, con cada fila como una tarjeta.\n\nCriterio-Elegir (nuevo): la pieza para elegir (262), cerrada y abierta, del servidor, con tope, en la barra y en el teléfono, con los tres detalles del 23/11: abre con la elegida a la vista, sin «0 opciones» y la lista de un botón del ancho de sus nombres.",
+      "w": 620,
+      "x": 0,
+      "y": 760
+    },
+    "base2-roles": {
+      "color": "yellow",
+      "page": "propuesta-base2",
+      "text": "Roles y personas (F5 y F10)\n\nRol: áreas plegables con la flecha, la casilla y la (i); lo incluido apagado con su motivo (si lo incluyen dos, los nombra); el Dueño con tildes y cerrado; un rol de una empresa. «Lo que no podés dar»: Valeria Castro, que no es Dueña, ve apagado lo que no tiene (269 y 0061). «Invitar usuarios» y «Asignar roles» incluyen su «Ver» como dibujo, a confirmar contra sus pantallas (260).\n\nUsuarios, Usuario y Empresa: la columna «Entrega» (Pendiente, Enviada, Sin confirmar, No se pudo enviar) con su (i); en la ficha, la caja «Invitación»; reenviar una sin confirmar pide revisar con la persona (0066 §4); el selector de roles con lo que no podés dar apagado. En el teléfono, cada fila es una tarjeta.",
+      "w": 620,
+      "x": 0,
+      "y": 5760
+    },
+    "base2-plataforma": {
+      "color": "yellow",
+      "page": "propuesta-base2",
+      "text": "Plataforma (F5 y F10)\n\nCuentas y Cuenta-Plat: la entrega de la invitación de un operador; sus permisos en áreas plegables, en la ficha (solo lo que tiene, con su tilde) y al invitar o cambiarlos, con lo incluido («Administrar cuentas» incluye «Ver cuentas») y lo que no podés dar apagados.\n\nAuditoria-Plat: la (i) del título, «Los ingresos se guardan 12 meses.», con el número de Configuración (272).",
+      "w": 620,
+      "x": 0,
+      "y": 6820
+    },
+    "base2-whatsapp": {
+      "color": "yellow",
+      "page": "propuesta-base2",
+      "text": "WhatsApp: «Sin confirmar» y los motivos (F10)\n\nUn mensaje «Sin confirmar» con su (i) y «Marcar como revisado»; revisado, «Lo revisó Ana Gómez · 19/11/2026, 14:35». Revisar no lo reenvía. «No se pudo mandar» con cada uno de los ocho motivos debajo. Igual en Plataforma.\n\nDifusión: un destinatario «Sin confirmar», sin revisión y sin contar como mandado ni como «No llegó» (255).",
+      "w": 620,
+      "x": 0,
+      "y": 7880
+    },
+    "base2-config": {
+      "color": "yellow",
+      "page": "propuesta-base2",
+      "text": "Las reglas en Configuración (F13)\n\nConfig-Plat: «Nombre y correos» con «Así llega», «Privacidad y retención» y, con WhatsApp, «Países que reciben códigos» con el aviso de costo, el plazo de sus chats y el máximo de las organizaciones. Cada valor con su mínimo y su máximo en la (i), el error, el 409 y sin permiso. El rango de «Conversaciones del Inicio» (1 a 30) es a confirmar.\n\nWA-Config (nuevo): «Guardar los mensajes de los chats» de la organización (272). El asistente: el cupo del día dice que fue el cupo y cuándo vuelve, con la hora de la organización o del perfil (271).",
+      "w": 620,
+      "x": 0,
+      "y": 8940
+    },
+    "base2-pieza": {
+      "color": "yellow",
+      "page": "propuesta-base2",
+      "text": "La pieza para elegir en pantalla (F11)\n\nLa zona horaria y el idioma en la pieza, con la ciudad y, en gris, la hora de su país y el desfase (262). En Mi cuenta, «Verificar» y «Vincular» pasan al ⋮ de su fila (261); «Exportar» y «Borrar» de Privacidad son acciones, no filas, y quedan.\n\n«Fuera de horario»: el horario en una tabla de lectura (Día · Horario · ✎), cada día en un diálogo con la atención en la pieza (IN1-C de allá, como referencia).",
+      "w": 620,
+      "x": 0,
+      "y": 10860
+    },
+    "base2-filas": {
+      "color": "yellow",
+      "page": "propuesta-base2",
+      "text": "Nada debajo de otro dato (F4)\n\nDocumentos legales y Difusiones: lo que iba junto en una celda o debajo del nombre pasa a sus columnas (263).\n\nM-Filas-Base2: las listas del teléfono del núcleo, una por estado, con cada fila como una tarjeta con sus datos nombrados, de a dos. Los segmentados de filtro con cantidad ya no estaban en el núcleo: «Clientes | Internos» de Chats son dos vistas y siguen.",
+      "w": 620,
+      "x": 0,
+      "y": 11920
     }
   },
   "order": [
@@ -4735,7 +4902,47 @@
     "M-Usuario-Propuesta.dc.html",
     "M-Rol-Propuesta.dc.html",
     "M-Confirmar-Propuesta.dc.html",
-    "Enlace.dc.html",
+    "Criterio-Tablas-Base2.dc.html",
+    "Criterio-Elegir.dc.html",
+    "Rol-Base2.dc.html",
+    "M-Rol-Base2.dc.html",
+    "Usuarios-Base2.dc.html",
+    "M-Usuarios-Base2.dc.html",
+    "Usuario-Base2.dc.html",
+    "M-Usuario-Base2.dc.html",
+    "Empresa-Base2.dc.html",
+    "M-Empresa-Base2.dc.html",
+    "Cuentas-Base2.dc.html",
+    "M-Cuentas-Base2.dc.html",
+    "Cuenta-Plat-Base2.dc.html",
+    "M-Cuenta-Plat-Base2.dc.html",
+    "Auditoria-Plat-Base2.dc.html",
+    "M-Auditoria-Plat-Base2.dc.html",
+    "WA-Chats-Base2.dc.html",
+    "M-WA-Conversacion-Base2.dc.html",
+    "Plat-WA-Chats-Base2.dc.html",
+    "M-Plat-WA-Conversacion-Base2.dc.html",
+    "WA-Difusion-Resultados-Base2.dc.html",
+    "M-WA-Difusion-Resultados-Base2.dc.html",
+    "Config-Plat-Base2.dc.html",
+    "M-Config-Plat-Base2.dc.html",
+    "WA-Config-Base2.dc.html",
+    "M-WA-Config-Base2.dc.html",
+    "Asistente-Org-Base2.dc.html",
+    "M-Asistente-Org-Base2.dc.html",
+    "Asistente-Personal-Base2.dc.html",
+    "M-Asistente-Personal-Base2.dc.html",
+    "Asistente-Plat-Base2.dc.html",
+    "M-Asistente-Plat-Base2.dc.html",
+    "Cuenta-Base2.dc.html",
+    "M-Cuenta-Base2.dc.html",
+    "Configuracion-Base2.dc.html",
+    "M-Configuracion-Base2.dc.html",
+    "WA-Respuestas-Base2.dc.html",
+    "M-WA-Respuestas-Base2.dc.html",
+    "Legales-Base2.dc.html",
+    "WA-Difusiones-Base2.dc.html",
+    "M-Filas-Base2.dc.html",
     "Sesion.dc.html",
     "Perfil-Suspendido.dc.html",
     "Recuperar.dc.html",
@@ -4770,7 +4977,6 @@
     "M-Registro.dc.html",
     "M-Registro-Empresa.dc.html",
     "M-Invitacion.dc.html",
-    "M-Enlace.dc.html",
     "M-Inicio-Personal.dc.html",
     "M-Cuenta.dc.html",
     "M-Recuperar.dc.html",
@@ -4911,30 +5117,18 @@
     "Plat-Asistente-Uso.dc.html",
     "M-Plat-Asistente-Config.dc.html",
     "M-Plat-Asistente-Uso.dc.html",
-    "FRM-Listado.dc.html",
-    "FRM-Nuevo.dc.html",
-    "FRM-Ficha.dc.html",
-    "FRM-Pregunta.dc.html",
-    "FRM-Ingles.dc.html",
-    "FRM-Prefijo.dc.html",
     "FRM-Publicar.dc.html",
-    "FRM-Publicacion.dc.html",
     "WA-Chats-Formulario.dc.html",
     "WA-Chats-Respuesta.dc.html",
-    "M-FRM-Listado.dc.html",
-    "M-FRM-Ficha.dc.html",
-    "M-FRM-Pregunta.dc.html",
     "M-WA-Chats-Formulario.dc.html",
     "M-WA-Conversacion-Respuesta.dc.html",
     "FRM-Catalogos.dc.html",
     "FRM-Catalogo-Nuevo.dc.html",
     "FRM-Catalogo.dc.html",
-    "FRM-Catalogo-Opcion.dc.html",
     "FRM-Catalogo-Filtros.dc.html",
     "M-FRM-Catalogos.dc.html",
     "M-FRM-Catalogo.dc.html",
     "M-FRM-Catalogo-Ordenar.dc.html",
-    "M-FRM-Catalogo-Opcion.dc.html",
     "M-FRM-Catalogo-Filtros.dc.html",
     "Plat-FRM-Biblioteca.dc.html",
     "Plat-FRM-Plantilla-Nueva.dc.html",
@@ -4948,25 +5142,11 @@
     "M-FRM-Biblioteca.dc.html",
     "M-FRM-Plantilla.dc.html",
     "M-Plat-FRM-Biblioteca.dc.html",
-    "FRM-Listado-v127.dc.html",
-    "FRM-Publicar-v127.dc.html",
-    "WA-Chats-Formulario-v127.dc.html",
-    "WA-Chats-Respuesta-v127.dc.html",
-    "M-FRM-Listado-v127.dc.html",
-    "M-WA-Chats-Formulario-v127.dc.html",
-    "M-WA-Conversacion-Respuesta-v127.dc.html",
     "FRM-Editor.dc.html",
     "FRM-Publicando.dc.html",
     "FRM-Vista-Oficial.dc.html",
     "M-FRM-Editor.dc.html",
     "M-FRM-Vista-Oficial.dc.html",
-    "FRM-Catalogos-v128.dc.html",
-    "FRM-Catalogo-Nuevo-v128.dc.html",
-    "FRM-Catalogo-v128.dc.html",
-    "FRM-Catalogo-Filtros-v128.dc.html",
-    "M-FRM-Catalogos-v128.dc.html",
-    "M-FRM-Catalogo-v128.dc.html",
-    "M-FRM-Catalogo-Filtros-v128.dc.html",
     "Indice-llega.dc.html",
     "Indice-entra.dc.html",
     "Indice-persona.dc.html",
@@ -4990,14 +5170,12 @@
     "FRM-Editor-Reglas.dc.html",
     "FRM-Editor-Reglas-Bloque.dc.html",
     "FRM-Pdf.dc.html",
-    "FRM-Por-Aprobar.dc.html",
     "FRM-Respuesta-Aprobacion.dc.html",
     "WA-Chats-Avisos.dc.html",
     "WA-Chats-Respuesta-21.dc.html",
     "WA-Plantilla-Nueva-21.dc.html",
     "M-FRM-Reglas.dc.html",
     "M-FRM-Reglas-Bloque.dc.html",
-    "M-FRM-Por-Aprobar.dc.html",
     "M-FRM-Respuesta-Aprobacion.dc.html",
     "M-WA-Conversacion-Avisos.dc.html",
     "M-WA-Conversacion-Respuesta-21.dc.html",
@@ -5005,7 +5183,6 @@
     "WA-Chats-Asistente.dc.html",
     "WA-Chats-Sugerencia.dc.html",
     "WA-Chats-Audio.dc.html",
-    "FRM-Catalogo-Propuesta.dc.html",
     "FRM-Faltan.dc.html",
     "FRM-Editor-Asistente.dc.html",
     "FRM-Editor-Sugerencias.dc.html",
@@ -5171,7 +5348,6 @@
     "M-WA-Modo-Atencion.dc.html",
     "FRM-Editor-Reglas-23.dc.html",
     "M-FRM-Reglas-23.dc.html",
-    "FRM-Catalogos-23.dc.html",
     "FRM-Dar-De-Baja-23.dc.html",
     "FRM-Editor-Baja-23.dc.html",
     "Plat-Asistente-Config-23.dc.html",
@@ -5218,6 +5394,10 @@
       "name": "Índice y mapas"
     },
     {
+      "id": "propuesta-base2",
+      "name": "Propuesta · Base 2"
+    },
+    {
       "id": "publico",
       "name": "Sitio público"
     },
@@ -5256,10 +5436,6 @@
     {
       "id": "reglas",
       "name": "Textos y mensajes"
-    },
-    {
-      "id": "archivo",
-      "name": "Archivo"
     }
   ],
   "title": "Sistema visual · Multitenant"
