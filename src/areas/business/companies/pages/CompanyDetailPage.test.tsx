@@ -8,6 +8,7 @@ import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
 import { companyQueryKey } from "../api/companies";
+import { pickerName } from "@/test/picker";
 
 const company = {
   id: "company-1", name: "Delta S.A.", taxId: null, timeZoneId: "America/Argentina/Buenos_Aires",
@@ -144,7 +145,7 @@ describe("CompanyDetailPage", () => {
     // Tablero Empresa, pestaña Roles: el mismo pie que Miembros; con un solo rol, «1 de 1».
     expect(within(roles).getByText("1 de 1")).toBeVisible();
     expect(within(roles).getByText("Página 1 de 1")).toBeVisible();
-    expect(within(roles).getByRole("combobox", { name: /por página/ })).toBeVisible();
+    expect(within(roles).getByRole("button", { name: pickerName("Filas por página") })).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
   });
 

@@ -12,6 +12,7 @@ import type { PlatformTenantResponse, TenantStatus } from "@/shared/api/types";
 import { tenantsQueryRoot } from "../api/tenants";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
 import { platformOperator } from "@/test/mocks/currentUsers";
+import { pickerName } from "@/test/picker";
 
 beforeAll(async () => { await import("./OrganizationsPage"); });
 
@@ -258,7 +259,7 @@ describe("OrganizationsPage", () => {
     const user = userEvent.setup(); const rows = Array.from({ length: 50 }, (_, index) => ({ ...organization, id: `org-${index}`, name: `Grupo ${index}` }));
     server.use(http.get("/api/platform/tenants/paged", ({ request }) => { const size = Number(new URL(request.url).searchParams.get("pageSize") ?? "10"); return HttpResponse.json(list(rows.slice(0, size), 50, size)); }));
     const { router } = renderRouteWithProviders("/plataforma", { as: "platform-operator" }); await screen.findByRole("link", { name: "Grupo 0" }); expect(screen.getAllByRole("row")).toHaveLength(11);
-    screen.getByRole("combobox", { name: "Filas por página" }).focus(); await user.keyboard("{ArrowDown}"); await user.click(await screen.findByRole("option", { name: "50 por página" }));
+    screen.getByRole("button", { name: pickerName("Filas por página") }).focus(); await user.keyboard("{ArrowDown}"); await user.click(await screen.findByRole("option", { name: "50 por página" }));
     await waitFor(() => expect(screen.getAllByRole("row")).toHaveLength(51)); expect(router.state.location.search).toContain("pageSize=50"); expect(screen.getByText("1–50 de 50")).toBeVisible();
   });
   it("sin manage conserva Ver ficha y oculta todas las escrituras y Crear", async () => {

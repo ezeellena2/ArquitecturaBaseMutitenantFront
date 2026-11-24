@@ -4,6 +4,7 @@ import { beforeAll, describe, expect, it, vi } from "vitest";
 import { changeCulture, configureI18n } from "@/shared/i18n";
 import { Pagination } from "./Pagination";
 import { AppChromeProvider } from "./app/AppChrome";
+import { pickerName } from "@/test/picker";
 
 vi.mock("@/shared/format/useFormat", () => ({
   useFormat: () => ({
@@ -54,14 +55,13 @@ describe("Pagination", () => {
     // Tableros Empresas y Usuarios: el pie en letra de 12, y el tamaño de página en un control de 28 con letra de 12,
     // también en la compu grande; con las esquinas de un control, nunca en pastilla (173).
     expect(screen.getByRole("navigation", { name: "Paginado" })).toHaveClass("text-[0.75rem]");
-    expect(screen.getByRole("combobox", { name: "Filas por página" })).toHaveClass("h-7", "text-[0.75rem]", "rounded-[0.5rem]");
-    expect(screen.getByRole("combobox", { name: "Filas por página" })).not.toHaveClass("rounded-full");
-    expect(screen.getByRole("combobox", { name: "Filas por página" })).not.toHaveClass("lg:h-8", "lg:text-[0.8125rem]");
+    expect(screen.getByRole("button", { name: pickerName("Filas por página") })).toHaveClass("h-7", "text-[0.75rem]", "rounded-[0.5rem]");
+    expect(screen.getByRole("button", { name: pickerName("Filas por página") })).not.toHaveClass("rounded-full");
+    expect(screen.getByRole("button", { name: pickerName("Filas por página") })).not.toHaveClass("lg:h-8", "lg:text-[0.8125rem]");
 
-    // Las flechas del tablero (.pag), con trazo 2; y la del tamaño de página, la chica de los desplegables.
+    // Las flechas del tablero (.pag), con trazo 2.
     expect(previous.querySelector("svg")).toHaveAttribute("stroke-width", "2");
     expect(previous.querySelector("path")).toHaveAttribute("d", "M14.5 5.5 8 12l6.5 6.5");
-    expect(screen.getByRole("combobox", { name: "Filas por página" }).querySelector("path")).toHaveAttribute("d", "m7 10 5 5 5-5");
 
     await userEvent.click(screen.getByRole("button", { name: "Página siguiente" }));
     expect(onPageChange).toHaveBeenCalledWith(2);
@@ -81,7 +81,7 @@ describe("Pagination", () => {
     await changeCulture("es-AR");
     const { onPageSizeChange } = renderPagination();
 
-    screen.getByRole("combobox", { name: "Filas por página" }).focus();
+    screen.getByRole("button", { name: pickerName("Filas por página") }).focus();
     await userEvent.keyboard("{Enter}");
     for (const size of [10, 20, 50, 100]) {
       expect(screen.getByRole("option", { name: `${size} por página` })).toBeInTheDocument();
@@ -113,7 +113,7 @@ describe("Pagination", () => {
     renderPagination({ totalCount: 25, totalPages: 3 });
 
     expect(screen.getByText("1–10 of 25")).toBeInTheDocument();
-    expect(screen.getByRole("combobox", { name: "Rows per page" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: pickerName("Rows per page") })).toBeInTheDocument();
     await changeCulture("es-AR");
   });
 
@@ -131,7 +131,7 @@ describe("Pagination", () => {
 
     expect(screen.getByText("11–20 de 50")).toBeInTheDocument();
     expect(screen.getByText("Página 2 de 5")).toBeInTheDocument();
-    expect(screen.queryByRole("combobox", { name: "Filas por página" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: pickerName("Filas por página") })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Cargar más" })).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Página siguiente" }));
     await userEvent.click(screen.getByRole("button", { name: "Página anterior" }));
@@ -142,7 +142,7 @@ describe("Pagination", () => {
   it("la variante web de escritorio conserva el selector de tamaño", async () => {
     await changeCulture("es-AR");
     const { onPageSizeChange } = renderPagination({ variant: "web", mobile: false });
-    screen.getByRole("combobox", { name: "Filas por página" }).focus();
+    screen.getByRole("button", { name: pickerName("Filas por página") }).focus();
     await userEvent.keyboard("{Enter}");
     await userEvent.click(screen.getByRole("option", { name: "20 por página" }));
     expect(onPageSizeChange).toHaveBeenCalledWith(20);

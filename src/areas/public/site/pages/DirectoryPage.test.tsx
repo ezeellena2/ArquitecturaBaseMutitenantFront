@@ -11,6 +11,7 @@ import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
 import { asPhone } from "@/test/utils/phone";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
+import { pickerName } from "@/test/picker";
 
 const companies: DirectoryEntryRow[] = Array.from({ length: 50 }, (_, index) => ({
   slug: `empresa-${index + 1}`, name: `Empresa ${index + 1}`, description: `Descripción pública ${index + 1}.`, logoUrl: null,
@@ -65,7 +66,7 @@ describe("DirectoryPage", () => {
     expect(within(first).getByText(publicSiteHost(companies[0].slug))).toBeVisible();
     expect(screen.getByText(total === 1 ? "1 de 1" : "1–10 de 50")).toBeVisible();
     expect(screen.getByText(total === 1 ? "Página 1 de 1" : "Página 1 de 5")).toBeVisible();
-    expect(screen.getByRole("combobox", { name: "Filas por página" })).toBeVisible();
+    expect(screen.getByRole("button", { name: pickerName("Filas por página") })).toBeVisible();
     expect(screen.queryByRole("link", { name: "Ayuda" })).not.toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -154,7 +155,7 @@ describe("DirectoryPage", () => {
       expect(screen.getByRole("button", { name: "Abrir el menú" })).toBeVisible();
       expect(screen.getByText("1–10 de 50")).toBeVisible();
       expect(screen.getByText("Página 1 de 5")).toBeVisible();
-      expect(screen.queryByRole("combobox", { name: "Filas por página" })).not.toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: pickerName("Filas por página") })).not.toBeInTheDocument();
       expect(screen.queryByRole("button", { name: "Cargar más" })).not.toBeInTheDocument();
       expect(screen.getByRole("button", { name: "Página anterior" })).toBeDisabled();
       await user.click(screen.getByRole("button", { name: "Página siguiente" }));

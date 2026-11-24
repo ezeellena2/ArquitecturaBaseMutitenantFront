@@ -7,7 +7,7 @@ import { useFormat } from "@/shared/format/useFormat";
 import { useAppChrome } from "./app/AppChrome";
 import { Button } from "./button";
 import { LoadMore } from "./LoadMore";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
+import { Picker } from "./Picker";
 
 export type PaginationProps = Required<Pick<
   PagedResultOfRoleResponse,
@@ -52,20 +52,11 @@ export function Pagination({
           : t("pagination.range", { from: formatInteger(from), to: formatInteger(to), total: formatInteger(totalCount) })}
       </p>
       <div className="flex flex-wrap items-center gap-2">
-        {!webPhone ? <Select value={String(pageSize)} onValueChange={(value) => onPageSizeChange(Number(value))}>
-          <SelectTrigger
-            size="sm"
-            aria-label={t("pagination.rowsPerPage")}
-            className="h-7 rounded-[0.5rem] border-[var(--borde)] bg-[var(--superficie)] px-2.5 text-[0.75rem] text-[var(--t2)] shadow-none"
-          >
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent position="popper" align="end" className="border-[var(--borde)] bg-[var(--superficie)] text-[var(--t1)]">
-            {pageSizes.map((size) => (
-              <SelectItem key={size} value={String(size)}>{t("pagination.perPage", { size })}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select> : null}
+        {/* 262: las filas por página se eligen en la pieza, del tamaño de la barra de la página. */}
+        {!webPhone ? <Picker label={t("pagination.rowsPerPage")} value={String(pageSize)}
+          onChange={(value) => { if (Number(value) !== pageSize) onPageSizeChange(Number(value)); }}
+          options={pageSizes.map((size) => ({ value: String(size), label: t("pagination.perPage", { size }) }))}
+          className="h-7 w-auto rounded-[0.5rem] border-[var(--borde)] px-2.5 text-[0.75rem] text-[var(--t2)] max-md:h-7 max-md:rounded-[0.5rem] max-md:px-2.5 max-md:text-[0.75rem]" /> : null}
         <span>
           {/* Sin filas, «Página 1 de 1» y no «de 0» (tablero Roles, «Ningún rol coincide con los filtros»). */}
           {t("pagination.page", { page: formatInteger(page), totalPages: formatInteger(Math.max(totalPages, 1)) })}

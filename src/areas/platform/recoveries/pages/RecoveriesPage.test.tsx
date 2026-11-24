@@ -15,6 +15,7 @@ import { renderRouteWithProviders, renderWithProviders } from "@/test/utils/rend
 import { routes } from "@/app/routes";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
 import { recoveriesQueryRoot } from "../api/recoveries";
+import { pickerName } from "@/test/picker";
 
 type Recovery = ApiSchemas["PlatformRecoveryResponse"];
 const pending: Recovery = { id: "r1", createdAtUtc: "2026-09-27T13:20:00Z", accountId: "pablo", accountName: "Pablo Ortiz", previousMethodType: "Email", previousMethod: "pa•••@kappa.ejemplo.com", newMethodType: "Email", newMethod: "pa•••@gmail.com", status: "Pending", version: 12 };
@@ -55,12 +56,12 @@ describe("Recuperaciones de Plataforma", () => {
   it("sin pedidos: banda y vacío, sin pie", async () => {
     server.use(http.get("/api/platform/recoveries/paged", () => HttpResponse.json(list([]))), http.get("/api/platform/recoveries/filter-counts", () => HttpResponse.json({ total: 0, statuses: [] })));
     renderRouteWithProviders("/plataforma/recuperaciones", { as: "platform-operator" });
-    expect(await screen.findByText("Sin pedidos")).toBeVisible(); expect(await screen.findByText("No hay pedidos de recuperación")).toBeVisible(); expect(screen.queryByRole("combobox", { name: "Filas por página" })).not.toBeInTheDocument(); expect(screen.queryByText("0 de 0")).not.toBeInTheDocument();
+    expect(await screen.findByText("Sin pedidos")).toBeVisible(); expect(await screen.findByText("No hay pedidos de recuperación")).toBeVisible(); expect(screen.queryByRole("button", { name: pickerName("Filas por página") })).not.toBeInTheDocument(); expect(screen.queryByText("0 de 0")).not.toBeInTheDocument();
   });
   it("sin coincidencias permite limpiar y conserva banda global desacoplada", async () => {
     server.use(http.get("/api/platform/recoveries/paged", ({ request }) => HttpResponse.json(new URL(request.url).searchParams.has("search") ? list([]) : list())));
     const user = userEvent.setup(); const { router } = renderRouteWithProviders("/plataforma/recuperaciones?search=nada", { as: "platform-operator" });
-    expect(await screen.findByText("Ningún pedido coincide con los filtros")).toBeVisible(); expect(screen.getByText("4 pedidos · 2 pendientes")).toBeVisible(); expect(screen.queryByRole("combobox", { name: "Filas por página" })).not.toBeInTheDocument();
+    expect(await screen.findByText("Ningún pedido coincide con los filtros")).toBeVisible(); expect(screen.getByText("4 pedidos · 2 pendientes")).toBeVisible(); expect(screen.queryByRole("button", { name: pickerName("Filas por página") })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Limpiar filtros" })); await screen.findByRole("link", { name: "Pablo Ortiz" }); expect(router.state.location.search).toBe("");
   });
   it("Estado ofrece sus opciones sin cantidades y búsqueda llega a la API con el filtro, reiniciando página", async () => {
