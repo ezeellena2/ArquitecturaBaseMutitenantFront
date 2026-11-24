@@ -1213,6 +1213,15 @@ export const validationConstraints = {
       "maximum": 4294967295
     }
   },
+  "PlatformAuditListResponse": {
+    "items": {
+      "maxItems": 100
+    },
+    "loginAuditRetentionMonths": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
   "PlatformFactorRecoveryCodesChallenge": {
     "recoveryCodes": {
       "maxItems": 8
@@ -1256,6 +1265,18 @@ export const validationConstraints = {
   },
   "PlatformSettingsResponse": {
     "maxOwnedOrganizations": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "loginAuditRetentionMonths": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "loginCodeRetentionDays": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "closedInvitationRetentionDays": {
       "minimum": -2147483648,
       "maximum": 2147483647
     }
@@ -1310,6 +1331,16 @@ export const validationConstraints = {
   },
   "PlatformWhatsAppNumberResponse": {
     "systemMessagesThisMonth": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PlatformWhatsAppSettingsResponse": {
+    "chatRetentionDays": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "maxOrganizationChatRetentionDays": {
       "minimum": -2147483648,
       "maximum": 2147483647
     }
@@ -1548,6 +1579,24 @@ export const validationConstraints = {
     },
     "reason": {
       "maxLength": 500
+    },
+    "loginAuditRetentionMonths": {
+      "minimum": 1,
+      "maximum": 120
+    },
+    "loginCodeRetentionDays": {
+      "minimum": 1,
+      "maximum": 3650
+    },
+    "closedInvitationRetentionDays": {
+      "minimum": 7,
+      "maximum": 3650
+    },
+    "appName": {
+      "maxLength": 60
+    },
+    "senderName": {
+      "maxLength": 60
     }
   },
   "UpdatePlatformWhatsAppBotHttpRequest": {
@@ -1559,6 +1608,16 @@ export const validationConstraints = {
     },
     "menu": {
       "maxItems": 10
+    }
+  },
+  "UpdatePlatformWhatsAppSettingsHttpRequest": {
+    "chatRetentionDays": {
+      "minimum": 1,
+      "maximum": 3650
+    },
+    "maxOrganizationChatRetentionDays": {
+      "minimum": 1,
+      "maximum": 3650
     }
   },
   "UpdatePublicPageHttpRequest": {
@@ -1609,6 +1668,12 @@ export const validationConstraints = {
       "items": {
         "maxLength": 40
       }
+    }
+  },
+  "UpdateWhatsAppOrganizationSettingsHttpRequest": {
+    "chatRetentionDays": {
+      "minimum": 1,
+      "maximum": 3650
     }
   },
   "UpdateWhatsAppTeamHttpRequest": {
@@ -1808,6 +1873,12 @@ export const validationConstraints = {
       "maximum": 2147483647
     },
     "chargedServiceMessagesThisMonth": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "WhatsAppOrganizationSettingsResponse": {
+    "chatRetentionDays": {
       "minimum": -2147483648,
       "maximum": 2147483647
     }

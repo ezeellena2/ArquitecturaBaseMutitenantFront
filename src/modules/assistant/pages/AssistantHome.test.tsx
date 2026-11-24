@@ -20,7 +20,7 @@ const state: AssistantStateResponse = { configured: true, canConfigure: true, mo
 const message = (id: string, role: AssistantMessageResponse["role"], text: string, status: AssistantMessageResponse["status"] = "Complete"): AssistantMessageResponse => ({
   id, role, text, status, version: 1, createdAtUtc: "2026-10-10T12:00:00Z", attachments: [], links: [],
 });
-const detail = (): AssistantConversationResponse => ({ conversation: { id: "chat", title: "Mi consulta", version: 1, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z" }, messages: { items: [], hasMore: false }, activeTurnId: null });
+const detail = (): AssistantConversationResponse => ({ conversation: { id: "chat", title: "Mi consulta", version: 1, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z", available: true }, messages: { items: [], hasMore: false }, activeTurnId: null });
 const props: AssistantHomeProps = { scope: { access: "business", userId: "user", tenantId: "org" }, enabled: true, hasPermission: () => true, onPrivacy: () => {} };
 function setup(initial = state, phone = false) {
   let currentState = initial;

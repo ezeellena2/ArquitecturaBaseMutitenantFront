@@ -91,12 +91,12 @@ export const galleryModels: AssistantModelPriceResponse[] = [{
 }];
 export const galleryModelPage: AssistantModelPricePageResponse = { items: galleryModels, page: 1, pageSize: 100, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false };
 export const galleryOrganizationSettings: OrganizationAssistantSettingsResponse = {
-  mode: "PlatformKey", modelId: galleryModels[0].id, effort: "medium", dailyMessageLimit: 50, monthlyBudget: { amount: 100, currency: "USD" },
+  unsupportedProvider: false, mode: "PlatformKey", modelId: galleryModels[0].id, effort: "medium", dailyMessageLimit: 50, monthlyBudget: { amount: 100, currency: "USD" },
   allowOwnKey: true, hasAlertRecipient: true, retentionDays: 30, hasKey: true, maskedKeySuffix: "test", version: 10,
   platformKeyModels: galleryModels, ownKeyModels: galleryModels,
 };
 export const galleryPlatformSettings: PlatformAssistantSettingsResponse = {
-  defaultModelId: galleryModels[0].id, allowedModelIds: [galleryModels[0].id], effort: "medium", dailyMessageLimit: 50,
+  unsupportedProvider: false, defaultModelId: galleryModels[0].id, allowedModelIds: [galleryModels[0].id], effort: "medium", dailyMessageLimit: 50,
   monthlyOrganizationBudget: { amount: 100, currency: "USD" }, personalEnabled: true, retentionDays: 30, hasKey: true, maskedKeySuffix: "test", version: 20,
 };
 export function galleryState(scope: Scope): AssistantStateResponse {
@@ -106,7 +106,7 @@ export function galleryState(scope: Scope): AssistantStateResponse {
     retentionDays: 30, maxAttachmentBytes: 10 * 1024 * 1024, maxAttachments: 5, monthlyBudgetProgress: null };
 }
 export const galleryConversation: AssistantConversationResponse = {
-  conversation: { id: "gallery-chat", title: "Mi consulta", version: 2, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z" },
+  conversation: { id: "gallery-chat", title: "Mi consulta", version: 2, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z", available: true },
   messages: { items: [
     { id: "gallery-user", role: "user", text: "Cuántos usuarios hay", status: "Complete", version: 1, createdAtUtc: "2026-10-10T12:00:00Z", attachments: [], links: [] },
     { id: "gallery-assistant", role: "assistant", text: "Respuesta **de prueba** del arnés.", status: "Complete", version: 1, createdAtUtc: "2026-10-10T12:00:00Z", attachments: [], links: [] },

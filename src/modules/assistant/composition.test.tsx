@@ -121,7 +121,7 @@ describe("composición real de accesos e inicios", () => {
   // Tablero Inicio-Personal (175): el aviso de método propio va en la campana; el Inicio con el asistente, sin cartel.
   it.each([1440, 768])("Personal a %i va sin el cartel del método propio y desmonta al apagar módulo", async (width) => {
     vi.stubGlobal("innerWidth", width);
-    const conversation: AssistantConversationResponse = { conversation: { id: "chat", title: "Consulta previa", version: 1, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z" }, messages: { items: [], hasMore: false }, activeTurnId: null };
+    const conversation: AssistantConversationResponse = { conversation: { id: "chat", title: "Consulta previa", version: 1, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z", available: true }, messages: { items: [], hasMore: false }, activeTurnId: null };
     server.use(http.get("/api/me/assistant/conversations", ({ request }) => HttpResponse.json({ items: new URL(request.url).searchParams.get("saved") === "false" ? [conversation.conversation] : [], hasMore: false })),
       http.get("/api/me/assistant/conversations/chat", () => HttpResponse.json(conversation)));
     const app = mount("/", { ...personal, needsPersonalLoginMethod: true });
@@ -246,7 +246,7 @@ describe("composición real de accesos e inicios", () => {
   it.each(["Active", "Suspended"] as const)("el enlace personal a organización %s cambia sólo al click mediante profiles/select", async (status) => {
     const tenantId = "11111111-1111-4111-8111-111111111111";
     const me: MeResponse = { ...personal, organizations: [{ id: tenantId, name: "Beta S.R.L.", status, memberStatus: "Active", isSelectable: status === "Active" }] };
-    const conversation: AssistantConversationResponse = { conversation: { id: "chat", title: "Mis organizaciones", version: 1, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z" }, messages: { items: [{ id: "answer", role: "assistant", text: "Beta S.R.L.", status: "Complete", createdAtUtc: "2026-10-10T12:00:00Z", version: 1, attachments: [], links: [
+    const conversation: AssistantConversationResponse = { conversation: { id: "chat", title: "Mis organizaciones", version: 1, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z", available: true }, messages: { items: [{ id: "answer", role: "assistant", text: "Beta S.R.L.", status: "Complete", createdAtUtc: "2026-10-10T12:00:00Z", version: 1, attachments: [], links: [
       { routeKey: "personal.organizations", labelKey: "personal.organizations", parameters: { tenantId }, query: {} },
       { routeKey: "personal.organizations", labelKey: "personal.organizations", parameters: { tenantId: "22222222-2222-4222-8222-222222222222" }, query: {} },
       { routeKey: "personal.organizations", labelKey: "personal.organizations", parameters: {}, query: {} },
@@ -278,7 +278,7 @@ describe("composición real de accesos e inicios", () => {
   });
   it("un enlace de Uso sólo aparece al registrar su página, aunque Me ya otorgue read", async () => {
     const me = { ...platform, effectivePermissions: { ...platform.effectivePermissions, platform: [...platform.effectivePermissions.platform, "platform.assistant.read"] } };
-    const detail: AssistantConversationResponse = { conversation: { id: "chat", title: "Consulta de uso", version: 1, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z" }, activeTurnId: null,
+    const detail: AssistantConversationResponse = { conversation: { id: "chat", title: "Consulta de uso", version: 1, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z", available: true }, activeTurnId: null,
       messages: { items: [{ id: "answer", role: "assistant", text: "Respuesta de uso", status: "Complete", createdAtUtc: "2026-10-10T12:00:00Z", version: 1, attachments: [], links: [{ routeKey: "platform.assistant.usage", labelKey: "platform.assistant.usage", parameters: {}, query: {} }] }], hasMore: false } };
     server.use(http.get("/api/platform/assistant/conversations", ({ request }) => HttpResponse.json({ items: new URL(request.url).searchParams.get("saved") === "false" ? [detail.conversation] : [], hasMore: false })),
       http.get("/api/platform/assistant/conversations/chat", () => HttpResponse.json(detail)));

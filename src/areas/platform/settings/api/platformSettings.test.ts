@@ -25,12 +25,13 @@ describe("API de Configuración de Plataforma", () => {
     const request = { ...platformSettingsFixture, reason: "Revisamos el registro." };
     expect(await updatePlatformSettings(request)).toEqual({ version: 27 }); expect(sent).toEqual(request); expect(key).toBeNull();
   });
-  it.skipIf(!hasBackend)("contrato real con cinco campos/version/reason y las cuotas opcionales (E9), sin gracia ni POST", () => {
+  it.skipIf(!hasBackend)("contrato real con sus campos, version/reason, las cuotas opcionales (E9) y los plazos y el nombre (272 y 273), sin gracia ni POST", () => {
     const contract = JSON.parse(readFileSync(contractSource, "utf8")) as {
       paths: Record<string, Record<string, { responses: Record<string, unknown> }>>;
       components: { schemas: Record<string, { properties: Record<string, unknown> }> };
     };
-    expect(Object.keys(contract.components.schemas.UpdatePlatformSettingsHttpRequest.properties).sort()).toEqual(["businessSignup", "consumerSignup", "maxOwnedOrganizations", "rateLimits", "reason", "salesEmail", "supportEmail", "version"]);
+    expect(Object.keys(contract.components.schemas.UpdatePlatformSettingsHttpRequest.properties).sort()).toEqual(["appName", "businessSignup", "closedInvitationRetentionDays", "consumerSignup", "emailLogoUrl", "loginAuditRetentionMonths",
+      "loginCodeRetentionDays", "maxOwnedOrganizations", "rateLimits", "reason", "salesEmail", "senderName", "supportEmail", "version"]);
     expect(Object.keys(contract.paths["/api/platform/settings"]).sort()).toEqual(["get", "put"]);
     expect(contract.paths["/api/platform/settings"].put.responses).toHaveProperty("200");
   });

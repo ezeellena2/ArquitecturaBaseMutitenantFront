@@ -17,6 +17,7 @@ const role: RoleResponse = {
   scope: "Organization",
   companyId: null,
   isSystemRole: false,
+  grantable: true,
   userCount: 0,
   permissions: ["roles.read"],
   version: 4,

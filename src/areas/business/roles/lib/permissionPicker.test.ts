@@ -11,14 +11,14 @@ import {
 
 const groups: PermissionGroupResponse[] = [
   { area: "roles", name: "Roles", permissions: [
-    { code: "roles.read", name: "Ver roles", description: "" },
-    { code: "roles.manage", name: "Administrar roles", description: "" },
+    { code: "roles.read", name: "Ver roles", description: "", includes: [], grantable: true },
+    { code: "roles.manage", name: "Administrar roles", description: "", includes: [], grantable: true },
   ] },
   { area: "company", name: "Miembros de empresa", permissions: [
-    { code: "company.members.read", name: "Ver miembros", description: "" },
-    { code: "company.members.manage", name: "Administrar miembros", description: "" },
+    { code: "company.members.read", name: "Ver miembros", description: "", includes: [], grantable: true },
+    { code: "company.members.manage", name: "Administrar miembros", description: "", includes: [], grantable: true },
   ] },
-  { area: "users", name: "Usuarios", permissions: [{ code: "users.read", name: "Ver usuarios", description: "" }] },
+  { area: "users", name: "Usuarios", permissions: [{ code: "users.read", name: "Ver usuarios", description: "", includes: [], grantable: true }] },
 ];
 
 describe("permissionPicker", () => {

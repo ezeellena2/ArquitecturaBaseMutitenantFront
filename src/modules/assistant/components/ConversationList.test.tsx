@@ -16,7 +16,7 @@ import { ConversationList } from "./ConversationList";
 
 const scope: AssistantScope = { access: "business", userId: "person", tenantId: "organization" };
 const row = (id: string, title: string): AssistantConversationSummaryResponse => ({ id, title, isSaved: false, version: 1,
-  createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z" });
+  createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z", available: true });
 function OwnedList({ enabled, onSelect, onOwner }: { enabled: boolean; onSelect: (id: string) => void; onOwner?: (lifetime: AssistantLifetime) => void }) {
   const client = useQueryClient();
   const lifetime = useMemo(() => new AssistantLifetime(client, ["test-history-owner"]), [client]);

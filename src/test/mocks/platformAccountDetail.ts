@@ -41,14 +41,14 @@ export function platformAccountDetailFixture({ state = "Activa", kind = "Persona
   return base;
 }
 
-function history(detail: Detail): ApiSchemas["CursorResultOfPlatformAuditEventResponse"] {
+function history(detail: Detail): ApiSchemas["PlatformAuditListResponse"] {
   const row = (id: string, occurredAtUtc: string, action: string, summary: string, reason: string | null = null): Event =>
     ({ id, occurredAtUtc, type: action === "SignIn" ? "signins" : action.startsWith("PlatformOperator") ? "operators" : action === "OrganizationMembershipEnded" ? "organizations" : "accounts", action, summary, target: detail.displayName ?? "ju•••@arquitecturabase.ejemplo.com", targetAccountId: detail.id,
       targetTenantId: null, actor: detail.displayName ?? "ju•••@arquitecturabase.ejemplo.com", actorRole: detail.kind === "Operator" ? "Operador" : "Persona", reason, ipAddress: null });
   // summary es texto humano del producer AuditTexts; action conserva la clave técnica.
   if (detail.state === "Invited" || detail.state === "InvitationExpired") return { items: [
     { ...row("invitation-history-1", invitationCreatedAtUtc, "PlatformOperatorInvited", "Invitó a un operador"), actor: "Martín Sosa", actorRole: "Operador" },
-  ], nextCursor: null, hasMore: false };
+  ], nextCursor: null, hasMore: false, loginAuditRetentionMonths: 12 };
   const rows = detail.kind === "Operator" ? [row("op-history-3", "2026-09-22T20:35:00Z", "SignIn", "Ingresó con un código por correo"),
     { ...row("op-history-2", "2026-08-22T17:20:00Z", "PlatformOperatorPermissionsChanged", "Cambió los permisos del operador"), actor: "Martín Sosa", actorRole: "Operador" },
     { ...row("op-history-1", operatorInvitedAtUtc, "PlatformOperatorInvited", "Invitó a un operador"), actor: "Martín Sosa", actorRole: "Operador" }]
@@ -59,20 +59,20 @@ function history(detail: Detail): ApiSchemas["CursorResultOfPlatformAuditEventRe
     { ...row("deleted-history-3", "2026-09-11T06:00:00Z", "AccountDeleted", "Eliminó la cuenta"), actor: "Sistema", actorRole: "Automático" },
     row("deleted-history-2", "2026-08-12T21:40:00Z", "AccountDeletionRequested", "Pidió la baja de la cuenta"),
     row("deleted-history-1", "2026-08-12T21:36:00Z", "SignIn", "Ingresó con un código por correo"),
-  ], nextCursor: null, hasMore: false };
+  ], nextCursor: null, hasMore: false, loginAuditRetentionMonths: 12 };
   if (detail.state === "NeedsRecovery") return { items: [
     { ...row("recovery-history-3", "2026-09-20T13:00:00Z", "OrganizationMembershipEnded", "Terminó la membresía en la organización"), actor: "Sistema", actorRole: "Automático", targetTenantId: "tenant-kappa", target: "Kappa S.R.L." },
     row("recovery-history-2", "2026-09-19T21:12:00Z", "SignIn", "Ingresó con un código por correo"),
     row("recovery-history-1", "2026-03-15T12:30:00Z", "LoginMethodChanged", "Cambió un método de ingreso"),
-  ], nextCursor: null, hasMore: false };
+  ], nextCursor: null, hasMore: false, loginAuditRetentionMonths: 12 };
   if (detail.deletion) return { items: [
     { ...row("deletion-history-3", detail.deletion.requestedAtUtc, "AccountDeletionRequested", "Pidió la baja de la cuenta", detail.deletion.requestedByPlatform ? "Pedido legal recibido por correo." : "Ya no uso el servicio."),
       ...(detail.deletion.requestedByPlatform ? { actor: "Laura Díaz", actorRole: "Operador" } : {}) },
     row("deletion-history-2", "2026-09-27T12:12:00Z", "SignIn", "Ingresó con un código por correo"),
     row("deletion-history-1", "2026-02-18T13:05:00Z", "LoginMethodChanged", "Cambió un método de ingreso"),
-  ], nextCursor: null, hasMore: false };
+  ], nextCursor: null, hasMore: false, loginAuditRetentionMonths: 12 };
   if (detail.state === "Suspended" && detail.lastStateChange) rows.unshift({ ...row("suspended-history-4", detail.lastStateChange.atUtc, "AccountSuspended", "Suspendió la cuenta", detail.lastStateChange.reason ?? null), actor: "Laura Díaz", actorRole: "Operador" });
-  return { items: rows, nextCursor: null, hasMore: false };
+  return { items: rows, nextCursor: null, hasMore: false, loginAuditRetentionMonths: 12 };
 }
 
 export function platformAccountDetailCaptureResponses(options: { state?: string; kind?: string; lastManager?: boolean } = {}) {

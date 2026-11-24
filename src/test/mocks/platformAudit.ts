@@ -36,10 +36,10 @@ const nextCursor = "AQjfFlZMHwaAAAAAoAAAAECAAAAAAAAQGQ";
 const organizations: ApiSchemas["PlatformAuditOrganizationResponse"][] = [{ id: delta, name: "Grupo Delta" }, { id: sigma, name: "Sigma S.A." }];
 
 export function platformAuditCaptureResponses() {
-  const page: ApiSchemas["CursorResultOfPlatformAuditEventResponse"] = { items: platformAuditEvents, nextCursor, hasMore: true };
-  const filtered: ApiSchemas["CursorResultOfPlatformAuditEventResponse"] = { items: [platformAuditEvents[5]], nextCursor: null, hasMore: false };
-  const next: ApiSchemas["CursorResultOfPlatformAuditEventResponse"] = { items: [{ ...signIn,
-    id: "a0000000-0000-4000-8000-000000001020", occurredAtUtc: "2026-09-18T14:00:00Z" }], nextCursor: null, hasMore: false };
+  const page: ApiSchemas["PlatformAuditListResponse"] = { items: platformAuditEvents, nextCursor, hasMore: true, loginAuditRetentionMonths: 12 };
+  const filtered: ApiSchemas["PlatformAuditListResponse"] = { items: [platformAuditEvents[5]], nextCursor: null, hasMore: false, loginAuditRetentionMonths: 12 };
+  const next: ApiSchemas["PlatformAuditListResponse"] = { items: [{ ...signIn,
+    id: "a0000000-0000-4000-8000-000000001020", occurredAtUtc: "2026-09-18T14:00:00Z" }], nextCursor: null, hasMore: false, loginAuditRetentionMonths: 12 };
   return [
     { method: "GET", path: "/api/platform/audit", query: { search: "Grupo Delta" }, status: 200, body: filtered },
     { method: "GET", path: "/api/platform/audit", query: { tenantId: delta }, status: 200, body: filtered },

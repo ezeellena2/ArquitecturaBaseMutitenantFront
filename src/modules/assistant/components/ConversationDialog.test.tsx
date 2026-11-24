@@ -7,7 +7,7 @@ import { renderWithProviders } from "@/test/utils/renderWithProviders";
 import { ConversationDialog, type ConversationDialogState } from "./ConversationDialog";
 import { AssistantNotice } from "./AssistantNotice";
 
-const conversation: ConversationDialogState["conversation"] = { id: "chat", title: "Mi consulta", version: 1, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z" };
+const conversation: ConversationDialogState["conversation"] = { id: "chat", title: "Mi consulta", version: 1, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z", available: true };
 
 describe("confirmación de conversaciones", () => {
   it("renombrar reconoce cambios y volver al nombre guardado; valida sin perder el borrador", async () => {
@@ -83,7 +83,7 @@ describe("confirmación de conversaciones", () => {
 it("no envía un título excedido y acepta la longitud máxima publicada al corregirlo", async () => {
   const onConfirm = vi.fn();
   renderWithProviders(<ConversationDialog value={{ kind: "rename", trigger: null, conversation: {
-    id: "chat", title: "Original", version: 1, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z",
+    id: "chat", title: "Original", version: 1, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z", available: true,
   } }} pending={false} error={null} onClose={() => {}} onConfirm={onConfirm} />);
   const input = await screen.findByRole("textbox", { name: "Nombre" });
   const maximum = validationConstraints.UpdateAssistantConversationHttpRequest.title.maxLength;

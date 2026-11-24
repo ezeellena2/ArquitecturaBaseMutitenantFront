@@ -16,7 +16,7 @@ export const broadcastStatusTones = defineStatusTones("WhatsAppBroadcastStatus",
 
 /// Tablero WA-Difusion-Resultados: leído y respondió en verde, entregado en gris, se dio de baja en ámbar y no llegó en rojo.
 export const recipientStatusTones = defineStatusTones("WhatsAppRecipientStatus", {
-  Pending: "neutral", Sent: "neutral", Delivered: "neutral", Read: "success", Replied: "success", Unsubscribed: "warning", Failed: "danger",
+  Pending: "neutral", Sent: "neutral", Uncertain: "warning", Delivered: "neutral", Read: "success", Replied: "success", Unsubscribed: "warning", Failed: "danger",
 });
 
 export const broadcastsPath = "/org/whatsapp/difusiones";

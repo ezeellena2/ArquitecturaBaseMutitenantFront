@@ -171,7 +171,7 @@ function usuarios(board: "Usuarios" | "M-Usuarios"): GalleryCase {
 const companies = [["company-delta", "Delta S.A."], ["company-delta-sur", "Delta Sur S.R.L."], ["company-delta-norte", "Delta Norte S.A."]] as const;
 const organizationPermissions = ["users.read", "users.invite", "users.manage", "roles.read", "roles.manage", "companies.read", "companies.manage", "settings.read", "settings.manage", "publicpage.manage", "audit.read", "assistant.use"];
 const role = (id: string, name: string, description: string, userCount: number, permissions: string[], scope: RoleResponse["scope"], company?: readonly [string, string], isSystemRole = false): RoleResponse =>
-  ({ id, name, description, scope, companyId: company?.[0] ?? null, companyName: company?.[1] ?? null, isSystemRole, userCount, permissions, version: 3, createdAtUtc: "2026-09-01T12:00:00Z" });
+  ({ id, name, description, scope, companyId: company?.[0] ?? null, companyName: company?.[1] ?? null, isSystemRole, grantable: true, userCount, permissions, version: 3, createdAtUtc: "2026-09-01T12:00:00Z" });
 const boardRoles: RoleResponse[] = [
   role("role-owner", "Dueño", "Tiene todos los permisos de la organización.", 1, organizationPermissions, "Organization", undefined, true),
   role("role-hr", "Recursos humanos", "Invita, edita y deshabilita usuarios.", 0, ["users.read", "users.invite", "users.manage"], "Organization"),

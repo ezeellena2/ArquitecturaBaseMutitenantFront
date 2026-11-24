@@ -19,7 +19,7 @@ const message = (id: string, role: AssistantMessageResponse["role"], status: Ass
   id, role, status, text, version: 2, createdAtUtc: "2026-10-09T12:00:00Z", attachments: [], links: [],
 });
 const conversation = (messages: AssistantMessageResponse[] = []): AssistantConversationResponse => ({
-  conversation: { id: "chat", title: null, version: 3, isSaved: false, createdAtUtc: "2026-10-09T12:00:00Z", lastActivityAtUtc: "2026-10-09T12:00:00Z" },
+  conversation: { id: "chat", title: null, version: 3, isSaved: false, createdAtUtc: "2026-10-09T12:00:00Z", lastActivityAtUtc: "2026-10-09T12:00:00Z", available: true },
   messages: { items: messages, hasMore: false },
   activeTurnId: null,
 });

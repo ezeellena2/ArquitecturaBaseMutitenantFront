@@ -406,7 +406,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. */
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Un destinatario suma Uncertain («Sin confirmar», decisión 255): no cuenta como enviado ni como «No llegó», sin revisión. */
         get: {
             parameters: {
                 query?: {
@@ -616,7 +616,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. */
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Un destinatario suma Uncertain («Sin confirmar», decisión 255): no cuenta como enviado ni como «No llegó», sin revisión. */
         post: {
             parameters: {
                 query?: never;
@@ -1827,7 +1827,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. */
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Cada mensaje: status suma Uncertain («Sin confirmar», ADR 0066), derivado de la cola mientras Meta no avise otra cosa; failureReason es el texto del motivo guardado (uno de los códigos WhatsApp.Send.*); reviewedByName y reviewedAtUtc dicen quién lo revisó y cuándo. */
         get: {
             parameters: {
                 query?: {
@@ -2795,6 +2795,116 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/organization/whatsapp/customers/conversations/{id}/messages/{messageId}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Marca como revisado un mensaje «Sin confirmar» (ADR 0066), sin cuerpo y sin idempotencia: no crea ni envía, y revisar dos
+         *     veces devuelve la primera revisión.
+         * @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Marca como revisado un mensaje «Sin confirmar» (ADR 0066), sin cuerpo y sin Idempotency-Key: no crea ni envía. 200 con el mensaje, que suma reviewedByName y reviewedAtUtc; revisar dos veces devuelve la primera revisión. Otro chat, otra organización o un mensaje que no es de ese chat: 404. Si no está «Sin confirmar»: 409 WhatsApp.Message.NotUncertain. 501 hasta la B7.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    messageId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["WhatsAppChatMessageResponse"];
+                        "application/json": components["schemas"]["WhatsAppChatMessageResponse"];
+                        "text/json": components["schemas"]["WhatsAppChatMessageResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; WhatsApp.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; WhatsApp.Message.NotUncertain */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/organization/whatsapp/internal/conversations": {
         parameters: {
             query?: never;
@@ -3000,7 +3110,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. */
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Cada mensaje: status suma Uncertain («Sin confirmar», ADR 0066), derivado de la cola mientras Meta no avise otra cosa; failureReason es el texto del motivo guardado (uno de los códigos WhatsApp.Send.*); reviewedByName y reviewedAtUtc dicen quién lo revisó y cuándo. */
         get: {
             parameters: {
                 query?: {
@@ -3968,6 +4078,116 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/organization/whatsapp/internal/conversations/{id}/messages/{messageId}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Marca como revisado un mensaje «Sin confirmar» (ADR 0066), sin cuerpo y sin idempotencia: no crea ni envía, y revisar dos
+         *     veces devuelve la primera revisión.
+         * @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Marca como revisado un mensaje «Sin confirmar» (ADR 0066), sin cuerpo y sin Idempotency-Key: no crea ni envía. 200 con el mensaje, que suma reviewedByName y reviewedAtUtc; revisar dos veces devuelve la primera revisión. Otro chat, otra organización o un mensaje que no es de ese chat: 404. Si no está «Sin confirmar»: 409 WhatsApp.Message.NotUncertain. 501 hasta la B7.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    messageId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["WhatsAppChatMessageResponse"];
+                        "application/json": components["schemas"]["WhatsAppChatMessageResponse"];
+                        "text/json": components["schemas"]["WhatsAppChatMessageResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; WhatsApp.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; WhatsApp.Message.NotUncertain */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/platform/whatsapp/conversations": {
         parameters: {
             query?: never;
@@ -4173,7 +4393,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. */
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Cada mensaje: status suma Uncertain («Sin confirmar», ADR 0066), derivado de la cola mientras Meta no avise otra cosa; failureReason es el texto del motivo guardado (uno de los códigos WhatsApp.Send.*); reviewedByName y reviewedAtUtc dicen quién lo revisó y cuándo. */
         get: {
             parameters: {
                 query?: {
@@ -5135,6 +5355,116 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/whatsapp/conversations/{id}/messages/{messageId}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Marca como revisado un mensaje «Sin confirmar» (ADR 0066), sin cuerpo y sin idempotencia: no crea ni envía, y revisar dos
+         *     veces devuelve la primera revisión.
+         * @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Marca como revisado un mensaje «Sin confirmar» (ADR 0066), sin cuerpo y sin Idempotency-Key: no crea ni envía. 200 con el mensaje, que suma reviewedByName y reviewedAtUtc; revisar dos veces devuelve la primera revisión. Otro chat, otra organización o un mensaje que no es de ese chat: 404. Si no está «Sin confirmar»: 409 WhatsApp.Message.NotUncertain. 501 hasta la B7.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                    messageId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["WhatsAppChatMessageResponse"];
+                        "application/json": components["schemas"]["WhatsAppChatMessageResponse"];
+                        "text/json": components["schemas"]["WhatsAppChatMessageResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; WhatsApp.Conversation.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; WhatsApp.Message.NotUncertain */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -7980,6 +8310,362 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/organization/whatsapp/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Configuración de WhatsApp de la organización (272): chatRetentionDays, de 1 al máximo de la plataforma, con version en el PUT y el 409 de siempre. Un valor fuera de su mínimo o su máximo es el 400 de validación en su campo. 501 hasta la B18. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["WhatsAppOrganizationSettingsResponse"];
+                        "application/json": components["schemas"]["WhatsAppOrganizationSettingsResponse"];
+                        "text/json": components["schemas"]["WhatsAppOrganizationSettingsResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Configuración de WhatsApp de la organización (272): chatRetentionDays, de 1 al máximo de la plataforma, con version en el PUT y el 409 de siempre. Un valor fuera de su mínimo o su máximo es el 400 de validación en su campo. 501 hasta la B18. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateWhatsAppOrganizationSettingsHttpRequest"];
+                    "text/json": components["schemas"]["UpdateWhatsAppOrganizationSettingsHttpRequest"];
+                    "application/*+json": components["schemas"]["UpdateWhatsAppOrganizationSettingsHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; General.ConcurrencyConflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/whatsapp/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Configuración de WhatsApp de la plataforma (270 y 272): allowedCountries (al menos uno, de los países habilitados, sin repetir), chatRetentionDays y maxOrganizationChatRetentionDays, con version en el PUT y el 409 de siempre. Un valor fuera de su mínimo o su máximo es el 400 de validación en su campo. 501 hasta la B18. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PlatformWhatsAppSettingsResponse"];
+                        "application/json": components["schemas"]["PlatformWhatsAppSettingsResponse"];
+                        "text/json": components["schemas"]["PlatformWhatsAppSettingsResponse"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Configuración de WhatsApp de la plataforma (270 y 272): allowedCountries (al menos uno, de los países habilitados, sin repetir), chatRetentionDays y maxOrganizationChatRetentionDays, con version en el PUT y el 409 de siempre. Un valor fuera de su mínimo o su máximo es el 400 de validación en su campo. 501 hasta la B18. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdatePlatformWhatsAppSettingsHttpRequest"];
+                    "text/json": components["schemas"]["UpdatePlatformWhatsAppSettingsHttpRequest"];
+                    "application/*+json": components["schemas"]["UpdatePlatformWhatsAppSettingsHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["VersionResponse"];
+                        "application/json": components["schemas"]["VersionResponse"];
+                        "text/json": components["schemas"]["VersionResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; General.ConcurrencyConflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/organization/whatsapp/teams": {
         parameters: {
             query?: never;
@@ -9494,7 +10180,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Cursor opaco ligado a lado/organización/dueño/filtro; orden LastActivityAtUtc/Id descendente, limit=20 máximo100. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Cursor opaco ligado a lado/organización/dueño/filtro; orden LastActivityAtUtc/Id descendente, limit=20 máximo100. Una conversación que esta versión no puede leer (ADR 0064 §6) sale en el listado con available=false, sin título ni mensajes; su GET es 409 Assistant.Conversation.Unavailable y el DELETE la borra igual. */
         get: {
             parameters: {
                 query?: {
@@ -9695,7 +10381,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Conversación propia, mensajes cronológicos por cursor; limit=50 máximo100. Ajeno devuelve404. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Conversación propia, mensajes cronológicos por cursor; limit=50 máximo100. Ajeno devuelve404. Una conversación que esta versión no puede leer (ADR 0064 §6) sale en el listado con available=false, sin título ni mensajes; su GET es 409 Assistant.Conversation.Unavailable y el DELETE la borra igual. */
         get: {
             parameters: {
                 query?: {
@@ -9748,6 +10434,15 @@ export interface paths {
                 };
                 /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
                 404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Assistant.Conversation.Unavailable */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -10468,7 +11163,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta 5 al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta 5 al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. Subida (ADR 0064 §2 y §4), antes de leer el cuerpo: sin cupo, el 429 de siempre (Assistant.Limit.DailyReached o MonthlyReached, con retryAfter) y no se guarda nada; otra subida de la misma persona en curso, 429 Assistant.Attachment.UploadBusy; la cola de la copia llena, 429 Assistant.Attachment.UploadQueueFull, los dos con retryAfter y Retry-After; el cuerpo tiene 120 s y después es 400 Assistant.Attachment.UploadTimedOut. La misma Idempotency-Key con otro archivo es 422 Request.IdempotencyKeyReused. */
         post: {
             parameters: {
                 query?: never;
@@ -10506,7 +11201,7 @@ export interface paths {
                         "application/json": components["schemas"]["AssistantAttachmentSummaryResponse"];
                     };
                 };
-                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany; Validation.Failed; Validation.Failed */
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany; Assistant.Attachment.UploadTimedOut; Validation.Failed; Validation.Failed */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -10569,7 +11264,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Security.RateLimit.Exceeded */
+                /** @description Assistant.Limit.DailyReached; Assistant.Limit.MonthlyReached; Assistant.Attachment.UploadBusy; Assistant.Attachment.UploadQueueFull; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -11129,7 +11824,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Cursor opaco ligado a lado/organización/dueño/filtro; orden LastActivityAtUtc/Id descendente, limit=20 máximo100. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Cursor opaco ligado a lado/organización/dueño/filtro; orden LastActivityAtUtc/Id descendente, limit=20 máximo100. Una conversación que esta versión no puede leer (ADR 0064 §6) sale en el listado con available=false, sin título ni mensajes; su GET es 409 Assistant.Conversation.Unavailable y el DELETE la borra igual. */
         get: {
             parameters: {
                 query?: {
@@ -11330,7 +12025,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Conversación propia, mensajes cronológicos por cursor; limit=50 máximo100. Ajeno devuelve404. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Conversación propia, mensajes cronológicos por cursor; limit=50 máximo100. Ajeno devuelve404. Una conversación que esta versión no puede leer (ADR 0064 §6) sale en el listado con available=false, sin título ni mensajes; su GET es 409 Assistant.Conversation.Unavailable y el DELETE la borra igual. */
         get: {
             parameters: {
                 query?: {
@@ -11383,6 +12078,15 @@ export interface paths {
                 };
                 /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
                 404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Assistant.Conversation.Unavailable */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -12103,7 +12807,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta 5 al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta 5 al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. Subida (ADR 0064 §2 y §4), antes de leer el cuerpo: sin cupo, el 429 de siempre (Assistant.Limit.DailyReached o MonthlyReached, con retryAfter) y no se guarda nada; otra subida de la misma persona en curso, 429 Assistant.Attachment.UploadBusy; la cola de la copia llena, 429 Assistant.Attachment.UploadQueueFull, los dos con retryAfter y Retry-After; el cuerpo tiene 120 s y después es 400 Assistant.Attachment.UploadTimedOut. La misma Idempotency-Key con otro archivo es 422 Request.IdempotencyKeyReused. */
         post: {
             parameters: {
                 query?: never;
@@ -12141,7 +12845,7 @@ export interface paths {
                         "application/json": components["schemas"]["AssistantAttachmentSummaryResponse"];
                     };
                 };
-                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany; Validation.Failed; Validation.Failed */
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany; Assistant.Attachment.UploadTimedOut; Validation.Failed; Validation.Failed */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -12204,7 +12908,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Security.RateLimit.Exceeded */
+                /** @description Assistant.Limit.DailyReached; Assistant.Limit.MonthlyReached; Assistant.Attachment.UploadBusy; Assistant.Attachment.UploadQueueFull; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -13045,7 +13749,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Cursor opaco ligado a lado/organización/dueño/filtro; orden LastActivityAtUtc/Id descendente, limit=20 máximo100. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Cursor opaco ligado a lado/organización/dueño/filtro; orden LastActivityAtUtc/Id descendente, limit=20 máximo100. Una conversación que esta versión no puede leer (ADR 0064 §6) sale en el listado con available=false, sin título ni mensajes; su GET es 409 Assistant.Conversation.Unavailable y el DELETE la borra igual. */
         get: {
             parameters: {
                 query?: {
@@ -13246,7 +13950,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Conversación propia, mensajes cronológicos por cursor; limit=50 máximo100. Ajeno devuelve404. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Conversación propia, mensajes cronológicos por cursor; limit=50 máximo100. Ajeno devuelve404. Una conversación que esta versión no puede leer (ADR 0064 §6) sale en el listado con available=false, sin título ni mensajes; su GET es 409 Assistant.Conversation.Unavailable y el DELETE la borra igual. */
         get: {
             parameters: {
                 query?: {
@@ -13299,6 +14003,15 @@ export interface paths {
                 };
                 /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
                 404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Assistant.Conversation.Unavailable */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -14019,7 +14732,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta 5 al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Adjunto privado PNG/JPEG/WebP/PDF, un archivo multipart por upload, máximo 10485760 bytes; hasta 5 al consumir mensaje. Verificar firma y extensión. Pendiente hasta consumo, replay por referencia privada, sin storageKey o URL pública. Subida (ADR 0064 §2 y §4), antes de leer el cuerpo: sin cupo, el 429 de siempre (Assistant.Limit.DailyReached o MonthlyReached, con retryAfter) y no se guarda nada; otra subida de la misma persona en curso, 429 Assistant.Attachment.UploadBusy; la cola de la copia llena, 429 Assistant.Attachment.UploadQueueFull, los dos con retryAfter y Retry-After; el cuerpo tiene 120 s y después es 400 Assistant.Attachment.UploadTimedOut. La misma Idempotency-Key con otro archivo es 422 Request.IdempotencyKeyReused. */
         post: {
             parameters: {
                 query?: never;
@@ -14057,7 +14770,7 @@ export interface paths {
                         "application/json": components["schemas"]["AssistantAttachmentSummaryResponse"];
                     };
                 };
-                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany; Validation.Failed; Validation.Failed */
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany; Assistant.Attachment.UploadTimedOut; Validation.Failed; Validation.Failed */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -14120,7 +14833,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Security.RateLimit.Exceeded */
+                /** @description Assistant.Limit.DailyReached; Assistant.Limit.MonthlyReached; Assistant.Attachment.UploadBusy; Assistant.Attachment.UploadQueueFull; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -15971,6 +16684,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** @description invitationDelivery (0066 §4): el estado de entrega de la invitación pendiente, derivado de la cola al leer: Pending (en la cola), Sent (salió, o sin fila en la cola), Uncertain («Sin confirmar»: no se sabe si salió; reenviar pide revisar antes con la persona) o Failed (no salió). null sin invitación pendiente. */
         get: {
             parameters: {
                 query?: {
@@ -16153,6 +16867,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** @description invitationDelivery (0066 §4): el estado de entrega de la invitación pendiente, derivado de la cola al leer: Pending (en la cola), Sent (salió, o sin fila en la cola), Uncertain («Sin confirmar»: no se sabe si salió; reenviar pide revisar antes con la persona) o Failed (no salió). null sin invitación pendiente. */
         get: {
             parameters: {
                 query?: never;
@@ -16241,6 +16956,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description ADR 0061: sobre un operador, quien actúa tiene que tener todos sus permisos. */
         post: {
             parameters: {
                 query?: never;
@@ -16283,7 +16999,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
+                /** @description Forbidden; Platform.Operator.HasMorePermissions; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -16347,6 +17063,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description ADR 0061: sobre un operador, quien actúa tiene que tener todos sus permisos. */
         post: {
             parameters: {
                 query?: never;
@@ -16389,7 +17106,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
+                /** @description Forbidden; Platform.Operator.HasMorePermissions; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -16559,6 +17276,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description ADR 0061: sobre un operador, quien actúa tiene que tener todos sus permisos. */
         post: {
             parameters: {
                 query?: never;
@@ -16601,7 +17319,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
+                /** @description Forbidden; Platform.Operator.HasMorePermissions; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -16663,6 +17381,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** @description loginAuditRetentionMonths (272): los meses que se guardan los ingresos, de la configuración de Plataforma; lo nombra la (i) de la pantalla. */
         get: {
             parameters: {
                 query?: {
@@ -16686,9 +17405,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["CursorResultOfPlatformAuditEventResponse"];
-                        "application/json": components["schemas"]["CursorResultOfPlatformAuditEventResponse"];
-                        "text/json": components["schemas"]["CursorResultOfPlatformAuditEventResponse"];
+                        "text/plain": components["schemas"]["PlatformAuditListResponse"];
+                        "application/json": components["schemas"]["PlatformAuditListResponse"];
+                        "text/json": components["schemas"]["PlatformAuditListResponse"];
                     };
                 };
                 /** @description Bad Request */
@@ -17882,6 +18601,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description ADR 0061: nadie da ni quita a un operador un permiso que no tiene. Lo que tiene una cuenta son los permisos de sus roles (o los de un operador) más lo que esos incluyen, en cadena (260); se guarda lo pedido más lo incluido, y el GET devuelve eso. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. */
         post: {
             parameters: {
                 query?: never;
@@ -17926,7 +18646,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
+                /** @description Forbidden; Platform.Operator.PermissionsNotHeld; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -17944,7 +18664,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Security.RateLimit.Exceeded */
+                /** @description Messaging.Email.DailyLimit; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -17981,7 +18701,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** «Reenviar invitación»: renueva los 7 días de una invitación sin aceptar y manda el correo de nuevo. */
+        /**
+         * «Reenviar invitación»: renueva los 7 días de una invitación sin aceptar y manda el correo de nuevo.
+         * @description Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta.
+         */
         post: {
             parameters: {
                 query?: never;
@@ -18040,7 +18763,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Security.RateLimit.Exceeded */
+                /** @description Messaging.Email.DailyLimit; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -18168,6 +18891,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
+        /** @description ADR 0061: nadie da ni quita a un operador un permiso que no tiene. Lo que tiene una cuenta son los permisos de sus roles (o los de un operador) más lo que esos incluyen, en cadena (260); se guarda lo pedido más lo incluido, y el GET devuelve eso. */
         put: {
             parameters: {
                 query?: never;
@@ -18214,7 +18938,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
+                /** @description Forbidden; Platform.Operator.PermissionsNotHeld; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -18264,6 +18988,7 @@ export interface paths {
             };
         };
         post?: never;
+        /** @description ADR 0061: sobre un operador, quien actúa tiene que tener todos sus permisos. */
         delete: {
             parameters: {
                 query?: never;
@@ -18306,7 +19031,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden; Auth.Platform.ReauthenticationRequired */
+                /** @description Forbidden; Platform.Operator.HasMorePermissions; Auth.Platform.ReauthenticationRequired */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -18481,6 +19206,82 @@ export interface paths {
                 };
             };
         };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/platform/permissions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description El catálogo de permisos de un operador, con los de los módulos instalados: code, includes (260) y grantable (269). Nombres y orden salen del catálogo del front. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["PlatformPermissionItem"][];
+                        "application/json": components["schemas"]["PlatformPermissionItem"][];
+                        "text/json": components["schemas"]["PlatformPermissionItem"][];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -19340,7 +20141,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description rateLimits (E9): los doce perfiles cerrados de cuotas compartidas, con ventanas fijas UTC y sin cola. */
+        /** @description rateLimits (E9): los doce perfiles cerrados de cuotas compartidas, con ventanas fijas UTC y sin cola. Plazos (272): loginAuditRetentionMonths, loginCodeRetentionDays y closedInvitationRetentionDays. Nombre y correos (273): appName y senderName (sin guardar, los de la configuración de arranque) y emailLogoUrl (null sin logo). */
         get: {
             parameters: {
                 query?: never;
@@ -19410,7 +20211,7 @@ export interface paths {
                 };
             };
         };
-        /** @description rateLimits (E9) es opcional: omitirlo conserva las cuotas guardadas y enviarlo exige los doce perfiles completos, permitLimit entre 1 y 1.000.000 y windowSeconds entre 1 y 86.400, sin cero para apagar una cuota. Conserva version, reason, la respuesta {version} y el permiso; además pide prueba reciente. */
+        /** @description rateLimits (E9) es opcional: omitirlo conserva las cuotas guardadas y enviarlo exige los doce perfiles completos, permitLimit entre 1 y 1.000.000 y windowSeconds entre 1 y 86.400, sin cero para apagar una cuota. Conserva version, reason, la respuesta {version} y el permiso; además pide prueba reciente. Los plazos (272) y appName, senderName y emailLogoUrl (273) son opcionales: si faltan se conserva lo guardado. Fuera de su mínimo o su máximo, 400 de validación en su campo; emailLogoUrl va vacío o con https://. */
         put: {
             parameters: {
                 query?: never;
@@ -21314,6 +22115,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. */
         post: {
             parameters: {
                 query?: never;
@@ -21382,7 +22184,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Security.RateLimit.Exceeded */
+                /** @description Messaging.Email.DailyLimit; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -21518,6 +22320,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** @description invitationDelivery (0066 §4): el estado de entrega de la invitación pendiente, derivado de la cola al leer: Pending (en la cola), Sent (salió, o sin fila en la cola), Uncertain («Sin confirmar»: no se sabe si salió; reenviar pide revisar antes con la persona) o Failed (no salió). null sin invitación pendiente. */
         get: {
             parameters: {
                 query?: {
@@ -21726,6 +22529,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description ADR 0061: no se da un rol de la empresa con permisos que quien suma no tiene en ella. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. */
         post: {
             parameters: {
                 query?: never;
@@ -21768,7 +22572,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Companies.Membership.RolesNotHeld */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -21795,7 +22599,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Security.RateLimit.Exceeded */
+                /** @description Messaging.Email.DailyLimit; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -21831,6 +22635,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
+        /** @description ADR 0061: no se da ni se quita un rol de la empresa con permisos que quien edita no tiene en ella, ni se edita a quien tiene en la empresa permisos que quien edita no tiene. */
         put: {
             parameters: {
                 query?: never;
@@ -21878,7 +22683,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Companies.Membership.RolesNotHeld; Companies.Membership.HasMorePermissions */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -21942,6 +22747,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
+        /** @description ADR 0061: no se desactiva a quien tiene en la empresa permisos que quien actúa no tiene. */
         put: {
             parameters: {
                 query?: never;
@@ -21989,7 +22795,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Companies.Membership.HasMorePermissions */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -22052,6 +22858,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** @description Cada rol trae grantable (269 y ADR 0061): si quien pide puede darlo ahí. */
         get: {
             parameters: {
                 query?: {
@@ -23138,6 +23945,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** @description invitationDelivery (0066 §4): el estado de entrega de la invitación pendiente, derivado de la cola al leer: Pending (en la cola), Sent (salió, o sin fila en la cola), Uncertain («Sin confirmar»: no se sabe si salió; reenviar pide revisar antes con la persona) o Failed (no salió). null sin invitación pendiente. */
         get: {
             parameters: {
                 query?: {
@@ -23322,6 +24130,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** @description invitationDelivery (0066 §4): el estado de entrega de la invitación pendiente, derivado de la cola al leer: Pending (en la cola), Sent (salió, o sin fila en la cola), Uncertain («Sin confirmar»: no se sabe si salió; reenviar pide revisar antes con la persona) o Failed (no salió). null sin invitación pendiente. */
         get: {
             parameters: {
                 query?: never;
@@ -23393,6 +24202,7 @@ export interface paths {
                 };
             };
         };
+        /** @description ADR 0061: no se da ni se quita un rol con permisos que quien edita no tiene, ni se edita a quien tiene permisos que quien edita no tiene. Sobre uno mismo pasa. */
         put: {
             parameters: {
                 query?: never;
@@ -23439,7 +24249,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Tenancy.Member.RolesNotHeld; Tenancy.Member.HasMorePermissions */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -23489,6 +24299,7 @@ export interface paths {
             };
         };
         post?: never;
+        /** @description ADR 0061: no se desactiva ni se quita a quien tiene permisos que quien actúa no tiene. */
         delete: {
             parameters: {
                 query?: {
@@ -23527,7 +24338,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Tenancy.Member.HasMorePermissions */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -23590,6 +24401,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description ADR 0061: no se da un rol con permisos que quien invita no tiene. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. */
         post: {
             parameters: {
                 query?: never;
@@ -23634,7 +24446,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Tenancy.Member.RolesNotHeld */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -23652,7 +24464,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Security.RateLimit.Exceeded */
+                /** @description Messaging.Email.DailyLimit; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -23689,6 +24501,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. */
         post: {
             parameters: {
                 query?: never;
@@ -23747,7 +24560,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Security.RateLimit.Exceeded */
+                /** @description Messaging.Email.DailyLimit; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -23874,6 +24687,7 @@ export interface paths {
             cookie?: never;
         };
         get?: never;
+        /** @description ADR 0061: no se desactiva ni se quita a quien tiene permisos que quien actúa no tiene. */
         put: {
             parameters: {
                 query?: never;
@@ -23920,7 +24734,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Tenancy.Member.HasMorePermissions */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -23983,6 +24797,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** @description Cada permiso trae includes (260): los códigos que incluye, de su misma área y su mismo catálogo ([] si no incluye nada), y grantable (269): si quien pide lo tiene, para darlo. */
         get: {
             parameters: {
                 query?: never;
@@ -24536,6 +25351,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** @description Cada rol trae grantable (269 y ADR 0061): si quien pide puede darlo ahí. */
         get: {
             parameters: {
                 query?: {
@@ -24699,6 +25515,7 @@ export interface paths {
                 };
             };
         };
+        /** @description ADR 0061: nadie da ni quita un permiso que no tiene en ese alcance. Lo que tiene una cuenta son los permisos de sus roles (o los de un operador) más lo que esos incluyen, en cadena (260); se guarda lo pedido más lo incluido, y el GET devuelve eso. */
         put: {
             parameters: {
                 query?: never;
@@ -24745,7 +25562,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Roles.Role.PermissionsNotHeld */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -24900,6 +25717,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description ADR 0061: nadie da ni quita un permiso que no tiene en ese alcance. Lo que tiene una cuenta son los permisos de sus roles (o los de un operador) más lo que esos incluyen, en cadena (260); se guarda lo pedido más lo incluido, y el GET devuelve eso. */
         post: {
             parameters: {
                 query?: never;
@@ -24944,7 +25762,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Forbidden */
+                /** @description Forbidden; Roles.Role.PermissionsNotHeld */
                 403: {
                     headers: {
                         [name: string]: unknown;
@@ -25197,7 +26015,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Invalid informa attemptsLeft sólo ante una prueba activa; sin prueba activa no informa intentos restantes. Los errores del código no incluyen errors.code. Intentos y topes actuales; cuando el error incluye retryAfter, son segundos y coincide con Retry-After. El bloqueo de cuenta no informa un plazo ni ese encabezado. No guardar códigos ni enlaces en logs. Nonce opaco base64url de 43 caracteres, ligado a este pedido. Sin sesión. Nuevo destino no se agrega a la cuenta. Submit: 202 sin body, prueba previa vigente y previousEmail o previousPhone; resolución asistida de Plataforma conserva reason/version/permiso/SecurityEvent. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Invalid informa attemptsLeft sólo ante una prueba activa; sin prueba activa no informa intentos restantes. Los errores del código no incluyen errors.code. Intentos y topes actuales; cuando el error incluye retryAfter, son segundos y coincide con Retry-After. El bloqueo de cuenta no informa un plazo ni ese encabezado. No guardar códigos ni enlaces en logs. Nonce opaco base64url de 43 caracteres, ligado a este pedido. Sin sesión. Nuevo destino no se agrega a la cuenta. Submit: 202 sin body, prueba previa vigente y previousEmail o previousPhone; resolución asistida de Plataforma conserva reason/version/permiso/SecurityEvent. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
@@ -25254,7 +26072,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; WhatsApp.LoginCode.DailyLimit; Security.RateLimit.Exceeded */
+                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Messaging.Email.DailyLimit; WhatsApp.LoginCode.DailyLimit; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -25471,7 +26289,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.BusinessSignup abierto, independiente de ConsumerSignup; identidad nueva o existente. No crea organización ni PhoneTaken personal. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.BusinessSignup abierto, independiente de ConsumerSignup; identidad nueva o existente. No crea organización ni PhoneTaken personal. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
@@ -25537,7 +26355,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; WhatsApp.LoginCode.DailyLimit; Security.RateLimit.Exceeded */
+                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Messaging.Email.DailyLimit; WhatsApp.LoginCode.DailyLimit; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -26242,7 +27060,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. Solo método verificado utilizable; conserva invitación por correo de ADR0047. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. Solo método verificado utilizable; conserva invitación por correo de ADR0047. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. */
         post: {
             parameters: {
                 query?: never;
@@ -26299,7 +27117,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; WhatsApp.LoginCode.DailyLimit; Security.RateLimit.Exceeded */
+                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Messaging.Email.DailyLimit; WhatsApp.LoginCode.DailyLimit; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -26782,7 +27600,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.ConsumerSignup abierto; acepta términos explícitos. Crea Persona, nunca empresa. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.ConsumerSignup abierto; acepta términos explícitos. Crea Persona, nunca empresa. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
@@ -26848,7 +27666,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; WhatsApp.LoginCode.DailyLimit; Security.RateLimit.Exceeded */
+                /** @description Too Many Requests; Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Messaging.Email.DailyLimit; WhatsApp.LoginCode.DailyLimit; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -27277,7 +28095,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. Pendiente propio y OTP al destino nuevo; otro dueño falla antes de pendiente, aviso o OTP. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. Pendiente propio y OTP al destino nuevo; otro dueño falla antes de pendiente, aviso o OTP. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. WhatsApp: tope por cuenta de las últimas 24 horas, por horas; al llegar, 429 WhatsApp.LoginCode.AccountDailyLimit con retryAfter y Retry-After. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
@@ -27352,7 +28170,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; WhatsApp.LoginCode.DailyLimit; Security.RateLimit.Exceeded */
+                /** @description Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Messaging.Email.DailyLimit; WhatsApp.LoginCode.DailyLimit; WhatsApp.LoginCode.AccountDailyLimit; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -27389,7 +28207,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Reenvío para pendiente propio; recarga propiedad y disponibilidad, sin body. No prueba posesión del método principal. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. */
+        /** @description Reenvío para pendiente propio; recarga propiedad y disponibilidad, sin body. No prueba posesión del método principal. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. WhatsApp: tope por cuenta de las últimas 24 horas, por horas; al llegar, 429 WhatsApp.LoginCode.AccountDailyLimit con retryAfter y Retry-After. */
         post: {
             parameters: {
                 query?: never;
@@ -27469,7 +28287,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; WhatsApp.LoginCode.DailyLimit; Security.RateLimit.Exceeded */
+                /** @description Auth.LoginCode.ResendTooSoon; Auth.LoginCode.TooManyRequests; Messaging.Email.DailyLimit; WhatsApp.LoginCode.DailyLimit; WhatsApp.LoginCode.AccountDailyLimit; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -28449,6 +29267,8 @@ export interface components {
             createdAtUtc: string;
             /** Format: date-time */
             lastActivityAtUtc: string;
+            /** @description false si esta versión no puede leerla: sin título ni mensajes, y se puede borrar (ADR 0064 §6). */
+            available: boolean;
         };
         AssistantCreatedModelResponse: {
             /** Format: uuid */
@@ -28481,6 +29301,7 @@ export interface components {
         AssistantErrorEventResponse: {
             /** Format: uuid */
             turnId?: null | string;
+            /** @description Código de la falla. Del proveedor (ADR 0064 §7), por el estado HTTP y sin leer el cuerpo: Assistant.Provider.CredentialRejected, Assistant.Provider.Limited, Assistant.Provider.ModelRejected, Assistant.Provider.Rejected, Assistant.Provider.Uncertain, Assistant.Provider.Unavailable, Assistant.Provider.KeyUnreadable, Assistant.Provider.UnsupportedProvider, Assistant.Provider.PlatformUnavailable. */
             code: string;
             traceId: string;
             /** Format: int32 */
@@ -29050,6 +29871,8 @@ export interface components {
             invitationId?: null | string;
             /** Format: date-time */
             invitationExpiresAtUtc?: null | string;
+            /** @description invitationDelivery (0066 §4): el estado de entrega de la invitación pendiente, derivado de la cola al leer: Pending (en la cola), Sent (salió, o sin fila en la cola), Uncertain («Sin confirmar»: no se sabe si salió; reenviar pide revisar antes con la persona) o Failed (no salió). null sin invitación pendiente. */
+            invitationDelivery?: null | components["schemas"]["InvitationDeliveryStatus"];
         };
         CompanyMemberRoleResponse: {
             /** Format: uuid */
@@ -29265,12 +30088,6 @@ export interface components {
             hasMore: boolean;
         };
         /** @description Resultado por cursor, sin conteo total sobre tablas que solo crecen. */
-        CursorResultOfPlatformAuditEventResponse: {
-            items: components["schemas"]["PlatformAuditEventResponse"][];
-            nextCursor?: null | string;
-            hasMore: boolean;
-        };
-        /** @description Resultado por cursor, sin conteo total sobre tablas que solo crecen. */
         CursorResultOfPlatformTenantHistoryResponse: {
             items: components["schemas"]["PlatformTenantHistoryResponse"][];
             nextCursor?: null | string;
@@ -29362,6 +30179,8 @@ export interface components {
         };
         /** Format: binary */
         IFormFile: string;
+        /** @enum {null|string} */
+        InvitationDeliveryStatus: "Pending" | "Sent" | "Uncertain" | "Failed" | null;
         /** @description Solo datos presentables de la invitación autorizada; jamás hashes ni secretos. */
         InvitationPreviewResponse: {
             state: components["schemas"]["InvitationPreviewState"];
@@ -29570,6 +30389,10 @@ export interface components {
             version: number;
             platformKeyModels: components["schemas"]["AssistantModelPriceResponse"][];
             ownKeyModels: components["schemas"]["AssistantModelPriceResponse"][];
+            /** @description La falla del proveedor que arregla quien ve esta configuración (ADR 0064 §7), según quién paga: Assistant.Provider.CredentialRejected, Assistant.Provider.Limited, Assistant.Provider.ModelRejected, Assistant.Provider.Unavailable, Assistant.Provider.KeyUnreadable, Assistant.Provider.PlatformUnavailable; PlatformUnavailable solo en la organización con la clave de la plataforma. null sin falla. */
+            providerIssue?: null | string;
+            /** @description El proveedor guardado no lo conoce esta versión: la conexión queda pausada; guardar sin clave lo descarta (ADR 0064 §6). */
+            unsupportedProvider: boolean;
         };
         OrganizationAuditActorResponse: {
             /** Format: uuid */
@@ -29699,6 +30522,8 @@ export interface components {
             /** Format: date-time */
             deletionScheduledForUtc?: null | string;
             phone?: null | string;
+            /** @description invitationDelivery (0066 §4): el estado de entrega de la invitación pendiente, derivado de la cola al leer: Pending (en la cola), Sent (salió, o sin fila en la cola), Uncertain («Sin confirmar»: no se sabe si salió; reenviar pide revisar antes con la persona) o Failed (no salió). null sin invitación pendiente. */
+            invitationDelivery?: null | components["schemas"]["InvitationDeliveryStatus"];
         };
         OrganizationUserRoleRow: {
             /** Format: uuid */
@@ -30227,10 +31052,16 @@ export interface components {
             name: string;
             permissions: components["schemas"]["PermissionItem"][];
         };
+        /**
+         * @description Un permiso del catálogo: `Includes` son los códigos que incluye, de su misma área y su mismo catálogo (decisión 260),
+         *     y `Grantable` dice si quien pide lo tiene, para dárselo a otro (decisión 269 y ADR 0061).
+         */
         PermissionItem: {
             code: string;
             name: string;
             description: string;
+            includes: string[];
+            grantable: boolean;
         };
         PersonalWhatsAppConversationDetailResponse: {
             conversation: components["schemas"]["PersonalWhatsAppConversationResponse"];
@@ -30297,6 +31128,8 @@ export interface components {
              * @example •••• 4521
              */
             maskedPrimaryPhone?: null | string;
+            /** @description invitationDelivery (0066 §4): el estado de entrega de la invitación pendiente, derivado de la cola al leer: Pending (en la cola), Sent (salió, o sin fila en la cola), Uncertain («Sin confirmar»: no se sabe si salió; reenviar pide revisar antes con la persona) o Failed (no salió). null sin invitación pendiente. */
+            invitationDelivery?: null | components["schemas"]["InvitationDeliveryStatus"];
         };
         PlatformAccountFilterCounts: {
             /** Format: int32 */
@@ -30363,6 +31196,8 @@ export interface components {
              * @example •••• 4521
              */
             maskedPrimaryPhone?: null | string;
+            /** @description invitationDelivery (0066 §4): el estado de entrega de la invitación pendiente, derivado de la cola al leer: Pending (en la cola), Sent (salió, o sin fila en la cola), Uncertain («Sin confirmar»: no se sabe si salió; reenviar pide revisar antes con la persona) o Failed (no salió). null sin invitación pendiente. */
+            invitationDelivery?: null | components["schemas"]["InvitationDeliveryStatus"];
         };
         /**
          * @description Estado que ve Plataforma. NeedsRecovery se deriva: cuenta Active sin ningún método que sirva para ingresar;
@@ -30398,6 +31233,10 @@ export interface components {
             maskedKeySuffix?: null | string;
             /** Format: uint32 */
             version: number;
+            /** @description La falla del proveedor que arregla quien ve esta configuración (ADR 0064 §7), según quién paga: Assistant.Provider.CredentialRejected, Assistant.Provider.Limited, Assistant.Provider.ModelRejected, Assistant.Provider.Unavailable, Assistant.Provider.KeyUnreadable, Assistant.Provider.PlatformUnavailable; PlatformUnavailable solo en la organización con la clave de la plataforma. null sin falla. */
+            providerIssue?: null | string;
+            /** @description El proveedor guardado no lo conoce esta versión: la conexión queda pausada; guardar sin clave lo descarta (ADR 0064 §6). */
+            unsupportedProvider: boolean;
         };
         /** @description Una fila de la auditoría ya traducida: qué pasó, sobre qué, quién y con qué motivo. */
         PlatformAuditEventResponse: {
@@ -30417,6 +31256,17 @@ export interface components {
             actorRole: string;
             reason?: null | string;
             ipAddress?: null | string;
+        };
+        /**
+         * @description Una página de la auditoría, recorrida con cursor y sin totales, con los meses que se guardan los ingresos: los nombra la (i)
+         *     de la pantalla (decisión 272).
+         */
+        PlatformAuditListResponse: {
+            items: components["schemas"]["PlatformAuditEventResponse"][];
+            nextCursor?: null | string;
+            hasMore: boolean;
+            /** Format: int32 */
+            loginAuditRetentionMonths: number;
         };
         /** @description Una organización presente en los eventos filtrados, con su nombre global actual. */
         PlatformAuditOrganizationResponse: {
@@ -30537,6 +31387,12 @@ export interface components {
             /** Format: date-time */
             expiresAtUtc: string;
         };
+        /** @description Un permiso del catálogo de Plataforma: los códigos que incluye, de su mismo catálogo, y si quien pide lo tiene. */
+        PlatformPermissionItem: {
+            code: string;
+            includes: string[];
+            grantable: boolean;
+        };
         /** @description Solo metadatos de publicación; no incluye contenido, logo ni contacto de la página. */
         PlatformPublicSiteResponse: {
             slug?: null | string;
@@ -30627,6 +31483,10 @@ export interface components {
             /** Format: int32 */
             count: number;
         };
+        /**
+         * @description La configuración de Plataforma. Los plazos de retención del núcleo (decisión 272) y el nombre, el remitente y el logo de
+         *     los correos (decisión 273) valen para todas las organizaciones; sin logo, `EmailLogoUrl` es null.
+         */
         PlatformSettingsResponse: {
             consumerSignup: components["schemas"]["ConsumerSignupMode"];
             businessSignup: components["schemas"]["BusinessSignupMode"];
@@ -30637,6 +31497,15 @@ export interface components {
             /** Format: uint32 */
             version: number;
             rateLimits: components["schemas"]["PlatformRateLimitsResponse"];
+            /** Format: int32 */
+            loginAuditRetentionMonths: number;
+            /** Format: int32 */
+            loginCodeRetentionDays: number;
+            /** Format: int32 */
+            closedInvitationRetentionDays: number;
+            appName: string;
+            senderName: string;
+            emailLogoUrl?: null | string;
         };
         /** @description Ficha global; su versión pertenece únicamente a Tenants. */
         PlatformTenantDetailResponse: {
@@ -30746,6 +31615,19 @@ export interface components {
             /** Format: int32 */
             systemMessagesThisMonth: number;
             signup?: null | components["schemas"]["WhatsAppSignupConfigResponse"];
+        };
+        /**
+         * @description La configuración de WhatsApp de la plataforma (B18): los países que reciben códigos (al menos uno, de los habilitados y
+         *     sin repetir), cuánto se guardan sus chats y el máximo que puede elegir una organización.
+         */
+        PlatformWhatsAppSettingsResponse: {
+            allowedCountries: string[];
+            /** Format: int32 */
+            chatRetentionDays: number;
+            /** Format: int32 */
+            maxOrganizationChatRetentionDays: number;
+            /** Format: uint32 */
+            version: number;
         };
         /** @description Correo con el que se entraba, enviado sólo en el cuerpo. */
         PreviewAccountRecoveryHttpRequest: {
@@ -30902,7 +31784,10 @@ export interface components {
                 [key: string]: number;
             };
         };
-        /** @description Representación HTTP-independent de un rol; version conserva el xmin de PostgreSQL. */
+        /**
+         * @description Representación HTTP-independent de un rol; version conserva el xmin de PostgreSQL. `Grantable` dice si quien pide
+         *     puede dar ese rol ahí (decisión 269 y ADR 0061).
+         */
         RoleResponse: {
             /** Format: uuid */
             id: string;
@@ -30920,6 +31805,8 @@ export interface components {
             /** Format: date-time */
             createdAtUtc: string;
             companyName?: null | string;
+            /** @default true */
+            grantable: boolean;
         };
         /**
          * @description Ámbito de un rol de organización.
@@ -31023,7 +31910,10 @@ export interface components {
          * @enum {string}
          */
         TenantStatus: "PendingApproval" | "Provisioning" | "Active" | "Suspended" | "Closed";
-        /** @description Expone una zona IANA y sus países para elegir y presentar la zona horaria. */
+        /**
+         * @description Expone una zona IANA y sus países para elegir y presentar la zona horaria, con la hora de su país («hora de Uruguay»,
+         *     decisión 262); null en una zona sin país.
+         */
         TimeZoneReferenceHttpResponse: {
             id: string;
             countryCodes: string[];
@@ -31031,6 +31921,8 @@ export interface components {
             isEnabled: boolean;
             /** Format: int32 */
             sortOrder?: null | number;
+            /** @description La hora de su país en la cultura pedida («hora de Uruguay», 262); null en una zona sin país. */
+            countryTimeName?: null | string;
         };
         TransferWhatsAppConversationHttpRequest: {
             /** Format: uuid */
@@ -31140,7 +32032,10 @@ export interface components {
             version?: null | number;
             reason?: null | string;
         };
-        /** @description Sin `rateLimits` se conservan las cuotas guardadas; con ellas, van los doce perfiles completos (E9). */
+        /**
+         * @description Sin `rateLimits` se conservan las cuotas guardadas; con ellas, van los doce perfiles completos (E9). Los plazos (272) y
+         *     el nombre, el remitente y el logo de los correos (273) que faltan conservan lo guardado.
+         */
         UpdatePlatformSettingsHttpRequest: {
             consumerSignup?: null | components["schemas"]["ConsumerSignupMode"];
             businessSignup?: null | components["schemas"]["BusinessSignupMode"];
@@ -31152,6 +32047,16 @@ export interface components {
             version?: null | number;
             reason?: null | string;
             rateLimits?: null | components["schemas"]["PlatformRateLimitsInput"];
+            /** Format: int32 */
+            loginAuditRetentionMonths?: null | number;
+            /** Format: int32 */
+            loginCodeRetentionDays?: null | number;
+            /** Format: int32 */
+            closedInvitationRetentionDays?: null | number;
+            appName?: null | string;
+            senderName?: null | string;
+            /** @description Vacío o una dirección https://; vacío quita el logo. */
+            emailLogoUrl?: null | string;
         };
         UpdatePlatformWhatsAppBotHttpRequest: {
             welcome?: null | string;
@@ -31163,6 +32068,17 @@ export interface components {
         };
         UpdatePlatformWhatsAppNumberHttpRequest: {
             consultationsEnabled?: null | boolean;
+            /** Format: uint32 */
+            version?: null | number;
+        };
+        /** @description La configuración de WhatsApp de la plataforma (B18), con su versión. */
+        UpdatePlatformWhatsAppSettingsHttpRequest: {
+            /** @description Los países que reciben códigos: al menos uno, de los habilitados en los datos de referencia, sin repetir. */
+            allowedCountries?: null | string[];
+            /** Format: int32 */
+            chatRetentionDays?: null | number;
+            /** Format: int32 */
+            maxOrganizationChatRetentionDays?: null | number;
             /** Format: uint32 */
             version?: null | number;
         };
@@ -31212,6 +32128,16 @@ export interface components {
         UpdateWhatsAppNumberHttpRequest: {
             /** Format: uuid */
             companyId?: null | string;
+            /** Format: uint32 */
+            version?: null | number;
+        };
+        /** @description La configuración de WhatsApp de la organización (B18), con su versión. */
+        UpdateWhatsAppOrganizationSettingsHttpRequest: {
+            /**
+             * Format: int32
+             * @description De 1 al máximo que deja la plataforma (maxOrganizationChatRetentionDays).
+             */
+            chatRetentionDays?: null | number;
             /** Format: uint32 */
             version?: null | number;
         };
@@ -31453,12 +32379,23 @@ export interface components {
             text?: null | string;
             mediaKind?: null | components["schemas"]["WhatsAppMediaKind"];
             status: components["schemas"]["WhatsAppChatMessageStatus"];
+            /** @description El texto del motivo de «No se pudo enviar», en la cultura pedida. El código guardado es uno de: WhatsApp.Send.NotAllowed, WhatsApp.Send.WindowClosed, WhatsApp.Send.Undeliverable, WhatsApp.Send.RateLimited, WhatsApp.Send.TokenInvalid, WhatsApp.Send.PermissionMissing, WhatsApp.Send.Unavailable, WhatsApp.Send.Rejected, WhatsApp.Send.ReadOnly, WhatsApp.Send.PaymentRequired. */
             failureReason?: null | string;
             /** Format: date-time */
             createdAtUtc: string;
+            /** @description Quién marcó como revisado el mensaje «Sin confirmar»; null sin revisión. */
+            reviewedByName?: null | string;
+            /**
+             * Format: date-time
+             * @description Cuándo se marcó como revisado; null sin revisión.
+             */
+            reviewedAtUtc?: null | string;
         };
-        /** @enum {string} */
-        WhatsAppChatMessageStatus: "Received" | "Pending" | "Sent" | "Delivered" | "Read" | "Failed";
+        /**
+         * @description `Uncertain` («Sin confirmar», ADR 0066) se deriva al leer, desde la cola: no se guarda.
+         * @enum {string}
+         */
+        WhatsAppChatMessageStatus: "Received" | "Pending" | "Sent" | "Delivered" | "Read" | "Failed" | "Uncertain";
         /** @enum {string} */
         WhatsAppConsent: "Accepted" | "Declined" | "NoAnswer" | "Unsubscribed";
         /** @enum {null|string} */
@@ -31630,6 +32567,13 @@ export interface components {
         };
         /** @enum {string} */
         WhatsAppNumberStatus: "Connected" | "PaymentMissing" | "Disconnected";
+        /** @description La configuración de WhatsApp de la organización (B18): cuánto se guardan sus chats, hasta el máximo de la plataforma. */
+        WhatsAppOrganizationSettingsResponse: {
+            /** Format: int32 */
+            chatRetentionDays: number;
+            /** Format: uint32 */
+            version: number;
+        };
         /**
          * @description «Vincular y mandar»: cada teléfono con el país elegido, y la casilla «La persona aceptó recibir mensajes por WhatsApp»
          *     (decisión 179). El back interpreta cada número y no revela si tiene cuenta.
@@ -31685,8 +32629,11 @@ export interface components {
             /** Format: date-time */
             changedAtUtc: string;
         };
-        /** @enum {string} */
-        WhatsAppRecipientStatus: "Pending" | "Sent" | "Delivered" | "Read" | "Replied" | "Unsubscribed" | "Failed";
+        /**
+         * @description `Uncertain` («Sin confirmar», decisión 255) se deriva al leer, desde la cola: no cuenta como enviado ni como «No llegó».
+         * @enum {string}
+         */
+        WhatsAppRecipientStatus: "Pending" | "Sent" | "Delivered" | "Read" | "Replied" | "Unsubscribed" | "Failed" | "Uncertain";
         WhatsAppReferenceResponse: {
             /** Format: uuid */
             id: string;

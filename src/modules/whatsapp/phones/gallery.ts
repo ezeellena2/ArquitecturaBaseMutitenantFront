@@ -58,7 +58,7 @@ const usersApp = (rows: OrganizationUserResponse[], options: { actions?: Gallery
 ], options);
 
 const role = (id: string, name: string, scope: RoleResponse["scope"], description: string, companyId: string | null = null): RoleResponse =>
-  ({ id, name, description, scope, companyId, isSystemRole: scope === "AnyCompany", userCount: 1, permissions: [], version: 1, createdAtUtc: "2026-01-12T15:00:00Z" });
+  ({ id, name, description, scope, companyId, isSystemRole: scope === "AnyCompany", grantable: true, userCount: 1, permissions: [], version: 1, createdAtUtc: "2026-01-12T15:00:00Z" });
 const deltaRoles = [role("role-admin", "Administrador", "AnyCompany", "Administra la empresa: sus miembros y sus roles."),
   role(`role-lectura-${delta.id}`, "Solo lectura", "SpecificCompany", "Ve los miembros de la empresa. No cambia nada.", delta.id)];
 

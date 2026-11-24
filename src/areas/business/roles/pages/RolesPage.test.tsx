@@ -17,6 +17,7 @@ const owner: RoleResponse = {
   scope: "Organization",
   companyId: null,
   isSystemRole: true,
+  grantable: true,
   userCount: 1,
   permissions: ["roles.read", "roles.manage"],
   version: 1,
