@@ -154,7 +154,7 @@ function PermissionChoice({ permission, groups, picked, onChange }: { permission
   const quoted = includers.map((name) => t("permissionPicker.quoted", { name }));
   const names = quoted.length > 1 ? t("fields.selectedList", { rest: quoted.slice(0, -1).join(", "), last: quoted.at(-1) }) : quoted[0];
   const reason = includers.length > 0 ? t("permissionPicker.includedBy", { count: includers.length, names })
-    : permission.grantable ? undefined : t("permissionPicker.notHeld");
+    : permission.grantable === false ? t("permissionPicker.notHeld") : undefined;
   const checkbox = <Checkbox id={id} checked={checked} aria-disabled={reason ? true : undefined}
     aria-describedby={`${id}-description${reason ? ` ${id}-reason` : ""}`} onClick={reason ? showOnly : undefined}
     onCheckedChange={(value) => { if (!reason) onChange?.(changePermission(groups, picked, permission.code, value === true)); }}

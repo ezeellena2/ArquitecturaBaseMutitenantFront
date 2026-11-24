@@ -36,8 +36,10 @@ const serverFields: Record<string, keyof MemberRolesForm> = { roleIds: "roleIds"
  * Se monta solo mientras está abierto y, al cerrar, le devuelve el foco al ⋮ de la fila (`returnFocusTo`), porque la
  * opción se fue con el menú.
  */
-export function MemberRolesDialog({ companyId, member, roles, onClose, returnFocusTo }: {
+export function MemberRolesDialog({ companyId, companyName, member, roles, onClose, returnFocusTo }: {
   companyId: string;
+  /** El nombre de la empresa: el motivo de un rol que quien edita no puede dar ahí (269). */
+  companyName: string;
   member: CompanyMemberResponse;
   /** Los roles que se asignan en esta empresa: los de cada empresa y los propios. */
   roles: readonly RoleResponse[];
@@ -79,7 +81,7 @@ export function MemberRolesDialog({ companyId, member, roles, onClose, returnFoc
       <form noValidate onSubmit={(event) => { void submit(event); }} className="flex min-h-0 flex-col">
         <DialogBody>
           <FormField label={t("companies:editMemberRoles.roles")} error={form.formState.errors.roleIds?.message}>
-            <MultiSelect remote={roleQuery.remote} selectedOptions={[...roles, ...member.roles, ...roleQuery.knownItems].map((role) => ({ value: role.id, label: role.name }))} options={roleQuery.items.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={roleIds.field.value}
+            <MultiSelect remote={roleQuery.remote} selectedOptions={[...roles, ...member.roles, ...roleQuery.knownItems].map((role) => ({ value: role.id, label: role.name }))} options={roleQuery.items.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined, disabledReason: role.grantable === false ? t("common:roleChoice.notGrantableIn", { company: companyName }) : undefined }))} value={roleIds.field.value}
               onChange={(next) => { roleIds.field.onChange(orderLike(form.formState.defaultValues?.roleIds, next)); clear(); }} placeholder={t("companies:addMember.noRoles")} />
           </FormField>
           {/* Tablero Empresa (v97): el error, una sola vez, en la franja con su ícono arriba de los botones. */}

@@ -23,14 +23,17 @@ export function RolesField({ label, allLabel, options, value, onChange, placehol
   const { t } = useTranslation();
   const [selectingAll, setSelectingAll] = useState(false);
   const mounted = useMountedRef();
-  const optionValues = options.map((option) => option.value);
-  const allChecked = options.length > 0 && value.length >= (allCount ?? optionValues.length) && optionValues.every((option) => value.includes(option));
+  // «Todos» elige o quita solo lo que quien edita puede dar (269): lo apagado queda como está.
+  const selectable = (list: readonly MultiSelectOption[]) => list.filter((option) => option.disabledReason === undefined).map((option) => option.value);
+  const optionValues = selectable(options);
+  const lockedCount = options.length - optionValues.length;
+  const allChecked = optionValues.length > 0 && value.length >= (allCount ?? options.length) - lockedCount && optionValues.every((option) => value.includes(option));
 
   async function toggleAll(checked: boolean) {
     if (allOptions) {
       setSelectingAll(true);
       try {
-        const all = (await allOptions()).map((option) => option.value);
+        const all = selectable(await allOptions());
         if (mounted.current) onChange(checked ? [...new Set([...value, ...all])] : value.filter((item) => !all.includes(item)));
       } catch (error) { if (mounted.current) toastActionError(error, t); }
       finally { setSelectingAll(false); }
@@ -44,7 +47,7 @@ export function RolesField({ label, allLabel, options, value, onChange, placehol
     // Tablero Usuario (.o-todos): con la letra del rótulo, en 500 y a 6 de la casilla. Tablero M-Usuario-Empresa
     // (.ap-todos): en el teléfono, en 14 con la casilla de 20, radio 6 y borde de 1,5, a 8 del texto.
     <FormField label={label} aside={<label className="inline-flex items-center gap-1.5 text-[0.78125rem] font-medium text-[var(--t2)] max-md:gap-2 max-md:text-[0.875rem]">
-      <Checkbox checked={allChecked} disabled={selectingAll || options.length === 0} onCheckedChange={(checked) => { void toggleAll(checked === true); }}
+      <Checkbox checked={allChecked} disabled={selectingAll || optionValues.length === 0} onCheckedChange={(checked) => { void toggleAll(checked === true); }}
         className="max-md:size-5 max-md:rounded-[0.375rem] max-md:border-[1.5px] max-md:border-[var(--borde2)]" />
       {allLabel}
     </label>}>

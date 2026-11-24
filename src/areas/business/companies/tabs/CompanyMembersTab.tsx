@@ -153,7 +153,7 @@ export function CompanyMembersTab({ company, list, roles }: {
       {paginationProps ? <Pagination {...paginationProps} /> : null}
     </Surface>
 
-    {rolesTarget ? <MemberRolesDialog companyId={company.id} member={rolesTarget.member} roles={roles} returnFocusTo={rolesTarget.trigger}
+    {rolesTarget ? <MemberRolesDialog companyId={company.id} companyName={company.name} member={rolesTarget.member} roles={roles} returnFocusTo={rolesTarget.trigger}
       onClose={() => setRolesTarget(null)} /> : null}
     {removeTarget ? <ConfirmDialog open onOpenChange={(open) => { if (!open) setRemoveTarget(null); }}
       title={t("companies:confirm.removeMember", { name: removeTarget.member.displayName })}

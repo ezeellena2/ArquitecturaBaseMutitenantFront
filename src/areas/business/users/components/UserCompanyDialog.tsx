@@ -60,6 +60,9 @@ export function UserCompanyDialog({ mode, assignment, companyName, companies, ro
   const roleQuery = useResourceOptions(roleOptions("Company", company.field.value), Boolean(company.field.value));
   const companyRoles = roleQuery.items.filter((role) => role.scope === "AnyCompany" || role.companyId === company.field.value);
   const knownRoles = [...new Map([...assignedRoles, ...roles, ...roleQuery.knownItems].map((role) => [role.id, role])).values()];
+  // Un rol que quien edita no puede dar en esa empresa queda apagado con su motivo (269 y 0061).
+  const chosenCompany = [...companies, ...companyQuery.knownItems].find((item) => item.id === company.field.value)?.name ?? companyName;
+  const notGrantable = t("common:roleChoice.notGrantableIn", { company: chosenCompany });
   const submit = form.handleSubmit((values) => onSave(values));
 
   return <Dialog open onOpenChange={(open) => { if (!open && !pending) onClose(); }}>
@@ -75,8 +78,8 @@ export function UserCompanyDialog({ mode, assignment, companyName, companies, ro
               options={companyQuery.items.filter((item) => item.status === "Active" && !excludedCompanyIds.includes(item.id)).map((option) => ({ value: option.id, label: option.name }))} />
           </FormField> : null}
           {company.field.value ? <RolesField key={company.field.value} label={t("users:invite.companyRoles")} allLabel={t("users:detail.allRoles")}
-            remote={roleQuery.remote} allCount={roleQuery.allCount} selectedOptions={knownRoles.map((role) => ({ value: role.id, label: role.name }))} allOptions={async () => (await roleQuery.allItems()).map((role) => ({ value: role.id, label: role.name }))}
-            options={companyRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={roleIds.field.value}
+            remote={roleQuery.remote} allCount={roleQuery.allCount} selectedOptions={knownRoles.map((role) => ({ value: role.id, label: role.name }))} allOptions={async () => (await roleQuery.allItems()).map((role) => ({ value: role.id, label: role.name, disabledReason: role.grantable === false ? notGrantable : undefined }))}
+            options={companyRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined, disabledReason: role.grantable === false ? notGrantable : undefined }))} value={roleIds.field.value}
             onChange={(next) => { roleIds.field.onChange(orderLike(form.formState.defaultValues?.roleIds, next)); onEdit(); }} placeholder={t("users:detail.noRoles")} /> : null}
           {/* «Criterio · Diálogos»: el error general, también el 409, en la franja arriba de los botones. */}
           {error ? <FormError message={error} /> : null}

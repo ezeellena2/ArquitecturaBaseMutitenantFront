@@ -161,4 +161,30 @@ describe("MultiSelect", () => {
     expect(trigger).toHaveTextContent("Admin");
     expect(trigger).toHaveFocus();
   });
+
+  // 269 y 0061 (tableros Usuarios-Base2, Usuario-Base2 y Empresa-Base2): un rol que quien edita no puede dar queda apagado con
+  // su motivo, en lugar de esperar el 403; lo ya elegido no se puede quitar.
+  it("una opción apagada dice por qué, no se elige ni se quita y sigue en el recorrido del teclado", async () => {
+    const user = userEvent.setup();
+    const changes: string[][] = [];
+    const locked = [{ value: "owner", label: "Dueño", disabledReason: "Tiene permisos que no tenés." }, { value: "sales", label: "Ventas" }];
+    const { baseElement } = renderWithProviders(<FormField label="Roles">
+      <MultiSelect options={locked} value={["owner"]} onChange={(next) => changes.push(next)} placeholder="Sin roles" />
+    </FormField>);
+
+    screen.getByRole("button", { name: "Roles" }).focus();
+    await user.keyboard("{Enter}");
+    await screen.findByRole("menuitemcheckbox", { name: "Ventas" });
+    const owner = await screen.findByRole("menuitemcheckbox", { name: "Dueño" });
+    expect(owner).toHaveAttribute("aria-disabled", "true");
+    expect(owner).toHaveAttribute("aria-checked", "true");
+    expect(owner).toHaveAccessibleDescription("Tiene permisos que no tenés.");
+    await user.click(owner);
+    expect(changes).toEqual([]);
+    expect(await screen.findByRole("tooltip")).toHaveTextContent("Tiene permisos que no tenés.");
+    await user.click(screen.getByRole("menuitemcheckbox", { name: "Ventas" }));
+    expect(changes).toEqual([["owner", "sales"]]);
+    // El menú va en un portal, fuera de los landmarks de la página de prueba.
+    expect(await axe(baseElement, { rules: { region: { enabled: false } } })).toHaveNoViolations();
+  });
 });

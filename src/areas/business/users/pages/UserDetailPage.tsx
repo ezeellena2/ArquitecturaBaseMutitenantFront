@@ -339,8 +339,8 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
                 </Select>
               </FormField> : null}
               {editable ? <RolesField label={t("users:detail.organizationRoles")} allLabel={t("users:detail.allRoles")}
-                remote={orgOptions.remote} allCount={orgOptions.allCount} allOptions={async () => (await orgOptions.allItems()).map((role) => ({ value: role.id, label: role.name }))}
-                selectedOptions={[...member.roles, ...orgOptions.knownItems].map((role) => ({ value: role.id, label: role.name }))} options={orgRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={current.roleIds}
+                remote={orgOptions.remote} allCount={orgOptions.allCount} allOptions={async () => (await orgOptions.allItems()).map((role) => ({ value: role.id, label: role.name, disabledReason: role.grantable === false ? t("common:roleChoice.notGrantable") : undefined }))}
+                selectedOptions={[...member.roles, ...orgOptions.knownItems].map((role) => ({ value: role.id, label: role.name }))} options={orgRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined, disabledReason: role.grantable === false ? t("common:roleChoice.notGrantable") : undefined }))} value={current.roleIds}
                 onChange={(roleIds) => changeAccess({ roleIds })} placeholder={t("users:detail.noRoles")} />
                 : <ReadOnlyField control="select" label={t("users:detail.organizationRoles")} muted={!member.roles.some((role) => role.scope === "Organization")}>{member.roles.filter((role) => role.scope === "Organization").map((role) => role.name).join(", ") || t("users:detail.noRoles")}</ReadOnlyField>}
             </SectionFields>}

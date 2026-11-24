@@ -70,7 +70,7 @@ export function toggleArea(groups: readonly PermissionAreaGroup[], group: Permis
 
 /// Si quien edita no puede dar o quitar todo lo del área (269 y 0061): su casilla queda apagada con su motivo.
 export function areaHasUngrantable(group: PermissionAreaGroup): boolean {
-  return group.permissions.some((permission) => !permission.grantable);
+  return group.permissions.some((permission) => permission.grantable === false);
 }
 
 /// Si un área arranca abierta (260): la que tiene algo en lo guardado o en lo elegido. Un rol nuevo arranca con todas

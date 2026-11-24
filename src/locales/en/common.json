@@ -228,5 +228,9 @@
     "notHeld": "You don't have this permission.",
     "areaNotHeld": "It has permissions you don't have.",
     "granted": "Has this permission"
+  },
+  "roleChoice": {
+    "notGrantable": "It has permissions you don't have.",
+    "notGrantableIn": "It has permissions you don't have in {{company}}."
   }
 }

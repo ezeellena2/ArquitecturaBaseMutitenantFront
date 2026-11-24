@@ -124,7 +124,7 @@ export function CompanyDetailPage() {
       ] }} />
 
     {/* Cada diálogo se monta solo mientras está abierto, es dueño de su borrador y de su error y devuelve el foco. */}
-    {dialog?.kind === "addMember" ? <AddMemberDialog companyId={id} roles={roles.assignable} onClose={closeDialog} /> : null}
+    {dialog?.kind === "addMember" ? <AddMemberDialog companyId={id} companyName={data.name} roles={roles.assignable} onClose={closeDialog} /> : null}
     {dialog?.kind === "edit" ? <CompanyDialog company={data} inDetail returnFocusTo={dialog.returnFocusTo} onClose={closeDialog} /> : null}
     {dialog?.kind === "deactivate" ? <ConfirmDialog open onOpenChange={(open) => { if (!open) closeDialog(); }}
       title={t("companies:confirm.deactivate", { name: dialog.change.name })}

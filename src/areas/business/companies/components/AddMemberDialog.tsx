@@ -47,8 +47,10 @@ type AddMemberOperation = { memberId: string; roleIds: string[]; name: string };
  * al cambiar la persona o sus roles, como en los otros diálogos de Empresa. Se monta solo mientras está abierto y, al
  * cerrar, le devuelve el foco al botón que lo abrió.
  */
-export function AddMemberDialog({ companyId, roles, onClose }: {
+export function AddMemberDialog({ companyId, companyName, roles, onClose }: {
   companyId: string;
+  /** El nombre de la empresa: el motivo de un rol que quien edita no puede dar ahí (269). */
+  companyName: string;
   /** Los roles que se asignan en esta empresa: los de cada empresa y los propios. */
   roles: readonly RoleResponse[];
   onClose: () => void;
@@ -103,7 +105,7 @@ export function AddMemberDialog({ companyId, roles, onClose }: {
                 description: candidate.maskedEmailAddress === candidate.displayName ? undefined : candidate.maskedEmailAddress ?? t("companies:addMember.withoutEmail") }))} />
           </FormField>
           <FormField label={t("companies:addMember.roles")} error={form.formState.errors.roleIds?.message}>
-            <MultiSelect remote={roleQuery.remote} selectedOptions={[...roles, ...roleQuery.knownItems].map((role) => ({ value: role.id, label: role.name }))} options={roleQuery.items.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={roleIds.field.value} onChange={(next) => { roleIds.field.onChange(next); clear(); }} placeholder={t("companies:addMember.noRoles")} />
+            <MultiSelect remote={roleQuery.remote} selectedOptions={[...roles, ...roleQuery.knownItems].map((role) => ({ value: role.id, label: role.name }))} options={roleQuery.items.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined, disabledReason: role.grantable === false ? t("common:roleChoice.notGrantableIn", { company: companyName }) : undefined }))} value={roleIds.field.value} onChange={(next) => { roleIds.field.onChange(next); clear(); }} placeholder={t("companies:addMember.noRoles")} />
           </FormField>
           {/* «Criterio · Diálogos»: el error general, también el 409, en la franja arriba de los botones. */}
           <FormError message={actionErrorMessage(failure, t)} />

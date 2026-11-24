@@ -316,6 +316,32 @@ describe("UsersPage", () => {
     expect(sent[2].key).not.toBe(sent[0].key);
   }, 10_000);
 
+  // 269 y 0061 (Usuarios-Base2, «Invitar usuario: lo que no podés dar»): el rol que quien invita no puede dar va apagado con
+  // su motivo, en lugar de esperar el 403; los demás se eligen.
+  it("al invitar, un rol que quien invita no puede dar queda apagado con su motivo", async () => {
+    const role = (id: string, name: string, grantable: boolean) => ({ id, name, description: null, isSystemRole: false, scope: "Organization" as const, companyId: null, grantable, userCount: 0, permissions: [], version: 1, createdAtUtc: "2026-09-27T12:00:00Z" });
+    server.use(
+      http.get("/api/users/paged", () => HttpResponse.json({ items: [member], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/users/filter-counts", () => HttpResponse.json({ all: 1, active: 1, pendingDeletion: 0, invited: 0, expired: 0, inactive: 0 })),
+      http.get("/api/roles/paged", () => HttpResponse.json({ items: [role("role-owner", "Dueño", false), role("role-sales", "Ventas", true)], page: 1, pageSize: 100, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+    );
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
+    await user.click(await screen.findByRole("button", { name: "Invitar usuario" }));
+    const dialog = await screen.findByRole("dialog", { name: "Invitar usuario" });
+
+    within(dialog).getByRole("button", { name: "Roles de la organización" }).focus();
+    await user.keyboard("{Enter}");
+    const owner = await screen.findByRole("menuitemcheckbox", { name: "Dueño" });
+    expect(owner).toHaveAttribute("aria-disabled", "true");
+    expect(owner).toHaveAccessibleDescription("Tiene permisos que no tenés.");
+    await user.click(owner);
+    expect(owner).toHaveAttribute("aria-checked", "false");
+    await user.click(screen.getByRole("menuitemcheckbox", { name: "Ventas" }));
+    expect(screen.getByRole("menuitemcheckbox", { name: "Ventas" })).toHaveAttribute("aria-checked", "true");
+  });
+
   it("tablero Usuarios, Invitar: una empresa con sus roles, todo opcional salvo el correo, e idempotente", async () => {
     const bodies: unknown[] = [];
     const keys: (string | null)[] = [];

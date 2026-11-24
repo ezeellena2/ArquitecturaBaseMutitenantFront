@@ -110,7 +110,7 @@ export function InviteUserDialog({ onClose, onInvited }: {
             <Input autoComplete="email" type="email" maxLength={validationConstraints.InviteOrganizationUserHttpRequest.email.maxLength} placeholder={t("users:invite.emailPlaceholder")} {...form.register("email")} />
           </FormField>
           <FormField label={t("users:invite.organizationRoles")}>
-            <MultiSelect remote={orgOptions.remote} selectedOptions={orgOptions.knownItems.map((role) => ({ value: role.id, label: role.name }))} options={organizationRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={roleIds.field.value} onChange={roleIds.field.onChange} placeholder={t("users:invite.noRoles")} />
+            <MultiSelect remote={orgOptions.remote} selectedOptions={orgOptions.knownItems.map((role) => ({ value: role.id, label: role.name }))} options={organizationRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined, disabledReason: role.grantable === false ? t("common:roleChoice.notGrantable") : undefined }))} value={roleIds.field.value} onChange={roleIds.field.onChange} placeholder={t("users:invite.noRoles")} />
           </FormField>
           <div className="grid gap-3.5 md:grid-cols-2">
             <FormField label={t("users:invite.company")}>
@@ -121,7 +121,7 @@ export function InviteUserDialog({ onClose, onInvited }: {
             </FormField>
             <FormField label={t("users:invite.companyRoles")}>
               {company.field.value
-                ? <MultiSelect remote={companyOptionsQuery.remote} selectedOptions={companyOptionsQuery.knownItems.map((role) => ({ value: role.id, label: role.name }))} options={companyRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} value={companyRoleIds.field.value} onChange={companyRoleIds.field.onChange} placeholder={t("users:invite.noRoles")} />
+                ? <MultiSelect remote={companyOptionsQuery.remote} selectedOptions={companyOptionsQuery.knownItems.map((role) => ({ value: role.id, label: role.name }))} options={companyRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined, disabledReason: role.grantable === false ? t("common:roleChoice.notGrantableIn", { company: companies.knownItems.find((item) => item.id === company.field.value)?.name ?? "" }) : undefined }))} value={companyRoleIds.field.value} onChange={companyRoleIds.field.onChange} placeholder={t("users:invite.noRoles")} />
                 : <button type="button" disabled className="flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-[0.5rem] border border-[var(--borde2)] bg-[var(--s2)] px-3 text-left text-[0.8125rem] text-[var(--t3)] max-md:h-12 max-md:rounded-[0.75rem] max-md:text-[1rem]">{t("users:invite.chooseCompanyFirst")}<ChevronDown aria-hidden="true" className="size-4 shrink-0" /></button>}
             </FormField>
           </div>

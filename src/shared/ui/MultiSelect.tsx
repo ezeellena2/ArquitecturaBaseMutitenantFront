@@ -4,6 +4,7 @@ import { ChevronDownIcon } from "./icons";
 import { cn } from "@/shared/lib/utils";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./dropdown-menu";
 import type { RemoteOptions } from "@/shared/hooks/useResourceOptions";
+import { InformativeTooltip } from "./InformativeTooltip";
 import { RemoteOptionFooter, RemoteOptionSearch } from "./RemoteOptionControls";
 
 export interface MultiSelectOption {
@@ -11,6 +12,9 @@ export interface MultiSelectOption {
   label: string;
   /// Línea de ayuda debajo de la opción.
   description?: ReactNode;
+  /// Por qué no se puede elegir ni quitar (211 y 269: un rol que quien edita no puede dar): gris, con el motivo en su
+  /// tooltip, que abren el mouse, el foco, el clic, Enter o Espacio, y es su descripción. Lo elegido queda elegido.
+  disabledReason?: string;
 }
 
 interface MultiSelectProps {
@@ -86,23 +90,33 @@ export function MultiSelect({
       onChange([...value, typed]);
       remote?.onSearch("");
     }}>{t("fields.createOption", { value: typed })}</DropdownMenuItem> : null}
-    {[...created, ...options].map((option, index) => (
-      <DropdownMenuCheckboxItem
-        key={option.value}
-        checked={value.includes(option.value)}
-        onCheckedChange={(checked) => toggle(option.value, checked)}
-        onSelect={(event) => event.preventDefault()}
-        aria-labelledby={`${optionId}-${index}`}
-        aria-describedby={option.description ? `${optionId}-${index}-description` : undefined}
-      >
-        <span className="flex min-w-0 flex-col leading-[1.35]">
-          <span id={`${optionId}-${index}`}>{option.label}</span>
-          {option.description ? (
-            <span id={`${optionId}-${index}-description`} className="text-[0.75rem] text-[var(--t3)]">{option.description}</span>
-          ) : null}
-        </span>
-      </DropdownMenuCheckboxItem>
-    ))}
+    {[...created, ...options].map((option, index) => {
+      const off = option.disabledReason !== undefined;
+      const describedBy = [option.description ? `${optionId}-${index}-description` : undefined, off ? `${optionId}-${index}-reason` : undefined]
+        .filter(Boolean).join(" ");
+      // Apagada, sigue en el recorrido del teclado para que se lea su motivo, pero no cambia ni cierra el menú (como `RowActions`).
+      const item = (
+        <DropdownMenuCheckboxItem
+          key={option.value}
+          checked={value.includes(option.value)}
+          onCheckedChange={(checked) => { if (!off) toggle(option.value, checked); }}
+          onSelect={(event) => event.preventDefault()}
+          aria-labelledby={`${optionId}-${index}`}
+          aria-describedby={describedBy || undefined}
+          aria-disabled={off || undefined}
+          className={off ? "text-[var(--t3)] focus:bg-transparent focus:text-[var(--t3)]" : undefined}
+        >
+          <span className="flex min-w-0 flex-col leading-[1.35]">
+            <span id={`${optionId}-${index}`}>{option.label}</span>
+            {option.description ? (
+              <span id={`${optionId}-${index}-description`} className="text-[0.75rem] text-[var(--t3)]">{option.description}</span>
+            ) : null}
+          </span>
+          {off ? <span id={`${optionId}-${index}-reason`} hidden>{option.disabledReason}</span> : null}
+        </DropdownMenuCheckboxItem>
+      );
+      return off ? <InformativeTooltip key={option.value} side="left" text={option.disabledReason}>{item}</InformativeTooltip> : item;
+    })}
   </>;
 
   return (
