@@ -57,8 +57,8 @@ describe("CompaniesPage", () => {
 
     await user.click(screen.getByRole("button", { name: "Estado: todas" }));
     // 143: las opciones de un filtro no dicen cuántas filas traen.
-    expect((await screen.findAllByRole("menuitemradio")).map((option) => option.textContent)).toEqual(["Todas", "Activas", "Dadas de baja"]);
-    await user.click(await screen.findByRole("menuitemradio", { name: /Dadas de baja/ }));
+    expect((await screen.findAllByRole("option")).map((option) => option.textContent)).toEqual(["Todas", "Activas", "Dadas de baja"]);
+    await user.click(await screen.findByRole("option", { name: /Dadas de baja/ }));
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("status")).toBe("Inactive"));
     expect(router.state.location.search).toContain("status=Inactive");
   });

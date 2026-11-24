@@ -41,7 +41,7 @@ describe("Difusiones", () => {
     const { router, user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/difusiones");
     (await screen.findByRole("button", { name: "Estado: todos" })).focus();
     await user.keyboard("{Enter}");
-    await user.click(await screen.findByRole("menuitemradio", { name: "Programada" }));
+    await user.click(await screen.findByRole("option", { name: "Programada" }));
     await waitFor(() => expect(router.state.location.search).toContain("status=Scheduled"));
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("status")).toBe("Scheduled"));
     expect(requests.at(-1)?.searchParams.has("sort")).toBe(false);

@@ -295,11 +295,11 @@ describe("CompanyDetailPage", () => {
     // Los menús de Radix se abren con el teclado: un clic en jsdom, después de otra prueba con clics, no siempre llega.
     screen.getByRole("button", { name: "Rol: todos" }).focus();
     await user.keyboard("{Enter}");
-    expect((await screen.findAllByRole("menuitemradio")).map((option) => option.textContent)).toEqual(["Todos", "Sin roles", "Administrador", "Solo lectura"]);
+    expect((await screen.findAllByRole("option")).map((option) => option.textContent)).toEqual(["Todos", "Sin roles", "Administrador", "Solo lectura"]);
     await user.keyboard("{Escape}");
     screen.getByRole("button", { name: "Estado: todos" }).focus();
     await user.keyboard("{Enter}");
-    expect(await screen.findByRole("menuitemradio", { name: /^Por borrar/ })).toBeVisible();
+    expect(await screen.findByRole("option", { name: /^Por borrar/ })).toBeVisible();
     await user.keyboard("{Escape}");
     expect(organizationRoles).toBe(0);
     // Lo de la organización no se ofrece: editar la empresa, la pestaña Roles (que lleva al editor de roles) ni la ficha

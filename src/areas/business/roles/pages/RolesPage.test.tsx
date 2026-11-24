@@ -115,9 +115,9 @@ describe("RolesPage", () => {
 
     // Tablero Roles: «Todos», «Toda la organización» y cada empresa por nombre; sin «Cada empresa».
     await user.click(screen.getByRole("button", { name: /Vale en: todos/ }));
-    const options = await screen.findAllByRole("menuitemradio");
+    const options = await screen.findAllByRole("option");
     expect(options.map((option) => option.textContent?.replace(/\d+$/, ""))).toEqual(["Todos", "Toda la organización", "Delta S.A.", "Delta Sur S.R.L."]);
-    await user.click(screen.getByRole("menuitemradio", { name: /Delta S\.A\./ }));
+    await user.click(screen.getByRole("option", { name: /Delta S\.A\./ }));
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("companyId")).toBe("company-1"));
     expect(requests.at(-1)?.searchParams.get("scope")).toBeNull();
     expect(router.state.location.search).toContain("vale=company-1");

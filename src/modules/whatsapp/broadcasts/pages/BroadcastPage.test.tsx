@@ -85,7 +85,7 @@ describe("Resultados de una difusión", () => {
     const { router, user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/difusiones/broadcast-sent");
     (await screen.findByRole("button", { name: "Estado: todos" })).focus();
     await user.keyboard("{Enter}");
-    await user.click(await screen.findByRole("menuitemradio", { name: "No llegó" }));
+    await user.click(await screen.findByRole("option", { name: "No llegó" }));
     await waitFor(() => expect(router.state.location.search).toContain("status=Failed"));
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("status")).toBe("Failed"));
     // CC16: el buscador ya filtra en el back.

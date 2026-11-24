@@ -99,7 +99,7 @@ describe("Picker cerrada", () => {
     renderWithProviders(<Picker trigger="button" active label="Estado" triggerLabel="Estado: activos" value="active" onChange={() => {}}
       first={{ value: "", label: "Todos" }} options={[{ value: "active", label: "Activos" }, { value: "inactive", label: "Dados de baja" }]} />);
 
-    const trigger = screen.getByRole("button", { name: "Estado Activos" });
+    const trigger = screen.getByRole("button", { name: "Estado: activos" });
     expect(trigger).toHaveTextContent("Estado: activos");
     expect(trigger).toHaveClass("border-[var(--marca)]", "text-[var(--marca-tx)]");
   });

@@ -67,26 +67,26 @@ describe("FilterBar", () => {
     expect(onClear).toHaveBeenCalledOnce();
   });
 
-  // «Criterio · Menús» (143): un filtro de opciones es un desplegable simple: cerrado dice «Estado: todos» o la elegida;
-  // abierto, una opción por renglón, sin la cantidad, con la elegida tildada a la izquierda y ninguna apagada.
-  it("el desplegable de un filtro tilda la elegida y no muestra cantidades", async () => {
+  // «Criterio · Elegir» (262): el filtro es la pieza para elegir con su botón: cerrado dice «Estado: todos» o la elegida;
+  // abierta, «Todos» primero y separada, la elegida con su tilde a la izquierda, sin cantidades y del ancho de sus nombres.
+  it("el filtro abre la pieza para elegir, con «Todos» primero, la elegida tildada y sin cantidades", async () => {
     const onChange = vi.fn();
     renderWithProviders(<FilterBar label="Filtros" searchLabel="Buscar" searchValue="" onSearchChange={vi.fn()} clearLabel="Limpiar" onClear={vi.fn()}
       filters={[filter("state", "Estado", { onChange })]} />);
 
     screen.getByRole("button", { name: "Estado: todos" }).focus();
     await userEvent.keyboard("{Enter}");
-    const menu = await screen.findByRole("menu");
-    // «Criterio · Menús» (Medidas): un menú mide de 220 a 320 de ancho.
-    expect(menu).toHaveClass("p-1", "min-w-55");
-    const all = within(menu).getByRole("menuitemradio", { name: "Todos" });
-    expect(all).toHaveAttribute("aria-checked", "true");
-    expect(all.querySelector("[data-slot='tilde'] svg")).not.toBeNull();
-    const other = within(menu).getByRole("menuitemradio", { name: "Estado A" });
-    expect(other.querySelector("[data-slot='tilde'] svg")).toBeNull();
-    expect(other).not.toHaveAttribute("aria-disabled");
-    expect(menu).not.toHaveTextContent(/\d/);
-    await userEvent.click(other);
+    const list = await screen.findByRole("listbox", { name: "Estado" });
+    expect(list.closest("[data-return-focus-to]")).toHaveClass("w-max");
+    const options = within(list).getAllByRole("option");
+    expect(options.map((option) => option.textContent)).toEqual(["Todos", "Estado A", "Estado B"]);
+    expect(options[0]).toHaveAttribute("aria-selected", "true");
+    expect(options[0]!.querySelector("svg")).not.toBeNull();
+    expect(options[1]!.querySelector("svg")).toBeNull();
+    expect(options[1]).not.toHaveAttribute("aria-disabled");
+    expect(list.querySelector("li[role=presentation]")).not.toBeNull();
+    expect(list).not.toHaveTextContent(/\d/);
+    await userEvent.click(options[1]!);
     expect(onChange).toHaveBeenCalledWith("a");
   });
 

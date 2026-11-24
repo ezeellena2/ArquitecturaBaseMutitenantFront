@@ -2,17 +2,10 @@ import { useState } from "react";
 import { ListFilter } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Popover as PopoverPrimitive } from "radix-ui";
-import { CheckIcon, ChevronDownIcon, ChevronLeftIcon, SearchIcon } from "./icons";
+import { CheckIcon, ChevronLeftIcon, SearchIcon } from "./icons";
 import { FilterChip } from "./FilterChip";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/shared/ui/dropdown-menu";
 import { Input } from "@/shared/ui/input";
 import { Surface } from "@/shared/ui/Surface";
 import { AppIconButton } from "./app/AppBar";
@@ -22,6 +15,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "./dialog"
 import type { RemoteOptions } from "@/shared/hooks/useResourceOptions";
 import { RemoteOptionFooter, RemoteOptionSearch } from "./RemoteOptionControls";
 import { NumberText } from "./format/NumberText";
+import { Picker } from "./Picker";
 
 /// Una opción de un filtro. Sin cantidad (143): lo que trae cada una se ve en la tabla y en el paginado.
 export interface FilterOption {
@@ -223,31 +217,18 @@ const filterButtonClass = (active: boolean) => cn(
     : "border-[var(--borde)] bg-[var(--superficie)] font-normal text-[var(--t2)]",
 );
 
-/// Un filtro de opciones es un desplegable simple: cerrado dice «Todas» o la elegida; abierto, una opción por renglón,
-/// sin la cantidad y con la elegida tildada a la izquierda. Con muchas opciones o del servidor, busca escribiendo.
+/// Un filtro de opciones es la pieza para elegir (262) con su botón de la barra: cerrado dice «Estado: todos» o la elegida;
+/// abierta, «Todos» primero y separada, la elegida con su tilde a la izquierda, sin cantidades, del ancho de sus nombres.
+/// Con muchas opciones o del servidor, se busca adentro de la lista.
 function FilterMenu({ filter }: { filter: FilterBarFilter }) {
   const selected = selectedOf(filter);
+  const [first, ...rest] = filter.options;
+  const others = filter.selectedLabel && !selected && filter.value ? [{ value: filter.value, label: filter.selectedLabel }] : [];
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button type="button" variant="outline" className={filterButtonClass(filter.active)}>
-          {/* Sin filtro, el botón dice su propio texto («Estado: todos»). */}
-          {selected?.label ?? filter.selectedLabel ?? filter.label}
-          <ChevronDownIcon strokeWidth={2} className="size-3.5" />
-        </Button>
-      </DropdownMenuTrigger>
-      {/* Tablero Usuarios (filtro abierto, .menu): 4 de relleno alrededor de las opciones; el ancho, el de «Criterio ·
-          Menús» (de 220 a 320; los tableros Empresa y Auditoria-Org lo dibujan de 210). */}
-      <DropdownMenuContent align="start" aria-label={filter.menuLabel} className="min-w-55 p-1">
-        {filter.remote ? <RemoteOptionSearch remote={filter.remote} label={filter.menuLabel} /> : null}
-        <DropdownMenuRadioGroup value={checkedOf(filter)} onValueChange={filter.onChange}>
-          {filter.options.map((option) => (
-            <DropdownMenuRadioItem key={option.value} value={option.value}>{option.label}</DropdownMenuRadioItem>
-          ))}
-        </DropdownMenuRadioGroup>
-        {filter.remote ? <RemoteOptionFooter remote={filter.remote} /> : null}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <Picker trigger="button" active={filter.active} label={filterName(filter)} value={checkedOf(filter)} onChange={filter.onChange}
+      first={first} options={rest} selectedOptions={others} remote={filter.remote}
+      // Sin filtro, el botón dice su propio texto («Estado: todos»).
+      triggerLabel={selected?.label ?? filter.selectedLabel ?? filter.label} />
   );
 }
 

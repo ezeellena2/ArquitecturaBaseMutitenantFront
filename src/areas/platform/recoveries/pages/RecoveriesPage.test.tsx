@@ -68,7 +68,7 @@ describe("Recuperaciones de Plataforma", () => {
     const user = userEvent.setup(); const { router } = renderRouteWithProviders("/plataforma/recuperaciones", { as: "platform-operator" });
     const filter = await screen.findByRole("button", { name: "Estado: todos" }); filter.focus(); await user.keyboard("{ArrowDown}");
     // 143: las opciones de un filtro no dicen cuántas filas traen.
-    expect(await screen.findByRole("menuitemradio", { name: /Pendientes/ })).toHaveTextContent(/^Pendientes$/); await user.click(screen.getByRole("menuitemradio", { name: /Pendientes/ }));
+    expect(await screen.findByRole("option", { name: /Pendientes/ })).toHaveTextContent(/^Pendientes$/); await user.click(screen.getByRole("option", { name: /Pendientes/ }));
     await user.type(screen.getByRole("searchbox", { name: "Buscar por cuenta, correo o teléfono" }), "Pablo");
     await waitFor(() => expect(urls.some((url) => url.searchParams.get("search") === "Pablo" && url.searchParams.get("status") === "Pending")).toBe(true));
     expect(router.state.location.search).toContain("status=Pending"); expect(router.state.location.search).not.toContain("page=2");

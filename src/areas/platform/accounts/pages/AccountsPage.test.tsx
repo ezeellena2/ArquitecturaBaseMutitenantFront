@@ -433,7 +433,7 @@ describe("Cuentas de Plataforma", () => {
     const { router } = renderRouteWithProviders("/plataforma/cuentas?kind=Person&state=Active&search=lucia", { as: "platform-operator" }); await screen.findByRole("link", { name: "Lucía Fernández" });
     expect(await screen.findByText("11 cuentas · 1 suspendida")).toBeVisible(); const state = screen.getByRole("button", { name: "Activas" }); state.focus(); await user.keyboard("{ArrowDown}");
     // 143: las opciones de un filtro no dicen cuántas filas traen.
-    expect(screen.getByRole("menuitemradio", { name: /^Todos/ })).not.toHaveTextContent(/\d/); expect(screen.getByRole("menuitemradio", { name: /^Suspendidas/ })).toHaveTextContent(/^Suspendidas$/); await user.click(screen.getByRole("menuitemradio", { name: /^Suspendidas/ }));
+    expect(screen.getByRole("option", { name: /^Todos/ })).not.toHaveTextContent(/\d/); expect(screen.getByRole("option", { name: /^Suspendidas/ })).toHaveTextContent(/^Suspendidas$/); await user.click(screen.getByRole("option", { name: /^Suspendidas/ }));
     await waitFor(() => expect(requested.at(-1)).toMatchObject({ kind: "Person", state: "Suspended", search: "lucia" })); expect(router.state.location.search).toContain("state=Suspended");
     await user.click(screen.getByRole("button", { name: /^Cuenta/ })); await waitFor(() => expect(requested.at(-1)?.sort).toBe("-name"));
     await user.click(screen.getByRole("button", { name: "Limpiar" })); await waitFor(() => expect(router.state.location.search).not.toMatch(/kind=|state=|search=/));

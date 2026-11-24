@@ -143,7 +143,7 @@ describe("UsersPage", () => {
     expect(router.state.location.search).toContain("search=Luc%C3%ADa");
 
     await user.click(screen.getByRole("button", { name: "Estado: todos" }));
-    await user.click(await screen.findByRole("menuitemradio", { name: /Dados de baja/ }));
+    await user.click(await screen.findByRole("option", { name: /Dados de baja/ }));
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("state")).toBe("Inactive"));
     expect(router.state.location.search).toContain("state=Inactive");
   }, 10_000);
@@ -194,7 +194,7 @@ describe("UsersPage", () => {
     screen.getByRole("button", { name: "Estado: todos" }).focus();
     await user.keyboard("{Enter}");
     // 143: las opciones de un filtro no dicen cuántas filas traen.
-    expect((await screen.findAllByRole("menuitemradio")).map((option) => option.textContent))
+    expect((await screen.findAllByRole("option")).map((option) => option.textContent))
       .toEqual(["Todos", "Activos", "Invitación pendiente", "Invitación vencida", "Dados de baja", "Por borrar"]);
     await user.keyboard("{Escape}");
     await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
@@ -202,9 +202,9 @@ describe("UsersPage", () => {
     const companyFilter = screen.getByRole("button", { name: "Empresa: todas" });
     companyFilter.focus();
     await user.keyboard("{Enter}");
-    await waitFor(async () => expect((await screen.findAllByRole("menuitemradio")).map((option) => option.textContent))
+    await waitFor(async () => expect((await screen.findAllByRole("option")).map((option) => option.textContent))
       .toEqual(["Todas", "Delta S.A.", "Delta Sur S.R.L.", "Sin empresa"]));
-    await user.click(screen.getByRole("menuitemradio", { name: /Sin empresa/ }));
+    await user.click(screen.getByRole("option", { name: /Sin empresa/ }));
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("withoutCompany")).toBe("true"));
     expect(requests.at(-1)?.searchParams.get("companyId")).toBeNull();
     expect(router.state.location.search).toContain("companyId=none");

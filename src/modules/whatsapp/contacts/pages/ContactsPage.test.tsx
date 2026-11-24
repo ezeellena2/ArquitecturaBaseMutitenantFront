@@ -32,12 +32,12 @@ describe("Contactos", () => {
     expect(await axe(container)).toHaveNoViolations();
 
     await user.click(screen.getByRole("button", { name: "Promociones: todas" }));
-    await user.click(await screen.findByRole("menuitemradio", { name: "Acepta" }));
+    await user.click(await screen.findByRole("option", { name: "Acepta" }));
     await waitFor(() => expect(router.state.location.search).toContain("consent=Accepted"));
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("consent")).toBe("Accepted"));
 
     await user.click(screen.getByRole("button", { name: "Etiqueta: todas" }));
-    await user.click(await screen.findByRole("menuitemradio", { name: "Mayorista" }));
+    await user.click(await screen.findByRole("option", { name: "Mayorista" }));
     await waitFor(() => expect(router.state.location.search).toContain("tag=Mayorista"));
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("tag")).toBe("Mayorista"));
     expect(requests.at(-1)?.searchParams.get("consent")).toBe("Accepted");

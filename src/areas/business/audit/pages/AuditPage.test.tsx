@@ -35,14 +35,14 @@ describe("AuditPage", () => {
     const { router } = renderRouteWithProviders("/org/auditoria?search=historial", { as: "business-e6-admin" });
     await screen.findByText("Nada coincide con los filtros");
     await openMenu(user, "Quién: todos");
-    await screen.findByRole("menuitemradio", { name: "Persona 1" });
-    const input = screen.getByRole("searchbox", { name: "Filtrar por persona" });
+    await screen.findByRole("option", { name: "Persona 1" });
+    const input = screen.getByRole("combobox", { name: "Buscar en Quién" });
     act(() => input.focus());
     vi.useFakeTimers();
     fireEvent.change(input, { target: { value: "101" } });
     await act(async () => { await vi.advanceTimersByTimeAsync(300); });
     vi.useRealTimers();
-    await user.click(await screen.findByRole("menuitemradio", { name: "Persona 101" }));
+    await user.click(await screen.findByRole("option", { name: "Persona 101" }));
     expect(router.state.location.search).toContain("actorId=actor-101");
     expect(router.state.location.search).toContain("search=historial");
     expect(requests.at(-1)?.searchParams.get("auditSearch")).toBe("historial");
@@ -185,25 +185,25 @@ describe("AuditPage", () => {
     expect(await screen.findByText("No hay movimientos para mostrar")).toBeVisible();
 
     await openMenu(user, "Quién: todos");
-    await waitFor(() => expect(screen.getAllByRole("menuitemradio").map((option) => option.textContent))
+    await waitFor(() => expect(screen.getAllByRole("option").map((option) => option.textContent))
       .toEqual(["Todas las personas", "Carolina Vega", "Lucía Fernández", "Sistema", "Plataforma"]));
-    await user.click(screen.getByRole("menuitemradio", { name: "Sistema" }));
+    await user.click(screen.getByRole("option", { name: "Sistema" }));
     await waitFor(() => expect(requests.at(-1)?.get("actorKind")).toBe("System"));
     expect(requests.at(-1)?.has("actorId")).toBe(false);
     expect(router.state.location.search).toContain("actorKind=System");
 
     await openMenu(user, "Sistema");
-    await user.click(await screen.findByRole("menuitemradio", { name: "Lucía Fernández" }));
+    await user.click(await screen.findByRole("option", { name: "Lucía Fernández" }));
     await waitFor(() => expect(requests.at(-1)?.get("actorId")).toBe("user-lucia"));
     expect(requests.at(-1)?.has("actorKind")).toBe(false);
 
     await openMenu(user, "Lucía Fernández");
-    await user.click(await screen.findByRole("menuitemradio", { name: "Plataforma" }));
+    await user.click(await screen.findByRole("option", { name: "Plataforma" }));
     await waitFor(() => expect(requests.at(-1)?.get("actorKind")).toBe("PlatformOperator"));
     expect(requests.at(-1)?.has("actorId")).toBe(false);
 
     await openMenu(user, "Plataforma");
-    await user.click(await screen.findByRole("menuitemradio", { name: "Todas las personas" }));
+    await user.click(await screen.findByRole("option", { name: "Todas las personas" }));
     await waitFor(() => expect(router.state.location.search).not.toContain("actorKind"));
     expect(requests.at(-1)?.has("actorKind")).toBe(false);
     expect(requests.at(-1)?.has("actorId")).toBe(false);

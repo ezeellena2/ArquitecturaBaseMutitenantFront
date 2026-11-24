@@ -47,7 +47,7 @@ interface PickerBase {
   trigger?: "field" | "button";
   /** En la barra, el botón con lo elegido lleva el color de la marca. */
   active?: boolean;
-  /** Lo que dice el botón de la barra, sea lo que sea lo elegido («Estado: activos»). */
+  /** Lo que dice el botón de la barra, sea lo que sea lo elegido («Estado: activos»), y su nombre. */
   triggerLabel?: ReactNode;
   /** Cerrada, una sola elegida dice también su descripción en gris («Buenos Aires · hora de Argentina · GMT−3»). */
   describeChosen?: boolean;
@@ -329,7 +329,8 @@ export function Picker(props: PickerProps) {
     "aria-haspopup": phone ? "dialog" as const : "listbox" as const,
     "aria-expanded": open,
     "aria-controls": open && !phone ? listboxId : undefined,
-    "aria-labelledby": `${nameId} ${valueId}`,
+    // El botón de la barra que dice lo suyo («Estado: activos») se llama con eso.
+    "aria-labelledby": props.triggerLabel !== undefined ? undefined : `${nameId} ${valueId}`,
     "aria-invalid": props["aria-invalid"],
     "aria-describedby": describedBy,
     "aria-busy": remote?.loading || undefined,
@@ -346,7 +347,8 @@ export function Picker(props: PickerProps) {
     ? <Button {...triggerProps} variant="outline" className={cn("group h-8 gap-1.5 rounded-[0.5rem] px-3 text-[0.8125rem] shadow-none",
       props.active ? "border-[var(--marca)] bg-[var(--marca-t)] font-medium text-[var(--marca-tx)]" : "border-[var(--borde)] bg-[var(--superficie)] font-normal text-[var(--t2)]",
       props.className)}>
-      <span aria-hidden="true" className="truncate">{props.triggerLabel ?? single?.short ?? spoken}</span>
+      {props.triggerLabel !== undefined ? <span className="truncate">{props.triggerLabel}</span>
+        : <span aria-hidden="true" className="truncate">{single?.short ?? spoken}</span>}
       <ChevronDownIcon aria-hidden="true" strokeWidth={2} className="size-3.5 shrink-0" />
     </Button>
     // «Criterio · Elegir», Cerrada: un campo con su flecha fina; en el teléfono, de 48 con letra de 16 (sin el zoom de iOS).

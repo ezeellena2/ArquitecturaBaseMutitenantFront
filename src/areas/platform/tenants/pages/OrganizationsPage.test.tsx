@@ -87,11 +87,11 @@ describe("OrganizationsPage", () => {
     expect(router.state.location.search).toContain("search=Delta"); expect(router.state.location.search).not.toContain("page=2");
     await user.click(screen.getByRole("button", { name: "Estado: todas" }));
     // 143: las opciones de un filtro no dicen cuántas filas traen.
-    expect(await screen.findByRole("menuitemradio", { name: /^Activa/u })).toHaveTextContent(/^Activa$/u);
-    await user.click(screen.getByRole("menuitemradio", { name: /^Activa/u }));
+    expect(await screen.findByRole("option", { name: /^Activa/u })).toHaveTextContent(/^Activa$/u);
+    await user.click(screen.getByRole("option", { name: /^Activa/u }));
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("status")).toBe("Active"));
     await user.click(screen.getByRole("button", { name: "Origen: todos" }));
-    await user.click(await screen.findByRole("menuitemradio", { name: /^Autoservicio/u }));
+    await user.click(await screen.findByRole("option", { name: /^Autoservicio/u }));
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("source")).toBe("SelfService"));
     expect(requests.at(-1)?.searchParams.get("status")).toBe("Active");
     // Los filtros no llevan cantidades (143): los conteos se piden una vez, sin la búsqueda ni los filtros.
