@@ -1,10 +1,11 @@
 """Las piezas de los tableros de la segunda parte de la base (F4, F5 y F10 a F13 del plan del back del 2026-11-19), que se dibujan
-para aprobar en la página «Propuesta · Base 2». Los usan los `base2_*_1004.py`; este archivo no escribe tableros.
+en la página «Segunda parte de la base», aprobados por el usuario el 2026-11-23 (v181). Los usan los `base2_*_1004.py`; este
+archivo no escribe tableros.
 
 Cada tablero parte de la copia de los tableros de siempre en la v179 (`base2_1004/`, que arma `base2_1004/capturar.mjs`) y escribe
 las medidas de antes de la escala: después va `traspaso10_piezas_1004.py --tableros <los de la compu y sus teléfonos>`, que pone las
-piezas y la escala de la compu (180). El tablero nuevo lleva el nombre del de siempre con `-Base2` y « · para aprobar» en el título;
-cuando el usuario lo aprueba, reemplaza al de siempre.
+piezas y la escala de la compu (180). El tablero nuevo lleva el nombre del de siempre con `-Base2`: en lo que dibuja, manda sobre el de
+siempre, que conserva sus demás estados.
 
 Las piezas nuevas:
 - **las áreas plegables de un rol** (260, RO3-D de ArquitecturaBase), con lo incluido y lo que quien edita no puede dar apagados con
@@ -25,9 +26,11 @@ import acciones_asistente_1004 as acc
 sys.stdout.reconfigure(encoding="utf-8")
 PROJ = pathlib.Path(__file__).resolve().parent.parent
 COPIA = pathlib.Path(__file__).resolve().parent / "base2_1004"
-PAGINA = {"id": "propuesta-base2", "name": "Propuesta · Base 2"}
+# El usuario aprobó los tableros el 2026-11-23 («Aprobados los tableros de la base 2», v181): la página conserva su id, para que
+# los enlaces de antes sigan andando, y los títulos pierden « · para aprobar».
+PAGINA = {"id": "propuesta-base2", "name": "Segunda parte de la base"}
 MARCA = 'data-b2="base2"'
-PARA_APROBAR = " · para aprobar"
+PARA_APROBAR = ""
 
 una_vez, fin_div, svg_de, sc_if, por_estado = acc.una_vez, acc.fin_div, acc.svg_de, acc.sc_if, acc.por_estado
 SVG_I, SVG_OK, SVG_ATEN, SVG_X, SVG_TILDE, SVG_MENOS, SVG_CHEV, SVG_FLECHA = (
@@ -502,6 +505,7 @@ def registrar(filas, nota, notas_extra=(), ruta=None):
     c = json.loads(ruta.read_text(encoding="utf-8"))
     if not any(p["id"] == PAGINA["id"] for p in c["pages"]):
         c["pages"].insert(next(i for i, p in enumerate(c["pages"]) if p["id"] == "mapa") + 1, dict(PAGINA))
+    next(p for p in c["pages"] if p["id"] == PAGINA["id"])["name"] = PAGINA["name"]
     nuevos = []
     y = 0
     for fila in filas:

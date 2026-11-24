@@ -1,13 +1,13 @@
-"""La propuesta de la segunda parte de la base (v180): los tableros que esperan la F4, la F5 y la F10 a la F13 del plan del back del
-2026-11-19, para que el usuario los apruebe, en la página «Propuesta · Base 2». Sale de la lista de la revisión del 2026-11-19 y de la
+"""La segunda parte de la base (v180, aprobada en la v181): los tableros que espera la F4, la F5 y la F10 a la F13 del plan del back
+del 2026-11-19, en la página «Segunda parte de la base». Sale de la lista de la revisión del 2026-11-19 y de la
 de alineación del 2026-11-23 (`.local/revision-2026-11-19/tableros-para-diseno.md` del back), con las decisiones 260 a 273 de la hoja
 de ruta de formularios y las ADR 0061, 0062 y 0066.
 
 Corre los generadores de cada grupo (`base2_roles_1004.py`, `base2_personas_1004.py`, `base2_filas_1004.py`,
 `base2_whatsapp_1004.py`, `base2_config_1004.py` y `base2_criterio_1004.py`), la pasada de las piezas sobre lo que escribieron
 (`traspaso10_piezas_1004.py --tableros …`) y suma la página, sus notas y sus tableros a `canvas.json`. Los tableros parten de la copia
-de `base2_1004/` (la arma `capturar.mjs`), así que se puede volver a correr. Los tableros de siempre no cambian: cuando el usuario
-aprueba, cada `-Base2` reemplaza al suyo (y `Criterio-Elegir` pasa a «Criterio de diseño»), y recién ahí entran en la guía y los índices.
+de `base2_1004/` (la arma `capturar.mjs`), así que se puede volver a correr. Los tableros de siempre no cambian: el usuario los
+aprobó el 2026-11-23 (v181), y cada `-Base2` manda sobre el suyo en lo que dibuja, que conserva sus demás estados.
 """
 import pathlib
 import subprocess
@@ -43,15 +43,15 @@ FILAS = [
 ]
 
 NOTA = (
-    "Propuesta · Base 2, para aprobar. Los tableros que esperan la segunda parte de la base (F4, F5 y F10 a F13 del plan del 19/11), "
-    "con las decisiones 260 a 273 y las ADR 0061, 0062 y 0066. Va antes que las acciones del asistente y que la E12.\n\n"
-    "Cada uno es el tablero de siempre con lo nuevo, con «-Base2» en el nombre y «· para aprobar» en el título: el de siempre no "
-    "cambia hasta que se aprueba. Cada uno muestra solo lo que existe hasta esta etapa (78), sin «Gestión de formularios» nuevo. "
-    "Los estados se eligen con el Tweak «estado».\n\n"
-    "Qué mirar, de arriba abajo: el criterio (las tablas que ordenan y la pieza para elegir); roles y personas; Plataforma; WhatsApp; "
-    "las reglas en Configuración; la pieza en pantalla, y nada debajo de otro dato. Cada fila tiene su nota a la izquierda.\n\n"
-    "Para decidir: la configuración de WhatsApp de la organización va como entrada nueva, «Configuración», en Administración › "
-    "WhatsApp (WA-Config-Base2).")
+    "Segunda parte de la base, aprobada por el usuario el 23/11 («Aprobados los tableros de la base 2», v181). Son los tableros de la "
+    "F4, la F5 y la F10 a la F13 del plan del 19/11, con las decisiones 260 a 273 y las ADR 0061, 0062 y 0066, y ya se programan. Van "
+    "antes que las acciones del asistente y que la E12.\n\n"
+    "Cada uno es el tablero de siempre con lo nuevo, con «-Base2» en el nombre: en lo que dibuja, manda sobre el de siempre, que "
+    "conserva sus demás estados. Cada uno muestra solo lo que existe hasta esta etapa (78). Los estados se eligen con el Tweak «estado».\n\n"
+    "De arriba abajo: el criterio (las tablas que ordenan y la pieza para elegir); roles y personas; Plataforma; WhatsApp; las reglas "
+    "en Configuración; la pieza en pantalla, y nada debajo de otro dato. Cada fila tiene su nota a la izquierda.\n\n"
+    "La configuración de WhatsApp de la organización va como entrada nueva, «Configuración», en Administración › WhatsApp "
+    "(WA-Config-Base2).")
 
 NOTAS_FILA = {
     "criterio": ("Criterio-Tablas-Base2: el encabezado que ordena (↑ ↓ en el color de la marca, ↕ al pasar el mouse) y «Ordenar por» al "
