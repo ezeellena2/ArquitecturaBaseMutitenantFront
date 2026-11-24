@@ -83,6 +83,7 @@
       "filtered": "No recipients match the filters"
     }
   },
+  "uncertain": "We don't know if it reached them: WhatsApp didn't confirm the send. It isn't repeated automatically, and it doesn't count as sent or as «Not delivered».",
   "failure": {
     "why": "Why it wasn’t delivered",
     "title": "It wasn’t delivered to {{name}}",

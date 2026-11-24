@@ -39,6 +39,11 @@
     "note": "Internal note",
     "pending": "Queued",
     "failed": "Couldn't send",
+    "uncertain": "Unconfirmed",
+    "uncertainInfo": "We don't know if it went out: WhatsApp didn't confirm the send. Check the chat on the phone before sending it again: it isn't repeated automatically. Marking it as reviewed doesn't resend it.",
+    "markReviewed": "Mark as reviewed",
+    "reviewedBy": "Reviewed by {{name}} · {{when}}",
+    "reviewed": "Reviewed · {{when}}",
     "media": {
       "Image": "Sent a photo",
       "Audio": "Sent an audio",

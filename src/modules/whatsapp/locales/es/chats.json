@@ -39,6 +39,11 @@
     "note": "Nota interna",
     "pending": "En cola",
     "failed": "No se pudo mandar",
+    "uncertain": "Sin confirmar",
+    "uncertainInfo": "No sabemos si salió: WhatsApp no confirmó el envío. Mirá el chat en el teléfono antes de mandarlo de nuevo: no se repite solo. Marcarlo como revisado no lo reenvía.",
+    "markReviewed": "Marcar como revisado",
+    "reviewedBy": "Lo revisó {{name}} · {{when}}",
+    "reviewed": "Revisado · {{when}}",
     "media": {
       "Image": "Mandó una foto",
       "Audio": "Mandó un audio",

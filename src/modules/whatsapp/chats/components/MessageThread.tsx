@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 import { useFormat } from "@/shared/format/useFormat";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
+import { InfoTip } from "@/shared/ui/InfoTip";
+import { StatusDot } from "@/shared/ui/StatusDot";
 import type { WhatsAppChatMessageResponse, WhatsAppMediaKind } from "../../api/types";
 import { chatDay } from "../lib/conversation";
 
@@ -20,7 +22,7 @@ export type ThreadPerspective = { kind: "team" } | { kind: "person"; organizatio
 /// El hilo de una conversación (WA-Chats .w-msjs y M-WA-Conversacion .ap-chat): los días separados, los globos de cada
 /// lado con la hora (y quién mandó lo del equipo), las notas internas en amarillo, los eventos al centro y los archivos
 /// como «Mandó una foto» (D7: sin descarga hasta la E14). Los mensajes llegan en orden y se baja al último.
-export function MessageThread({ messages, perspective, label, phone, hasEarlier, loadingEarlier, onLoadEarlier }: {
+export function MessageThread({ messages, perspective, label, phone, hasEarlier, loadingEarlier, onLoadEarlier, review }: {
   messages: readonly WhatsAppChatMessageResponse[];
   perspective: ThreadPerspective;
   label: string;
@@ -28,6 +30,8 @@ export function MessageThread({ messages, perspective, label, phone, hasEarlier,
   hasEarlier: boolean;
   loadingEarlier: boolean;
   onLoadEarlier: () => void;
+  /** «Marcar como revisado» de un mensaje «Sin confirmar» (0066): lo ofrece quien atiende el chat. */
+  review?: MessageReview;
 }) {
   const { t } = useTranslation("whatsapp");
   const format = useFormat();
@@ -47,7 +51,7 @@ export function MessageThread({ messages, perspective, label, phone, hasEarlier,
         ? <span className={cn("self-center rounded-full border border-[var(--borde)] bg-[var(--superficie)] px-2.5 py-0.5 text-[0.75rem]", phone ? "rounded-[0.5rem] border-0 text-[var(--t2)]" : "text-[var(--t3)]")}>
           {chatDay(format, message.createdAtUtc)}
         </span> : null;
-      return <Fragment key={message.id}>{separator}<ThreadItem message={message} perspective={perspective} phone={phone} /></Fragment>;
+      return <Fragment key={message.id}>{separator}<ThreadItem message={message} perspective={perspective} phone={phone} review={review} /></Fragment>;
     })}
     <div ref={end} />
   </div>;
@@ -57,7 +61,18 @@ const threadClass = (phone: boolean) => cn("flex flex-col bg-[var(--s2)]", phone
   ? "flex-1 gap-2 p-3"
   : "min-h-0 flex-1 gap-2.5 overflow-y-auto px-6 py-4");
 
-function ThreadItem({ message, perspective, phone }: { message: WhatsAppChatMessageResponse; perspective: ThreadPerspective; phone: boolean }) {
+/** Marcar como revisado un mensaje «Sin confirmar»: qué hacer y cuál se está marcando. */
+export interface MessageReview {
+  onReview: (message: WhatsAppChatMessageResponse) => void;
+  pendingId: string | null;
+}
+
+function ThreadItem({ message, perspective, phone, review }: {
+  message: WhatsAppChatMessageResponse;
+  perspective: ThreadPerspective;
+  phone: boolean;
+  review?: MessageReview;
+}) {
   const { t } = useTranslation("whatsapp");
   const format = useFormat();
   const time = format.formatTime(message.createdAtUtc);
@@ -77,6 +92,9 @@ function ThreadItem({ message, perspective, phone }: { message: WhatsAppChatMess
     ? own ? null : perspective.organizationName
     : own ? message.author ?? t("chats.thread.automaticReply") : null;
   const failed = message.status === "Failed";
+  // «Sin confirmar» (WA-Chats-Base2 y Plat-WA-Chats-Base2, 0066): lo que salió sin que WhatsApp confirmara el envío lo ve el
+  // equipo que atiende, con su (i) y «Marcar como revisado»; revisado, quién y cuándo en gris. Revisar no lo reenvía.
+  const uncertain = message.status === "Uncertain" && perspective.kind === "team";
   // «No se pudo mandar» lleva debajo su motivo, en su propio renglón (WA-Chats-Base2, 0066 §3): el texto que manda el back
   // para uno de los ocho códigos, tal como llega.
   const footer: ReactNode = failed
@@ -92,7 +110,36 @@ function ThreadItem({ message, perspective, phone }: { message: WhatsAppChatMess
       MediaIcon ? "inline-flex items-center gap-2 text-[var(--t2)] italic" : null)}>
       {MediaIcon ? <><MediaIcon aria-hidden="true" className="size-4 shrink-0 text-[var(--t3)]" />{t(`chats.thread.media.${message.mediaKind ?? "Other"}`)}</> : message.text}
     </span>
-    <span className={cn("px-1 text-[0.71875rem]", failed ? "text-[var(--peligro)]" : "text-[var(--t3)]")}>{footer}</span>
-    {failed && message.failureReason ? <span className="px-1 text-[0.71875rem] text-[var(--peligro)]">{message.failureReason}</span> : null}
+    {uncertain ? <UncertainFooter message={message} review={review} /> : <>
+      <span className={cn("px-1 text-[0.71875rem]", failed ? "text-[var(--peligro)]" : "text-[var(--t3)]")}>{footer}</span>
+      {failed && message.failureReason ? <span className="px-1 text-[0.71875rem] text-[var(--peligro)]">{message.failureReason}</span> : null}
+    </>}
   </div>;
+}
+
+/// Debajo de un mensaje «Sin confirmar»: el estado en ámbar con su (i) y, en su renglón, «Marcar como revisado»; revisado,
+/// sin la (i) y con «Lo revisó Ana Gómez · 19/11/2026, 14:35».
+function UncertainFooter({ message, review }: { message: WhatsAppChatMessageResponse; review?: MessageReview }) {
+  const { t } = useTranslation("whatsapp");
+  const format = useFormat();
+  const label = t("chats.thread.uncertain");
+  const reviewedAt = message.reviewedAtUtc;
+  const reviewed = reviewedAt
+    ? message.reviewedByName
+      ? t("chats.thread.reviewedBy", { name: message.reviewedByName, when: format.formatDateTime(reviewedAt) })
+      : t("chats.thread.reviewed", { when: format.formatDateTime(reviewedAt) })
+    : null;
+  return <>
+    <span className="inline-flex items-center gap-1 px-1 text-[0.71875rem] text-[var(--t3)]">
+      <StatusDot tone="warning" label={label} className="text-[0.71875rem] text-inherit" />
+      {reviewed ? null : <InfoTip text={t("chats.thread.uncertainInfo")} title={label} />}
+    </span>
+    {reviewed ? <span className="px-1 text-[0.71875rem] text-[var(--t3)]">{reviewed}</span>
+      : review ? <span className="px-1 text-[0.71875rem]">
+        <button type="button" disabled={review.pendingId === message.id} onClick={() => review.onReview(message)}
+          className="cursor-pointer font-semibold text-[var(--marca-tx)] underline outline-none focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)] disabled:cursor-default disabled:opacity-60">
+          {t("chats.thread.markReviewed")}
+        </button>
+      </span> : null}
+  </>;
 }

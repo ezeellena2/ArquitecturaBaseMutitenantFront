@@ -79,6 +79,11 @@ export function transferConversation(scope: ChatsScope, id: string, request: Tra
   return api.post<WhatsAppConversationRowResponse>(`${conversationPath(scope, id)}/transfer`, request);
 }
 
+/** Marca como revisado un mensaje «Sin confirmar» (0066): no lo reenvía; revisarlo dos veces devuelve la primera revisión. */
+export function reviewMessage(scope: ChatsScope, id: string, messageId: string) {
+  return api.post<WhatsAppChatMessageResponse>(`${conversationPath(scope, id)}/messages/${encodeURIComponent(messageId)}/review`);
+}
+
 export function sendTemplate(scope: ChatsScope, id: string, request: SendWhatsAppTemplateRequest, key: string) {
   return api.post<WhatsAppChatMessageResponse>(`${conversationPath(scope, id)}/templates`, request, idempotent(key));
 }

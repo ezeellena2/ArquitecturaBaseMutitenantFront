@@ -23,7 +23,7 @@ import { Page } from "@/shared/ui/Page";
 import { toastError } from "@/shared/ui/sonner";
 import type { WhatsAppChatMessageResponse } from "../../api/types";
 import { conversationRefetchInterval, platformUntakenQueryKey, untakenQueryKey } from "../../api/untaken";
-import { addNote, chatsScopeQueryRoot, conversationQueryKey, fetchConversation, sendMessage, takeConversation, transferConversation, type ChatsScope } from "../api/chats";
+import { addNote, chatsScopeQueryRoot, conversationQueryKey, fetchConversation, reviewMessage, sendMessage, takeConversation, transferConversation, type ChatsScope } from "../api/chats";
 import { chronological, composerState, isUntaken, lastInbound, phoneLabel, rowDescriptors } from "../lib/conversation";
 import { ChatAvatar } from "./ChatAvatar";
 import { ChatComposer, type ComposerNotice } from "./ChatComposer";
@@ -119,6 +119,13 @@ export function ConversationView({ scope, id, links, back, phone }: {
     onError: (error) => { toastActionError(error, t); void refresh(); },
   });
 
+  // «Marcar como revisado» (0066): si ya no está «Sin confirmar» (409), el aviso dice por qué y el chat se relee.
+  const review = useMutation({
+    mutationFn: (messageId: string) => reviewMessage(scope, id, messageId),
+    onSuccess: refresh,
+    onError: (error) => { toastActionError(error, t); void refresh(); },
+  });
+
   const data = query.data;
   if (!data) {
     if (query.isError) {
@@ -152,7 +159,8 @@ export function ConversationView({ scope, id, links, back, phone }: {
   const onTransfer = (target: TransferTarget, version: number) => transfer.mutate({ target, version });
 
   const thread = <MessageThread messages={messages} perspective={{ kind: "team" }} phone={phone} label={t("chats.thread.label", { name })}
-    hasEarlier={earlier} loadingEarlier={query.isFetching && query.isPlaceholderData} onLoadEarlier={() => { if (larger) setPageSize(larger); }} />;
+    hasEarlier={earlier} loadingEarlier={query.isFetching && query.isPlaceholderData} onLoadEarlier={() => { if (larger) setPageSize(larger); }}
+    review={{ onReview: (message) => review.mutate(message.id), pendingId: review.isPending ? review.variables : null }} />;
   const composer = <ChatComposer key={row.id} state={state} phone={phone} sendPending={send.isPending} notePending={note.isPending}
     onSend={onSend} onNote={onNote} onChooseTemplate={() => setTemplateOpen(true)} onExplain={setNotice} />;
   const dialogs = <>

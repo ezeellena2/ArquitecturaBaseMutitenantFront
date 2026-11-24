@@ -254,6 +254,56 @@ describe("Chats de la organización", () => {
     expect(within(log).getByText(reason)).toBeVisible();
   });
 
+  // WA-Chats-Base2 (0066): un mensaje «Sin confirmar» lleva su (i) y «Marcar como revisado», que lo marca sin reenviarlo;
+  // revisado, dice quién y cuándo, sin la (i).
+  it("«Sin confirmar» lleva su (i) y «Marcar como revisado»; revisado, quién y cuándo", async () => {
+    const sent = message({ id: "m-2", direction: "Outbound", author: "Lucía Fernández", text: "Sí, hasta las 18. ¿Te las preparo?",
+      status: "Uncertain", createdAtUtc: "2026-10-12T13:43:00Z" });
+    let reviewed = false;
+    const reviews: string[] = [];
+    inbox(row(), [message(), sent]);
+    server.use(
+      http.get(`${org}/:inbox/conversations/:id`, () => HttpResponse.json(detail(row(), [message(), reviewed
+        ? { ...sent, reviewedByName: "Ana Gómez", reviewedAtUtc: "2026-11-19T17:35:00Z" } : sent]))),
+      http.post(`${org}/customers/conversations/c-martina/messages/m-2/review`, ({ request }) => {
+        reviews.push(request.headers.get("Idempotency-Key") ?? "sin clave");
+        reviewed = true;
+        return HttpResponse.json({ ...sent, reviewedByName: "Ana Gómez", reviewedAtUtc: "2026-11-19T17:35:00Z" });
+      }),
+    );
+    const { container, user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/chats");
+    const log = await screen.findByRole("log", { name: "Mensajes con Martina López" });
+    expect(await within(log).findByText("Sin confirmar")).toBeVisible();
+    expect(within(log).queryByText("No se pudo mandar")).not.toBeInTheDocument();
+    const info = within(log).getByRole("button", { name: "Más información sobre Sin confirmar" });
+    expect(info).toHaveAccessibleDescription(/No sabemos si salió: WhatsApp no confirmó el envío\..*Marcarlo como revisado no lo reenvía\./u);
+    expect(await axe(container)).toHaveNoViolations();
+    await user.click(within(log).getByRole("button", { name: "Marcar como revisado" }));
+    expect(await within(log).findByText("Lo revisó Ana Gómez · 19/11/2026, 14:35")).toBeVisible();
+    expect(reviews).toEqual(["sin clave"]);
+    expect(within(log).getByText("Sin confirmar")).toBeVisible();
+    expect(within(log).queryByRole("button", { name: "Marcar como revisado" })).not.toBeInTheDocument();
+    expect(within(log).queryByRole("button", { name: "Más información sobre Sin confirmar" })).not.toBeInTheDocument();
+  });
+
+  it("si el mensaje ya no está «Sin confirmar», el 409 se avisa y el chat se relee", async () => {
+    const sent = message({ id: "m-2", direction: "Outbound", author: "Lucía Fernández", text: "Sí, hasta las 18.", status: "Uncertain", createdAtUtc: "2026-10-12T13:43:00Z" });
+    let delivered = false;
+    inbox(row(), [message(), sent]);
+    server.use(
+      http.get(`${org}/:inbox/conversations/:id`, () => HttpResponse.json(detail(row(), [message(), delivered ? { ...sent, status: "Delivered" } : sent]))),
+      http.post(`${org}/customers/conversations/c-martina/messages/m-2/review`, () => {
+        delivered = true;
+        return HttpResponse.json({ code: "WhatsApp.Message.NotUncertain", detail: "El mensaje ya no está sin confirmar.", status: 409 }, { status: 409 });
+      }),
+    );
+    const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/chats");
+    const log = await screen.findByRole("log", { name: "Mensajes con Martina López" });
+    await user.click(await within(log).findByRole("button", { name: "Marcar como revisado" }));
+    expect(await screen.findByText("El mensaje ya no está sin confirmar.")).toBeVisible();
+    await waitFor(() => expect(within(log).queryByText("Sin confirmar")).not.toBeInTheDocument());
+  });
+
   it("lo que se escribe mientras sale un mensaje no se borra cuando ese mensaje termina", async () => {
     inbox(row());
     let release!: () => void;
@@ -474,6 +524,23 @@ describe("Consultas de Plataforma", () => {
     const log = await screen.findByRole("log", { name: "Mensajes con Lucía Fernández" });
     const failed = await within(log).findByText("No se pudo mandar");
     expect(failed.nextElementSibling?.textContent).toBe(reason);
+  });
+
+  it("«Marcar como revisado» va a las Consultas de Plataforma", async () => {
+    const conversation = row({ inbox: null, accountId: "account-lucia", contactName: "Lucía Fernández", tags: [], contactId: null });
+    const sent = message({ id: "m-2", direction: "Outbound", author: "Tomás Acosta", text: "Hola, Lucía.", status: "Uncertain", createdAtUtc: "2026-10-12T13:43:00Z" });
+    let reviewed = 0;
+    consultations(conversation);
+    server.use(
+      http.get(`${platform}/:id`, () => HttpResponse.json(detail(conversation, [message(), reviewed
+        ? { ...sent, reviewedByName: "Ana Gómez", reviewedAtUtc: "2026-11-19T17:35:00Z" } : sent]))),
+      http.post(`${platform}/:id/messages/m-2/review`, () => { reviewed++; return HttpResponse.json({ ...sent, reviewedByName: "Ana Gómez", reviewedAtUtc: "2026-11-19T17:35:00Z" }); }),
+    );
+    const { user } = mountWhatsApp(whatsappOperator(), "/plataforma/whatsapp");
+    const log = await screen.findByRole("log", { name: "Mensajes con Lucía Fernández" });
+    await user.click(await within(log).findByRole("button", { name: "Marcar como revisado" }));
+    expect(await within(log).findByText("Lo revisó Ana Gómez · 19/11/2026, 14:35")).toBeVisible();
+    expect(reviewed).toBe(1);
   });
 
   it("sin permiso para leer cuentas no ofrece la ficha", async () => {

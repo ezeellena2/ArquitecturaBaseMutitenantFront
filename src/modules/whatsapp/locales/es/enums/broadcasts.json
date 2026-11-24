@@ -12,7 +12,8 @@
     "Read": "Leído",
     "Replied": "Respondió",
     "Unsubscribed": "Se dio de baja",
-    "Failed": "No llegó"
+    "Failed": "No llegó",
+    "Uncertain": "Sin confirmar"
   },
   "WhatsAppAudienceKind": {
     "AllAccepting": "Todos los que aceptan",

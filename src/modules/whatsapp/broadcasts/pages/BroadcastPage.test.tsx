@@ -63,6 +63,19 @@ describe("Resultados de una difusión", () => {
     expect(within(notice).getByText(reason)).toBeVisible();
   });
 
+  // WA-Difusion-Resultados-Base2 (255): un destinatario «Sin confirmar» lleva su (i), sin «Por qué no llegó».
+  it("un destinatario «Sin confirmar» lleva su (i)", async () => {
+    server.use(http.get("/api/organization/whatsapp/broadcasts/broadcast-sent", () =>
+      HttpResponse.json({ broadcast: sent, recipients: paged([{ ...recipients[0], status: "Uncertain", failureReason: null }]) })));
+    const { container, user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/difusiones/broadcast-sent");
+    const info = await screen.findByRole("button", { name: "Más información sobre Sin confirmar" });
+    expect(screen.getAllByText("Sin confirmar").length).toBeGreaterThan(0);
+    expect(screen.queryByRole("button", { name: "Por qué no llegó" })).not.toBeInTheDocument();
+    await user.click(info);
+    expect(await screen.findByRole("tooltip")).toHaveTextContent("No sabemos si le llegó: WhatsApp no confirmó el envío. No se repite solo, y no cuenta como mandado ni como «No llegó».");
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   it("la búsqueda y el filtro de estado van a la URL y a la consulta de los destinatarios", async () => {
     const requests: URL[] = [];
     server.use(http.get("/api/organization/whatsapp/broadcasts/broadcast-sent", ({ request }) => {

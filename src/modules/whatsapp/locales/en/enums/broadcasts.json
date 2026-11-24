@@ -12,7 +12,8 @@
     "Read": "Read",
     "Replied": "Replied",
     "Unsubscribed": "Unsubscribed",
-    "Failed": "Not delivered"
+    "Failed": "Not delivered",
+    "Uncertain": "Unconfirmed"
   },
   "WhatsAppAudienceKind": {
     "AllAccepting": "Everyone who accepts",

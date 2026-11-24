@@ -83,6 +83,7 @@
       "filtered": "Ningún destinatario coincide con los filtros"
     }
   },
+  "uncertain": "No sabemos si le llegó: WhatsApp no confirmó el envío. No se repite solo, y no cuenta como mandado ni como «No llegó».",
   "failure": {
     "why": "Por qué no llegó",
     "title": "No le llegó a {{name}}",
