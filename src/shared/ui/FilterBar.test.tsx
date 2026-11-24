@@ -129,10 +129,17 @@ describe("FilterBar", () => {
     // .r311-panel .izq: lo que se está eligiendo lleva el tinte, la barra de 3 y la letra en 600 (142).
     expect(within(tabs).getByRole("tab", { name: "Versión" })).toHaveClass("bg-[var(--marca-t)]", "font-semibold", "shadow-[inset_3px_0_0_var(--marca)]");
     expect(within(tabs).getByRole("tab", { name: "Recibida" })).not.toHaveClass("shadow-[inset_3px_0_0_var(--marca)]");
-    const options = within(panel).getByRole("radiogroup", { name: "Filtrar por versión" });
-    expect(within(options).getByRole("radio", { name: "Todos" })).toBeChecked();
-    await user.click(within(options).getByRole("radio", { name: "Versión B" }));
+    // A la derecha, la pieza para elegir (262) con el nombre del filtro: elegir lo ya elegido no vuelve a filtrar.
+    const version = within(panel).getByRole("button", { name: "Versión Todos" });
+    expect(panel.querySelector('input[type="radio"]')).toBeNull();
+    await user.click(version);
+    expect(await screen.findByRole("option", { name: "Todos" })).toHaveAttribute("aria-selected", "true");
+    await user.click(screen.getByRole("option", { name: "Todos" }));
+    expect(channel).not.toHaveBeenCalled();
+    await user.click(version);
+    await user.click(await screen.findByRole("option", { name: "Versión B" }));
     expect(channel).toHaveBeenCalledWith("b");
+    expect(screen.getByRole("dialog", { name: "Filtros" })).toBeVisible();
     expect(panel).not.toHaveTextContent("Aplicar");
     expect(await axe(container)).toHaveNoViolations();
   });

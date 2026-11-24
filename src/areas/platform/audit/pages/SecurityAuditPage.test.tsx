@@ -16,6 +16,7 @@ import { AppProviders } from "@/app/providers";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { createQueryClient } from "@/shared/api/queryClient";
 import { fixtureAuth } from "@/test/mocks/authContext";
+import { pickerName } from "@/test/picker";
 
 const event: PlatformAuditEventResponse = {
   id: "event-1", occurredAtUtc: "2026-09-26T20:30:00Z", type: "accounts", action: "AccountSuspended",
@@ -253,7 +254,8 @@ describe("SecurityAuditPage", () => {
     // Tableros M-* (base de la 12): «Filtros» a pantalla completa aplica cada cambio y «Listo» vuelve a la lista.
     await user.click(screen.getByRole("button", { name: "Filtrar la auditoría" }));
     const filters = await screen.findByRole("dialog", { name: "Filtros" });
-    await user.click(within(filters).getByRole("radio", { name: "Grupo Delta" }));
+    await user.click(within(filters).getByRole("button", { name: pickerName("Organización") }));
+    await user.click(await screen.findByRole("option", { name: "Grupo Delta" }));
     await user.click(within(filters).getByRole("button", { name: "Listo" }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });

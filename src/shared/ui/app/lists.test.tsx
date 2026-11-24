@@ -114,9 +114,11 @@ describe("listas en el teléfono", () => {
     expect(sheet).toHaveAccessibleDescription("Usuarios");
     expect(sheet).toHaveClass("max-md:inset-0", "max-md:h-dvh", "max-md:rounded-none");
     expect(within(sheet).getByText("Estado")).toBeVisible();
-    expect(within(sheet).getByRole("radio", { name: "Todos" })).toBeChecked();
+    // Cada filtro es la pieza para elegir (262): su campo dice lo elegido y abre la lista a pantalla completa.
+    const state = within(sheet).getByRole("button", { name: "Estado Todos" });
     expect(sheet).not.toHaveTextContent(/\d/);
-    await userEvent.click(within(sheet).getByRole("radio", { name: "Activos" }));
+    await userEvent.click(state);
+    await userEvent.click(await screen.findByRole("option", { name: "Activos" }));
     expect(onChange).toHaveBeenCalledWith("Active");
     // Cada cambio se aplica enseguida: la pantalla sigue abierta hasta «Listo».
     expect(screen.getByRole("dialog", { name: "Filtros" })).toBeVisible();
