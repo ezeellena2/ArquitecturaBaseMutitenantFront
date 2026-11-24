@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { DateText } from "@/shared/ui/format/DateText";
-import { AlertCircleIcon, ChevronRightIcon, ClockIcon } from "@/shared/ui/icons";
+import { ChevronRightIcon, ClockIcon, ErrorIcon } from "@/shared/ui/icons";
 import { Spinner } from "@/shared/ui/Spinner";
 import { NewVersionIcon } from "./icons";
 import type { NotificationRow, Notifications } from "./useNotifications";
@@ -12,7 +12,7 @@ import type { NotificationRow, Notifications } from "./useNotifications";
 type Variant = "menu" | "page";
 
 // `.cmp-ic`: lo que espera a alguien, en ámbar con el reloj; lo que falló, en rojo con el «!»; la versión nueva, en la marca.
-const toneIcons = { waiting: ClockIcon, failed: AlertCircleIcon, version: NewVersionIcon } as const;
+const toneIcons = { waiting: ClockIcon, failed: ErrorIcon, version: NewVersionIcon } as const;
 const toneColors = {
   waiting: "bg-[var(--alerta-t)] text-[var(--alerta-tx)]",
   failed: "bg-[var(--peligro-t)] text-[var(--peligro)]",

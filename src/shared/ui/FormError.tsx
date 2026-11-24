@@ -1,23 +1,25 @@
 import type { ComponentProps, ComponentType, ReactNode } from "react";
 import { cn } from "@/shared/lib/utils";
-import { AlertCircleIcon, AlertTriangleIcon, InfoIcon } from "./icons";
+import { AlertTriangleIcon, ErrorIcon, InfoIcon } from "./icons";
+import { noticeSurface, noticeTones, type NoticeTone } from "./noticeTones";
 
-type Tone = "danger" | "warning" | "info";
+type Tone = Exclude<NoticeTone, "success">;
 
 export interface FormErrorProps extends Omit<ComponentProps<"div">, "children"> {
   message: ReactNode;
-  /** La de error (por defecto) es roja; la de atención, ámbar; la de información, verde («Tu sesión venció»). */
+  /** La de error (por defecto) lleva el filo rojo; la de atención, el ámbar; la de información, el gris («Tu sesión venció»). */
   tone?: Tone;
   /** Otro ícono que el del tono: el reloj de «Tu sesión venció» (tableros Ingreso y M-Ingreso). */
   icon?: ComponentType<{ className?: string; strokeWidth?: number }>;
 }
 
-// El texto y el ícono, en el color de los avisos (.aviso-mal, .msj.alerta y .msj.info). Los tableros dibujan el ícono del
-// error y el de la información con trazo 2; el triángulo de la atención, con el del set.
-const tones: Record<Tone, { icon: ComponentType<{ className?: string; strokeWidth?: number }>; box: string; stroke?: number }> = {
-  danger: { icon: AlertCircleIcon, box: "bg-[var(--peligro-t)] text-[var(--peligro-tx)]", stroke: 2 },
-  warning: { icon: AlertTriangleIcon, box: "bg-[var(--alerta-t)] text-[var(--alerta-tx)]" },
-  info: { icon: InfoIcon, box: "bg-[var(--marca-t)] text-[var(--marca-tx)]", stroke: 2 },
+// 210 («Criterio · Avisos», Avisos según el tipo): la franja es blanca y el tipo va en el filo y en el ícono, del mismo
+// color (noticeTones): octógono, triángulo o (i). Los tableros dibujan el ícono del error y el de la información con trazo
+// 2; el triángulo de la atención, con el del set.
+const tones: Record<Tone, { icon: ComponentType<{ className?: string; strokeWidth?: number }>; stroke?: number }> = {
+  danger: { icon: ErrorIcon, stroke: 2 },
+  warning: { icon: AlertTriangleIcon },
+  info: { icon: InfoIcon, stroke: 2 },
 };
 
 export function FormError({ message, tone = "danger", icon, role, className, ...props }: FormErrorProps) {
@@ -40,13 +42,14 @@ export function FormError({ message, tone = "danger", icon, role, className, ...
         // M-Registro-Empresa y M-Invitacion), la letra de sus avisos: 14,5 con interlineado 1,4, padding 12/14 y radio 12.
         // Va por el ancho de la pantalla y no por el marco de la app: las páginas públicas no lo tienen.
         "rounded-[0.5rem] px-3 py-2.5 text-[0.8125rem] leading-normal max-md:rounded-xl max-md:px-3.5 max-md:py-3 max-md:text-[0.90625rem] max-md:leading-[1.4]",
-        tones[tone].box,
+        noticeSurface,
+        noticeTones[tone].edge,
         className,
       )}
       {...props}
     >
       {/* El ícono de 16 al medio de la primera línea, como .aviso-mal (el del teléfono, 1 px abajo, como .aviso-mal.tel). */}
-      <Icon className="mt-0.5 size-4 shrink-0 max-md:mt-px" strokeWidth={tones[tone].stroke} />
+      <Icon className={cn("mt-0.5 size-4 shrink-0 max-md:mt-px", noticeTones[tone].icon)} strokeWidth={tones[tone].stroke} />
       <span className="min-w-0">{message}</span>
     </div>
   );

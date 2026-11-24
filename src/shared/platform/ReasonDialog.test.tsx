@@ -127,7 +127,7 @@ describe("ReasonDialog (E5)", () => {
     expect(action).toBeDisabled();
     expect(screen.queryByRole("textbox", { name: "Motivo" })).not.toBeInTheDocument();
     expect(screen.getByRole("alert")).toHaveTextContent(reason);
-    expect(screen.getByRole("alert")).toHaveClass("bg-[var(--peligro-t)]");
+    expect(screen.getByRole("alert")).toHaveClass("bg-[var(--superficie)]", "border-l-[var(--peligro)]");
     expect(screen.getByRole("alert").compareDocumentPosition(screen.getByText("Nadie entra mientras esté suspendida.")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     await userEvent.click(action);
     expect(mutationFn).not.toHaveBeenCalled();

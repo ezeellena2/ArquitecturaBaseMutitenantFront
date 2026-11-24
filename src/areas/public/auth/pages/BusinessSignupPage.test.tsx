@@ -272,8 +272,8 @@ describe("BusinessSignupPage", () => {
     fireEvent.click(screen.getByRole("button", { name: "Crear organización" }));
     const limit = await screen.findByRole("alert");
     expect(limit).toHaveTextContent("Llegaste al límite de 3 organizaciones propias.");
-    // Lienzo v104: la franja común de error (FormError), con el círculo en el color del texto y la segunda línea más clara.
-    expect(limit).toHaveClass("bg-[var(--peligro-t)]", "text-[var(--peligro-tx)]", "rounded-[0.5rem]");
+    // Lienzo v104 y 210: la franja común de error (FormError), blanca con el filo rojo, y la segunda línea más clara.
+    expect(limit).toHaveClass("bg-[var(--superficie)]", "border-l-[var(--peligro)]", "rounded-[0.5rem]");
     expect(limit.querySelector("svg")).toHaveClass("size-4");
     expect(within(limit).getByText("Si necesitás más, escribinos para ampliar el límite.")).toHaveClass("opacity-85");
   });

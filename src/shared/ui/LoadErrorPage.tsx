@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { ErrorPageFrame } from "./ErrorPageFrame";
-import { AlertCircleIcon } from "./icons";
+import { ErrorIcon } from "./icons";
 
 /// La «Pantalla de error» de «Criterio · Avisos» (M-Error-Org, «No se pudo abrir»): cuando no se puede mostrar nada de
 /// la pantalla porque no cargó lo que la arma (la ficha, la configuración, /api/me). Al centro, el ícono de alerta en
@@ -17,7 +17,7 @@ export function LoadErrorPage({ onRetry, back, screen, standalone }: {
 }) {
   const { t } = useTranslation("errors");
   return <ErrorPageFrame
-    icon={<AlertCircleIcon className="size-5 text-[var(--peligro)]" />}
+    icon={<ErrorIcon className="size-5 text-[var(--peligro)]" />}
     title={t("loadFailed")}
     onRetry={onRetry}
     back={back}

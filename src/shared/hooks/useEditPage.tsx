@@ -7,7 +7,7 @@ import { PhoneBand } from "@/shared/ui/app/PhoneBand";
 import { Banner } from "@/shared/ui/Banner";
 import { ConcurrencyBanner } from "@/shared/ui/ConcurrencyBanner";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
-import { AlertCircleIcon } from "@/shared/ui/icons";
+import { ErrorIcon } from "@/shared/ui/icons";
 import { useAbandonOnLeave } from "./useAbandonOnLeave";
 
 export interface EditPageOptions {
@@ -60,8 +60,8 @@ export function useEditPage({ isDirty, error, onSeeNew, onContinueEditing, error
     banner: <>
       <ConcurrencyBanner error={error} isDirty={isDirty} onSeeNew={onSeeNew} onContinueEditing={onContinueEditing} />
       {/* Tableros M-Usuario y M-Pagina-Org («Error al guardar»): en el teléfono, el error con el texto del back va en la
-          banda roja debajo de la barra, donde va lo que sigue pasando («Criterio · Decisiones»). */}
-      {phone && message ? <PhoneBand tone="danger" role="alert" icon={<AlertCircleIcon className="mt-0.5 size-4 shrink-0" strokeWidth={2} />}>
+          banda de error debajo de la barra, donde va lo que sigue pasando («Criterio · Decisiones»). */}
+      {phone && message ? <PhoneBand tone="danger" role="alert" icon={<ErrorIcon className="mt-0.5 size-4 shrink-0" strokeWidth={2} />}>
         <span className="min-w-0">{message}</span>
       </PhoneBand> : null}
     </>,

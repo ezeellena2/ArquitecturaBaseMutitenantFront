@@ -279,10 +279,17 @@ body {
   body:has([data-slot="fixed-actions"]) [data-sonner-toaster][data-y-position="bottom"] { bottom: 5.5rem; }
   /* Con la barra de abajo, la franja va por encima de ella. */
   body:has([data-slot="bottom-nav"]) [data-sonner-toaster][data-y-position="bottom"] { bottom: 5.25rem; }
+  /* 210 y .f-snack: la franja oscura de siempre, sin borde alrededor, con el filo de 3 de su tipo a la izquierda y el
+     ícono del mismo color: verde lo que salió bien, rojo el error, ámbar la atención y el gris de .neu la información. */
+  [data-sonner-toaster] [data-sonner-toast][data-styled="true"] { border-width: 0; border-left-width: 3px; border-left-color: var(--punto-apagado); }
+  [data-sonner-toaster] [data-sonner-toast][data-type="success"] { border-left-color: var(--franja-ok); }
+  [data-sonner-toaster] [data-sonner-toast][data-type="warning"] { border-left-color: var(--punto-alerta); }
+  [data-sonner-toaster] [data-sonner-toast][data-type="error"] { border-left-color: var(--franja-mal); }
   [data-sonner-toast][data-type="success"] [data-icon] { color: var(--franja-ok); }
-  [data-sonner-toast][data-type="error"] [data-icon], [data-sonner-toast][data-type="warning"] [data-icon] { color: var(--franja-mal); }
-  /* .f-snack: sin borde, con el renglón de 1,4 y el ícono en su caja (20; el del error, 28), sin los márgenes de sonner. */
-  [data-sonner-toaster] [data-sonner-toast][data-styled="true"] { border-width: 0; }
+  [data-sonner-toast][data-type="info"] [data-icon] { color: var(--punto-apagado); }
+  [data-sonner-toast][data-type="warning"] [data-icon] { color: var(--punto-alerta); }
+  [data-sonner-toast][data-type="error"] [data-icon] { color: var(--franja-mal); }
+  /* .f-snack: el renglón de 1,4 y el ícono en su caja (20; el del error, 28), sin los márgenes de sonner. */
   [data-sonner-toaster] [data-sonner-toast][data-styled="true"] [data-icon] { width: 1.25rem; height: 1.25rem; margin: 0; }
   [data-sonner-toaster] [data-sonner-toast][data-type="error"] [data-icon] { width: 1.75rem; height: 1.75rem; }
   [data-sonner-toast][data-styled="true"] [data-title] { font-weight: 400; line-height: inherit; }
@@ -291,14 +298,18 @@ body {
   /* .f-snack .x: la ✕ de 18, sin caja alrededor. */
   [data-sonner-toast][data-styled="true"] [data-close-button] { position: static; order: 99; width: 1.125rem; height: 1.125rem; transform: none; border: 0; background: transparent; color: oklch(1 0 0 / 0.7); }
 }
-/* En la compu (tablero Avisos, .p-aviso): sobre la tarjeta blanca solo el ícono lleva color; el error suma el borde rojo
-   suave y la ✕ a la derecha; «Reintentar» y «Copiar código» van en texto verde. */
+/* En la compu (tablero Avisos, .p-aviso, y 210, Avisos según el tipo): la tarjeta blanca con el borde de siempre; el tipo
+   va en el filo de 3 a la izquierda y en el ícono, del mismo color: tilde verde, (i) gris, triángulo ámbar y octógono
+   rojo. El error lleva la ✕ a la derecha; «Reintentar» y «Copiar código» van en texto verde. */
 @media (min-width: 768px) {
+  [data-sonner-toaster] [data-sonner-toast][data-styled="true"] { border-left-width: 3px; border-left-color: var(--t2); }
+  [data-sonner-toaster] [data-sonner-toast][data-type="success"] { border-left-color: var(--aviso-ok); }
+  [data-sonner-toaster] [data-sonner-toast][data-type="warning"] { border-left-color: var(--alerta); }
+  [data-sonner-toaster] [data-sonner-toast][data-type="error"] { border-left-color: var(--peligro); align-items: flex-start; }
   [data-sonner-toast][data-type="success"] [data-icon] { color: var(--aviso-ok); }
-  [data-sonner-toast][data-type="error"] [data-icon] { color: var(--peligro); }
+  [data-sonner-toast][data-type="info"] [data-icon] { color: var(--t2); }
   [data-sonner-toast][data-type="warning"] [data-icon] { color: var(--alerta); }
-  [data-sonner-toast][data-type="info"] [data-icon] { color: var(--marca-tx); }
-  [data-sonner-toast][data-type="error"] { border-color: var(--peligro-borde); align-items: flex-start; }
+  [data-sonner-toast][data-type="error"] [data-icon] { color: var(--peligro); }
   /* El ícono en su caja de 18, sin los márgenes de sonner (su regla pesa más que [data-sonner-toast] [data-icon]). */
   [data-sonner-toaster] [data-sonner-toast][data-styled="true"] [data-icon] { width: 1.125rem; height: 1.125rem; margin: 0; }
   [data-sonner-toast][data-styled="true"] [data-title] { font-weight: 400; line-height: normal; }

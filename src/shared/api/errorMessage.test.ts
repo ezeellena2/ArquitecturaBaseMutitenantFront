@@ -58,6 +58,7 @@ describe("toastActionError", () => {
     toastActionError(ApiError.network(), t);
 
     expect(toastError).toHaveBeenCalledTimes(1);
-    expect(toastError).toHaveBeenCalledWith("Es el último Administrador.", expect.objectContaining({ duration: Number.POSITIVE_INFINITY, closeButton: true }));
+    // 210: sin una acción, el aviso de error se va a los 10 s.
+    expect(toastError).toHaveBeenCalledWith("Es el último Administrador.", expect.objectContaining({ duration: 10_000, closeButton: true }));
   });
 });

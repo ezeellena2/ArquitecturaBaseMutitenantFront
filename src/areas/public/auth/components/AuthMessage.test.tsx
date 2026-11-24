@@ -10,7 +10,8 @@ describe("AuthMessage", () => {
 
     const alert = screen.getByRole("alert");
     expect(alert).toHaveTextContent("El código no es válido.Te quedan 3 intentos.");
-    expect(alert).toHaveClass("bg-[var(--peligro-t)]", "text-[var(--peligro-tx)]");
+    // 210: la franja es blanca, con el filo rojo del error.
+    expect(alert).toHaveClass("bg-[var(--superficie)]", "border-l-[var(--peligro)]");
     expect(screen.getByText("Te quedan 3 intentos.")).toHaveClass("block");
   });
 
@@ -22,9 +23,9 @@ describe("AuthMessage", () => {
     expect(screen.getByText("El código no es válido.")).not.toHaveClass("opacity-85");
   });
 
-  it("la de atención es ámbar y sin mensaje no hay franja", () => {
+  it("la de atención lleva el filo ámbar y sin mensaje no hay franja", () => {
     const { rerender } = render(<AuthMessage message={{ tone: "warning", text: "Esperá un momento antes de pedir otro código." }} />);
-    expect(screen.getByRole("alert")).toHaveClass("bg-[var(--alerta-t)]", "text-[var(--alerta-tx)]");
+    expect(screen.getByRole("alert")).toHaveClass("bg-[var(--superficie)]", "border-l-[var(--alerta)]");
 
     rerender(<AuthMessage message={null} />);
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();

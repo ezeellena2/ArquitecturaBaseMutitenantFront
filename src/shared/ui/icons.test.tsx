@@ -82,14 +82,20 @@ describe("los íconos de las áreas", () => {
   });
 });
 
-// «Criterio · Formularios» (.aviso-mal), «Criterio · Avisos» y tableros Usuario, Rol y M-Usuario (.w-cartel, .f-banda): el
-// ícono de error es un círculo de 8,5, la raya de 8 a 12,5 y el punto en 15,8; los avisos lo piden con trazo 2.
+// 210 («Criterio · Avisos», Avisos según el tipo): el ícono de error es el octógono con la cruz, el mismo en el aviso de
+// abajo, la franja de un formulario, el cartel, la banda del teléfono, la pantalla de error y la campana; los avisos lo
+// piden con trazo 2.
 describe("el ícono de error", () => {
-  it("dibuja el del tablero y acepta su trazo", () => {
-    const svg = render(<icons.AlertCircleIcon strokeWidth={2} />).container.querySelector("svg")!;
-    expect(svg.querySelector("circle")).toHaveAttribute("r", "8.5");
-    expect([...svg.querySelectorAll("path")].map((path) => path.getAttribute("d"))).toEqual(["M12 8v4.5", "M12 15.8h.01"]);
+  it("dibuja el octógono del tablero y acepta su trazo", () => {
+    const svg = render(<icons.ErrorIcon strokeWidth={2} />).container.querySelector("svg")!;
+    expect(svg.querySelector("circle")).toBeNull();
+    expect([...svg.querySelectorAll("path")].map((path) => path.getAttribute("d")))
+      .toEqual(["M8.7 3h6.6L21 8.7v6.6L15.3 21H8.7L3 15.3V8.7z", "m14.5 9.5-5 5", "m9.5 9.5 5 5"]);
     expect(svg).toHaveAttribute("stroke-width", "2");
+  });
+
+  it("es el único ícono de error: el círculo con el signo salió", () => {
+    expect("AlertCircleIcon" in icons).toBe(false);
   });
 });
 

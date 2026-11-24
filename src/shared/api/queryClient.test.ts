@@ -96,8 +96,9 @@ describe("queryClient", () => {
     expect(call).toHaveBeenCalledTimes(1);
     expect(caught).toBeInstanceOf(ApiError);
     expect((caught as ApiError).retryAfterSeconds).toBe(42);
+    // 210: sin una acción, el aviso de error se va a los 10 s.
     expect(toastError).toHaveBeenCalledWith(i18n.t("rateLimited", { ns: "errors" }), expect.objectContaining({
-      duration: Number.POSITIVE_INFINITY,
+      duration: 10_000,
       closeButton: true,
     }));
   });
@@ -106,7 +107,7 @@ describe("queryClient", () => {
     const toastError = vi.spyOn(toast, "error");
     await failQuery("business", new ApiError(409, { code: "Users.Email.AlreadyTaken", detail: "Ese correo ya está en uso." }));
     expect(toastError).toHaveBeenCalledWith("Ese correo ya está en uso.", expect.objectContaining({
-      duration: Number.POSITIVE_INFINITY,
+      duration: 10_000,
       closeButton: true,
     }));
   });

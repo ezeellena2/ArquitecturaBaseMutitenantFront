@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { TriangleAlertIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { ApiError } from "@/shared/api/ApiError";
 import { Banner } from "./Banner";
@@ -7,6 +6,7 @@ import { Button } from "./button";
 import { useAppChrome } from "./app/AppChrome";
 import { PhoneBand } from "./app/PhoneBand";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { AlertTriangleIcon } from "./icons";
 
 interface ConcurrencyBannerProps {
   error: unknown;
@@ -33,9 +33,9 @@ export function ConcurrencyBanner({ error, isDirty, onSeeNew, onContinueEditing 
 
   return (
     <>
-      {/* Tablero M-Avisos («Alguien cambió esto»): en el teléfono, una banda ámbar debajo de la barra, con las dos
-          salidas en texto debajo del aviso. */}
-      {phone ? <PhoneBand tone="warning" role="alert" icon={<TriangleAlertIcon aria-hidden="true" className="mt-px size-4.5 shrink-0" />}>
+      {/* Tablero M-Avisos («Alguien cambió esto»): en el teléfono, la banda de atención debajo de la barra (blanca, con el
+          filo y el triángulo ámbar, 210), con las dos salidas en texto debajo del aviso. */}
+      {phone ? <PhoneBand tone="warning" role="alert" icon={<AlertTriangleIcon className="mt-px size-4.5 shrink-0" strokeWidth={2} />}>
         <span className="flex min-w-0 flex-1 flex-col gap-2">
           {t("concurrency.banner")}
           <span className="flex gap-4.5 font-semibold">

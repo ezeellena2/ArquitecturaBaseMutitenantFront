@@ -13,17 +13,20 @@ beforeAll(async () => {
 });
 
 describe("OfflineBanner", () => {
-  it("anuncia el aviso en español y usa el token del texto", () => {
+  // Tablero Avisos («Sin conexión», .w-cartel.o-prob) y 210: en la compu, el cartel que bloquea, blanco, con el filo y el
+  // ícono rojos y el texto en la tinta de siempre.
+  it("anuncia el aviso en español, blanco con el filo y el ícono rojos", () => {
     render(<I18nextProvider i18n={i18n}><OfflineBanner /></I18nextProvider>);
 
-    expect(screen.getByRole("status", { name: "Sin conexión" })).toHaveClass("bg-[var(--t1)]");
+    const banner = screen.getByRole("status", { name: "Sin conexión" });
+    expect(banner).toHaveClass("bg-[var(--superficie)]", "text-[var(--t1)]", "border-l-[3px]", "border-l-[var(--peligro)]");
+    expect(banner.querySelector("svg")).toHaveClass("text-[var(--peligro)]");
   });
 
-  // Tablero M-Avisos («Sin conexión»): en el teléfono es una banda roja clara debajo de la barra.
-  it("en el teléfono es una banda roja clara", () => {
+  // Tablero M-Avisos («Sin conexión»): en el teléfono es la banda debajo de la barra, blanca con el filo rojo (210).
+  it("en el teléfono es la banda de error", () => {
     render(<I18nextProvider i18n={i18n}><AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}><OfflineBanner /></AppChromeProvider></I18nextProvider>);
 
-    // M-Avisos (.f-banda.mal): el rosa de la banda del teléfono.
-    expect(screen.getByRole("status", { name: "Sin conexión" })).toHaveClass("bg-[var(--peligro-banda)]", "text-[var(--peligro-tx)]", "text-[0.90625rem]");
+    expect(screen.getByRole("status", { name: "Sin conexión" })).toHaveClass("bg-[var(--superficie)]", "border-l-[var(--peligro)]", "text-[0.90625rem]");
   });
 });

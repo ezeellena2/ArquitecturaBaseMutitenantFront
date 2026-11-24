@@ -32,12 +32,12 @@ describe("ConcurrencyBanner", () => {
       </I18nextProvider>,
     );
     expect(screen.getByRole("alert")).toHaveTextContent("Otra persona cambió esto mientras lo editabas.");
-    // Tablero «Criterio · Avisos»: un cartel de atención, ámbar, redondeado y sin borde, arriba del contenido.
-    expect(screen.getByRole("alert")).toHaveClass("rounded-[0.625rem]", "bg-[var(--alerta-t)]");
+    // Tablero «Criterio · Avisos»: un cartel de atención, redondeado, arriba del contenido; blanco con el filo ámbar (210).
+    expect(screen.getByRole("alert")).toHaveClass("rounded-[0.625rem]", "bg-[var(--superficie)]", "border-l-[var(--alerta)]");
     expect(screen.getByRole("alert")).not.toHaveClass("border-b");
     // Tablero Avisos («Alguien cambió esto», .w-cartel): el mismo cartel de atención (Banner), de 44 de alto con su
-    // botón chico, y el texto sin negrita en --alerta-tx.
-    expect(screen.getByRole("alert")).toHaveClass("min-h-11", "py-1.5", "text-[var(--alerta-tx)]");
+    // botón chico, y el texto sin negrita en la tinta de siempre.
+    expect(screen.getByRole("alert")).toHaveClass("min-h-11", "py-1.5", "text-[var(--t1)]");
     expect(screen.getByRole("alert").querySelector("strong")).toBeNull();
   });
 
@@ -97,7 +97,7 @@ describe("ConcurrencyBanner", () => {
     </AppChromeProvider></I18nextProvider>);
 
     const banner = screen.getByRole("alert");
-    expect(banner).toHaveClass("bg-[var(--alerta-t)]", "text-[var(--alerta-tx)]", "text-[0.90625rem]");
+    expect(banner).toHaveClass("bg-[var(--superficie)]", "border-l-[var(--alerta)]", "text-[0.90625rem]");
     const [first, second] = within(banner).getAllByRole("button");
     expect(first).toHaveTextContent("Seguir editando");
     expect(second).toHaveTextContent("Ver lo nuevo");

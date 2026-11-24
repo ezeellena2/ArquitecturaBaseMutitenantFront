@@ -219,8 +219,9 @@ describe("tema aprobado", () => {
       && !file.includes(`${path.sep}test${path.sep}`) && !file.endsWith("schema.d.ts"));
     const comments = /\/\*[\s\S]*?\*\/|(?<![:"'`])\/\/.*$/gm;
     // Siguen en px los cortes, que no cambian con la raíz, los anillos, que no se afinan, y la barra de 3 de lo abierto
-    // (142), que es una línea como un borde: los tableros la dibujan en 3 también en la compu.
-    const allowed = /@media[^\n]*|useMediaQuery\([^)]*\)|ring-\[3px\]|shadow-\[(?:inset_)?0_0_0_[^\]\s]*\]|shadow-\[inset_3px_0_0_var\(--marca\)\]/g;
+    // (142) y el filo de 3 de un aviso (210), que son líneas como un borde: los tableros las dibujan en 3 también en la
+    // compu.
+    const allowed = /@media[^\n]*|useMediaQuery\([^)]*\)|ring-\[3px\]|shadow-\[(?:inset_)?0_0_0_[^\]\s]*\]|shadow-\[inset_3px_0_0_var\(--marca\)\]|border-l-\[3px\]|border-left-width: 3px/g;
 
     for (const file of sourceFiles) {
       const source = readFileSync(file, "utf8").replace(comments, "").replace(allowed, "");
