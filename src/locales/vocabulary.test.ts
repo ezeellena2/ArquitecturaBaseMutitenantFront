@@ -75,6 +75,21 @@ describe("las palabras de la base de la 12", () => {
   });
 });
 
+// «Criterio · Diálogos» (213): una confirmación dice en una frase lo que se afecta, sin instrucciones ni «¿Estás seguro?»;
+// el título es la pregunta, con el nombre de lo que se toca.
+describe("las confirmaciones (213)", () => {
+  const unsure = /(?<!\p{L})est(?:[aá]s?|[eé]s) segur[oa]s?(?!\p{L})|are you sure/iu;
+
+  it("reconoce «¿Estás seguro?» sin confundirlo con un lugar seguro", () => {
+    for (const text of ["¿Estás seguro?", "¿Estás segura de quitarla?", "Are you sure?", "¿Está seguro de borrarlo?"]) expect(unsure.test(text), text).toBe(true);
+    for (const text of ["Guardalo en un lugar seguro.", "¿Quitar a Sofía Herrera de Grupo Delta?"]) expect(unsure.test(text), text).toBe(false);
+  });
+
+  it("nunca preguntan «¿Estás seguro?», en ningún idioma", () => {
+    expect([...spanish, ...english].filter(({ text }) => unsure.test(text)).map(({ at, text }) => `${at}: «${text}»`)).toEqual([]);
+  });
+});
+
 describe("el voseo y la Organización", () => {
   it("reconoce el tuteo sin confundirlo con el voseo ni con una descripción", () => {
     for (const text of ["¿Puedes revisar esto?", "Si tienes una cuenta, ingresá.", "Lo elegiste tú.", "Es para ti", "Haz clic acá",
