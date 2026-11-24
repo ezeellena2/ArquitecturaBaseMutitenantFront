@@ -25,15 +25,17 @@ it.each<{ route: string; as: CurrentUserFixture; endpoint: string; label: string
   { route: "/plataforma/cuentas", as: "platform-operator", endpoint: "/api/platform/accounts", label: "Buscar por nombre, correo o teléfono", payload: accountCounts([]) },
   { route: "/plataforma/organizaciones", as: "platform-operator", endpoint: "/api/platform/tenants", label: "Buscar por nombre o correo", payload: platformTenantsCounts([]) },
   { route: "/plataforma/recuperaciones", as: "platform-operator", endpoint: "/api/platform/recoveries", label: "Buscar por cuenta, correo o teléfono", payload: { total: 0, statuses: [] } },
+  // N30: Empresas pedía los conteos otra vez con cada búsqueda, para un resumen que cuenta todas.
+  { route: "/org/empresas", as: "business-e6-admin", endpoint: "/api/companies", label: "Buscar por nombre o CUIT", payload: { all: 0, active: 0, inactive: 0 } },
 ])("$route pide los conteos una sola vez, sin la búsqueda", async ({ route, as, endpoint, label, payload }) => {
   const user = userEvent.setup();
   const requests: URL[] = [];
   const listRequests: URL[] = [];
   server.use(
-    http.get("/api/companies/paged", () => HttpResponse.json({
+    ...endpoint === "/api/companies" ? [] : [http.get("/api/companies/paged", () => HttpResponse.json({
       items: Array.from({ length: 10 }, (_, index) => ({ id: `company-${index}`, name: `Empresa ${index}`, status: "Active" })),
       page: 1, pageSize: 10, totalCount: 101, totalPages: 11, hasPrevious: false, hasNext: true,
-    })),
+    }))],
     http.get(`${endpoint}/paged`, ({ request }) => {
       listRequests.push(new URL(request.url));
       return HttpResponse.json(emptyPage);

@@ -54,12 +54,7 @@ export function CompaniesPage() {
     queryKey: companiesQueryKey, queryFn: fetchCompanies, meta: { silent: true, blocksView: true },
   });
   const { status } = query;
-  const debouncedSearch = query.search ?? undefined;
-  const counts = useQuery({
-    queryKey: companiesCountQueryKey(debouncedSearch),
-    queryFn: () => fetchCompanyCounts(debouncedSearch),
-    meta: { silent: true },
-  });
+  const counts = useQuery({ queryKey: companiesCountQueryKey(), queryFn: () => fetchCompanyCounts(), meta: { silent: true } });
   // «Crear empresa» o «Editar» de una fila: el diálogo se monta solo mientras está abierto y es dueño de su borrador.
   const [dialog, setDialog] = useState<{ company?: CompanyResponse; returnFocusTo?: HTMLElement | null } | null>(null);
   // «Inactivar» de una fila: la confirmación le devuelve el foco al ⋮ de esa fila.

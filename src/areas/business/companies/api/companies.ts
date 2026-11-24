@@ -27,7 +27,8 @@ export type CompanyMembersQuery = PagedRequest & {
 import { companiesQueryRoot } from "@/shared/api/resourceOptions";
 export { companiesQueryRoot, companyQueryKey, fetchCompany } from "@/shared/api/resourceOptions";
 export const companiesQueryKey = (query: CompaniesQuery) => [...companiesQueryRoot, query] as const;
-export const companiesCountQueryKey = (search?: string) => [...companiesQueryRoot, "counts", search ?? ""] as const;
+/// Cuelga de la raíz del listado: una mutación que lo invalida se lleva también el resumen.
+export const companiesCountQueryKey = () => [...companiesQueryRoot, "counts"] as const;
 
 export const companyMembersQueryRoot = (companyId: string) => [...companiesQueryRoot, companyId, "members"] as const;
 export const companyMembersQueryKey = (companyId: string, query: CompanyMembersQuery) => [...companyMembersQueryRoot(companyId), query] as const;
@@ -38,9 +39,10 @@ export function fetchCompanies(query: CompaniesQuery): Promise<PagedResultOfComp
   return api.get<PagedResultOfCompanyResponse>(`/api/companies/paged${search ? `?${search}` : ""}`);
 }
 
-export function fetchCompanyCounts(search?: string): Promise<CompanyFilterCountsResponse> {
-  const query = toSearch({ search });
-  return api.get<CompanyFilterCountsResponse>(`/api/companies/filter-counts${query ? `?${query}` : ""}`);
+/// El resumen de la banda («12 empresas · 10 activas») cuenta todas: se pide una vez, sin la búsqueda ni los filtros, y no
+/// con cada búsqueda (N30).
+export function fetchCompanyCounts(): Promise<CompanyFilterCountsResponse> {
+  return api.get<CompanyFilterCountsResponse>("/api/companies/filter-counts");
 }
 
 export function createCompany(request: CreateCompanyRequest, idempotencyKey: string): Promise<string> {

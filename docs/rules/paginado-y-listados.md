@@ -54,7 +54,7 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
 ## Lo verifica
 - `pageSizes.test.ts` (E0)
 - `option-pagination.test.ts` y `RemoteOptions.test.tsx` (E4), correctivo C2: prohíben el corte fijo en 100 y eligen recursos fuera de la primera página con búsqueda remota.
-- `src/test/filter-counts.test.tsx` (base de la 12, E12): los conteos del resumen se piden una vez, sin la búsqueda ni los filtros, en las cinco listas.
+- `src/test/filter-counts.test.tsx` (base de la 12, E12; Empresas con la N30): los conteos del resumen se piden una vez, sin la búsqueda ni los filtros, en las seis listas.
 
 ## Detalle
 [frontend.md §4, "Paginado, orden y búsqueda"](../architecture/frontend.md#paginado-orden-y-búsqueda) · back: `docs/rules/paginado-y-busqueda.md`
