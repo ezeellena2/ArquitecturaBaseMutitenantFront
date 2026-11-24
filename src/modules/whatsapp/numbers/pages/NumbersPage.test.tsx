@@ -54,7 +54,7 @@ async function openMeta(me = whatsappOwner, company?: string) {
   await page.user.click(await screen.findByRole("button", { name: "Conectar número" }));
   const dialog = await screen.findByRole("dialog", { name: "Conectar número" });
   if (company) {
-    within(dialog).getByRole("combobox", { name: "Atiende a" }).focus();
+    within(dialog).getByRole("button", { name: /^Atiende a / }).focus();
     await page.user.keyboard("{Enter}");
     await page.user.click(await screen.findByRole("option", { name: company }));
   }

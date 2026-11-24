@@ -54,7 +54,7 @@ export function NumberCompanyDialog({ number, title, onClose, returnFocusTo }: {
       <form noValidate onSubmit={(event) => { void submit(event); }} className="flex min-h-0 flex-col">
         <DialogBody>
           <FormField label={t("whatsapp:numbers.company.label")} required>
-            <CompanySelect value={company.field.value} current={number.company} onChange={(value) => { company.field.onChange(value); clear(); }} />
+            <CompanySelect value={company.field.value} current={number.company} onChange={(value) => { if (value === company.field.value) return; company.field.onChange(value); clear(); }} />
           </FormField>
           <FormError message={actionErrorMessage(failure, t)} />
         </DialogBody>

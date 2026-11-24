@@ -38,7 +38,6 @@ const pending = new Set([
   "modules/whatsapp/chats/components/TemplateDialog.tsx",
   "modules/whatsapp/contacts/components/EditContactDialog.tsx",
   "modules/whatsapp/contacts/components/ImportContactsDialog.tsx",
-  "modules/whatsapp/numbers/components/CompanySelect.tsx",
   "modules/whatsapp/phones/pages/LoadPhonesPage.tsx",
   "modules/whatsapp/teams/components/TeamDialog.tsx",
   "modules/whatsapp/templates/components/TemplateDialog.tsx",
