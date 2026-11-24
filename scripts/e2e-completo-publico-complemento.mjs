@@ -7,6 +7,7 @@ import { cleanupContinuationSessions } from "./e2e-completo-continuacion.mjs";
 import { assertViewport } from "./e2e-completo-personal.mjs";
 import { openAction } from "./e2e-completo-plataforma.mjs";
 import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
+import { pickerButton, pickerSearch } from "./e2e-pieza.mjs";
 
 const definition = (number, actor, action, route, expected, covers = []) => ({
   id: "PUB-C-" + String(number).padStart(2, "0"), area: "Sitio público y Configuración", actor, action, route, expected, covers,
@@ -152,9 +153,9 @@ async function operatorAction(h, page, tenantId, action, reason, moderation = fa
   await dialog.getByRole("button", { name: action, exact: true }).click();
   await dialog.waitFor({ state: "hidden" }); assert.equal((await response).status(), 200);
 }
-async function selectReference(page, label, wanted, search) {
-  const control = page.getByRole("combobox", { name: label, exact: true }); await control.click();
-  const input = page.getByRole("searchbox", { name: search, exact: true });
+async function selectReference(page, label, wanted) {
+  const control = pickerButton(page, label); await control.click();
+  const input = pickerSearch(page, label);
   if (await input.isVisible()) await input.fill(wanted);
   await page.getByRole("option", { name: new RegExp(escapeRegex(wanted), "u") }).first().click();
   return control.innerText();
@@ -162,26 +163,19 @@ async function selectReference(page, label, wanted, search) {
 export async function auditFilter(h, page, key, label) {
   if (h.width === 390) {
     const trigger = page.getByRole("button", { name: "Filtros de auditoría", exact: true }); await trigger.click();
-    const sheet = page.getByRole("dialog", { name: "Filtros de auditoría", exact: true });
-    const group = sheet.getByRole("group", { name: { period: "Período", category: "Tema", actor: "Quién" }[key], exact: true });
-    const radio = group.getByRole("radio", { name: label, exact: true });
-    const value = await radio.getAttribute("value"); assert.ok(value, "El filtro debe tener un valor real antes de seleccionarlo.");
-    // FilterBar onChange actualiza la URL y desmonta la hoja: check no puede verificar ese mismo nodo después.
-    await group.getByText(label, { exact: true }).click(); await sheet.waitFor({ state: "hidden" });
-    await page.waitForURL((url) => {
-      if (url.pathname !== "/org/auditoria") return false;
-      const query = url.searchParams;
-      if (key === "actor") return value === "all" ? !query.has("actorId") && !query.has("actorKind")
-        : query.get("actorId") === value && !query.has("actorKind") || query.get("actorKind") === value && !query.has("actorId");
-      return value === "all" && key === "category" || value === "30" && key === "period" ? !query.has(key) : query.get(key) === value;
-    });
-    await trigger.click(); await radio.waitFor({ state: "visible" });
-    try { assert.equal(await radio.isChecked(), true, "El filtro elegido debe conservarse seleccionado al reabrir su hoja."); }
+    // «Filtros» a pantalla completa: cada filtro es la pieza para elegir (262), que aplica al elegir; «Listo» vuelve.
+    const sheet = page.getByRole("dialog", { name: "Filtros", exact: true });
+    const name = { period: "Período", category: "Tema", actor: "Quién" }[key];
+    await pickerButton(sheet, name).click(); await page.getByRole("option", { name: label, exact: true }).click();
+    await page.waitForURL((url) => url.pathname === "/org/auditoria");
+    if (await sheet.isVisible()) { await sheet.getByRole("button", { name: "Listo", exact: true }).click(); await sheet.waitFor({ state: "hidden" }); }
+    await trigger.click(); const field = pickerButton(sheet, name); await field.waitFor({ state: "visible" });
+    try { assert.ok((await field.innerText()).includes(label), "El filtro elegido debe conservarse al reabrir «Filtros»."); }
     finally { await page.keyboard.press("Escape"); await sheet.waitFor({ state: "hidden" }); }
   } else {
     const trigger = { period: /^(Últimos 30 días|Todo|Hoy|Últimos 7 días)$/u, category: /^(Tema: todos|Usuarios)$/u, actor: /^(Quién: todos|Plataforma)$/u }[key];
     await page.getByRole("button", { name: trigger }).first().click();
-    await page.getByRole("menuitemradio", { name: label, exact: true }).click();
+    await page.getByRole("option", { name: label, exact: true }).click();
   }
 }
 
@@ -310,9 +304,9 @@ export async function runPublicSupplementCases(h) {
       }, next);
       await aPage.getByRole("textbox", { name: "Nombre de la organización", exact: true }).fill("Organización configurada " + tag);
       const selected = [
-        ["Idioma y región predeterminados", await selectReference(aPage, "Idioma y región predeterminados", labels.culture, "Buscar cultura")],
-        ["Zona horaria predeterminada", await selectReference(aPage, "Zona horaria predeterminada", next.timeZone.city, "Buscar zona horaria")],
-        ["Moneda predeterminada", await selectReference(aPage, "Moneda predeterminada", labels.currency, "Buscar moneda")],
+        ["Idioma y región predeterminados", await selectReference(aPage, "Idioma y región predeterminados", labels.culture)],
+        ["Zona horaria predeterminada", await selectReference(aPage, "Zona horaria predeterminada", next.timeZone.city)],
+        ["Moneda predeterminada", await selectReference(aPage, "Moneda predeterminada", labels.currency)],
       ];
       const response = await clickForResponse(aPage, aPage.getByRole("button", { name: "Guardar cambios", exact: true }), "/api/organization/settings", "PUT");
       const sent = response.request().postDataJSON(); assert.equal(sent.version, before.version);
@@ -320,7 +314,7 @@ export async function runPublicSupplementCases(h) {
       const after = await read(h, aPage, "/api/organization/settings");
       for (const key of ["name", "defaultCulture", "defaultTimeZoneId", "defaultCurrency"]) assert.equal(after[key], sent[key]); assert.notEqual(after.version, before.version);
       await aPage.reload(); assert.equal(await aPage.getByRole("textbox", { name: "Nombre de la organización", exact: true }).inputValue(), sent.name);
-      for (const [label, value] of selected) assert.equal(await aPage.getByRole("combobox", { name: label, exact: true }).innerText(), value);
+      for (const [label, value] of selected) assert.equal(await pickerButton(aPage, label).innerText(), value);
       assert.equal((await read(h, aPage, "/api/organization/settings")).version, after.version); await assertViewport(aPage);
       return "Un PUT versionado guardó nombre/cultura/zona/moneda elegidos del catálogo real; F5 y relectura los conservan.";
     });
@@ -348,7 +342,7 @@ export async function runPublicSupplementCases(h) {
       const invitedEmail = "auditoria-publica-" + tag + "@example.test";
       await aPage.goto(new URL("/org/usuarios", h.base).href); await aPage.getByRole("button", { name: "Invitar usuario", exact: true }).click();
       const invite = aPage.getByRole("dialog", { name: "Invitar usuario", exact: true }); await invite.getByRole("textbox", { name: "Correo", exact: true }).fill(invitedEmail);
-      await invite.getByRole("combobox", { name: "Empresa", exact: true }).click(); await aPage.getByRole("option", { name: companyA.name, exact: true }).click();
+      await pickerButton(invite, "Empresa").click(); await aPage.getByRole("option", { name: companyA.name, exact: true }).click();
       await invite.getByRole("button", { name: "Roles en la empresa", exact: true }).click(); await aPage.getByRole("menuitemcheckbox", { name: "Administrador", exact: true }).click(); await aPage.keyboard.press("Escape");
       await clickForResponse(aPage, invite.getByRole("button", { name: "Invitar", exact: true }), "/api/users/invitations", "POST", 201); await invite.waitFor({ state: "hidden" });
       // Genera el evento de Plataforma por una acción UI legítima, sin seed de auditoría.

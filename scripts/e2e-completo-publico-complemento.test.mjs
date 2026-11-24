@@ -5,24 +5,27 @@ import { publicSupplementDefinitions, requireUnavailableMatrix, chooseReferenceC
   requireAuditPrivacy, withPublicRestoration, publicHostUrl } from "./e2e-completo-publico-complemento.mjs";
 import * as publicCases from "./e2e-completo-publico-complemento.mjs";
 
-test("el filtro móvil pulsa el texto visible, espera cierre y verifica URL y radio persistido al reabrir", async () => {
+test("el filtro móvil elige en la pieza de «Filtros», espera la URL y verifica lo elegido al reabrir", async () => {
   for (const selected of [true, false]) {
-    const calls = []; let open = false; let current = new URL("https://localtest.me/org/auditoria?search=propio");
-    const radio = { getAttribute: async (key) => { assert.equal(key, "value"); return "users"; }, waitFor: async () => assert.equal(open, true),
-      check: async () => assert.fail("onChange desmonta este radio antes de la postcondición de check"), isChecked: async () => selected };
-    const group = { getByRole: (role, options) => { assert.equal(role, "radio"); assert.deepEqual(options, { name: "Usuarios", exact: true }); return radio; },
-      getByText: (label, options) => { assert.equal(label, "Usuarios"); assert.deepEqual(options, { exact: true }); return { click: async () => { calls.push("Usuarios visible"); current.searchParams.set("category", "users"); open = false; } }; } };
-    const sheet = { getByRole: (role, options) => { assert.equal(role, "group"); assert.deepEqual(options, { name: "Tema", exact: true }); return group; },
+    const calls = []; let open = false; const current = new URL("https://localtest.me/org/auditoria?search=propio");
+    const field = { click: async () => calls.push("abrir Tema"), waitFor: async () => assert.equal(open, true), innerText: async () => selected ? "Usuarios" : "Todos" };
+    const sheet = { getByRole: (role, options) => {
+      assert.equal(role, "button");
+      if (options.name === "Listo") { assert.deepEqual(options, { name: "Listo", exact: true }); return { click: async () => { open = false; calls.push("Listo"); } }; }
+      assert.ok(options.name.test("Tema Todos")); assert.ok(!options.name.test("Temario")); return field;
+    }, isVisible: async () => open,
       waitFor: async (options) => { assert.deepEqual(options, { state: "hidden" }); assert.equal(open, false); calls.push("hoja cerrada"); } };
     const trigger = { click: async () => { open = true; calls.push("abrir filtros"); } };
     const page = { getByRole: (role, options) => {
-      assert.deepEqual(options, { name: "Filtros de auditoría", exact: true }); return role === "button" ? trigger : sheet;
+      if (role === "option") { assert.deepEqual(options, { name: "Usuarios", exact: true }); return { click: async () => { calls.push("Usuarios"); current.searchParams.set("category", "users"); } }; }
+      if (role === "dialog") { assert.deepEqual(options, { name: "Filtros", exact: true }); return sheet; }
+      assert.deepEqual(options, { name: "Filtros de auditoría", exact: true }); return trigger;
     }, waitForURL: async (predicate) => {
-      assert.equal(predicate(current), true); assert.equal(predicate(new URL("https://localtest.me/org/auditoria?category=roles")), false); calls.push("category users en URL");
+      assert.equal(predicate(current), true); assert.equal(predicate(new URL("https://localtest.me/org/otra")), false); calls.push("URL");
     }, keyboard: { press: async (key) => { assert.equal(key, "Escape"); open = false; calls.push("Escape"); } } };
     const filter = () => publicCases.auditFilter({ width: 390 }, page, "category", "Usuarios");
-    if (selected) await filter(); else await assert.rejects(filter, /filtro.*seleccionado/iu);
-    assert.deepEqual(calls, ["abrir filtros", "Usuarios visible", "hoja cerrada", "category users en URL", "abrir filtros", "Escape", "hoja cerrada"]);
+    if (selected) await filter(); else await assert.rejects(filter, /filtro.*conservarse/iu);
+    assert.deepEqual(calls, ["abrir filtros", "abrir Tema", "Usuarios", "URL", "Listo", "hoja cerrada", "abrir filtros", "Escape", "hoja cerrada"]);
   }
 });
 

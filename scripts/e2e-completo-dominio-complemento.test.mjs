@@ -68,7 +68,7 @@ test("el estado móvil se elige por su etiqueta visible y se comprueba después 
         if (role === "region") { assert.equal(options.name, "Acceso a la organización"); return region; }
         assert.equal(role, "dialog", "El input radio sr-only no es el blanco del clic real."); assert.equal(options.name, "Estado"); return sheet;
       }
-      if (role === "combobox") { assert.equal(options.name, "Estado"); return state; }
+      if (role === "button") { assert.equal(options.name.test("Estado Activo"), true); return state; }
       assert.equal(role, "option"); assert.equal(options.name, label); return { click: async () => { chosen = label; calls.push("opción escritorio"); } };
     } };
     await domain.chooseDomainMemberState({ width }, page, active); assert.equal(chosen, label);

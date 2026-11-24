@@ -9,6 +9,7 @@ import { clickForResponse, requireProblem } from "./e2e-completo-negocio.mjs";
 import { openPlatformSettings } from "./test-e2e-real-whatsapp-settings.mjs";
 import { cleanupContinuationSessions } from "./e2e-completo-continuacion.mjs";
 import { assertViewport } from "./e2e-completo-personal.mjs";
+import { pickerButton } from "./e2e-pieza.mjs";
 
 export const contractSupplementDefinitions = [
   { id: "CON-01", area: "Sesión histórica", actor: "Otra persona con organización propia y operador con sesión separada", action: "Abrir las dos puertas con la cookie pública firmada del operador anterior", route: "/login · /login/empresa", expected: "Cada puerta retira sólo el legado público, admite a la cuenta por OTP y conserva la misma sesión de Plataforma tras F5, en un único contexto persistente.", covers: ["BACK-ID-029"], critical: true, source: "scripts/test-e2e-real.test.mjs#A8: sesiones antiguas abren ambas puertas y conservan Plataforma a 1440 y 390" },
@@ -161,7 +162,7 @@ async function checkSharedQuota(h, page, platformPage, state) {
   const business = await h.registerBusiness(page); state.publicSignedIn = true;
   const roleName = `Contrato de cuota ${randomUUID().slice(0, 8)}`;
   await page.goto(new URL("/org/roles/nuevo", h.base).href); await page.getByRole("textbox", { name: "Nombre", exact: true }).fill(roleName);
-  await page.getByRole("combobox", { name: "Vale en", exact: true }).click(); await page.getByRole("option", { name: "Toda la organización", exact: true }).click();
+  await pickerButton(page, "Vale en").click(); await page.getByRole("option", { name: "Toda la organización", exact: true }).click();
   await page.getByRole("button", { name: "Abrir o cerrar Roles", exact: true }).click(); await page.getByRole("checkbox", { name: "Ver roles", exact: true }).check();
   const created = await clickForResponse(page, page.getByRole("button", { name: "Crear rol", exact: true }), "/api/roles", "POST", 201);
   const roleId = await created.json(); assert.match(roleId, /^[0-9a-f-]{36}$/iu); await page.getByRole("heading", { name: roleName, exact: true }).waitFor();
@@ -237,7 +238,7 @@ async function checkLostRoleReplay(h, page, _platformPage, state) {
   const initialRoles = await read(h, page, "/api/roles/paged?page=1&pageSize=50&search=" + encodeURIComponent(name)); assert.equal(initialRoles.totalCount, 0);
   await page.goto(new URL("/org/roles/nuevo", h.base).href);
   await page.getByRole("textbox", { name: "Nombre", exact: true }).fill(name);
-  await page.getByRole("combobox", { name: "Vale en", exact: true }).click(); await page.getByRole("option", { name: "Toda la organización", exact: true }).click();
+  await pickerButton(page, "Vale en").click(); await page.getByRole("option", { name: "Toda la organización", exact: true }).click();
   await page.getByRole("button", { name: "Abrir o cerrar Roles", exact: true }).click(); await page.getByRole("checkbox", { name: "Ver roles", exact: true }).check();
   const lost = deferred(); const attempts = []; const routeUrl = new URL("/api/roles", h.base).href;
   const intercept = async (route) => {

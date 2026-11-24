@@ -6,6 +6,7 @@ import { pickupCode } from "./test-e2e-real-mail.mjs";
 import { clickForResponse, requireProblem, runBusinessDependencyCase } from "./e2e-completo-negocio.mjs";
 import { requireSyntheticEmail } from "./e2e-completo-soporte.mjs";
 import { sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs";
+import { pickerButton } from "./e2e-pieza.mjs";
 
 const preparedDomain = "corp.example.test";
 const preparedEmail = "e2e-managed@corp.example.test";
@@ -63,7 +64,7 @@ async function addDomainBackupCompany(h, page, memberId, company, role) {
   await page.goto(new URL(`/org/usuarios/${memberId}`, h.base).href);
   await page.getByRole("button", { name: "Agregar empresa", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Agregar empresa", exact: true });
-  await dialog.getByRole("combobox", { name: "Empresa", exact: true }).click();
+  await pickerButton(dialog, "Empresa").click();
   await page.getByRole("option", { name: company.name, exact: true }).click();
   await dialog.getByRole("button", { name: "Roles en la empresa", exact: true }).click();
   await page.getByRole("menuitemcheckbox", { name: role.name, exact: true }).click(); await page.keyboard.press("Escape");
@@ -117,7 +118,7 @@ export async function chooseDomainMemberState(h, page, active) {
     await sheet.getByText(label, { exact: true }).click(); await sheet.waitFor({ state: "hidden" });
     await state.getByText(label, { exact: true }).waitFor();
   }
-  else { await page.getByRole("combobox", { name: "Estado", exact: true }).click(); await page.getByRole("option", { name: label, exact: true }).click(); }
+  else { await pickerButton(page, "Estado").click(); await page.getByRole("option", { name: label, exact: true }).click(); }
 }
 async function memberState(h, page, memberId, active, onSaved = () => {}) {
   await page.goto(new URL(`/org/usuarios/${memberId}`, h.base).href); await chooseDomainMemberState(h, page, active);

@@ -8,6 +8,7 @@ import { sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs";
 import { confirmRecentAuthentication, stopConfirmingRecentAuthentication } from "./platform-factor-real.mjs";
 import { openPublicModerationAction } from "./e2e-completo-publico-complemento.mjs";
 import { chooseBarAction } from "./e2e-completo-menu-barra.mjs";
+import { pickerButton } from "./e2e-pieza.mjs";
 
 const def = (number, actor, action, route, expected, covers = [], extra = {}) => ({ id: `ORX-${String(number).padStart(2, "0")}`, area: "Organizaciones · complemento", actor, action, route, expected, covers, critical: true, source: "scripts/e2e-completo-organizaciones-complemento.mjs", ...extra });
 export const organizationSupplementDefinitions = [
@@ -136,7 +137,7 @@ async function invite(h, page, company, email = syntheticEmail("orx-invitado"), 
   return observeOrganizationInvitationAction(h, page, async ({ phase, assertNoPosts }) => {
     await page.goto(new URL("/org/usuarios", h.base).href); await page.getByRole("button", { name: "Invitar usuario", exact: true }).click(); const dialog = page.getByRole("dialog", { name: "Invitar usuario", exact: true });
     await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(email); phase("empresa");
-    await dialog.getByRole("combobox", { name: "Empresa", exact: true }).click(); await page.getByRole("option", { name: company.name, exact: true }).click();
+    await pickerButton(dialog, "Empresa").click(); await page.getByRole("option", { name: company.name, exact: true }).click();
     phase("roles");
     if (companyRoleName) { await dialog.getByRole("button", { name: "Roles en la empresa", exact: true }).click(); await page.getByRole("menuitemcheckbox", { name: companyRoleName, exact: true }).click(); await page.keyboard.press("Escape"); }
     const before = new Set(await h.env.files()); phase("antesInvitar"); assertNoPosts(); phase("clickInvitar");
@@ -245,7 +246,7 @@ async function runOrganizationPlan(h, repair, definitions) {
       await originalFixture();
       for (let index = 0; index < 10; index++) { const issued = await inviteCurrent(company); await expire(issued); }
       const roleName = `Administrador propio ORX ${tag}`; await page.goto(url("/org/roles/nuevo")); await page.getByRole("textbox", { name: "Nombre", exact: true }).fill(roleName);
-      await page.getByRole("combobox", { name: "Vale en", exact: true }).click(); await page.getByRole("option", { name: company.name, exact: true }).click(); await page.getByRole("button", { name: "Abrir o cerrar Miembros", exact: true }).click();
+      await pickerButton(page, "Vale en").click(); await page.getByRole("option", { name: company.name, exact: true }).click(); await page.getByRole("button", { name: "Abrir o cerrar Miembros", exact: true }).click();
       for (const permission of ["Ver miembros", "Administrar miembros"]) await page.getByRole("checkbox", { name: permission, exact: true }).check();
       const createdRole = await clickForResponse(page, page.getByRole("button", { name: "Crear rol", exact: true }), "/api/roles", "POST", 201); const roleId = await createdRole.json(); await page.getByRole("heading", { name: roleName, exact: true }).waitFor();
       companyAdmin = await inviteCurrent(company, syntheticEmail("orx-admin"), roleName);

@@ -10,6 +10,7 @@ import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { clickForResponse, requireProblem } from "./e2e-completo-negocio.mjs";
 import { assertViewport } from "./e2e-completo-personal.mjs";
 import { cleanupContinuationSessions } from "./e2e-completo-continuacion.mjs";
+import { pickerButton } from "./e2e-pieza.mjs";
 
 export const quotaWhatsAppDefinitions = [
   { id: "CUOTA-WA-01", area: "WhatsApp · cuota diaria real", actor: "Visitante de entorno fresco y persona con Phone verificado propio", action: "Agotar los800 códigos nuevos y conservar el ingreso protegido dentro del total1000", route: "/registro · /login · /", expected: "Alta Phone verificada consume1 nuevo;799 admisiones nuevas más agotan la capacidad. Otro destino nunca usado recibe429 WhatsApp.LoginCode.DailyLimit con Retry-After/traceId; el Phone verificado todavía recibe202, prueba OTP y Me200 de la misma persona. No acredita ausencia persistida de LoginCodes/outbox.", covers: [], critical: true, source: "back:tests/ArquitecturaBaseMultitenant.Api.IntegrationTests/TestFeatures/WhatsAppBrowser/RecorridoWhatsAppModule.cs; back:src/ArquitecturaBaseMultitenant.Application/Modules/WhatsApp/Services/WhatsAppCodeQuotaIssuer.cs; scripts/e2e-completo-cuota-whatsapp.mjs" },
@@ -93,8 +94,8 @@ export async function phoneForm(h, page, phone, route, { previousStatus, freshNa
       throw error;
     }
   }
-  const channel = page.getByRole("button", { name: "WhatsApp", exact: true });
-  await channel.waitFor({ state: "visible" }); await channel.click();
+  const channel = pickerButton(page, "Método de ingreso");
+  await channel.waitFor({ state: "visible" }); await channel.click(); await page.getByRole("option", { name: "WhatsApp", exact: true }).click();
   const number = page.getByRole("textbox", { name: /^(Tu )?número de WhatsApp$/iu });
   await number.waitFor({ state: "visible" }); await number.fill(nationalPhone(phone));
   if (route === "/registro") {

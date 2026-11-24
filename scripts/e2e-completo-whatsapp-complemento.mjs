@@ -12,6 +12,7 @@ import { assertViewport } from "./e2e-completo-personal.mjs";
 import { openBarMenu } from "./e2e-completo-menu-barra.mjs";
 import { checkByLabel } from "./platform-factor-real.mjs";
 import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
+import { pickerButton } from "./e2e-pieza.mjs";
 
 const root = "/api/organization/whatsapp";
 const def = (id, actor, action, route, expected, covers = [], extra = {}) => ({
@@ -219,7 +220,7 @@ async function createRole(h, page, name, permission) {
   const item = group.permissions.find((entry) => entry.code === permission);
   await page.goto(new URL("/org/roles/nuevo", h.base).href);
   await page.getByRole("textbox", { name: "Nombre", exact: true }).fill(name);
-  await page.getByRole("combobox", { name: "Vale en", exact: true }).click();
+  await pickerButton(page, "Vale en").click();
   await page.getByRole("option", { name: "Toda la organización", exact: true }).click();
   await page.getByRole("button", { name: "Abrir o cerrar " + group.name, exact: true }).click();
   await mark(page, page.getByRole("checkbox", { name: item.name, exact: true }), true);
@@ -254,7 +255,7 @@ async function uploadPreview(page, dialog, file, status = 200) {
 }
 async function registerPhone(h, page, phone, cursor) {
   await page.goto(new URL("/registro", h.base).href);
-  await page.getByRole("button", { name: "WhatsApp", exact: true }).click();
+  await pickerButton(page, "Método de ingreso").click(); await page.getByRole("option", { name: "WhatsApp", exact: true }).click();
   await page.getByRole("textbox", { name: /^(Tu )?número de WhatsApp$/iu }).fill(nationalPhone(phone));
   await mark(page, page.getByRole("checkbox", { name: /Acepto los Términos/ }), true);
   await sendWithCooldown(() => clickForResponse(page, page.getByRole("button", { name: "Crear cuenta", exact: true }), "/api/auth/signup", "POST", null));
@@ -268,7 +269,7 @@ async function addPhone(h, page, phone, cursor) {
   await page.goto(new URL("/cuenta", h.base).href); await heading(page, "Mi cuenta");
   await page.getByRole("button", { name: "Agregar correo o teléfono", exact: true }).click();
   const dialog = page.getByRole("dialog");
-  await dialog.getByRole("button", { name: "WhatsApp", exact: true }).click();
+  await pickerButton(dialog, "Qué querés agregar").click(); await page.getByRole("option", { name: "WhatsApp", exact: true }).click();
   await dialog.getByRole("textbox", { name: "Número", exact: true }).fill(nationalPhone(phone));
   const sent = await sendWithCooldown(() => clickForResponse(page, dialog.getByRole("button", { name: "Enviar código", exact: true }), "/api/me/login-methods", "POST", null));
   const methodId = (await sent.json()).methodId;
@@ -518,7 +519,7 @@ async function runWhatsAppSupplementPlan(h, repair, mobile = false) {
       await ownerPage.goto(new URL("/org/whatsapp/contactos/" + customerChat.contactId, h.base).href);
       const edit = h.width === 390 ? await supplementWhatsAppBarAction(ownerPage, "Editar contacto") : ownerPage.getByRole("button", { name: "Editar contacto", exact: true });
       await edit.click(); const dialog = ownerPage.getByRole("dialog", { name: "Editar contacto", exact: true });
-      await dialog.getByRole("radio", { name: "Acepta", exact: true }).click();
+      await pickerButton(dialog, "Promociones").click(); await ownerPage.getByRole("option", { name: "Acepta", exact: true }).click();
       await clickForResponse(ownerPage, dialog.getByRole("button", { name: h.width === 390 ? "Guardar" : "Guardar cambios", exact: true }), root + "/contacts/" + customerChat.contactId, "PUT");
       assert.equal((await read(h, ownerPage, root + "/contacts/" + customerChat.contactId)).consent, "Accepted");
       assert.equal((await cursor("orgInbound", { reply: { type: "button", id: "bot.unsubscribe" } })).status, 200);
@@ -581,7 +582,7 @@ async function runWhatsAppSupplementPlan(h, repair, mobile = false) {
       const before = await read(h, ownerPage, "/api/users/paged?page=1&pageSize=100");
       await ownerPage.goto(new URL("/org/usuarios/cargar-telefonos", h.base).href);
       await ownerPage.getByRole("textbox", { name: "Uno por renglón, hasta 200", exact: true }).fill(nationalPhone(invitePhone));
-      await ownerPage.getByRole("combobox", { name: "Empresa", exact: true }).click();
+      await pickerButton(ownerPage, "Empresa").click();
       await ownerPage.getByRole("option", { name: company.name, exact: true }).click();
       await ownerPage.getByRole("button", { name: "Roles en la empresa", exact: true }).click();
       await ownerPage.getByRole("menuitemcheckbox", { name: "Administrador", exact: true }).click(); await ownerPage.keyboard.press("Escape");

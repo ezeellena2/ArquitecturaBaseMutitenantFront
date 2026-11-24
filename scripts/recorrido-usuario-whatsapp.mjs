@@ -4,6 +4,7 @@ import { setTimeout as delay } from "node:timers/promises";
 import { fillOtp, openPlatformAccountSearch } from "./test-e2e-real-ui.mjs";
 import { navigationResponses, reloadResponse, responsesForAction, safeActionErrorKind } from "./test-e2e-real-whatsapp-action.mjs";
 import { decideAfterRecoveryNotice, recoveryRow, selectRecovery } from "./test-e2e-real-whatsapp-recovery.mjs";
+import { pickerButton } from "./e2e-pieza.mjs";
 
 export const e8SourceRevision = "8a3ac6a57c6bb411bff13967ab74f4501b38b45e";
 export const e8ManualChecks = [
@@ -140,7 +141,10 @@ export async function runE8Journey({ page, platformPage, width, env, base, site,
     assert.equal(reply.status(), status); return reply;
   };
   const channel = async (target, destination, label = /^(Tu )?número de WhatsApp$/i) => {
-    await target.getByRole("button", { name: "WhatsApp", exact: true }).click();
+    // La pieza para elegir (262): en el ingreso, «Método de ingreso»; en «Agregar correo o teléfono», «Qué querés agregar».
+    const root = typeof target.page === "function" ? target.page() : target;
+    await pickerButton(target, label === "Número" ? "Qué querés agregar" : "Método de ingreso").click();
+    await root.getByRole("option", { name: "WhatsApp", exact: true }).click();
     await target.getByRole("textbox", { name: label }).fill(destination);
   };
   const assertOidc = (since, access = "consumer") => {

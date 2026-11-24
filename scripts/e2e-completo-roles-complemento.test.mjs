@@ -137,8 +137,8 @@ test("deshabilitar espera la elección móvil y confirma un único PUT antes de 
       waitForResponse: async (predicate) => { assert.equal(predicate(response), true); return response; },
       getByRole: (role, { name } = {}) => {
         if (role === "region") return { getByRole: () => ({ click: async () => { sheetOpen = true; } }) };
-        if (role === "combobox") return { click: async () => {} };
         if (role === "option") return option;
+        if (name instanceof RegExp) { assert.equal(name.test("Estado Activo"), true); return { click: async () => {} }; }
         if (role === "dialog") return name === "Estado" ? sheet : { getByRole: () => ({ click: async () => { assert.equal(confirmed, true); writes++; } }) };
         assert.equal(role, "button"); assert.equal(name, "Guardar cambios");
         return { click: async () => { assert.equal(chosen, true); if (width === 390) assert.equal(sheetClosed, true); confirmed = true; } };

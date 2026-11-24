@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { caseDelay as delay, newCaseContext } from "./test-e2e-real-case.mjs";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { completeOperatorFactor, confirmRecentAuthentication, factorKeeper } from "./platform-factor-real.mjs";
+import { pickerButton } from "./e2e-pieza.mjs";
 
 // E9 en el E2E real (pedido del Coordinador de la 9 para I1): el segundo factor, «Confirmá que sos vos», restablecer el
 // autenticador, las dos cookies, los 14 permisos, Auditoría y un límite de uso. Cada caso usa su operador del entorno
@@ -493,7 +494,7 @@ export function etapa9Cases(env) {
         const roleName = `Lectura E9 ${randomUUID().slice(0, 8)}`;
         await page.goto(new URL("/org/roles/nuevo", baseUrl).href);
         await page.getByRole("textbox", { name: "Nombre" }).fill(roleName);
-        await page.getByRole("combobox", { name: "Vale en" }).click();
+        await pickerButton(page, "Vale en").click();
         await page.getByRole("option", { name: "Toda la organización" }).click();
         await page.getByRole("button", { name: "Abrir o cerrar Roles", exact: true }).click();
         const permission = page.getByRole("checkbox", { name: "Ver roles", exact: true });

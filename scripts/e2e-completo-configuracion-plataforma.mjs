@@ -4,6 +4,7 @@ import settingsTexts from "../src/locales/es/platformSettings.json" with { type:
 import { openPlatformSettings, reloadPlatformSettings, selectSetting, withRestoredSettings } from "./test-e2e-real-whatsapp-settings.mjs";
 import { assertPlatformProblem } from "./e2e-completo-plataforma.mjs";
 import { confirmRecentAuthentication, stopConfirmingRecentAuthentication } from "./platform-factor-real.mjs";
+import { pickerButton } from "./e2e-pieza.mjs";
 
 export const platformConfigurationDefinitions = [{
   id: "CFG-01", area: "Configuración de Plataforma", actor: "Operador con todos los permisos", route: "/plataforma/configuracion",
@@ -61,13 +62,13 @@ async function fillCompleteSettings(page, target, drafts) {
   for (const key of ["maxOwnedOrganizations", "salesEmail", "supportEmail"]) await page.getByRole("textbox", { name: settingsTexts.fields[key], exact: true }).fill(String(target[key]));
   const group = page.getByRole("group", { name: settingsTexts.rateLimits.title, exact: true }); await group.waitFor();
   assert.equal(await group.locator('input[name^="rateLimits."]').count(), 24);
-  assert.equal(await group.getByRole("combobox").count(), 12);
+  assert.equal(await group.locator('button[aria-haspopup="listbox"], button[aria-haspopup="dialog"]').count(), 12);
   for (const key of configurationProfileKeys) {
     const draft = drafts[key]; assert.ok(Number.isInteger(draft.permitLimit) && Number.isInteger(draft.amount));
     await inputFor(page, key, "permitLimit").fill(String(draft.permitLimit));
     await inputFor(page, key, "amount").fill(String(draft.amount));
     const label = settingsTexts.rateLimits.unitOf.replace("{{name}}", settingsTexts.rateLimits.profiles[key]);
-    const unit = page.getByRole("combobox", { name: label, exact: true }); await unit.focus(); await unit.press("Enter");
+    const unit = pickerButton(page, label); await unit.focus(); await unit.press("Enter");
     await page.getByRole("option", { name: unitNames[draft.unit] }).click();
   }
 }

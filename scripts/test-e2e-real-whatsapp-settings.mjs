@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { expect } from "playwright/test";
 import { reloadResponse, responsesForAction } from "./test-e2e-real-whatsapp-action.mjs";
+import { pickerButton } from "./e2e-pieza.mjs";
 
 const endpoint = "/api/platform/settings";
 const consumerLabels = { Open: "Abierto", Closed: "Cerrado" };
@@ -46,7 +47,7 @@ export async function withRestoredSettings({ read, prepare, body, restore, close
 
 /** ItemText contiene el label; la descripción también puede formar parte del nombre accesible. */
 export async function selectSetting(page, field, label) {
-  const control = page.getByRole("combobox", { name: field, exact: true });
+  const control = pickerButton(page, field);
   if ((await control.innerText()).trim() === label) return;
   await control.focus(); await control.press("Enter");
   await page.getByRole("option").filter({ has: page.getByText(label, { exact: true }) }).click();
@@ -72,7 +73,7 @@ export async function reloadPlatformSettings(page) {
 
 async function verifySettingsUi(page, expected) {
   for (const [field, label] of [["Registro de personas", consumerLabels[expected.consumerSignup]], ["Alta de organizaciones", businessLabels[expected.businessSignup]]])
-    await page.getByRole("combobox", { name: field, exact: true }).getByText(label, { exact: true }).waitFor();
+    await pickerButton(page, field).getByText(label, { exact: true }).waitFor();
   for (const [field, value] of [["Organizaciones propias por persona", String(expected.maxOwnedOrganizations)], ["Correo de ventas", expected.salesEmail ?? ""], ["Correo de soporte", expected.supportEmail ?? ""]])
     await expect(page.getByRole("textbox", { name: field, exact: true })).toHaveValue(value, { timeout: 30_000 });
 }

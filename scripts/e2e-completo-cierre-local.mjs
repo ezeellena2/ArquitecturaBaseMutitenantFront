@@ -4,6 +4,7 @@ import { expect } from "playwright/test";
 import { clickForResponse, requireProblem } from "./e2e-completo-negocio.mjs";
 import { syntheticEmail } from "./e2e-completo-soporte.mjs";
 import { assertViewport } from "./e2e-completo-personal.mjs";
+import { pickerButton } from "./e2e-pieza.mjs";
 
 const definition = (number, actor, action, route, expected, covers) => ({ id: `CIERRE-${number}`, area: "Cierre de cobertura local", actor, action, route, expected, covers, critical: true, source: "scripts/e2e-completo-cierre-local.mjs" });
 export const localClosureDefinitions = [
@@ -108,7 +109,7 @@ async function createRole(h, page, name, company) {
   await page.getByRole("link", { name: "Crear rol", exact: true }).filter({ visible: true }).first().click();
   await page.waitForURL((url) => url.pathname === "/org/roles/nuevo");
   await page.getByRole("textbox", { name: "Nombre", exact: true }).fill(name);
-  await page.getByRole("combobox", { name: "Vale en", exact: true }).click();
+  await pickerButton(page, "Vale en").click();
   await page.getByRole("option", { name: company.name, exact: true }).click();
   await page.getByRole("button", { name: "Abrir o cerrar Miembros", exact: true }).click();
   await page.getByRole("checkbox", { name: "Ver miembros", exact: true }).check();
@@ -164,7 +165,7 @@ export async function runLocalClosureCases(h) {
       const active = await read(h, page, `/api/users/${reserved.memberId}`); assert.equal(active.state, "Active"); assert.equal(active.companies.length, 0);
       await page.goto(new URL(`/org/empresas/${company.id}`, h.base).href); await page.getByRole("heading", { name: company.name, exact: true }).waitFor();
       await page.getByRole("button", { name: "Agregar miembro", exact: true }).filter({ visible: true }).first().click(); const dialog = page.getByRole("dialog", { name: "Agregar miembro", exact: true });
-      await dialog.getByRole("combobox", { name: "Usuario", exact: true }).click(); await page.getByRole("option", { name: active.displayName, exact: true }).click();
+      await pickerButton(dialog, "Usuario").click(); await page.getByRole("option", { name: active.displayName, exact: true }).click();
       await rolePicker(page, "Roles en la empresa", role.name);
       await clickForResponse(page, dialog.getByRole("button", { name: "Agregar miembro", exact: true }), `/api/companies/${company.id}/members`, "POST", 204); await dialog.waitFor({ state: "hidden" });
       const after = await read(h, page, `/api/users/${reserved.memberId}`); assert.deepEqual(after.roles, active.roles); assert.ok(after.companies.some((item) => item.companyId === company.id && item.roles.some((assigned) => assigned.id === role.id)));

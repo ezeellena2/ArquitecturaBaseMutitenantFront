@@ -9,6 +9,7 @@ import { fillOtp, accountAddMethodName } from "./test-e2e-real-ui.mjs";
 import { requireE8Control, sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs";
 import { nationalPhone } from "./recorrido-usuario-e11.mjs";
 import { confirmRecentAuthentication, stopConfirmingRecentAuthentication } from "./platform-factor-real.mjs";
+import { pickerButton } from "./e2e-pieza.mjs";
 
 const root = "/api/organization/assistant"; const platformRoot = "/api/platform/assistant";
 const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jh5kAAAAASUVORK5CYII=", "base64");
@@ -335,8 +336,8 @@ async function runAssistantCases(h, selected) {
     const models = (await read(h, platformPage, `${platformRoot}/models?pageSize=100`)).items;
     await platformPage.goto(url("/plataforma/asistente/configuracion"));
     const selected = models.find((model) => model.id === desired.defaultModelId); assert.ok(selected);
-    await platformPage.getByRole("combobox", { name: "Modelo por defecto", exact: true }).click(); await platformPage.getByRole("option", { name: new RegExp(`^${escaped(selected.name)}(?:\\s|$)`, "u") }).click();
-    const effort = { low: "Bajo", medium: "Medio", high: "Alto" }[desired.effort]; await platformPage.getByRole("radio", { name: effort, exact: true }).click();
+    await pickerButton(platformPage, "Modelo por defecto").click(); await platformPage.getByRole("option", { name: new RegExp(`^${escaped(selected.name)}(?:\\s|$)`, "u") }).click();
+    const effort = { low: "Bajo", medium: "Medio", high: "Alto" }[desired.effort]; await pickerButton(platformPage, "Esfuerzo").click(); await platformPage.getByRole("option", { name: effort, exact: true }).click();
     const picker = platformPage.getByRole("button", { name: "Modelos que pueden elegir las organizaciones", exact: true }); await picker.focus(); await picker.press("ArrowDown");
     for (const model of models.filter((item) => item.isActive || current.allowedModelIds.includes(item.id))) {
       const option = platformPage.getByRole("menuitemcheckbox", { name: model.name, exact: true }); const wanted = desired.allowedModelIds.includes(model.id);
@@ -351,7 +352,7 @@ async function runAssistantCases(h, selected) {
   const ownKey = async () => {
     await prepareOwner(); await allowOwnKey(owner.me.activeTenantId); await business(); await page.goto(url("/org/asistente/configuracion"));
     const before = await read(h, page, `${root}/settings`); if (before.mode === "OwnKey" && before.hasKey) return;
-    await page.getByRole("radio", { name: "La nuestra", exact: true }).click();
+    await pickerButton(page, "Qué clave usa").click(); await page.getByRole("option", { name: "La nuestra", exact: true }).click();
     await page.getByRole("textbox", { name: "Consultas por persona por día", exact: true }).fill("50"); await page.getByRole("textbox", { name: "Tope del mes", exact: true }).fill("1000");
     await page.getByRole("textbox", { name: "Clave de Anthropic", exact: true }).fill("e2e-own-assistant-supplement");
     await clickForResponse(page, page.getByRole("button", { name: "Guardar cambios", exact: true }), `${root}/settings`, "PUT", 200);
@@ -362,7 +363,7 @@ async function runAssistantCases(h, selected) {
     const prepareProjectedAdminChat = async () => {
       await prepareOwner(); companyAdmin = { email: syntheticEmail("as-admin") };
       await page.goto(url("/org/usuarios")); await page.getByRole("button", { name: "Invitar usuario", exact: true }).click(); const dialog = page.getByRole("dialog", { name: "Invitar usuario", exact: true });
-      await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(companyAdmin.email); await dialog.getByRole("combobox", { name: "Empresa", exact: true }).click(); await page.getByRole("option", { name: company.name, exact: true }).click();
+      await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(companyAdmin.email); await pickerButton(dialog, "Empresa").click(); await page.getByRole("option", { name: company.name, exact: true }).click();
       await dialog.getByRole("button", { name: "Roles en la empresa", exact: true }).click(); await page.getByRole("menuitemcheckbox", { name: "Administrador", exact: true }).click(); await page.keyboard.press("Escape");
       await clickForResponse(page, dialog.getByRole("button", { name: "Invitar", exact: true }), "/api/users/invitations", "POST", 201); await dialog.waitFor({ state: "hidden" });
       const me = await business(companyAdmin.email); requireProjectedAssistant(me, owner.me.activeTenantId, company.id);
@@ -378,14 +379,14 @@ async function runAssistantCases(h, selected) {
       await prepareOwner(); await leavePublic(); setCapture(page); const phoneOwner = await h.registerBusiness(page); publicSession = true; publicEmail = phoneOwner.email; publicAccess = "business";
       await control("prepare", { email: phoneOwner.email, access: "business", tenantId: phoneOwner.me.activeTenantId }); await allowOwnKey(phoneOwner.me.activeTenantId);
       const phone = h.width === 1440 ? "+5491134567868" : "+5491134567869"; const cursor = await requireE8Control(h.env)(`as-sin-email-${tag}`, phone);
-      setCapture(page); await page.goto(url("/cuenta")); await page.getByRole("button", { name: accountAddMethodName }).click(); let dialog = page.getByRole("dialog"); await dialog.getByRole("button", { name: "WhatsApp", exact: true }).click(); await dialog.getByRole("textbox", { name: "Número", exact: true }).fill(nationalPhone(phone));
+      setCapture(page); await page.goto(url("/cuenta")); await page.getByRole("button", { name: accountAddMethodName }).click(); let dialog = page.getByRole("dialog"); await pickerButton(dialog, "Qué querés agregar").click(); await page.getByRole("option", { name: "WhatsApp", exact: true }).click(); await dialog.getByRole("textbox", { name: "Número", exact: true }).fill(nationalPhone(phone));
       const sent = await sendWithCooldown(() => clickForResponse(page, dialog.getByRole("button", { name: "Enviar código", exact: true }), "/api/me/login-methods", "POST", null)); assert.equal(sent.status(), 202); const methodId = (await sent.json()).methodId;
       await fillOtp(dialog, (await cursor("code")).proof); await clickForResponse(page, dialog.getByRole("button", { name: "Verificar", exact: true }), `/api/me/login-methods/${methodId}/verify`, "POST", 204); await dialog.waitFor({ state: "hidden" });
       const methods = (await read(h, page, "/api/me/login-methods")).methods; const email = methods.find((item) => item.type === "Email" && item.isVerified); assert.ok(email);
       await page.getByRole("button", { name: `Acciones de ${phoneOwner.email}`, exact: true }).click(); await page.getByRole("menuitem", { name: "Quitar", exact: true }).click(); dialog = page.getByRole("dialog"); await clickForResponse(page, dialog.getByRole("button", { name: "Quitar", exact: true }), `/api/me/login-methods/${email.id}`, "DELETE", 204); await dialog.waitFor({ state: "hidden" });
       const afterMethods = (await read(h, page, "/api/me/login-methods")).methods; assert.equal(afterMethods.some((item) => item.type === "Email" && item.isVerified), false); assert.ok(afterMethods.some((item) => item.type === "Phone" && item.isVerified));
       await page.goto(url("/org/asistente/configuracion")); const settings = await read(h, page, `${root}/settings`); assert.equal(settings.hasAlertRecipient, false); assert.equal(settings.allowOwnKey, true);
-      await page.getByRole("radio", { name: "La nuestra", exact: true }).click(); await page.getByRole("textbox", { name: "Clave de Anthropic", exact: true }).fill("e2e-rejected-before-key-validation");
+      await pickerButton(page, "Qué clave usa").click(); await page.getByRole("option", { name: "La nuestra", exact: true }).click(); await page.getByRole("textbox", { name: "Clave de Anthropic", exact: true }).fill("e2e-rejected-before-key-validation");
       const writes = []; const watched = (request) => { if (endpoint(`${root}/settings`, "PUT")({ url: () => request.url(), request: () => request })) writes.push(request); }; page.on("request", watched);
       try { await page.getByRole("button", { name: "Guardar cambios", exact: true }).click(); await page.locator('[role="radiogroup"][aria-label="Qué clave usa"][aria-invalid="true"]').waitFor(); await page.getByRole("button", { name: "Agregar un correo", exact: true }).waitFor(); assert.equal(writes.length, 0); } finally { page.off("request", watched); }
       await requirePrivateProblem(await h.api(page, `${root}/settings`, { method: "PUT", data: { mode: "OwnKey", modelId: settings.modelId, effort: settings.effort, dailyMessageLimit: 50, monthlyBudget: settings.monthlyBudget, keyAction: "keep", apiKey: null, version: settings.version } }), 400, "Assistant.Settings.AlertRecipientRequired");

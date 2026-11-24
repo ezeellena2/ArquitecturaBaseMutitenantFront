@@ -6,6 +6,7 @@ import { setTimeout as delay } from "node:timers/promises";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { completeOperatorFactor } from "./platform-factor-real.mjs";
 import { createAssistantControl } from "./assistant-real-control.mjs";
+import { pickerButton } from "./e2e-pieza.mjs";
 
 export const assistantHomeRoute = (access, width) => ({ business: width === 390 ? "/org/asistente" : "/org",
   consumer: width === 390 ? "/asistente" : "/", platform: width === 390 ? "/plataforma/asistente" : "/plataforma" })[access];
@@ -384,7 +385,7 @@ export async function runAssistantJourney({ page, platformPage, width, env, base
   }
   const selectOwnKey = async () => {
     await page.goto(new URL("/org/asistente/configuracion", base).href);
-    await page.getByRole("radio", { name: "La nuestra", exact: true }).click();
+    await pickerButton(page, "Qué clave usa").click(); await page.getByRole("option", { name: "La nuestra", exact: true }).click();
     await page.getByRole("textbox", { name: "Clave de Anthropic", exact: true }).waitFor();
     return "El Dueño puede elegir su clave tras el permiso explícito de Plataforma.";
   };

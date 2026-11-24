@@ -5,6 +5,7 @@ import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs";
 import { clickForResponse, invitationTokenFromMessage, requireProblem, runBusinessDependencyCase, chooseBusinessBarAction } from "./e2e-completo-negocio.mjs";
 import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
+import { pickerButton, pickerSearch } from "./e2e-pieza.mjs";
 
 const definition = (suffix, actor, action, route, expected, covers) => ({ id: `SUP-BIZ-${suffix}`, area: "Administración complementaria", actor, action, route, expected, covers, critical: true });
 export const supplementBusinessDefinitions = [
@@ -126,7 +127,7 @@ async function createCompany(h, page, name, taxId) {
 async function fillRole(h, page, name, company, label = "Ver miembros", area = "Miembros") {
   await page.goto(new URL("/org/roles/nuevo", h.base).href);
   await page.getByRole("textbox", { name: "Nombre", exact: true }).fill(name);
-  await page.getByRole("combobox", { name: "Vale en", exact: true }).click();
+  await pickerButton(page, "Vale en").click();
   await page.getByRole("option", { name: company?.name ?? "Toda la organización", exact: true }).click();
   await page.getByRole("button", { name: `Abrir o cerrar ${area}`, exact: true }).click();
   await page.getByRole("checkbox", { name: label, exact: true }).check();
@@ -140,7 +141,7 @@ async function addCompanyToUser(h, page, memberId, company, roleName) {
   await page.goto(new URL(`/org/usuarios/${memberId}`, h.base).href);
   await page.getByRole("button", { name: "Agregar empresa", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Agregar empresa", exact: true });
-  await dialog.getByRole("combobox", { name: "Empresa", exact: true }).click();
+  await pickerButton(dialog, "Empresa").click();
   await page.getByRole("option", { name: company.name, exact: true }).click();
   if (roleName) { await dialog.getByRole("button", { name: "Roles en la empresa", exact: true }).click(); await page.getByRole("menuitemcheckbox", { name: roleName, exact: true }).click(); await page.keyboard.press("Escape"); }
   await clickForResponse(page, dialog.getByRole("button", { name: "Agregar", exact: true }), `/api/users/${memberId}`, "PUT");
@@ -153,7 +154,7 @@ async function invite(h, page, email, company, { companyRole, organizationRole }
   const dialog = page.getByRole("dialog", { name: "Invitar usuario", exact: true });
   await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(email);
   if (organizationRole) { await dialog.getByRole("button", { name: "Roles de la organización", exact: true }).click(); await page.getByRole("menuitemcheckbox", { name: organizationRole, exact: true }).click(); await page.keyboard.press("Escape"); }
-  await dialog.getByRole("combobox", { name: "Empresa", exact: true }).click(); await page.getByRole("option", { name: company.name, exact: true }).click();
+  await pickerButton(dialog, "Empresa").click(); await page.getByRole("option", { name: company.name, exact: true }).click();
   if (companyRole) { await dialog.getByRole("button", { name: "Roles en la empresa", exact: true }).click(); await page.getByRole("menuitemcheckbox", { name: companyRole, exact: true }).click(); await page.keyboard.press("Escape"); }
   const response = await clickForResponse(page, dialog.getByRole("button", { name: "Invitar", exact: true }), "/api/users/invitations", "POST", 201);
   const issued = await response.json(); await dialog.waitFor({ state: "hidden" });
@@ -178,19 +179,18 @@ async function openInvitation(h, page, token, state) {
   assert.ok(new URL(page.url()).hash === "", "El token no queda en la captura."); return body;
 }
 
-async function chooseFilter(h, page, { label, index, key, value, option }) {
+async function chooseFilter(h, page, { label, index, option }) {
   if (h.width === 390) {
     await page.getByRole("button", { name: label, exact: true }).click();
-    const sheet = page.getByRole("dialog", { name: label, exact: true });
-    const radio = page.locator(`input[type="radio"][name="${key}"][value="${value}"]`);
-    // La fila visible aplica el filtro y cierra la hoja. check() exige volver a leer un input que el cierre desmonta.
-    const row = sheet.locator("label").filter({ has: radio });
-    assert.equal(await row.count(), 1, "Cada valor del filtro debe tener una única etiqueta visible.");
-    await row.click();
+    // «Filtros» a pantalla completa: cada filtro es la pieza para elegir (262), que abre su lista y aplica al elegir.
+    const sheet = page.getByRole("dialog", { name: "Filtros", exact: true });
+    await sheet.locator('button[aria-haspopup="dialog"]').nth(index).click();
+    await page.getByRole("option", { name: new RegExp(`^${escapeRegex(option)}(?:\\s|$)`) }).click();
+    await sheet.getByRole("button", { name: "Listo", exact: true }).click();
     await sheet.waitFor({ state: "hidden" });
   } else {
     await page.locator('[data-slot="filter-pills"] button').nth(index).click();
-    await page.getByRole("menuitemradio", { name: new RegExp(`^${escapeRegex(option)}(?:\\s|$)`) }).click();
+    await page.getByRole("option", { name: new RegExp(`^${escapeRegex(option)}(?:\\s|$)`) }).click();
   }
 }
 async function searchUsers(h, page, value) {
@@ -341,8 +341,8 @@ export async function runSupplementBusinessCases(h) {
       else await page.getByRole("button", { name: "Editar empresa", exact: true }).click();
       const dialog = page.getByRole("dialog", { name: "Editar empresa", exact: true });
       const renamed = `${prefix} Fiscal editada`; await dialog.getByRole("textbox", { name: "Nombre", exact: true }).fill(renamed);
-      await dialog.getByRole("combobox", { name: "Zona de negocio", exact: true }).click();
-      await page.getByRole("searchbox", { name: "Buscar zona horaria", exact: true }).fill(zone.city);
+      await pickerButton(dialog, "Zona de negocio").click();
+      await pickerSearch(page, "Zona de negocio").fill(zone.city);
       await page.getByRole("option", { name: new RegExp(escapeRegex(zone.city)) }).first().click();
       await clickForResponse(page, dialog.getByRole("button", { name: "Guardar cambios", exact: true }), `/api/companies/${b.id}`, "PUT");
       b = await read(h, page, `/api/companies/${b.id}`); assert.equal(b.name, renamed); assert.equal(b.timeZoneId, zone.id); assert.deepEqual(b.taxId, before.taxId); assert.notEqual(b.version, before.version);

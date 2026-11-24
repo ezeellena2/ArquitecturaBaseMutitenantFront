@@ -7,6 +7,7 @@ import { journeyDate } from "./recorrido-usuario.mjs";
 import { confirmRecentAuthentication, stopConfirmingRecentAuthentication } from "./platform-factor-real.mjs";
 import { parseLegalPublicationReceipt, assertPublishedTerms, assertPendingTerms, acceptPublishedLegalAndReturn } from "./test-e2e-real-legal.mjs";
 import { assertViewport } from "./e2e-completo-personal.mjs";
+import { pickerButton } from "./e2e-pieza.mjs";
 
 export const legalSupplementDefinitions = [
   { id: "LEG-01", area: "Legales", actor: "Persona existente y operador con platform.legal.manage y MFA", action: "Publicar términos V1/V2 por UI mientras la persona acepta la versión anterior", route: "/plataforma/legales/nueva · /aceptar-terminos · /cuenta", expected: "Publicaciones201 con fecha civil de hoy y contenidos es/en; aceptación vieja409 Legal.Document.VersionChanged, refetch de V2 y casilla reiniciada; sin marcar no se envía, aceptación explícita204 retorna a Mi cuenta de la misma persona.", covers: ["BACK-CU-018"], critical: true, source: "src/areas/platform/legal/pages/PublishLegalVersionPage.tsx; src/areas/public/legal/pages/AcceptTermsPage.tsx; scripts/test-e2e-real-legal.mjs" },
@@ -58,7 +59,7 @@ function fixtureContents(cultures, tag, version) {
 async function publicationForm(h, page, effectiveOn, contents, cultures) {
   await page.goto(new URL("/plataforma/legales", h.base).href);
   await page.getByRole("link", { name: "Publicar versión nueva", exact: true }).first().click();
-  await page.getByRole("combobox", { name: "Documento", exact: true }).click();
+  await pickerButton(page, "Documento").click();
   await page.getByRole("option", { name: /Términos y condiciones/u }).click();
   await page.getByRole("textbox", { name: "Vigente desde", exact: true }).fill(effectiveOn.split("-").reverse().join("/"));
   for (const content of contents) {

@@ -3,25 +3,30 @@ import test from "node:test";
 import { buildMatrix } from "./e2e-completo-matriz.mjs";
 import { quotaWhatsAppDefinitions, quotaWhatsAppLimitations, quotaPhonePlan, createQuotaBudget, nextQuotaDestination, rememberQuotaKey, requireWhatsAppDailyLimit, phoneForm, observeQuotaResources, diagnoseQuotaNavigation, waitRealCooldown } from "./e2e-completo-cuota-whatsapp.mjs";
 
+// La pieza para elegir (262): el canal se elige abriendo «Método de ingreso» y tocando su opción.
+const named = (role, options) => role === "textbox" ? "número" : role === "checkbox" ? "términos"
+  : options.name instanceof RegExp && options.name.test("Método de ingreso Correo") ? "Método de ingreso" : options.name;
+
 test("el formulario Phone espera DOMContentLoaded y cada control visible, sin esperar load ni reintentar navegación", async () => {
   for (const route of ["/registro", "/login"]) for (const missingPhone of [false, true]) {
     const calls = []; const failure = new Error("El número no apareció");
     const control = (name) => ({
       waitFor: async (options) => { assert.deepEqual(options, { state: "visible" }); calls.push("visible " + name); if (name === "número" && missingPhone) throw failure; },
-      click: async () => calls.push("elegir WhatsApp"), fill: async (value) => { assert.equal(value, "11 3456-7897"); calls.push("llenar número"); },
+      click: async () => calls.push("click " + name), fill: async (value) => { assert.equal(value, "11 3456-7897"); calls.push("llenar número"); },
       check: async () => calls.push("aceptar términos"),
     });
     const page = {
       goto: async (url, options) => { assert.equal(url, "https://localtest.me" + route); assert.deepEqual(options, { waitUntil: "domcontentloaded" }); calls.push("DOMContentLoaded"); },
       getByRole: (role, options) => {
-        if (role === "button") { assert.deepEqual(options, { name: "WhatsApp", exact: true }); return control("WhatsApp"); }
+        if (role === "button") { assert.equal(options.name.test("Método de ingreso Correo"), true); return control("Método de ingreso"); }
+        if (role === "option") { assert.deepEqual(options, { name: "WhatsApp", exact: true }); return control("WhatsApp"); }
         if (role === "textbox") { assert.equal(options.name.test("Tu número de WhatsApp"), true); return control("número"); }
         assert.equal(role, "checkbox"); assert.equal(options.name.test("Acepto los Términos"), true); return control("términos");
       },
     };
     const prepare = () => phoneForm({ base: new URL("https://localtest.me/") }, page, "+5491134567897", route);
     if (missingPhone) await assert.rejects(prepare, (error) => error === failure); else await prepare();
-    assert.deepEqual(calls, ["DOMContentLoaded", "visible WhatsApp", "elegir WhatsApp", "visible número",
+    assert.deepEqual(calls, ["DOMContentLoaded", "visible Método de ingreso", "click Método de ingreso", "click WhatsApp", "visible número",
       ...(missingPhone ? [] : ["llenar número", ...(route === "/registro" ? ["visible términos", "aceptar términos"] : [])])]);
   }
 });
@@ -49,13 +54,13 @@ test("las altas siguientes vuelven por Usar otro número o enlaces reales y nunc
       url: () => "https://localtest.me" + currentPath,
       goto: async () => { calls.push("recarga inesperada"); },
       waitForURL: async (predicate) => { assert.equal(predicate(new URL(page.url())), true); calls.push("ruta " + currentPath); },
-      getByRole: (role, options) => control(role === "textbox" ? "número" : role === "checkbox" ? "términos" : options.name),
+      getByRole: (role, options) => control(named(role, options)),
     };
     await phoneForm({ base: new URL("https://localtest.me/") }, page, "+5491134567897", "/registro", { previousStatus });
     assert.deepEqual(calls, [
       ...(previousStatus === 202 ? ["visible Usar otro número", "click Usar otro número"]
         : ["visible Ingresá", "click Ingresá", "ruta /login", "visible Creá una", "click Creá una", "ruta /registro"]),
-      "visible WhatsApp", "click WhatsApp", "visible número", "llenar número", "visible términos", "términos",
+      "visible Método de ingreso", "click Método de ingreso", "click WhatsApp", "visible número", "llenar número", "visible términos", "términos",
     ]);
   }
 });
@@ -84,12 +89,12 @@ test("el destino fresco posterior aDailyLimit abre Registro una sola vez y esper
     goto: async (url, options) => { assert.equal(url, "https://localtest.me/registro"); assert.deepEqual(options, { waitUntil: "domcontentloaded" }); calls.push("navegación completa"); },
     getByRole: (role, options) => {
       if (role === "link") { calls.push("enlace inesperado"); return control(options.name); }
-      return control(role === "textbox" ? "número" : role === "checkbox" ? "términos" : options.name);
+      return control(named(role, options));
     },
     waitForURL: async () => {},
   };
   await phoneForm({ base: new URL("https://localtest.me/") }, page, "+5491134567898", "/registro", { previousStatus: 429, freshNavigation: true });
-  assert.deepEqual(calls, ["navegación completa", "visible WhatsApp", "click WhatsApp", "visible número", "llenar número", "visible términos", "términos"]);
+  assert.deepEqual(calls, ["navegación completa", "visible Método de ingreso", "click Método de ingreso", "click WhatsApp", "visible número", "llenar número", "visible términos", "términos"]);
 });
 
 test("el diagnóstico inicia cuatro probes independientes y descarta datos de respuesta ajenos a las métricas", async () => {

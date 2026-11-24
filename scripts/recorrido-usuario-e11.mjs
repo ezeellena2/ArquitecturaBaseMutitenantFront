@@ -4,6 +4,7 @@ import { checkByLabel } from "./platform-factor-real.mjs";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
 import { navigationResponses, reloadResponse, responsesForAction, safeActionErrorKind } from "./test-e2e-real-whatsapp-action.mjs";
 import { readJourneyIdentity, requireE8Control, safeJourneyHttp, sendWithCooldown } from "./recorrido-usuario-whatsapp.mjs";
+import { pickerButton } from "./e2e-pieza.mjs";
 
 // E11: la atención por WhatsApp de una organización, con el canal privado de Testing de la E8 (WhatsAppBrowserControl) y
 // sin Meta. El número lo conecta el control; lo que escribe la persona entra firmado al webhook real y el bot corre con el
@@ -100,14 +101,14 @@ export async function runE11Journey({ page, platformPage, width, env, base, reco
   // La salida del teléfono va por «Más» de la barra de secciones (signOutMobile): se sale desde el inicio del acceso,
   // que la tiene, y no desde una pantalla propia («Cargar teléfonos», una conversación) que vuelve a otra.
   const leave = async (profile, route) => { await page.goto(url(route)); await awaitApp(page, profile, route); await signOut(page, profile); };
-  const closeMenu = async () => { if (await page.getByRole("menu").isVisible()) await page.keyboard.press("Escape"); };
+  const closeMenu = async () => { if (await page.getByRole("menu").or(page.getByRole("listbox")).first().isVisible()) await page.keyboard.press("Escape"); };
   /** En el teléfono, lo que no está a la vista va en el ⋮ de la barra (moreActions de Page). */
   const barAction = async (label) => {
     await page.getByRole("button", { name: /^Acciones de / }).first().click();
     await page.getByRole("menuitem", { name: label, exact: true }).click();
   };
   const channel = async (destination) => {
-    await page.getByRole("button", { name: "WhatsApp", exact: true }).click();
+    await pickerButton(page, "Método de ingreso").click(); await page.getByRole("option", { name: "WhatsApp", exact: true }).click();
     await page.getByRole("textbox", { name: /^(Tu )?número de WhatsApp$/i }).fill(destination);
   };
   const sendCode = (button, endpoint) => sendWithCooldown(async () => (await responsesForAction(page, [responseFor(endpoint, "POST")], () => button.click()))[0],
@@ -148,10 +149,10 @@ export async function runE11Journey({ page, platformPage, width, env, base, reco
       await page.getByRole("button", { name: "Crear equipo", exact: true }).first().click();
       const dialog = page.getByRole("dialog", { name: "Crear equipo", exact: true });
       await dialog.getByRole("textbox", { name: "Nombre", exact: true }).fill(name);
-      await dialog.getByRole("radio", { name: "Clientes", exact: true }).click();
-      await dialog.getByRole("button", { name: "Personas", exact: true }).click();
-      await page.getByRole("menuitemcheckbox").first().click(); await closeMenu();
-      await dialog.getByRole("combobox", { name: "Aviso por correo si nadie lo toma", exact: true }).click();
+      await pickerButton(dialog, "Bandeja").click(); await page.getByRole("option", { name: "Clientes", exact: true }).click();
+      await pickerButton(dialog, "Personas").click();
+      await page.getByRole("option").first().click(); await closeMenu();
+      await pickerButton(dialog, "Aviso por correo si nadie lo toma").click();
       await page.getByRole("option", { name: "No avisar", exact: true }).click();
       const created = await act(page, () => dialog.getByRole("button", { name: "Crear equipo", exact: true }).click(), `${organizationApi}/teams`);
       const team = await created.json(); assert.equal(created.status(), 201); assert.equal(team.inbox, "Customers"); teams[name] = team.id;
@@ -165,8 +166,8 @@ export async function runE11Journey({ page, platformPage, width, env, base, reco
     await page.getByRole("button", { name: "Agregar opción", exact: true }).click();
     const dialog = page.getByRole("dialog", { name: "Agregar opción", exact: true });
     await dialog.getByRole("textbox", { name: "Texto de la opción", exact: true }).fill(option);
-    await dialog.getByRole("radio", { name: "Pasa a un equipo", exact: true }).click();
-    await dialog.getByRole("combobox", { name: "Equipo", exact: true }).click();
+    await pickerButton(dialog, "Qué hace").click(); await page.getByRole("option", { name: "Pasa a un equipo", exact: true }).click();
+    await pickerButton(dialog, "Equipo").click();
     await page.getByRole("option", { name: "Ventas", exact: true }).click();
     const saved = await act(page, () => dialog.getByRole("button", { name: "Guardar", exact: true }).click(), `${organizationApi}/numbers/${numberId}/bot`, "PUT");
     assert.ok((await saved.json()).menu.some((item) => item.label === option && item.action === "Team" && item.teamId === teams.Ventas));

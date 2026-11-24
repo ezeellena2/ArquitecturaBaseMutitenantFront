@@ -46,7 +46,7 @@ function companyRepairCandidateFixture(patch = {}, postedPatch = {}) {
   const send = (response) => { const matching = waiting.filter(({ predicate }) => predicate(response)); assert.equal(matching.length, 1); matching[0].resolve(response); };
   const option = { waitFor: async () => calls.push("opción visible"), count: async () => 1, click: async () => calls.push("seleccionar candidato verificado") };
   const dialog = { getByRole: (role, options) => {
-    if (role === "combobox") { assert.deepEqual(options, { name: "Usuario", exact: true }); return { click: async () => calls.push("abrir selector") }; }
+    if (role === "button" && options.name instanceof RegExp) { assert.equal(options.name.test("Usuario Elegí una persona"), true); return { click: async () => calls.push("abrir selector") }; }
     assert.equal(role, "button"); assert.deepEqual(options, { name: "Agregar miembro", exact: true }); return { click: async () => { calls.push("POST UI"); send(postReply); } };
   }, waitFor: async (options) => { assert.deepEqual(options, { state: "hidden" }); calls.push("diálogo cerrado"); } };
   const page = { waitForResponse: (predicate) => { calls.push("observar respuesta"); const pending = { predicate, ...Promise.withResolvers() }; waiting.push(pending); return pending.promise; }, getByRole: (role, options) => {
@@ -208,16 +208,22 @@ test("deshabilitar y rehabilitar exigen PUT200, versión nueva y conservación d
   }
 });
 
-test("el filtro móvil aplica la opción por su texto y verifica la URL y la lectura HTTP200 después de desmontar", async () => {
-  let current = "https://localtest.me/org/roles"; let clicked = false; let closed = false;
+test("el filtro móvil elige «Vale en» en la pieza de «Filtros», verifica la URL y la lectura HTTP200 y vuelve con «Listo»", async () => {
+  let current = "https://localtest.me/org/roles"; const calls = []; let closed = false;
   const response = { url: () => "https://localtest.me/api/roles/paged?companyId=propia", status: () => 200 };
-  const sheet = { getByText: (name, options) => { assert.equal(name, "Empresa propia"); assert.equal(options.exact, true); return { click: async (options) => { assert.equal(options, undefined); clicked = true; closed = true; current += "?vale=propia"; } }; },
-    getByRole: () => assert.fail("check requiere una comprobación posterior sobre el radio ya desmontado."),
-    waitFor: async ({ state }) => { assert.equal(state, "hidden"); assert.equal(closed, true); } };
+  const sheet = { getByRole: (role, options) => {
+    assert.equal(role, "button");
+    if (options.name === "Listo") return { click: async () => { closed = true; calls.push("Listo"); } };
+    assert.equal(options.name.test("Vale en Todas"), true); return { click: async () => calls.push("abrir Vale en") };
+  }, waitFor: async ({ state }) => { assert.equal(state, "hidden"); assert.equal(closed, true); calls.push("hoja cerrada"); } };
   const page = { goto: async () => {}, url: () => current, waitForResponse: async (predicate) => { assert.equal(predicate(response), true); return response; },
-    getByRole: (role) => role === "dialog" ? sheet : { click: async () => {} } };
+    getByRole: (role, options) => {
+      if (role === "dialog") { assert.deepEqual(options, { name: "Filtros", exact: true }); return sheet; }
+      if (role === "option") { assert.equal(options.name.test("Empresa propia"), true); return { click: async () => { calls.push("Empresa propia"); current += "?vale=propia"; } }; }
+      return { click: async () => calls.push("abrir filtros") };
+    } };
   await business.filterRolesByCompany({ width: 390, base: new URL("https://localtest.me") }, page, { id: "propia", name: "Empresa propia" });
-  assert.equal(clicked, true);
+  assert.deepEqual(calls, ["abrir filtros", "abrir Vale en", "Empresa propia", "Listo", "hoja cerrada"]);
 });
 
 test("la reparación de acceso sólo declara los trece afectados y bloquea dependientes si no existe fixture", async () => {

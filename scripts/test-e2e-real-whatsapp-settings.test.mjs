@@ -3,6 +3,7 @@ import { execFileSync } from "node:child_process";
 import { test } from "node:test";
 import { chromium } from "playwright";
 import { editableSettings, restorableSettings, sameSettings, selectSetting, withRestoredSettings } from "./test-e2e-real-whatsapp-settings.mjs";
+import { pickerButton } from "./e2e-pieza.mjs";
 
 const original = { consumerSignup: "Open", businessSignup: "RequiresApproval", maxOwnedOrganizations: 7,
   salesEmail: "original-sales@example.test", supportEmail: "original-support@example.test", version: 18 };
@@ -82,17 +83,18 @@ for (const failureAt of ["prepare", "body"]) test(`conserva fallos de ${failureA
   execFileSync(process.execPath, ["--unhandled-rejections=strict", "--input-type=module", "--eval", script], { stdio: "pipe" });
 });
 
-test("selector accesible acepta descripciones Radix y evita opciones con otro prefijo", async () => {
+test("la pieza para elegir acepta descripciones y evita opciones con otro prefijo", async () => {
   const browser = await chromium.launch({ headless: true });
   try {
     const page = await browser.newPage();
-    await page.setContent(`<button role="combobox" aria-label="Alta de organizaciones" onclick="document.querySelector('[role=listbox]').hidden=false">Cerrada</button>
-      <div role="listbox" hidden><button role="option" onclick="choose(this)"><span>Abierta especial</span></button>
-      <button role="option" onclick="choose(this)"><span>Abierta</span><span>Las organizaciones se crean al instante.</span></button></div>
-      <script>function choose(option) { document.querySelector('[role=combobox]').innerHTML='<span>'+option.firstElementChild.textContent+'</span>'; document.querySelector('[role=listbox]').hidden=true; }
-      document.querySelector('[role=combobox]').onkeydown=(event)=>{if(event.key==='Enter') document.querySelector('[role=listbox]').hidden=false;};</script>`);
+    // Como Picker (262): el botón se llama con el rótulo y lo elegido, y abre un listbox con sus option.
+    await page.setContent(`<button type="button" aria-label="Alta de organizaciones Cerrada" onclick="document.querySelector('[role=listbox]').hidden=false"><span aria-hidden="true">Cerrada</span></button>
+      <ul role="listbox" hidden><li role="option" onclick="choose(this)"><span>Abierta especial</span></li>
+      <li role="option" onclick="choose(this)"><span>Abierta</span><span>Las organizaciones se crean al instante.</span></li></ul>
+      <script>function choose(option) { const button = document.querySelector('button'); const text = option.firstElementChild.textContent;
+        button.innerHTML='<span aria-hidden="true">'+text+'</span>'; button.setAttribute('aria-label', 'Alta de organizaciones '+text); document.querySelector('[role=listbox]').hidden=true; }</script>`);
     await selectSetting(page, "Alta de organizaciones", "Abierta");
-    assert.equal(await page.getByRole("combobox", { name: "Alta de organizaciones" }).innerText(), "Abierta");
+    assert.equal(await pickerButton(page, "Alta de organizaciones").innerText(), "Abierta");
     await selectSetting(page, "Alta de organizaciones", "Abierta");
     assert.equal(await page.getByRole("listbox").count(), 0);
   } finally { await browser.close(); }

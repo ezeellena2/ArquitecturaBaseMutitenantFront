@@ -11,6 +11,7 @@ import { decideAfterRecoveryNotice, newPlatformContext, recoveryRow, selectRecov
 import { reloadResponse, responsesForAction, safeActionErrorKind } from "./test-e2e-real-whatsapp-action.mjs";
 import { openPlatformSettings, reloadPlatformSettings, restorableSettings, savePlatformSettings, withRestoredSettings } from "./test-e2e-real-whatsapp-settings.mjs";
 import { completeOperatorFactor } from "./platform-factor-real.mjs";
+import { pickerButton } from "./e2e-pieza.mjs";
 
 // Sólo RealE2ESetup en Testing inicia este runner. Front/API/OIDC/PostgreSQL son reales.
 // FIXTURE es IPC privado: el host no publica líneas, respuestas, números ni pruebas.
@@ -34,7 +35,7 @@ async function clickHttp(page, button, endpoint, status, method = "POST") {
   return response;
 }
 async function whatsapp(page, phone, label = /^(Tu )?número de WhatsApp$/i) {
-  await page.getByRole("button", { name: "WhatsApp", exact: true }).click();
+  await pickerButton(page, "Método de ingreso").click(); await page.getByRole("option", { name: "WhatsApp", exact: true }).click();
   await page.getByRole("textbox", { name: label }).fill(phone);
 }
 async function authenticated(page, width, organization = "Personal") {
@@ -372,7 +373,7 @@ async function journey(width, index) {
 
   start(`agregar Phone ${width}`); const added = await begin(`add-${width}`, next);
   await page.goto(`${base}/cuenta`); await page.getByRole("button", { name: "Agregar correo o teléfono", exact: true }).click();
-  const dialog = page.getByRole("dialog"); await dialog.getByRole("button", { name: "WhatsApp", exact: true }).click();
+  const dialog = page.getByRole("dialog"); await pickerButton(dialog, "Qué querés agregar").click(); await page.getByRole("option", { name: "WhatsApp", exact: true }).click();
   await dialog.getByRole("textbox", { name: "Número", exact: true }).fill(next);
   const addReply = await clickHttp(page, dialog.getByRole("button", { name: "Enviar código", exact: true }), "/api/me/login-methods", 202);
   const methodId = (await addReply.json()).methodId;

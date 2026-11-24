@@ -10,6 +10,7 @@ import { journeyDate } from "./recorrido-usuario.mjs";
 import { nationalPhone } from "./recorrido-usuario-e11.mjs";
 import { openAction } from "./e2e-completo-plataforma.mjs";
 import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
+import { pickerButton } from "./e2e-pieza.mjs";
 
 const definition = (number, actor, action, route, expected, covers) => ({ id: `IDS-${String(number).padStart(2, "0")}`, area: "Complemento de identidad", actor, action, route, expected, covers, critical: true, source: "scripts/e2e-completo-identidad-complemento.mjs" });
 export const identitySupplementDefinitions = [
@@ -102,7 +103,7 @@ async function click(page, button, route, status = 200, method = "POST") {
   assert.equal(response.status(), 202); return response;
 }
 async function choosePhone(page, phone, label = /^(Tu )?número de WhatsApp$/iu) {
-  await page.getByRole("button", { name: "WhatsApp", exact: true }).click();
+  await pickerButton(page, "Método de ingreso").click(); await page.getByRole("option", { name: "WhatsApp", exact: true }).click();
   await page.getByRole("textbox", { name: label }).fill(nationalPhone(phone));
 }
 function publicIdentityFrame(page) {
@@ -220,7 +221,7 @@ export async function runIdentitySupplementCases(h) {
     await run(3, [], async () => {
       await closePublic(h, page); phoneAccount = await registerPhone(h, page, phone.foreign, `ids-phone-${tag}`); const owned = await read(h, page, "/api/me/login-methods"); await h.signOut(page);
       const claimant = await h.registerPerson(page); const before = await read(h, page, "/api/me/login-methods"); await page.goto(new URL("/cuenta", h.base).href);
-      await page.getByRole("button", { name: accountAddMethodName }).click(); const dialog = page.getByRole("dialog"); await dialog.getByRole("button", { name: "WhatsApp", exact: true }).click(); await dialog.getByRole("textbox", { name: "Número", exact: true }).fill(nationalPhone(phone.foreign));
+      await page.getByRole("button", { name: accountAddMethodName }).click(); const dialog = page.getByRole("dialog"); await pickerButton(dialog, "Qué querés agregar").click(); await page.getByRole("option", { name: "WhatsApp", exact: true }).click(); await dialog.getByRole("textbox", { name: "Número", exact: true }).fill(nationalPhone(phone.foreign));
       const problem = await requireProblem(await click(page, dialog.getByRole("button", { name: "Enviar código", exact: true }), "/api/me/login-methods", 400), 400, "Identity.LoginMethod.PhoneAlreadyUsed");
       assert.ok(problem.errors?.phone?.length > 0); await dialog.getByText(problem.errors.phone[0], { exact: true }).waitFor();
       assert.equal(await dialog.getByRole("textbox", { name: "Código 1", exact: true }).count(), 0); assert.deepEqual(await read(h, page, "/api/me/login-methods"), before);
@@ -279,7 +280,7 @@ export async function runIdentitySupplementCases(h) {
     await run(8, [], async () => {
       await closePublic(h, page); const target = await h.registerPerson(page); await h.signOut(page); await ensureOperator();
       await operatorPage.goto(new URL("/plataforma/legales", h.base).href); await operatorPage.getByRole("link", { name: "Publicar versión nueva", exact: true }).first().click();
-      await operatorPage.getByRole("combobox", { name: "Documento" }).click(); await operatorPage.getByRole("option", { name: /Términos y condiciones/u }).click();
+      await pickerButton(operatorPage, "Documento").click(); await operatorPage.getByRole("option", { name: /Términos y condiciones/u }).click();
       await operatorPage.getByRole("textbox", { name: "Vigente desde" }).fill(journeyDate().split("-").reverse().join("/")); await operatorPage.getByRole("textbox", { name: "En español" }).fill(`Términos del complemento de identidad ${tag}.`); await operatorPage.getByRole("textbox", { name: "En inglés" }).fill(`Terms for identity supplement ${tag}.`);
       await operatorPage.getByRole("button", { name: "Publicar", exact: true }).click(); const published = await operatorClick(operatorPage, operatorPage.getByRole("alertdialog").getByRole("button", { name: "Publicar", exact: true }), "/api/platform/legal-documents", operator, 201); const receipt = parseLegalPublicationReceipt(await published.text());
       await acceptPublishedLegalAndReturn(operatorPage, receipt, "/api/platform/legal-documents");

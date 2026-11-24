@@ -19,6 +19,7 @@ import { acceptAssistantNoticeFromHome } from "./assistant-real-ui.mjs";
 import { completeOperatorFactor } from "./platform-factor-real.mjs";
 import { etapa9Cases } from "./test-e2e-real-e9.mjs";
 import { chromium } from "playwright";
+import { pickerButton } from "./e2e-pieza.mjs";
 
 // Esta prueba arranca su propio AppHost y un PostgreSQL efímero, fuera del volumen Development.
 // No intercepta peticiones ni simula sesiones. A8 conserva una cookie antigua firmada por el preparador aislado.
@@ -240,7 +241,7 @@ async function inviteFromUsersPage(page, email, companyName, { organizationRole 
   if (companyName) {
     // Tablero Usuarios (Invitar): una sola Empresa con sus roles.
     const dialog = page.getByRole("dialog");
-    await dialog.getByRole("combobox", { name: "Empresa", exact: true }).click();
+    await pickerButton(dialog, "Empresa").click();
     await page.getByRole("option", { name: companyName, exact: true }).click();
     await dialog.getByRole("button", { name: "Roles en la empresa", exact: true }).click();
     await page.getByRole("menuitemcheckbox", { name: "Administrador", exact: true }).click();
@@ -914,7 +915,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
 
           setStage("cambia sólo la región de la organización, sin cambiar la cultura personal");
           await accountPage.goto(new URL("/org/configuracion", baseUrl).href);
-          await accountPage.getByRole("combobox", { name: "Idioma y región predeterminados", exact: true }).click();
+          await pickerButton(accountPage, "Idioma y región predeterminados").click();
           await accountPage.getByRole("option", { name: /^(English|Inglés) \(United States|Estados Unidos/ }).click();
           const configured = accountPage.waitForResponse((response) => new URL(response.url()).pathname === "/api/organization/settings"
             && response.request().method() === "PUT");
@@ -1561,7 +1562,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           setStage("abre Publicar versión nueva de Privacidad");
           await platformPage.getByRole("link", { name: "Publicar versión nueva", exact: true }).click();
           setStage("completa Privacidad con vigencia de hoy y contenidos en ambos idiomas");
-          await platformPage.getByRole("combobox", { name: "Documento" }).click();
+          await pickerButton(platformPage, "Documento").click();
           await platformPage.getByRole("option", { name: "Política de privacidad", exact: true }).click();
           const civil = new Intl.DateTimeFormat("es-AR", { timeZone: "America/Argentina/Buenos_Aires", day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date());
           await platformPage.getByRole("textbox", { name: "Vigente desde" }).fill(civil);
@@ -1711,7 +1712,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await rolesPage.getByRole("textbox", { name: "Nombre" }).fill(uiRoleName);
           await rolesPage.getByRole("textbox", { name: "Descripción" }).fill("Creado por el recorrido real del front.");
           setStage("elige que el rol aplica a toda la organización");
-          await rolesPage.getByRole("combobox", { name: "Vale en" }).click();
+          await pickerButton(rolesPage, "Vale en").click();
           await rolesPage.getByRole("option", { name: "Toda la organización" }).click();
           setStage("expande el grupo de permisos Roles");
           await rolesPage.getByRole("button", { name: "Abrir o cerrar Roles", exact: true }).click();
@@ -1738,7 +1739,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await rolesPage.goto(new URL("/org/roles/nuevo", baseUrl).href);
           const repeatedNameField = rolesPage.getByRole("textbox", { name: "Nombre" });
           await repeatedNameField.fill(uiRoleName);
-          await rolesPage.getByRole("combobox", { name: "Vale en" }).click();
+          await pickerButton(rolesPage, "Vale en").click();
           await rolesPage.getByRole("option", { name: "Toda la organización" }).click();
           await rolesPage.getByRole("button", { name: "Abrir o cerrar Roles", exact: true }).click();
           const repeatedPermission = rolesPage.getByRole("checkbox", { name: "Ver roles", exact: true });
@@ -1836,8 +1837,8 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await adminPage.getByRole("button", { name: "Crear empresa", exact: true }).click();
           const companyDialog = adminPage.getByRole("dialog");
           await companyDialog.getByRole("textbox", { name: "Nombre", exact: true }).fill(e2eCompanyName);
-          await companyDialog.getByRole("combobox", { name: "Zona de negocio", exact: true }).click();
-          await adminPage.getByRole("option", { name: "Buenos Aires (GMT−3)", exact: true }).click();
+          await pickerButton(companyDialog, "Zona de negocio").click();
+          await adminPage.getByRole("option", { name: "Buenos Aires", exact: true }).click();
           const companyCreated = adminPage.waitForResponse((response) => new URL(response.url()).pathname === "/api/companies"
             && response.request().method() === "POST");
           await companyDialog.getByRole("button", { name: "Crear empresa", exact: true }).click();
@@ -1973,7 +1974,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             await companyMembers.getByRole("row").filter({ hasText: companyAdminEmail }).waitFor();
             const filtered = membersRead((params) => params.get("state") === "Active");
             await companyAdminPage.getByRole("button", { name: "Estado: todos", exact: true }).click();
-            await companyAdminPage.getByRole("menuitemradio", { name: /^Activos/ }).click();
+            await companyAdminPage.getByRole("option", { name: /^Activos/ }).click();
             await filtered;
             assert.equal(new URL(companyAdminPage.url()).searchParams.get("state"), "Active");
             await companyMembers.getByRole("row").filter({ hasText: companyAdminEmail }).getByText("Activo", { exact: true }).waitFor();
@@ -2242,7 +2243,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
         ["3b: cambiar el idioma a en-US desde /cuenta", async (accountPage) => {
           await registerPerson(accountPage);
           await openAccount(accountPage);
-          const culture = accountPage.getByRole("combobox", { name: "Idioma y región" });
+          const culture = pickerButton(accountPage, "Idioma y región");
           await culture.waitFor({ state: "visible" });
           for (let attempt = 0; attempt < 120 && !(await culture.isEnabled()); attempt++) await delay(250);
           assert.equal(await culture.isEnabled(), true, "La lista de culturas debe terminar de cargar.");

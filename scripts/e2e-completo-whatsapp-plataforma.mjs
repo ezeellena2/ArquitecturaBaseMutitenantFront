@@ -10,6 +10,7 @@ import { confirmRecentAuthentication, stopConfirmingRecentAuthentication } from 
 import { choosePlatformPermissions, platformPermissionTable } from "./test-e2e-real-e9.mjs";
 import { openBarMenu, chooseBarAction } from "./e2e-completo-menu-barra.mjs";
 import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
+import { pickerButton } from "./e2e-pieza.mjs";
 
 const root = "/api/platform/whatsapp";
 const def = (id, actor, action, expected, covers = [], extra = {}) => ({
@@ -185,7 +186,7 @@ async function setConsultations(h, page, enabled, email) {
 async function addPhone(h, page, phone, cursor) {
   await page.goto(new URL("/cuenta", h.base).href); await page.getByRole("heading", { name: "Mi cuenta", exact: true }).waitFor();
   await page.getByRole("button", { name: "Agregar correo o teléfono", exact: true }).click();
-  const dialog = page.getByRole("dialog"); await dialog.getByRole("button", { name: "WhatsApp", exact: true }).click();
+  const dialog = page.getByRole("dialog"); await pickerButton(dialog, "Qué querés agregar").click(); await page.getByRole("option", { name: "WhatsApp", exact: true }).click();
   await dialog.getByRole("textbox", { name: "Número", exact: true }).fill(nationalPhone(phone));
   const send = () => uiWrite(page, dialog.getByRole("button", { name: "Enviar código", exact: true }), "/api/me/login-methods", "POST", null);
   // El cooldown es una respuesta propia del envío, no una espera fija de preparación.

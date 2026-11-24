@@ -6,6 +6,7 @@ import { clickForResponse, forceBusinessLogin, requireProblem, runBusinessDepend
 import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
 import { cleanupContinuationSessions } from "./e2e-completo-continuacion.mjs";
 import { assertViewport } from "./e2e-completo-personal.mjs";
+import { pickerButton } from "./e2e-pieza.mjs";
 
 const definition = (number, actor, action, route, expected, covers = []) => ({ id: `SUP-RO-${number}`, area: "Roles y permisos de empresa", actor, action, route, expected, covers, critical: true,
   source: "docs/features/roles.md; docs/features/organizaciones.md; docs/features/inicio.md" });
@@ -99,7 +100,7 @@ async function expectedCatalog(language) {
 async function createRole(h, page, company, name) {
   await visit(h, page, "/org/roles/nuevo");
   await page.getByRole("textbox", { name: "Nombre", exact: true }).fill(name);
-  await page.getByRole("combobox", { name: "Vale en", exact: true }).click();
+  await pickerButton(page, "Vale en").click();
   await page.getByRole("option", { name: company.name, exact: true }).click();
   await page.getByRole("button", { name: "Abrir o cerrar Miembros", exact: true }).click();
   await page.getByRole("checkbox", { name: "Ver miembros", exact: true }).check();
@@ -115,7 +116,7 @@ async function invite(h, page, email, company, role) {
   await page.getByRole("button", { name: "Invitar usuario", exact: true }).click();
   const dialog = page.getByRole("dialog", { name: "Invitar usuario", exact: true });
   await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(email);
-  await dialog.getByRole("combobox", { name: "Empresa", exact: true }).click();
+  await pickerButton(dialog, "Empresa").click();
   await page.getByRole("option", { name: company.name, exact: true }).click();
   await dialog.getByRole("button", { name: "Roles en la empresa", exact: true }).click();
   await page.getByRole("menuitemcheckbox", { name: role.name, exact: true }).click(); await page.keyboard.press("Escape");
@@ -137,7 +138,7 @@ export async function disableMember(h, page, memberId) {
     await sheet.getByText("De baja", { exact: true }).click();
     await sheet.waitFor({ state: "hidden" });
   } else {
-    await page.getByRole("combobox", { name: "Estado", exact: true }).click(); await page.getByRole("option", { name: "De baja", exact: true }).click();
+    await pickerButton(page, "Estado").click(); await page.getByRole("option", { name: "De baja", exact: true }).click();
   }
   await page.getByRole("button", { name: "Guardar cambios", exact: true }).click();
   await clickForResponse(page, page.getByRole("dialog").getByRole("button", { name: "Dar de baja y guardar", exact: true }), `/api/users/${memberId}`, "PUT");
@@ -187,7 +188,7 @@ export async function runRoleSupplementCases(h) {
         const role = await read(h, page, `/api/roles/${item.id}`); assert.equal(role.isSystemRole, true);
         await visit(h, page, `/org/roles/${role.id}`); await heading(page, role.name);
         assert.equal(await page.getByRole("textbox", { name: "Nombre", exact: true }).count(), 0);
-        assert.equal(await page.getByRole("combobox", { name: "Vale en", exact: true }).isDisabled(), true);
+        assert.equal(await pickerButton(page, "Vale en").isDisabled(), true);
         assert.equal(await page.getByRole("button", { name: "Guardar cambios", exact: true }).count(), 0);
         const checks = page.getByRole("checkbox"); assert.ok(await checks.count());
         for (const check of await checks.all()) assert.equal(await check.isDisabled(), true);
@@ -223,7 +224,7 @@ export async function runRoleSupplementCases(h) {
       for (const entry of assignments) {
         const role = await read(h, page, `/api/roles/${entry.roleId}`); const member = await read(h, page, `/api/users/${entry.memberId}`);
         await visit(h, page, `/org/roles/${role.id}`); await heading(page, role.name);
-        assert.equal(await page.getByRole("combobox", { name: "Vale en", exact: true }).isDisabled(), true);
+        assert.equal(await pickerButton(page, "Vale en").isDisabled(), true);
         for (const [method, data, code] of [["DELETE", { version: role.version }, "Roles.Role.HasUsers"], ["PUT", { ...roleBody(role), scope: "Organization", companyId: null, permissions: ["roles.read"] }, "Roles.Role.ScopeChangeHasUsers"]]) {
           const problem = await requireProblem(await h.api(page, `/api/roles/${role.id}`, { method, data }), 409, code);
           assertAssignedRoleUnchanged({ role, member, state: entry.state, code, problem, afterRole: await read(h, page, `/api/roles/${role.id}`), afterMember: await read(h, page, `/api/users/${member.memberId}`) });
@@ -247,7 +248,7 @@ export async function runRoleSupplementCases(h) {
       const restored = await forceBusinessLogin(h, page, owner.email); currentEmail = owner.email; activePages.add(page); assert.equal(restored.id, owner.me.id);
       await visit(h, page, `/org/usuarios/${active.memberId}`); const accepted = await read(h, page, `/api/users/${active.memberId}`); assert.equal(accepted.state, "Active"); assert.equal(accepted.userId, me.id);
       if (h.width === 390) await page.getByRole("region", { name: "Acceso a la organización", exact: true }).getByRole("button", { name: /^Estado/ }).getByText("Activo", { exact: true }).waitFor();
-      else assert.ok((await page.getByRole("combobox", { name: "Estado", exact: true }).innerText()).includes("Activo"));
+      else assert.ok((await pickerButton(page, "Estado").innerText()).includes("Activo"));
       capturePage = live; assertCompanyOnlyPermissions(await read(h, live, "/api/me"), fixture, true); assert.equal(liveToken, activeToken);
       await assertViewport(live);
       return "Miembro company-only con token propio: Inicio muestra su empresa/rol y Me sólo company.members.read. La Dueña lo ve Activo en Usuarios; las identidades permanecen separadas.";

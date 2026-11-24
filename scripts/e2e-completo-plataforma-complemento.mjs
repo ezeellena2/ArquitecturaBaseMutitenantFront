@@ -16,6 +16,7 @@ import { journeyDate } from "./recorrido-usuario.mjs";
 import { createAssistantControl } from "./assistant-real-control.mjs";
 import { acceptAssistantNoticeFromHome } from "./assistant-real-ui.mjs";
 import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
+import { pickerButton } from "./e2e-pieza.mjs";
 
 const definition = (number, actor, action, route, expected, covers = []) => ({ id: `PLAT-C-${String(number).padStart(2, "0")}`, area: "Complemento de Plataforma", actor, action, route, expected, covers, critical: true, source: "scripts/e2e-completo-plataforma-complemento.mjs" });
 export const supplementPlatformDefinitions = [
@@ -199,7 +200,7 @@ async function notice(env, email, before, predicate) {
   throw new Error("No llegó el aviso esperado al pickup propio.");
 }
 async function whatsapp(page, phone, label = /^(Tu )?número de WhatsApp$/iu) {
-  await page.getByRole("button", { name: "WhatsApp", exact: true }).click();
+  await pickerButton(page, "Método de ingreso").click(); await page.getByRole("option", { name: "WhatsApp", exact: true }).click();
   await page.getByRole("textbox", { name: label }).fill(phone);
 }
 async function inviteOperator(h, page, email, status = 201) {
@@ -733,7 +734,7 @@ export async function runSupplementPlatformCases(h) {
       // Cierra explícitamente la identidad pública creada por el alta pendiente antes del nuevo ingreso del Dueño.
       if (publicSignedIn) { await publicPage.goto(url("/login")); await publicPage.waitForURL((target) => target.pathname === "/"); await publicPage.getByRole("navigation", { name: "Secciones", exact: true }).or(publicPage.getByRole("button", { name: /, Personal$/ })).filter({ visible: true }).first().waitFor(); await read(h, publicPage, "/api/me"); await h.signOut(publicPage); publicSignedIn = false; }
       await ensureFull(); await page.goto(url("/plataforma/legales")); await page.getByRole("link", { name: "Publicar versión nueva", exact: true }).first().click();
-      await page.getByRole("combobox", { name: "Documento" }).click(); await page.getByRole("option", { name: /Términos y condiciones/ }).click();
+      await pickerButton(page, "Documento").click(); await page.getByRole("option", { name: /Términos y condiciones/ }).click();
       await page.getByRole("textbox", { name: "Vigente desde" }).fill(journeyDate().split("-").reverse().join("/"));
       await page.getByRole("textbox", { name: "En español" }).fill(`Términos del escenario aislado ${tag}: uso del servicio y responsabilidades de la cuenta.`);
       await page.getByRole("textbox", { name: "En inglés" }).fill(`Terms for isolated scenario ${tag}: service use and account responsibilities.`);
