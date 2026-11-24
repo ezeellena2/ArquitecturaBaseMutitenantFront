@@ -43,7 +43,7 @@ function connectCases(board: "WA-Alta" | "M-WA-Alta"): GalleryCase[] {
   return [
     galleryCase("numeros", board, "Atiende a", galleryApp("business", route, numbersApi(), { actions: open, readySelector: "[role=dialog]", readyText: "Seguir en Meta" })),
     galleryCase("numeros", board, "Atiende a · elegir", galleryApp("business", route, numbersApi(), {
-      actions: [...open, press("Atiende a", "combobox")], readyText: "Delta Norte S.A." })),
+      actions: [...open, press("Atiende a Toda la organización", "button")], readyText: "Delta Norte S.A." })),
   ];
 }
 
