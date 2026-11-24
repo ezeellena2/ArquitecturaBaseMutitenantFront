@@ -256,6 +256,8 @@ describe("CompanyDetailPage", () => {
   });
 
   it("un 403 en la ficha muestra la pantalla sin permiso", async () => {
+    // Los miembros y los roles se piden a la par de la ficha: responden, así ningún pedido queda sin respuesta.
+    detailApi([]);
     server.use(http.get("/api/companies/company-1", () => HttpResponse.json({ code: "Authorization.Forbidden", detail: "No tenés permiso." }, { status: 403 })));
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
 
