@@ -19,7 +19,6 @@ const twoViews = new Map([
 const pending = new Set([
   "areas/business/companies/components/AddMemberDialog.tsx",
   "areas/business/companies/components/MemberRolesDialog.tsx",
-  "areas/business/roles/components/RoleScopeField.tsx",
   "areas/business/users/components/InviteUserDialog.tsx",
   "areas/business/users/components/RolesField.tsx",
   "areas/business/users/components/UserCompanyDialog.tsx",

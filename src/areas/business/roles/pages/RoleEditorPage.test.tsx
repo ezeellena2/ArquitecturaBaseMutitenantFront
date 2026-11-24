@@ -68,7 +68,7 @@ describe("RoleEditorPage", () => {
     expect(await axe(container)).toHaveNoViolations();
     await user.type(name, "Operaciones");
     await user.type(screen.getByRole("textbox", { name: "Descripción" }), "Consulta los roles.");
-    await user.click(screen.getByRole("combobox", { name: "Vale en" }));
+    await user.click(screen.getByRole("button", { name: /^Vale en / }));
     await user.click(await screen.findByRole("option", { name: "Toda la organización" }));
     await user.click(await screen.findByRole("button", { name: "Abrir o cerrar Roles" }));
     await user.click(await screen.findByRole("checkbox", { name: "Ver roles" }));
@@ -97,7 +97,7 @@ describe("RoleEditorPage", () => {
 
     const name = await screen.findByRole("textbox", { name: "Nombre" });
     await user.type(name, "Operaciones");
-    await user.click(screen.getByRole("combobox", { name: "Vale en" }));
+    await user.click(screen.getByRole("button", { name: /^Vale en / }));
     await user.click(await screen.findByRole("option", { name: "Toda la organización" }));
     await user.click(await screen.findByRole("button", { name: "Abrir o cerrar Roles" }));
     await user.click(await screen.findByRole("checkbox", { name: "Ver roles" }));
@@ -139,7 +139,7 @@ describe("RoleEditorPage", () => {
 
     const name = await screen.findByRole("textbox", { name: "Nombre" });
     await user.type(name, "Operaciones");
-    await user.click(screen.getByRole("combobox", { name: "Vale en" }));
+    await user.click(screen.getByRole("button", { name: /^Vale en / }));
     await user.click(await screen.findByRole("option", { name: "Toda la organización" }));
     await user.click(await screen.findByRole("button", { name: "Abrir o cerrar Roles" }));
     await user.click(await screen.findByRole("checkbox", { name: "Ver roles" }));
@@ -179,7 +179,7 @@ describe("RoleEditorPage", () => {
     renderRouteWithProviders("/org/roles/nuevo?scope=SpecificCompany&companyId=company-1", { as: "business-e6-admin" });
     await user.type(await screen.findByRole("textbox", { name: "Nombre" }), "Administración Delta");
     // Desde una empresa llega elegida; sin un campo «Empresa» aparte.
-    const valeEn = screen.getByRole("combobox", { name: "Vale en" });
+    const valeEn = screen.getByRole("button", { name: /^Vale en / });
     await waitFor(() => expect(valeEn).toHaveTextContent("Delta S.A."));
     expect(screen.queryByRole("combobox", { name: "Empresa" })).not.toBeInTheDocument();
     valeEn.focus();
@@ -207,7 +207,7 @@ describe("RoleEditorPage", () => {
     expect(screen.queryByText("Una empresa específica")).not.toBeInTheDocument();
     expect(screen.queryByText("Empresa")).not.toBeInTheDocument();
     // Tableros Rol y M-Rol (A11): «Delta S.A. ⌄» es el mismo desplegable, apagado, con fondo y texto grises.
-    const scope = screen.getByRole("combobox", { name: "Vale en" });
+    const scope = screen.getByRole("button", { name: /^Vale en / });
     expect(scope).toBeDisabled();
     expect(scope).toHaveTextContent("Delta S.A.");
     expect(scope).toHaveClass("disabled:bg-[var(--s2)]");
@@ -223,7 +223,7 @@ describe("RoleEditorPage", () => {
         http.get("/api/roles/role-company", () => HttpResponse.json({ ...role, id: "role-company", scope: "SpecificCompany", companyId: "company-1", userCount: 4, permissions: ["company.members.read"] })),
       );
       const { container } = renderRouteWithProviders("/org/roles/role-company", { as: "business-e6-admin" });
-      const scope = await screen.findByRole("combobox", { name: "Vale en" });
+      const scope = await screen.findByRole("button", { name: /^Vale en / });
       expect(scope).toBeDisabled();
       await waitFor(() => expect(scope).toHaveTextContent("Delta S.A."));
       expect(await axe(container)).toHaveNoViolations();
@@ -283,8 +283,8 @@ describe("RoleEditorPage", () => {
 
     const name = await screen.findByRole("textbox", { name: "Nombre" });
     // A11 (Criterio · Formularios): el mismo campo, deshabilitado.
-    expect(screen.getByRole("combobox", { name: "Vale en" })).toBeDisabled();
-    expect(screen.getByRole("combobox", { name: "Vale en" })).toHaveTextContent("Toda la organización");
+    expect(screen.getByRole("button", { name: /^Vale en / })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /^Vale en / })).toHaveTextContent("Toda la organización");
     await user.clear(name);
     await user.type(name, "Solo lectura de la organización");
     await user.click(screen.getAllByRole("button", { name: "Guardar cambios" })[0]);
@@ -581,7 +581,7 @@ describe("RoleEditorPage", () => {
 
     expect(await screen.findByRole("button", { name: "Cancelar" })).toBeVisible();
     expect(screen.queryByRole("button", { name: "Descartar cambios" })).not.toBeInTheDocument();
-    const valeEn = screen.getByRole("combobox", { name: "Vale en" });
+    const valeEn = screen.getByRole("button", { name: /^Vale en / });
     expect(valeEn).not.toHaveAttribute("aria-required");
     expect(document.querySelector(`label[for="${valeEn.id}"]`)).toHaveTextContent(/^Vale en$/);
     expect(screen.getByRole("textbox", { name: "Nombre" })).toHaveAttribute("aria-required", "true");
@@ -608,8 +608,8 @@ describe("RoleEditorPage", () => {
 
       await screen.findByRole("textbox", { name: "Nombre" });
       // Tablero M-Rol («Criterio · Formularios», A11): «Vale en» es el mismo desplegable, apagado.
-      expect(screen.getByRole("combobox", { name: "Vale en" })).toBeDisabled();
-      expect(screen.getByRole("combobox", { name: "Vale en" })).toHaveTextContent("Toda la organización");
+      expect(screen.getByRole("button", { name: /^Vale en / })).toBeDisabled();
+      expect(screen.getByRole("button", { name: /^Vale en / })).toHaveTextContent("Toda la organización");
       expect(await axe(container)).toHaveNoViolations();
       expect(screen.getByRole("heading", { level: 1, name: "Solo lectura" }).closest("header")).toHaveTextContent("Vale en toda la organización · 0 usuarios lo tienen");
       expect(screen.getByRole("heading", { name: "Datos del rol" })).toHaveClass("sr-only");
@@ -644,7 +644,7 @@ describe("RoleEditorPage", () => {
     const name = screen.getByRole("textbox", { name: "Nombre" });
     expect(await screen.findByText("Escribí el nombre del rol.")).toBeVisible();
     expect(name).toHaveAccessibleDescription("Escribí el nombre del rol.");
-    expect(screen.getByRole("combobox", { name: "Vale en" })).toHaveAccessibleDescription("Elegí dónde vale el rol.");
+    expect(screen.getByRole("button", { name: /^Vale en / })).toHaveAccessibleDescription("Elegí dónde vale el rol.");
     expect(screen.getByText("Elegí al menos un permiso.")).toBeVisible();
     // Tablero Rol (.w-cartel.o-prob, con 12 y 16 de margen): en la compu, el error de los permisos va en el cartel de
     // problema, de 44 con el ícono de 18.
@@ -656,7 +656,7 @@ describe("RoleEditorPage", () => {
 
     await user.type(name, "Operaciones");
     expect(screen.queryByText("Escribí el nombre del rol.")).not.toBeInTheDocument();
-    await user.click(screen.getByRole("combobox", { name: "Vale en" }));
+    await user.click(screen.getByRole("button", { name: /^Vale en / }));
     await user.click(await screen.findByRole("option", { name: "Toda la organización" }));
     expect(screen.queryByText("Elegí dónde vale el rol.")).not.toBeInTheDocument();
     await user.click(await screen.findByRole("checkbox", { name: "Todos los permisos de Roles" }));
@@ -672,7 +672,7 @@ describe("RoleEditorPage", () => {
     );
     renderRouteWithProviders("/org/roles/nuevo?scope=AnyCompany", { as: "business-e6-admin" });
 
-    const valeEn = await screen.findByRole("combobox", { name: "Vale en" });
+    const valeEn = await screen.findByRole("button", { name: /^Vale en / });
     expect(valeEn).toHaveTextContent("Elegí dónde vale");
     expect(screen.getByText("Elegí dónde vale el rol para ver sus permisos.")).toBeVisible();
     // accesibilidad.md: los desplegables se abren con el teclado. Las empresas pueden llegar después de abrirlo.
