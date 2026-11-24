@@ -98,7 +98,7 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
     { meta: action.meta, sameOperation: (previous, next) => previous.id === next.id });
   const busy = action.isPending;
   // Tablero Cuenta-Plat, en cada estado: «Cerrar sesiones», solo con la cuenta activa; «Reactivar», suspendida; «Suspender»,
-  // activa o por recuperar.
+  // activa o por recuperar. Van en el ⋮ de la banda, también en la compu (209): no son la tarea de la pantalla.
   const accountActions: AccountAction[] = mutable && canManage && !operator && !invitation
     ? [...(data.state === "Active" ? ["revoke-sessions"] as const : []), ...(data.state === "Suspended" ? ["reactivate"] as const : []),
       ...(["Active", "NeedsRecovery"].includes(data.state) ? ["suspend"] as const : [])] : [];
@@ -143,13 +143,12 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
     <Page title={name} backTo={{ to: "/plataforma/cuentas", label: t("platformAccounts:detail.back") }} phoneBody="flush"
       summary={<><StatusBadge tones={accountStateTones} value={data.state} />{why ? <InfoTip standalone className="ml-1" text={why} title={format.formatEnum("PlatformAccountState", data.state)} /> : null}<SublineSeparator />{operator ? operatorSummary : personSummary}</>}
       phoneSubtitle={<><StatusBadge tones={accountStateTones} value={data.state} />{" · "}{operator ? invitation ? expires : <>{t("platformAccounts:detail.operatorInline")} {" · "}<NumberText value={permissionCount} /> {t("platformAccounts:detail.permissionCount", { count: permissionCount })}</> : <>{t(data.state === "Deleted" ? "platformAccounts:detail.deletedInline" : "platformAccounts:detail.lastSignInInline")} <DateText value={data.state === "Deleted" ? data.deletedAtUtc : data.lastSignInAtUtc} kind={data.state === "Deleted" ? "date" : "dateTime"} /></>}</>}
-      actions={!phone ? <>{accountActions.map((action) => <Button key={action} variant="outline" onClick={(event) => open(action, event.currentTarget)}>{t(action === "revoke-sessions" ? "platformAccounts:detail.closeSessions" : `platformAccounts:actions.${action}`)}</Button>)}
-        {mutable && canOperators && operator && !invitation ? <Button variant="outline" onClick={(event) => open("permissions", event.currentTarget)}>{t("platformAccounts:operator.change")}</Button> : null}
+      actions={!phone ? <>{mutable && canOperators && operator && !invitation ? <Button variant="outline" onClick={(event) => open("permissions", event.currentTarget)}>{t("platformAccounts:operator.change")}</Button> : null}
         {canResend ? <Button variant="outline" pending={busy} pendingLabel={t("platformAccounts:detail.resending")} onClick={() => resend.mutate({ id: data.id, name })}>{t("platformAccounts:actions.resend")}</Button> : null}</> : undefined}
       // «Criterio · Menús»: cada opción con su ícono gris (Cuenta-Plat: candado en «Restablecer el autenticador», ✕ en «Quitar
       // operador», tacho en «Dar de baja»; las demás, las del ⋮ de la lista de Cuentas). En el teléfono, la hoja (M-Cuenta-Plat).
       moreActions={{ label: t("platformAccounts:rowActions", { name }), pending: phone && resend.isPending, items: [
-        ...accountActions.map((action) => ({ label: t(action === "revoke-sessions" ? "platformAccounts:detail.closeSessions" : `platformAccounts:actions.${action}`), icon: accountActionIcons[action], hidden: !phone, destructive: action === "suspend", onSelect: (trigger: HTMLElement | null) => open(action, trigger) })),
+        ...accountActions.map((action) => ({ label: t(action === "revoke-sessions" ? "platformAccounts:detail.closeSessions" : `platformAccounts:actions.${action}`), icon: accountActionIcons[action], destructive: action === "suspend", onSelect: (trigger: HTMLElement | null) => open(action, trigger) })),
         { label: t("platformAccounts:operator.change"), icon: Pencil, hidden: !phone || !mutable || !canOperators || !operator || invitation, onSelect: (trigger) => open("permissions", trigger) },
         { label: t("platformAccounts:actions.resend"), icon: RotateCw, hidden: !phone || !canResend || busy, onSelect: () => resend.mutate({ id: data.id, name }) },
         // Tablero Cuenta-Plat («Operador: acciones»): «Restablecer el autenticador» y, de peligro, «Quitar operador». Nunca

@@ -1,8 +1,9 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRef, useState } from "react";
+import { useRef, useState, type ComponentType } from "react";
 import { useTranslation } from "react-i18next";
 import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { useParams } from "react-router";
+import { Power, RotateCw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { usePermissions } from "@/auth/usePermissions";
 import { invalidateNotifications } from "@/layouts/notifications/api";
@@ -17,6 +18,7 @@ import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { InfoTip } from "@/shared/ui/InfoTip";
 import { endWithPeriod } from "@/shared/format/phrase";
 import { Button } from "@/shared/ui/button";
+import { CheckIcon, CloseIcon } from "@/shared/ui/icons";
 import { DateText } from "@/shared/ui/format/DateText";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
@@ -101,7 +103,11 @@ function OrganizationDetail({ id }: { id: string }) {
   const data = written ? { ...organization.data, ...written, lastStateChange: organization.data.status === written.status ? organization.data.lastStateChange : null } : organization.data;
   const open = (action: TenantAction, trigger: HTMLElement | null) => setConfirmation({ organization: data, action, trigger });
   const retryProvisioning = () => retry.mutate(data, { onSuccess: (response) => { wrote(response.version, "Active"); toast.success(t("platformTenants:messages.retried", { name: data.name })); void invalidate(); }, onError: (error) => toastActionError(error, t) });
-  const actions = canManage ? data.status === "PendingApproval" ? ["reject", "approve"] as const : data.status === "Active" ? ["suspend"] as const : data.status === "Suspended" ? ["reactivate", "close"] as const : [] : [];
+  // 209 («Criterio · Botones» y «Criterio · Menús»): a la vista, lo que espera una decisión (rechazar y aprobar) y reintentar el
+  // alta; suspender, reactivar y cerrar van en el ⋮ de la banda, con lo destructivo al final y en rojo. En el teléfono, todo en el ⋮.
+  const decisions = canManage && data.status === "PendingApproval" ? ["reject", "approve"] as const : [];
+  const menuActions = canManage ? data.status === "Active" ? ["suspend"] as const : data.status === "Suspended" ? ["reactivate", "close"] as const : [] : [];
+  const actionIcons: Record<TenantAction, ComponentType<{ className?: string }>> = { approve: CheckIcon, reject: CloseIcon, suspend: Power, reactivate: Power, close: Trash2 };
   const counts = data.companyCount === 0 ? t("platformTenants:columns.noCompanies") : t("platformTenants:detail.counts", { companies: format.formatInteger(data.companyCount), companyLabel: t("platformTenants:columns.company", { count: data.companyCount }), members: format.formatInteger(data.memberCount), memberLabel: t("platformTenants:columns.member", { count: data.memberCount }) });
   // Tablero Organizacion (175): el estado una vez; cuándo y por qué, en la frase de su (i).
   const why = (data.status === "Suspended" || data.status === "Closed") && data.lastStateChange?.atUtc
@@ -111,8 +117,12 @@ function OrganizationDetail({ id }: { id: string }) {
     <Page title={data.name} backTo={back} phoneBody="flush"
       summary={<><StatusBadge tones={tenantStatusTones} value={data.status} />{why ? <InfoTip standalone className="ml-1" text={why} title={format.formatEnum("TenantStatus", data.status)} /> : null}<SublineSeparator /><span>{t(data.status === "PendingApproval" || data.status === "Provisioning" ? "platformTenants:detail.requested" : "platformTenants:detail.created")} <DateText value={data.createdAtUtc} /> {t(`platformTenants:detail.source.${data.source}`)}{" · "}{counts}</span></>}
       phoneSubtitle={<><StatusBadge tones={tenantStatusTones} value={data.status} />{" · "}{counts}</>}
-      actions={!phone && canManage ? <>{actions.map((action) => <Button key={action} variant={action === "reject" || action === "close" ? "danger" : action === "approve" ? "default" : "outline"} onClick={(event) => open(action, event.currentTarget)}>{t(`platformTenants:actions.${action}`)}</Button>)}{data.status === "Provisioning" ? <Button pending={retry.isPending} onClick={retryProvisioning}>{t("platformTenants:actions.retry")}</Button> : null}</> : undefined}
-      moreActions={phone && canManage ? { label: t("platformTenants:rowActions", { name: data.name }), pending: retry.isPending, items: [...actions.map((action) => ({ label: t(`platformTenants:actions.${action}`), destructive: ["reject", "suspend", "close"].includes(action), onSelect: (trigger: HTMLButtonElement | null) => open(action, trigger) })), ...(data.status === "Provisioning" ? [{ label: t("platformTenants:actions.retry"), onSelect: retryProvisioning }] : [])] } : undefined}
+      actions={!phone && canManage ? <>{decisions.map((action) => <Button key={action} variant={action === "reject" ? "danger" : "default"} onClick={(event) => open(action, event.currentTarget)}>{t(`platformTenants:actions.${action}`)}</Button>)}{data.status === "Provisioning" ? <Button pending={retry.isPending} onClick={retryProvisioning}>{t("platformTenants:actions.retry")}</Button> : null}</> : undefined}
+      moreActions={canManage ? { label: t("platformTenants:rowActions", { name: data.name }), pending: phone && retry.isPending, items: [
+        ...decisions.map((action) => ({ label: t(`platformTenants:actions.${action}`), icon: actionIcons[action], hidden: !phone, destructive: action === "reject", onSelect: (trigger: HTMLButtonElement | null) => open(action, trigger) })),
+        ...menuActions.map((action) => ({ label: t(`platformTenants:actions.${action}`), icon: actionIcons[action], destructive: action !== "reactivate", onSelect: (trigger: HTMLButtonElement | null) => open(action, trigger) })),
+        { label: t("platformTenants:actions.retry"), icon: RotateCw, hidden: !phone || data.status !== "Provisioning", onSelect: retryProvisioning },
+      ] } : undefined}
       tabs={{ label: t("platformTenants:detail.tabsLabel"), value: tab, onValueChange: setTab, items: [
         { value: "history", label: t("platformTenants:detail.history"), content: <OrganizationHistoryTab id={id} /> },
         { value: "owners", label: t("platformTenants:detail.owners"), count: organizationOwners(data).length, content: <OrganizationOwnersTab organization={data} /> },

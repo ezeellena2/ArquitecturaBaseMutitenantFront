@@ -51,7 +51,7 @@ describe("Ficha de Cuenta de Plataforma", () => {
     data = { ...platformAccountDetailFixture({ kind, state: kind === "Persona suspendida" ? "Suspendida" : "Activa" }), displayName: null, primaryEmail: null, soleOwnerOrganizations: [] };
     const user = userEvent.setup(); const { container } = open();
     await screen.findByRole("heading", { name: "Sin dato", level: 1 });
-    if (["Reactivar", "Cerrar sesiones", "Cambiar permisos"].includes(action)) await user.click(screen.getByRole("button", { name: action }));
+    if (action === "Cambiar permisos") await user.click(screen.getByRole("button", { name: action }));
     else await menu(user, action);
     expect(await screen.findByRole("dialog")).toHaveAccessibleName(title);
     if (action === "Borrar la cuenta") await screen.findByRole("textbox", { name: "Motivo" });
@@ -79,8 +79,8 @@ describe("Ficha de Cuenta de Plataforma", () => {
     expect(await screen.findByRole("heading", { name: empty, level: 1 })).toBeVisible();
     if (!phone) expect(screen.getByRole("navigation", { name: breadcrumbs })).toHaveTextContent(empty);
     const trigger = screen.getByRole("button", { name: actions });
-    if (phone) { await user.click(trigger); await user.click(await screen.findByRole("menuitem", { name: suspend })); }
-    else await user.click(screen.getByRole("button", { name: suspend }));
+    if (phone) await user.click(trigger); else { trigger.focus(); await user.keyboard("{Enter}"); }
+    await user.click(await screen.findByRole("menuitem", { name: suspend }));
     expect(screen.getByRole("dialog", { name: title })).toBeVisible();
     await user.type(screen.getByRole("textbox", { name: reasonLabel }), "Revisión");
     await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: suspend }));
@@ -101,7 +101,8 @@ describe("Ficha de Cuenta de Plataforma", () => {
     expect(await axe(container)).toHaveNoViolations();
   });
   // Tablero Cuenta-Plat (175): sin cartel; la banda dice el estado una vez, y cuándo y por qué van en la frase de su (i).
-  // «Cerrar sesiones», solo con la cuenta activa, como el tablero en cada estado.
+  // «Cerrar sesiones», solo con la cuenta activa, como el tablero en cada estado. 209: cerrar sesiones, suspender y reactivar
+  // van en el ⋮ de la banda, con suspender y borrar de peligro, al final.
   it.each([
     ["Activa", ["Cerrar sesiones", "Suspender"], null],
     ["Suspendida", ["Reactivar"], /^El 27\/09\/2026, \d{2}:\d{2}\. Motivo: Denuncia de uso indebido\.$/],
@@ -112,9 +113,7 @@ describe("Ficha de Cuenta de Plataforma", () => {
   ] as const)("estado %s conserva evidencia y acciones", async (state, actions, why) => {
     data = platformAccountDetailFixture({ state }); open();
     await screen.findByRole("heading", { name: data.displayName!, level: 1 });
-    for (const label of ["Cerrar sesiones", "Suspender", "Reactivar"]) {
-      expect(Boolean(screen.queryByRole("button", { name: label }))).toBe(actions.includes(label as never));
-    }
+    for (const label of ["Cerrar sesiones", "Suspender", "Reactivar"]) expect(screen.queryByRole("button", { name: label })).not.toBeInTheDocument();
     if (why) expect(screen.getByRole("img", { name: why })).toHaveAttribute("tabindex", "0");
     else expect(screen.queryByRole("img", { name: /^(El |Pidió|La plataforma)/ })).not.toBeInTheDocument();
     expect(screen.queryByText(/Suspendida el|Pidió la baja el|inició la baja el|Necesita recuperación\./)).not.toBeInTheDocument();
@@ -122,6 +121,14 @@ describe("Ficha de Cuenta de Plataforma", () => {
     if (state.startsWith("Por borrar") || state === "Borrada") expect(screen.queryByRole("button", { name: `Acciones de ${data.displayName}` })).not.toBeInTheDocument();
     if (state === "Necesita recuperación") expect(screen.getByText("Ya no sirve para ingresar")).toBeVisible();
     if (state === "Borrada") expect(screen.getByText("No tiene métodos de ingreso.")).toBeVisible();
+    const trigger = screen.queryByRole("button", { name: `Acciones de ${data.displayName}` });
+    if (actions.length > 0) {
+      trigger!.focus(); await userEvent.setup().keyboard("{Enter}");
+      const items = await screen.findAllByRole("menuitem");
+      expect(items.map((item) => item.textContent).filter((label) => ["Cerrar sesiones", "Suspender", "Reactivar"].includes(label ?? ""))).toEqual(actions);
+      for (const item of items) expect(item.querySelector("svg")).not.toBeNull();
+      expect(screen.queryByRole("menuitem", { name: "Suspender" })?.getAttribute("data-variant") ?? "destructive").toBe("destructive");
+    }
   });
   it.each(["terminadas", "activa y terminada"] as const)("recuperación con organizaciones homónimas %s no atribuye una fecha ajena", async (memberships) => {
     data = platformAccountDetailFixture({ state: "Necesita recuperación" });
@@ -345,7 +352,7 @@ describe("Ficha de Cuenta de Plataforma", () => {
   });
   it("409 de estado se muestra con su texto, conserva motivo y al cancelar relee", async () => {
     const user = userEvent.setup(); server.use(http.post("/api/platform/accounts/:id/suspend", () => HttpResponse.json({ code: "Users.User.InvalidTransition", detail: "No se puede cambiar la cuenta a ese estado." }, { status: 409 })));
-    open(); await user.click(await screen.findByRole("button", { name: "Suspender" })); await reason(user, "Suspender");
+    open(); await menu(user, "Suspender"); await reason(user, "Suspender");
     expect(await screen.findByText("No se puede cambiar la cuenta a ese estado.")).toBeVisible(); expect(screen.getByRole("textbox", { name: "Motivo" })).toHaveValue("Revisión");
     expect(reads).toBe(1); await user.click(screen.getByRole("button", { name: "Cancelar" })); await waitFor(() => expect(reads).toBe(2));
   });
@@ -354,16 +361,16 @@ describe("Ficha de Cuenta de Plataforma", () => {
     if (action === "reactivate") data = platformAccountDetailFixture({ state: "Suspendida" });
     const user = userEvent.setup(); const received: { key: string | null; body: unknown }[] = [];
     server.use(http.post(`/api/platform/accounts/:id/${action}`, async ({ request }) => { received.push({ body: await request.json(), key: request.headers.get("Idempotency-Key") }); return received.length === 1 ? HttpResponse.error() : new HttpResponse(null, { status: 204 }); }));
-    open(); await user.click(await screen.findByRole("button", { name: label })); await reason(user, label);
+    open(); await menu(user, label); await reason(user, label);
     fireEvent.click(await screen.findByRole("button", { name: "Reintentar" })); await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(received).toHaveLength(2); expect(received[0].body).toEqual({ reason: "Revisión" }); expect(received[0].key).toBeTruthy(); expect(received[1]).toEqual(received[0]);
   });
   it("cambiar id abandona borrador, Retry viejo y respuesta tardía de la cuenta anterior", async () => {
     const user = userEvent.setup(); let writes = 0;
     server.use(http.post("/api/platform/accounts/:id/suspend", () => { writes++; return HttpResponse.error(); }));
-    const { router } = open(); await user.click(await screen.findByRole("button", { name: "Suspender" })); await reason(user, "Suspender"); const retry = await screen.findByRole("button", { name: "Reintentar" });
+    const { router } = open(); await menu(user, "Suspender"); await reason(user, "Suspender"); const retry = await screen.findByRole("button", { name: "Reintentar" });
     data = { ...data, id: "otra", displayName: "Otra cuenta" }; await act(async () => { await router.navigate("/plataforma/cuentas/otra"); });
-    await user.click(await screen.findByRole("button", { name: "Suspender" })); expect(screen.getByRole("textbox", { name: "Motivo" })).toHaveValue("");
+    await menu(user, "Suspender"); expect(screen.getByRole("textbox", { name: "Motivo" })).toHaveValue("");
     await act(async () => { fireEvent.click(retry); }); expect(writes).toBe(1); expect(screen.getByRole("dialog")).toBeVisible();
   });
   it.each(["permissions", "state", "self"] as const)("perder %s abandona el formulario y al recuperar no revive Retry", async (loss) => {
@@ -470,7 +477,7 @@ describe("Ficha de Cuenta de Plataforma", () => {
       await new Promise<void>((resolve) => { release = resolve; }); return failed === "red" ? HttpResponse.error() : new HttpResponse(null, { status: 503 });
     }), http.post("/api/platform/accounts/:id/deletion", () => new HttpResponse(null, { status: 204 })));
     const { router, queryClient } = open(); await menu(user, "Borrar la cuenta"); await screen.findByRole("textbox", { name: "Motivo" }); await reason(user, "Borrar la cuenta"); await waitFor(() => expect(release).toBeDefined());
-    await act(async () => { await router.navigate("/plataforma/cuentas/otra"); }); await user.click(await screen.findByRole("button", { name: "Suspender" })); const motive = screen.getByRole("textbox", { name: "Motivo" }); await user.type(motive, "Otro recorrido");
+    await act(async () => { await router.navigate("/plataforma/cuentas/otra"); }); (await screen.findByRole("button", { name: "Acciones de Otra" })).focus(); await user.keyboard("{ArrowDown}"); await user.click(await screen.findByRole("menuitem", { name: "Suspender" })); const motive = screen.getByRole("textbox", { name: "Motivo" }); await user.type(motive, "Otro recorrido");
     await act(async () => { release?.(); }); await waitFor(() => expect(queryClient.isMutating()).toBe(0)); expect(screen.getByRole("textbox", { name: "Motivo" })).toBe(motive); expect(motive).toHaveValue("Otro recorrido");
     expect(screen.queryByText("No pudimos conectarnos. Revisá tu conexión.")).not.toBeInTheDocument(); expect(screen.queryByText("Algo salió mal. Probá de nuevo en un rato.")).not.toBeInTheDocument();
   });

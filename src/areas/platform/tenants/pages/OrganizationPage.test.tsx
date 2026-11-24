@@ -25,8 +25,14 @@ function cacheOtherOrganization(page: ReturnType<typeof render>) {
   server.use(http.get("/api/platform/tenants/omega", () => HttpResponse.json(otherOrganization)), http.get("/api/platform/tenants/omega/history", () => HttpResponse.json({ items: [], hasMore: false })));
   server.use(http.get("/api/platform/tenants/omega/features", () => HttpResponse.json([])));
 }
+/// 209: suspender, reactivar y cerrar van en el ⋮ de la banda; aprobar y rechazar lo que espera, a la vista.
+async function openAction(user: ReturnType<typeof userEvent.setup>, label: string) {
+  (await screen.findByRole("button", { name: /^Acciones de Grupo / })).focus(); await user.keyboard("{Enter}");
+  await user.click(await screen.findByRole("menuitem", { name: label }));
+}
 async function confirm(user: ReturnType<typeof userEvent.setup>, label: string, reason = "Revisión") {
-  await user.click(await screen.findByRole("button", { name: label }));
+  if (["Suspender", "Reactivar", "Cerrar"].includes(label)) await openAction(user, label);
+  else await user.click(await screen.findByRole("button", { name: label }));
   const dialog = await screen.findByRole("dialog");
   await user.type(within(dialog).getByRole("textbox", { name: "Motivo" }), reason);
   await user.click(within(dialog).getByRole("button", { name: label }));
@@ -65,16 +71,10 @@ describe("Ficha de Organización", () => {
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     await waitFor(() => expect(reads).toBeGreaterThan(before)); expect(await screen.findByRole("button", { name: "Avisos" })).toBeVisible();
   });
-  it.each([
-    ["PendingApproval", ["Rechazar", "Aprobar"]], ["Provisioning", ["Reintentar el alta"]], ["Active", ["Suspender"]], ["Suspended", ["Reactivar", "Cerrar"]], ["Closed", []],
-  ] as const)("%s muestra sólo sus acciones", async (status, actions) => {
-    detail({ ...organization, status }); render(); await screen.findByRole("heading", { name: "Grupo Delta" });
-    for (const action of ["Rechazar", "Aprobar", "Reintentar el alta", "Suspender", "Reactivar", "Cerrar"]) expect(Boolean(screen.queryByRole("button", { name: action }))).toBe(actions.some((item) => item === action));
-  });
-  it.each([["Suspended", "Cerrar"], ["PendingApproval", "Rechazar"]] as const)("%s %s en banda usa peligro con borde y en confirmación peligro lleno", async (status, label) => {
-    detail({ ...organization, status }); const user = userEvent.setup(); render();
-    const button = await screen.findByRole("button", { name: label }); expect(button).toHaveAttribute("data-variant", "danger");
-    await user.click(button); expect(within(await screen.findByRole("dialog")).getByRole("button", { name: label })).toHaveAttribute("data-variant", "destructive");
+  it("PendingApproval Rechazar en banda usa peligro con borde y en confirmación peligro lleno", async () => {
+    detail({ ...organization, status: "PendingApproval" }); const user = userEvent.setup(); render();
+    const button = await screen.findByRole("button", { name: "Rechazar" }); expect(button).toHaveAttribute("data-variant", "danger");
+    await user.click(button); expect(within(await screen.findByRole("dialog")).getByRole("button", { name: "Rechazar" })).toHaveAttribute("data-variant", "destructive");
   });
   // Tablero Organizacion (175): sin cartel; la banda dice el estado una vez, y cuándo y por qué van en la frase de su (i).
   // Sin el cambio de estado, no hay frase ni se inventa una fecha.
@@ -86,6 +86,28 @@ describe("Ficha de Organización", () => {
     expect(screen.queryByText(/Motivo: Reclamo/)).not.toBeInTheDocument();
     detail({ ...organization, status, lastStateChange: null }); await act(async () => { await queryClient.invalidateQueries({ queryKey: tenantsQueryRoot }); });
     await waitFor(() => expect(screen.queryByRole("img", { name: /^El 03\/09\/2026/ })).not.toBeInTheDocument());
+  });
+  // 209 («Criterio · Botones» y «Criterio · Menús»): a la vista solo lo que espera una decisión y reintentar el alta; suspender,
+  // reactivar y cerrar van en el ⋮ de la banda, con lo destructivo al final.
+  it.each([
+    ["Active", [], ["Suspender"]],
+    ["Suspended", [], ["Reactivar", "Cerrar"]],
+    ["PendingApproval", ["Rechazar", "Aprobar"], null],
+    ["Provisioning", ["Reintentar el alta"], null],
+    ["Closed", [], null],
+  ] as const)("la banda de una organización %s deja a la vista la tarea y lo demás en el ⋮", async (status, visible, menu) => {
+    detail({ ...organization, status }); const user = userEvent.setup(); render(); await screen.findByRole("heading", { name: "Grupo Delta" });
+    for (const label of ["Suspender", "Reactivar", "Cerrar", "Rechazar", "Aprobar", "Reintentar el alta"]) {
+      expect(Boolean(screen.queryByRole("button", { name: label }))).toBe((visible as readonly string[]).includes(label));
+    }
+    const trigger = screen.queryByRole("button", { name: "Acciones de Grupo Delta" });
+    if (!menu) { expect(trigger).not.toBeInTheDocument(); return; }
+    trigger!.focus(); await user.keyboard("{Enter}");
+    const items = await screen.findAllByRole("menuitem");
+    expect(items.map((item) => item.textContent)).toEqual(menu);
+    // «Criterio · Menús»: cada opción con su ícono; suspender y cerrar, de peligro y al final.
+    for (const item of items) expect(item.querySelector("svg")).not.toBeNull();
+    expect(items.filter((item) => item.getAttribute("data-variant") === "destructive").map((item) => item.textContent)).toEqual(menu.filter((label) => label !== "Reactivar"));
   });
   it("Plataforma y fecha nullable se muestran sin atribuir autoservicio", async () => {
     detail({ ...organization, source: "Platform", createdAtUtc: null }); render(); await screen.findByRole("heading", { name: "Grupo Delta" });
@@ -126,6 +148,7 @@ describe("Ficha de Organización", () => {
   it("sin manage permite leer ficha y Dueños, omite acciones y lecturas privadas", async () => {
     const user = userEvent.setup(); renderRouteWithProviders("/plataforma/organizaciones/delta", { as: "platform-operator-reader" }); await screen.findByRole("heading", { name: "Grupo Delta" });
     await user.click(screen.getByRole("tab", { name: "Dueños 1" })); expect(await screen.findByText("Lucía Fernández")).toBeVisible(); expect(screen.queryByRole("button", { name: "Suspender" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Acciones de Grupo Delta" })).not.toBeInTheDocument();
   });
   it("403 principal y falta de read bloquean la ficha", async () => {
     server.use(http.get("/api/platform/tenants/delta", () => HttpResponse.json({ code: "Auth.Forbidden" }, { status: 403 }))); render(); expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
@@ -141,7 +164,7 @@ describe("Ficha de Organización", () => {
   it("en-US conserva formatos y textos traducidos", async () => {
     const { queryClient } = render(); await screen.findByRole("heading", { name: "Grupo Delta" });
     await act(async () => { queryClient.setQueryData(currentUserQueryKey, { ...platformOperator, culture: "en-US" }); });
-    expect(await screen.findByRole("tab", { name: "History" })).toBeVisible(); expect(screen.getByRole("button", { name: "Suspend" })).toBeVisible(); expect(screen.getByText(/01\/12\/2026/)).toBeVisible();
+    expect(await screen.findByRole("tab", { name: "History" })).toBeVisible(); expect(screen.getByRole("button", { name: "Actions for Grupo Delta" })).toBeVisible(); expect(screen.getByText(/01\/12\/2026/)).toBeVisible();
   });
   // 263: cada Dueño es una tarjeta con el estado, el último ingreso y el correo, cada dato con su nombre.
   it("Dueños a 390 es una tarjeta sin avatar con estado, último ingreso y correo; axe", async () => {
@@ -153,8 +176,8 @@ describe("Ficha de Organización", () => {
   it("la versión propia habilita Reactivar antes del GET y otra lectura no la pisa ni inventa fecha", async () => {
     const user = userEvent.setup(); let reads = 0; let release: (() => void) | undefined; let body: unknown;
     server.use(http.get("/api/platform/tenants/delta", async () => { reads++; if (reads === 1) return HttpResponse.json({ ...organization, lastStateChange: { atUtc: "2026-09-01T14:00:00Z", action: "OrganizationReactivated", reason: "Anterior" } }); await new Promise<void>((resolve) => { release = resolve; }); return HttpResponse.json({ ...organization, status: "Suspended", version: 99, lastStateChange: { atUtc: "2026-09-03T14:00:00Z", action: "OrganizationSuspended", reason: "Real" } }); }), http.post("/api/platform/tenants/delta/suspend", () => HttpResponse.json({ version: 10 })), http.post("/api/platform/tenants/delta/reactivate", async ({ request }) => { body = await request.json(); return HttpResponse.json({ version: 11 }); }));
-    render(); await confirm(user, "Suspender"); await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument()); expect(await screen.findByRole("button", { name: "Reactivar" })).toBeVisible(); expect(screen.queryByText(/01\/09\/2026/)).not.toBeInTheDocument();
-    await user.click(screen.getByRole("button", { name: "Reactivar" })); await user.click(screen.getByRole("button", { name: "Cancelar" })); await waitFor(() => expect(release).toBeDefined()); await act(async () => { release?.(); }); await waitFor(() => expect(screen.getByRole("img", { name: /Motivo: Real\.$/ })).toBeInTheDocument());
+    render(); await confirm(user, "Suspender"); await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument()); expect(screen.queryByText(/01\/09\/2026/)).not.toBeInTheDocument();
+    await openAction(user, "Reactivar"); await user.click(screen.getByRole("button", { name: "Cancelar" })); await waitFor(() => expect(release).toBeDefined()); await act(async () => { release?.(); }); await waitFor(() => expect(screen.getByRole("img", { name: /Motivo: Real\.$/ })).toBeInTheDocument());
     await confirm(user, "Reactivar"); expect(await screen.findByText("Reactivamos Grupo Delta.")).toBeVisible(); expect(body).toEqual({ version: 10, reason: "Revisión" });
   });
   it.each(["General.ConcurrencyConflict", "Tenancy.Tenant.InvalidTransition"])("%s conserva motivo y franja, cerrar descarta coordinación y relee", async (code) => {
@@ -185,7 +208,7 @@ describe("Ficha de Organización", () => {
   ] as const)("%s %s manda versión, motivo y clave y conserva foco", async (status, label, action, message) => {
     detail({ ...organization, status }); const user = userEvent.setup(); let body: unknown; let key: string | null = null;
     server.use(http.post(`/api/platform/tenants/delta/${action}`, async ({ request }) => { body = await request.json(); key = request.headers.get("Idempotency-Key"); return HttpResponse.json({ version: 9 }); }));
-    render(); await user.click(await screen.findByRole("button", { name: label })); const dialog = await screen.findByRole("dialog");
+    render(); if (["Suspender", "Reactivar", "Cerrar"].includes(label)) await openAction(user, label); else await user.click(await screen.findByRole("button", { name: label })); const dialog = await screen.findByRole("dialog");
     await user.click(within(dialog).getByRole("button", { name: label })); expect(await screen.findByText("Escribí el motivo.")).toBeVisible(); expect(body).toBeUndefined();
     await user.type(screen.getByRole("textbox", { name: "Motivo" }), "Revisión"); await user.click(within(dialog).getByRole("button", { name: label }));
     expect(await screen.findByText(message)).toBeVisible(); await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument()); expect(body).toEqual({ version: 2, reason: "Revisión" }); expect(key).toBeTruthy();
@@ -203,15 +226,15 @@ describe("Ficha de Organización", () => {
   it("cancelar un retry en vuelo aborta la respuesta tardía y mantiene abierto el siguiente formulario", async () => {
     const user = userEvent.setup(); let complete: (() => void) | undefined; let calls = 0;
     server.use(http.post("/api/platform/tenants/delta/suspend", async () => { calls++; if (calls === 1) return HttpResponse.error(); await new Promise<void>((resolve) => { complete = resolve; }); return HttpResponse.json({ version: 9 }); })); render();
-    await confirm(user, "Suspender"); fireEvent.click(await screen.findByRole("button", { name: "Reintentar" })); await waitFor(() => expect(complete).toBeDefined()); await user.click(screen.getByRole("button", { name: "Cancelar" })); await user.click(screen.getByRole("button", { name: "Suspender" })); await screen.findByRole("dialog");
+    await confirm(user, "Suspender"); fireEvent.click(await screen.findByRole("button", { name: "Reintentar" })); await waitFor(() => expect(complete).toBeDefined()); await user.click(screen.getByRole("button", { name: "Cancelar" })); await openAction(user, "Suspender"); await screen.findByRole("dialog");
     await act(async () => { complete?.(); }); expect(screen.getByRole("dialog")).toBeVisible(); expect(screen.getByRole("textbox", { name: "Motivo" })).toHaveValue(""); expect(screen.queryByText("Suspendimos Grupo Delta.")).not.toBeInTheDocument(); expect(calls).toBe(2);
   });
   it("navegar a otra ficha cacheada abandona el diálogo sin enviar el POST anterior", async () => {
     const user = userEvent.setup(); const posts: { id: string; body: unknown }[] = [];
     server.use(http.post("/api/platform/tenants/:id/suspend", async ({ params, request }) => { posts.push({ id: String(params.id), body: await request.json() }); return HttpResponse.json({ version: 43 }); }));
-    const page = render(); cacheOtherOrganization(page); await user.click(await screen.findByRole("button", { name: "Suspender" })); await user.type(screen.getByRole("textbox", { name: "Motivo" }), "Motivo de Delta");
+    const page = render(); cacheOtherOrganization(page); await openAction(user, "Suspender"); await user.type(screen.getByRole("textbox", { name: "Motivo" }), "Motivo de Delta");
     await act(async () => { await page.router.navigate("/plataforma/organizaciones/omega"); }); expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(await screen.findByRole("heading", { name: "Grupo Omega" })).toBeVisible(); expect(posts).toEqual([]); expect(page.queryClient.getQueryData(tenantQueryKey("omega"))).toEqual(otherOrganization);
-    await user.click(screen.getByRole("button", { name: "Suspender" })); expect(screen.getByRole("textbox", { name: "Motivo" })).toHaveValue(""); await user.type(screen.getByRole("textbox", { name: "Motivo" }), "Motivo de Omega"); await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Suspender" }));
+    await openAction(user, "Suspender"); expect(screen.getByRole("textbox", { name: "Motivo" })).toHaveValue(""); await user.type(screen.getByRole("textbox", { name: "Motivo" }), "Motivo de Omega"); await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Suspender" }));
     expect(await screen.findByText("Suspendimos Grupo Omega.")).toBeVisible(); expect(posts).toEqual([{ id: "omega", body: { version: 42, reason: "Motivo de Omega" } }]);
   });
   it("navegar a otra ficha cacheada durante POST descarta éxito tardío y conserva la nueva ficha y su diálogo", async () => {
@@ -219,14 +242,14 @@ describe("Ficha de Organización", () => {
     server.use(http.post("/api/platform/tenants/delta/suspend", async () => { calls++; await new Promise<void>((resolve) => { complete = resolve; }); return HttpResponse.json({ version: 99 }); }));
     const page = render(); cacheOtherOrganization(page); await confirm(user, "Suspender"); await waitFor(() => expect(complete).toBeDefined());
     await act(async () => { await page.router.navigate("/plataforma/organizaciones/omega"); }); expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(await screen.findByRole("heading", { name: "Grupo Omega" })).toBeVisible();
-    await user.click(screen.getByRole("button", { name: "Suspender" })); await user.type(screen.getByRole("textbox", { name: "Motivo" }), "Motivo de Omega"); await act(async () => { complete?.(); }); await waitFor(() => expect(page.queryClient.getMutationCache().getAll().some((mutation) => mutation.state.status === "pending")).toBe(false));
+    await openAction(user, "Suspender"); await user.type(screen.getByRole("textbox", { name: "Motivo" }), "Motivo de Omega"); await act(async () => { complete?.(); }); await waitFor(() => expect(page.queryClient.getMutationCache().getAll().some((mutation) => mutation.state.status === "pending")).toBe(false));
     expect(page.queryClient.getQueryData(tenantQueryKey("omega"))).toEqual(otherOrganization); expect(page.queryClient.getQueryData(tenantQueryKey("delta"))).toEqual(organization); expect(screen.getByRole("dialog")).toBeVisible(); expect(screen.getByRole("textbox", { name: "Motivo" })).toHaveValue("Motivo de Omega"); expect(screen.queryByText("Suspendimos Grupo Delta.")).not.toBeInTheDocument(); expect(calls).toBe(1);
   });
   it("navegar a otra ficha cacheada vuelve inerte el retry del aviso anterior", async () => {
     const user = userEvent.setup(); let calls = 0; server.use(http.post("/api/platform/tenants/delta/suspend", () => { calls++; return HttpResponse.error(); }));
     const page = render(); cacheOtherOrganization(page); await confirm(user, "Suspender"); const oldRetry = await screen.findByRole("button", { name: "Reintentar" });
     await act(async () => { await page.router.navigate("/plataforma/organizaciones/omega"); }); expect(screen.queryByRole("dialog")).not.toBeInTheDocument(); expect(await screen.findByRole("heading", { name: "Grupo Omega" })).toBeVisible();
-    await user.click(screen.getByRole("button", { name: "Suspender" })); await act(async () => { fireEvent.click(oldRetry); }); await waitFor(() => expect(page.queryClient.getMutationCache().getAll().some((mutation) => mutation.state.status === "pending")).toBe(false));
+    await openAction(user, "Suspender"); await act(async () => { fireEvent.click(oldRetry); }); await waitFor(() => expect(page.queryClient.getMutationCache().getAll().some((mutation) => mutation.state.status === "pending")).toBe(false));
     expect(calls).toBe(1); expect(page.queryClient.getQueryData(tenantQueryKey("omega"))).toEqual(otherOrganization); expect(screen.getByRole("dialog")).toBeVisible(); expect(screen.getByRole("textbox", { name: "Motivo" })).toHaveValue(""); expect(screen.queryByText("Suspendimos Grupo Delta.")).not.toBeInTheDocument();
   });
   it("carga inicial muestra el estado común hasta recibir la ficha", async () => {
