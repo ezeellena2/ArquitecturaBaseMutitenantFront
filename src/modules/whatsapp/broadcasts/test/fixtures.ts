@@ -21,7 +21,7 @@ export const promoTemplate: WhatsAppTemplateOptionResponse = {
 
 export const recipients: WhatsAppRecipientResponse[] = [
   { contactId: "contact-laura", contactName: "Laura Méndez", displayNumber: "+5491155553378", status: "Replied", failureReason: null, changedAtUtc: "2026-09-25T13:12:00Z" },
-  { contactId: "contact-unknown", contactName: null, displayNumber: "+5491155556650", status: "Failed", failureReason: "Ese número no tiene WhatsApp", changedAtUtc: "2026-09-25T12:30:00Z" },
+  { contactId: "contact-unknown", contactName: null, displayNumber: "+5491155556650", status: "Failed", failureReason: "WhatsApp no pudo entregarlo a ese número.", changedAtUtc: "2026-09-25T12:30:00Z" },
 ];
 
 export function paged<T>(items: readonly T[], totalCount = items.length) {

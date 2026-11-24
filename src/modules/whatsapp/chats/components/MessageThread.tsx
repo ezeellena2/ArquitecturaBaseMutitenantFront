@@ -77,8 +77,10 @@ function ThreadItem({ message, perspective, phone }: { message: WhatsAppChatMess
     ? own ? null : perspective.organizationName
     : own ? message.author ?? t("chats.thread.automaticReply") : null;
   const failed = message.status === "Failed";
+  // «No se pudo mandar» lleva debajo su motivo, en su propio renglón (WA-Chats-Base2, 0066 §3): el texto que manda el back
+  // para uno de los ocho códigos, tal como llega.
   const footer: ReactNode = failed
-    ? [t("chats.thread.failed"), message.failureReason].filter(Boolean).join(" · ")
+    ? t("chats.thread.failed")
     : [message.status === "Pending" ? t("chats.thread.pending") : sender, time].filter(Boolean).join(" · ");
   const MediaIcon = message.kind === "Media" ? mediaIcons[message.mediaKind ?? "Other"] : null;
 
@@ -91,5 +93,6 @@ function ThreadItem({ message, perspective, phone }: { message: WhatsAppChatMess
       {MediaIcon ? <><MediaIcon aria-hidden="true" className="size-4 shrink-0 text-[var(--t3)]" />{t(`chats.thread.media.${message.mediaKind ?? "Other"}`)}</> : message.text}
     </span>
     <span className={cn("px-1 text-[0.71875rem]", failed ? "text-[var(--peligro)]" : "text-[var(--t3)]")}>{footer}</span>
+    {failed && message.failureReason ? <span className="px-1 text-[0.71875rem] text-[var(--peligro)]">{message.failureReason}</span> : null}
   </div>;
 }

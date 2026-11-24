@@ -8,6 +8,7 @@ import { asPhone } from "@/test/utils/phone";
 import type {
   WhatsAppChatMessageResponse, WhatsAppConversationListResponse, WhatsAppConversationResponse, WhatsAppConversationRowResponse, WhatsAppTemplateOptionResponse,
 } from "../../api/types";
+import { sendFailures } from "../../test/sendFailures";
 import { mountWhatsApp, whatsappMember, whatsappOperator, whatsappOwner } from "../../test/support";
 
 beforeAll(async () => { await import("./ChatsPage"); });
@@ -242,6 +243,17 @@ describe("Chats de la organización", () => {
     expect(hola.compareDocumentPosition(bot) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
+  // WA-Chats-Base2 (0066 §3): «No se pudo mandar» lleva debajo su motivo, en su propio renglón, con el texto que manda el back.
+  it.each(sendFailures)("«No se pudo mandar» lleva debajo su motivo: %s", async (_code, reason) => {
+    inbox(row(), [message(), message({ id: "m-2", direction: "Outbound", author: "Lucía Fernández", text: "Sí, hasta las 18. ¿Te las preparo?",
+      status: "Failed", failureReason: reason, createdAtUtc: "2026-10-12T13:43:00Z" })]);
+    mountWhatsApp(whatsappOwner, "/org/whatsapp/chats");
+    const log = await screen.findByRole("log", { name: "Mensajes con Martina López" });
+    const failed = await within(log).findByText("No se pudo mandar");
+    expect(failed.nextElementSibling?.textContent).toBe(reason);
+    expect(within(log).getByText(reason)).toBeVisible();
+  });
+
   it("lo que se escribe mientras sale un mensaje no se borra cuando ese mensaje termina", async () => {
     inbox(row());
     let release!: () => void;
@@ -450,6 +462,18 @@ describe("Consultas de Plataforma", () => {
     expect(screen.queryByRole("group", { name: "Bandeja" })).not.toBeInTheDocument();
     expect(screen.getByText(/4 conversaciones/)).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("«No se pudo mandar» lleva debajo su motivo, como en la organización", async () => {
+    const [, reason] = sendFailures[4];
+    const conversation = row({ inbox: null, accountId: "account-lucia", contactName: "Lucía Fernández", tags: [], contactId: null });
+    consultations(conversation);
+    server.use(http.get(`${platform}/:id`, () => HttpResponse.json(detail(conversation, [message(), message({ id: "m-2", direction: "Outbound",
+      author: "Tomás Acosta", text: "Hola, Lucía. Ya lo revisamos.", status: "Failed", failureReason: reason, createdAtUtc: "2026-10-12T13:43:00Z" })]))));
+    mountWhatsApp(whatsappOperator(), "/plataforma/whatsapp");
+    const log = await screen.findByRole("log", { name: "Mensajes con Lucía Fernández" });
+    const failed = await within(log).findByText("No se pudo mandar");
+    expect(failed.nextElementSibling?.textContent).toBe(reason);
   });
 
   it("sin permiso para leer cuentas no ofrece la ficha", async () => {

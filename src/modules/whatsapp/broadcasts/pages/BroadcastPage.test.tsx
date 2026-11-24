@@ -6,6 +6,7 @@ import type { CreateWhatsAppBroadcastRequest } from "../../api/types";
 import { server } from "@/test/mocks/server";
 import { asPhone, cardData } from "@/test/utils/phone";
 import { mountWhatsApp, whatsappMember, whatsappOwner } from "../../test/support";
+import { sendFailures } from "../../test/sendFailures";
 import { frameHandlers, paged, recipients, scheduled, sent } from "../test/fixtures";
 
 beforeAll(async () => { await import("./BroadcastPage"); await import("./NewBroadcastPage"); });
@@ -45,11 +46,21 @@ describe("Resultados de una difusión", () => {
 
     await user.click(screen.getByRole("button", { name: "Por qué no llegó" }));
     const notice = await screen.findByRole("dialog", { name: "No le llegó a 011 15-5555-6650" });
-    expect(within(notice).getByText("Ese número no tiene WhatsApp")).toBeVisible();
+    expect(within(notice).getByText("WhatsApp no pudo entregarlo a ese número.")).toBeVisible();
     expect(within(notice).getByText("Meta lo informó el 25/09/2026 a las 09:30")).toBeVisible();
     await user.click(within(notice).getByRole("button", { name: "Entendido" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(requests).toHaveLength(1);
+  });
+
+  // 0066 §3: «Por qué no llegó» dice el motivo con el texto que manda el back, uno de los ocho.
+  it.each(sendFailures)("«Por qué no llegó» dice su motivo: %s", async (_code, reason) => {
+    server.use(http.get("/api/organization/whatsapp/broadcasts/broadcast-sent", () =>
+      HttpResponse.json({ broadcast: sent, recipients: paged([{ ...recipients[1], failureReason: reason }]) })));
+    const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/difusiones/broadcast-sent");
+    await user.click(await screen.findByRole("button", { name: "Por qué no llegó" }));
+    const notice = await screen.findByRole("dialog", { name: "No le llegó a 011 15-5555-6650" });
+    expect(within(notice).getByText(reason)).toBeVisible();
   });
 
   it("la búsqueda y el filtro de estado van a la URL y a la consulta de los destinatarios", async () => {
