@@ -76,7 +76,7 @@ export function MoneyField({ value, onChange, onValidityChange, id, name, disabl
       aria-invalid={externalInvalid || showError} aria-describedby={description} /></div>
     {!fixedCurrency ? <div className="flex flex-col gap-1.5">
       <Label htmlFor={currencyId}>{t("fields.currency")}</Label>
-      <CurrencySelect id={currencyId} value={currency} placeholder={t("fields.selectCurrency")}
+      <CurrencySelect id={currencyId} label={t("fields.currency")} value={currency} placeholder={t("fields.selectCurrency")}
         onChange={(selected) => {
           setCurrencyOverride({ base: value?.currency ?? null, selected });
           if (inputValue !== "") change(inputValue, selected);

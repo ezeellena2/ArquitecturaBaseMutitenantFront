@@ -29,9 +29,9 @@ describe("Crear organización", () => {
   it("ofrece cinco campos accesibles con defaults del operador y Crear habilitado", async () => {
     const user = userEvent.setup();
     const { container } = renderRouteWithProviders("/plataforma", { as: "platform-operator" }); const dialog = await open(user);
-    expect(within(dialog).getAllByRole("textbox")).toHaveLength(3); expect(within(dialog).getAllByRole("combobox")).toHaveLength(2);
-    expect(within(dialog).getByRole("combobox", { name: "Zona horaria" })).toHaveTextContent("Buenos Aires");
-    expect(within(dialog).getByRole("combobox", { name: "Idioma y región" })).toHaveTextContent("Español");
+    expect(within(dialog).getAllByRole("textbox")).toHaveLength(3); expect(within(dialog).getAllByRole("button", { name: /^(Zona horaria|Idioma y región) / })).toHaveLength(2);
+    expect(within(dialog).getByRole("button", { name: /^Zona horaria / })).toHaveTextContent("Buenos Aires");
+    expect(within(dialog).getByRole("button", { name: /^Idioma y región / })).toHaveTextContent("Español");
     expect(within(dialog).getByRole("button", { name: "Crear organización" })).toBeEnabled();
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -56,7 +56,7 @@ describe("Crear organización", () => {
     const user = userEvent.setup(); server.use(http.post("/api/platform/tenants", () => HttpResponse.json({ code: "General.Validation", detail: "Revisá los datos.", errors: { [field]: ["Dato rechazado."] } }, { status: 400 })));
     renderRouteWithProviders("/plataforma", { as: "platform-operator" }); await open(user); await fill(user); await user.click(screen.getByRole("button", { name: "Crear organización" })); expect(await screen.findByText("Dato rechazado.")).toBeVisible(); expect(screen.queryByText("Revisá los datos.")).not.toBeInTheDocument();
     const labels = { name: "Nombre de la organización", firstCompanyName: "Primera empresa", ownerEmail: "Correo del Dueño", culture: "Idioma y región", timeZoneId: "Zona horaria" };
-    expect(screen.getByRole(field === "culture" || field === "timeZoneId" ? "combobox" : "textbox", { name: labels[field] })).toHaveAttribute("aria-invalid", "true");
+    expect(field === "culture" || field === "timeZoneId" ? screen.getByRole("button", { name: new RegExp(`^${labels[field]} `) }) : screen.getByRole("textbox", { name: labels[field] })).toHaveAttribute("aria-invalid", "true");
   });
   it.each([["Tenancy.Tenant.NameTooLong", "Nombre de la organización"], ["Tenancy.Company.NameTooLong", "Primera empresa"], ["Users.Email.Invalid", "Correo del Dueño"]])("el código %s va debajo del dato", async (code, label) => {
     const user = userEvent.setup(); server.use(http.post("/api/platform/tenants", () => HttpResponse.json({ code, detail: "Dato rechazado." }, { status: 400 })));
@@ -80,6 +80,6 @@ describe("Crear organización", () => {
   });
   it("en el teléfono el alta conserva los cinco campos y los selectores de referencia", async () => {
     const restore = asPhone(); const user = userEvent.setup();
-    try { const { container } = renderRouteWithProviders("/plataforma", { as: "platform-operator" }); const dialog = await open(user); expect(within(dialog).getAllByRole("textbox")).toHaveLength(3); expect(within(dialog).getAllByRole("combobox")).toHaveLength(2); expect(await axe(container)).toHaveNoViolations(); await user.keyboard("{Escape}"); await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument()); } finally { restore(); }
+    try { const { container } = renderRouteWithProviders("/plataforma", { as: "platform-operator" }); const dialog = await open(user); expect(within(dialog).getAllByRole("textbox")).toHaveLength(3); expect(within(dialog).getAllByRole("button", { name: /^(Zona horaria|Idioma y región) / })).toHaveLength(2); expect(await axe(container)).toHaveNoViolations(); await user.keyboard("{Escape}"); await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument()); } finally { restore(); }
   });
 });

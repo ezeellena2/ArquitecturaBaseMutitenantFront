@@ -253,8 +253,8 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
     return phone.country === profile.countryCode ? phone.formatNational() : phone.formatInternational();
   }
 
-  function formatTimeZone(id: string): string {
-    const zone = findRow(referenceData.timeZones, id, (item) => item.id);
+  /** El desfase de una zona hoy, como lo dice la pieza para elegir (262): «GMT−3», «GMT+5:30», «GMT+0». */
+  function formatTimeZoneOffset(id: string): string {
     const offset = new Intl.DateTimeFormat("en", {
       timeZone: id, timeZoneName: "longOffset", hour: "2-digit",
     }).formatToParts(clock()).find((part) => part.type === "timeZoneName")?.value;
@@ -264,7 +264,12 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
       ? `${match[1] === "-" ? "−" : "+"}${Number(match[2])}${match[3] === "00" ? "" : `:${match[3]}`}`
       : null;
     if (visible === null) throw new Error(`Desfase horario desconocido: ${offset}.`);
-    return `${zone.city} (GMT${visible})`;
+    return `GMT${visible}`;
+  }
+
+  function formatTimeZone(id: string): string {
+    const zone = findRow(referenceData.timeZones, id, (item) => item.id);
+    return `${zone.city} (${formatTimeZoneOffset(id)})`;
   }
 
   function formatCulture(code: string): string {
@@ -324,7 +329,7 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
     formatMonth, getMonthOptions, getAdjacentMonthYear, getCurrentMonth,
     formatDate, formatDateTime, formatTime, formatDateRange,
     formatInteger, formatDecimal, formatQuantity, formatPercent, formatMoney, formatCompact,
-    formatFileSize, formatDuration, formatPhone, formatTimeZone, formatCulture, formatTaxId,
+    formatFileSize, formatDuration, formatPhone, formatTimeZone, formatTimeZoneOffset, formatCulture, formatTaxId,
     formatEmail, formatEnum, formatBoolean, formatEmpty, formatText,
   };
 }

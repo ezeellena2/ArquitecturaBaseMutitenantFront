@@ -48,6 +48,7 @@ const unavailableFormatters: Formatters = {
   formatDuration: emptyText,
   formatPhone: emptyText,
   formatTimeZone: emptyText,
+  formatTimeZoneOffset: emptyText,
   formatCulture: emptyText,
   formatTaxId: emptyText,
   formatEmail: emptyText,

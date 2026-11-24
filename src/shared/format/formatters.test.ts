@@ -170,6 +170,9 @@ describe.skipIf(!backendPresent)("reloj del formateador", () => {
         translate: translator("en-US"),
       });
       expect(formatter.formatTimeZone("America/New_York")).toBe("New York (GMT−5)");
+      // La pieza para elegir (262) dice el desfase solo, después de la hora de su país.
+      expect(formatter.formatTimeZoneOffset("America/New_York")).toBe("GMT−5");
+      expect(formatter.formatTimeZoneOffset("Asia/Kolkata")).toBe("GMT+5:30");
 
       vi.setSystemTime(new Date("2026-07-15T15:00:00Z"));
       expect(formatter.formatTimeZone("America/New_York")).toBe("New York (GMT−4)");

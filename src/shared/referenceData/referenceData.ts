@@ -33,6 +33,8 @@ const timeZoneSchema = z.object({
   id: z.string().min(1),
   countryCodes: z.array(z.string().min(1)),
   city: z.string().min(1),
+  /** La hora de su país en la cultura pedida («hora de Uruguay», 262); sin país, no viene. */
+  countryTimeName: z.string().nullish(),
   ...referenceRow,
 });
 

@@ -29,7 +29,8 @@ export function FormField({ label, htmlFor, help, error, required, aside, varian
 
   // «Criterio · Formularios»: rótulo de 12,5 a 6 del campo; en el teléfono de la app (tableros M-*, .ap-cmp .rt), de 13,5
   // con el interlineado normal. En ingreso y registro (tableros Ingreso, Registro y sus M-*), de 12,5 en cualquier tamaño.
-  const labelText = <Label htmlFor={controlId} className={cn("gap-1! text-[0.78125rem] font-semibold text-[var(--t2)]", variant === "auth" ? "" : "max-md:text-[0.84375rem] max-md:leading-[normal]")}>
+  // La etiqueta lleva el id `<control>-label`: la pieza para elegir (262) se nombra con ella.
+  const labelText = <Label id={`${controlId}-label`} htmlFor={controlId} className={cn("gap-1! text-[0.78125rem] font-semibold text-[var(--t2)]", variant === "auth" ? "" : "max-md:text-[0.84375rem] max-md:leading-[normal]")}>
     {label}
     {/* Tablero «Criterio · Formularios»: el asterisco de obligatorio va en rojo. */}
     {required ? <span aria-hidden="true" className="text-[var(--peligro)]">{" *"}</span> : null}

@@ -43,7 +43,7 @@ describe("CountrySelect", () => {
     })));
     renderSelect();
 
-    const select = await screen.findByRole("combobox", { name: "País" });
+    const select = await screen.findByRole("button", { name: /^País/ });
     await waitFor(() => expect(select).toBeEnabled());
     select.focus();
     await userEvent.setup().keyboard("{Enter}");
@@ -62,10 +62,10 @@ describe("CountrySelect", () => {
     })));
     renderSelect();
 
-    const select = await screen.findByRole("combobox", { name: "País" });
+    const select = await screen.findByRole("button", { name: /^País/ });
     await waitFor(() => expect(select).toBeEnabled());
     await user.click(select);
-    const search = await screen.findByRole("searchbox", { name: "Buscar país" });
+    const search = await screen.findByRole("combobox", { name: "Buscar en País" });
     await user.type(search, "+54");
     expect(optionNames()).toEqual(["Argentina +54"]);
     await user.clear(search);
@@ -74,8 +74,8 @@ describe("CountrySelect", () => {
     await user.keyboard("{Enter}");
 
     expect(screen.getByRole("status")).toHaveTextContent("UY");
-    expect(select).toHaveTextContent("Uruguay (+598)");
-    expect(screen.getByRole("combobox", { name: "País: Uruguay, +598" })).toBeInTheDocument();
+    expect(select).toHaveTextContent("Uruguay");
+    expect(screen.getByRole("button", { name: "País Uruguay" })).toBeInTheDocument();
     expect(within(select).queryByRole("img")).not.toBeInTheDocument();
   });
 
@@ -87,7 +87,7 @@ describe("CountrySelect", () => {
     }));
     renderSelect();
 
-    const select = screen.getByRole("combobox", { name: "País" });
+    const select = screen.getByRole("button", { name: /^País/ });
     expect(select).toBeDisabled();
     expect(select).toHaveTextContent("Cargando…");
     await waitFor(() => expect(release).toBeDefined());
@@ -104,7 +104,7 @@ describe("CountrySelect", () => {
     })));
     renderSelect(["UY"]);
 
-    const select = screen.getByRole("combobox", { name: "País" });
+    const select = screen.getByRole("button", { name: /^País/ });
     await waitFor(() => expect(select).toBeEnabled());
     select.focus();
     await userEvent.setup().keyboard("{Enter}");

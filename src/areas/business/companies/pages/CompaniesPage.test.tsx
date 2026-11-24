@@ -140,7 +140,7 @@ describe("CompaniesPage", () => {
     expect(dialog).not.toHaveClass("min-h-[calc(100dvh-1rem)]");
     expect(within(dialog).getByRole("textbox", { name: "Nombre" }).closest("[data-slot='dialog-body']")).not.toBeNull();
     expect(within(dialog).getByRole("textbox", { name: "CUIT" })).toHaveAttribute("placeholder", "99-99999999-9");
-    expect(within(dialog).getByRole("combobox", { name: "Zona de negocio" })).toHaveTextContent("La de la organización");
+    expect(within(dialog).getByRole("button", { name: /^Zona de negocio / })).toHaveTextContent("La de la organización");
 
     // Solo el nombre: la zona queda la de la organización.
     await user.click(within(dialog).getByRole("textbox", { name: "Nombre" }));
@@ -242,7 +242,7 @@ describe("CompaniesPage", () => {
     const alert = await within(dialog).findByRole("alert");
     expect(alert).toHaveTextContent("Otra persona cambió esto. Revisá la versión más reciente antes de guardar.");
     const following = (from: Node, to: Node) => Boolean(from.compareDocumentPosition(to) & Node.DOCUMENT_POSITION_FOLLOWING);
-    expect(following(within(dialog).getByRole("combobox", { name: "Zona de negocio" }), alert)).toBe(true);
+    expect(following(within(dialog).getByRole("button", { name: /^Zona de negocio / }), alert)).toBe(true);
     expect(following(alert, within(dialog).getByRole("button", { name: "Cancelar" }))).toBe(true);
     expect(screen.getAllByRole("alert", { hidden: true })).toHaveLength(1);
   });

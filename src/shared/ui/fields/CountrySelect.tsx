@@ -3,29 +3,28 @@ import { useTranslation } from "react-i18next";
 import { CountryFlag } from "@/shared/phone/CountryFlag";
 import { enabledOptions, type CountryReference } from "@/shared/referenceData/referenceData";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
-import { SearchSelect, type SearchSelectOption } from "../SearchSelect";
+import { Picker, type PickerOption } from "../Picker";
 
 interface CountrySelectProps {
   value: string;
   onChange: (value: string) => void;
   placeholder: string;
+  /** El nombre del campo; por defecto, «País». */
+  label?: string;
   id?: string;
   disabled?: boolean;
   busy?: boolean;
   allowedCountries?: readonly string[];
-  /** Lo que muestra el control para el país elegido; el teléfono muestra «AR +54». */
+  /** Lo que muestra el campo cerrado para el país elegido; el teléfono muestra «AR +54». El lector oye el nombre. */
   renderValue?: (country: CountryReference) => ReactNode;
   className?: string;
   "aria-invalid"?: boolean;
   "aria-describedby"?: string;
 }
 
-function countryLabel(country: CountryReference): string {
-  return country.callingCode ? `${country.name} (+${country.callingCode})` : country.name;
-}
-
-/** Países seleccionables, con bandera y prefijo telefónico cuando existe. Se busca por nombre, código o prefijo. */
-export function CountrySelect({ value, onChange, placeholder, id, disabled, busy, allowedCountries, renderValue, className,
+/** El país en la pieza para elegir (262), con la bandera, el nombre y, a la derecha, el prefijo telefónico (lienzo v98).
+ *  Se busca por nombre, código o prefijo. */
+export function CountrySelect({ value, onChange, placeholder, label, id, disabled, busy, allowedCountries, renderValue, className,
   "aria-invalid": invalid, "aria-describedby": describedBy }: CountrySelectProps) {
   const { t } = useTranslation();
   const { data, isPending, isError } = useReferenceData();
@@ -33,23 +32,19 @@ export function CountrySelect({ value, onChange, placeholder, id, disabled, busy
     .filter((country) => !allowedCountries || allowedCountries.includes(country.code))
     .sort((left, right) => (left.sortOrder ?? Number.MAX_SAFE_INTEGER) - (right.sortOrder ?? Number.MAX_SAFE_INTEGER)
       || left.name.localeCompare(right.name, data?.culture));
-  // Lienzo v98: la bandera, el nombre y, a la derecha, el prefijo.
-  const options: SearchSelectOption[] = countries.map((country) => ({
+  const option = (country: CountryReference): PickerOption => ({
     value: country.code,
     label: country.name,
     trailing: country.callingCode ? `+${country.callingCode}` : undefined,
     keywords: country.callingCode ? `+${country.callingCode}` : undefined,
     icon: <CountryFlag countryCode={country.code} title={country.name} className="h-4 w-6 shrink-0" decorative />,
-  }));
+    short: renderValue?.(country),
+  });
   const selected = data?.countries.find((country) => country.code === value);
-  const selectedLabel = selected
-    ? `${t("phone.country", { country: selected.name })}${selected.callingCode ? `, +${selected.callingCode}` : ""}`
-    : undefined;
+  const kept = selected && !countries.includes(selected) ? [option(selected)] : [];
 
-  return <SearchSelect id={id} options={options} value={value} onChange={onChange} className={className}
+  return <Picker id={id} label={label ?? t("fields.country")} options={countries.map(option)} selectedOptions={kept} value={value || null}
+    onChange={onChange} className={className}
     placeholder={isPending || busy ? t("states.loading") : isError ? t("states.error") : placeholder}
-    searchLabel={t("fields.searchCountry")} title={t("fields.country")} selectedLabel={selected ? (renderValue?.(selected) ?? countryLabel(selected)) : undefined}
-    renderValue={() => (selected ? (renderValue?.(selected) ?? countryLabel(selected)) : null)}
-    disabled={disabled || !data} busy={isPending || busy} aria-label={selectedLabel}
-    aria-invalid={invalid} aria-describedby={describedBy} />;
+    disabled={disabled || !data} aria-invalid={invalid} aria-describedby={describedBy} />;
 }

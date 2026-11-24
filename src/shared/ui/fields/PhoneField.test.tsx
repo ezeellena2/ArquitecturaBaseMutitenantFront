@@ -56,9 +56,9 @@ describe("PhoneField", () => {
     expect(input).toHaveAccessibleDescription("Para avisos de la cuenta");
     // El país compacto en una caja de 112 al lado del número: la bandera (una imagen, no un emoji) y «+54». Decisión del
     // usuario del 2026-10-04.
-    const country = screen.getByRole("combobox", { name: "País: Argentina, +54" });
+    const country = screen.getByRole("button", { name: "País Argentina" });
     // Lienzo v98: la bandera de 24×16 con esquinas de 2 y un borde gris suave, a 6 del prefijo.
-    const flag = await within(country).findByRole("img", { name: "Argentina" });
+    const flag = await within(country).findByRole("img", { name: "Argentina", hidden: true });
     expect(flag).toHaveClass("h-4", "w-6", "rounded-[2px]", "shadow-[0_0_0_1px_var(--borde-bandera)]");
     expect(flag.parentElement).toHaveClass("gap-1.5");
     expect(country).toHaveTextContent(/^\+54$/);
@@ -75,7 +75,7 @@ describe("PhoneField", () => {
     renderField({ allowedCountries: ["AR", "UY"] });
     const input = screen.getByRole("textbox", { name: "Teléfono" });
     await waitFor(() => expect(input).toBeEnabled());
-    const selector = screen.getByRole("combobox", { name: "País: Argentina, +54" });
+    const selector = screen.getByRole("button", { name: "País Argentina" });
     selector.focus();
     await userEvent.setup().keyboard("{Enter}");
     // Lienzo v98: el nombre del país y, a la derecha y en gris, su prefijo.
@@ -86,7 +86,7 @@ describe("PhoneField", () => {
     await userEvent.setup().keyboard("{Escape}");
 
     fireEvent.change(input, { target: { value: "+598 94 123 456" } });
-    expect(screen.getByRole("combobox", { name: "País: Uruguay, +598" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "País Uruguay" })).toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent('"country":"UY"');
     expect(input).not.toHaveValue(expect.stringContaining("+598"));
   });
@@ -96,7 +96,7 @@ describe("PhoneField", () => {
     renderField({}, { phone: true });
     const input = screen.getByRole("textbox", { name: "Teléfono" });
     await waitFor(() => expect(input).toBeEnabled());
-    await userEvent.setup().click(screen.getByRole("combobox", { name: "País: Argentina, +54" }));
+    await userEvent.setup().click(screen.getByRole("button", { name: "País Argentina" }));
     const sheet = await screen.findByRole("dialog", { name: "País" });
     expect(within(sheet).getByRole("option", { name: "Argentina +54" })).toHaveAttribute("aria-selected", "true");
   });
@@ -122,31 +122,33 @@ describe("PhoneField", () => {
     await waitFor(() => expect(release).toBeDefined());
     release?.();
     await waitFor(() => expect(input).toBeEnabled());
-    const selector = screen.getByRole("combobox", { name: "País: Uruguay, +598" });
+    const selector = screen.getByRole("button", { name: "País Uruguay" });
     selector.focus();
     await userEvent.setup().keyboard("{Enter}");
     expect(screen.getAllByRole("option").map((item) => item.textContent)).toEqual(["Uruguay +598"]);
-    expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
   });
 
   it("sin canal WhatsApp no permite cargar un teléfono aunque el catálogo tenga países", async () => {
     server.use(http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "email", countries: [] }] })));
     renderField({ usage: "whatsapp" });
-    await waitFor(() => expect(screen.getByRole("combobox")).not.toHaveAttribute("aria-busy", "true"));
+    await waitFor(() => expect(screen.getByRole("button", { name: /^País/ })).not.toHaveAttribute("aria-busy", "true"));
     expect(screen.getByRole("textbox", { name: "Teléfono" })).toBeDisabled();
-    expect(screen.getByRole("combobox")).toBeDisabled();
+    expect(screen.getByRole("button", { name: /^País/ })).toBeDisabled();
   });
 
   it("conserva visible un país guardado retirado del canal, sin ofrecerlo como opción nueva", async () => {
     server.use(http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "whatsapp", countries: ["UY"] }] })));
     renderField({ usage: "whatsapp", initialValue: { country: "AR", number: "11 2345-6789" } });
-    const selector = await screen.findByRole("combobox", { name: "País: Argentina, +54" });
+    const selector = await screen.findByRole("button", { name: "País Argentina" });
     await waitFor(() => expect(selector).toBeEnabled());
     expect(selector).toHaveTextContent(/^\+54$/);
-    expect(await within(selector).findByRole("img", { name: "Argentina" })).toBeVisible();
+    expect(await within(selector).findByRole("img", { name: "Argentina", hidden: true })).toBeVisible();
     selector.focus();
     await userEvent.setup().keyboard("{Enter}");
-    expect(screen.queryByRole("option", { name: "Argentina +54" })).not.toBeInTheDocument();
+    // La pieza dice la guardada primero, elegida, aunque ya no se ofrezca (262).
+    expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual(["Argentina +54", "Uruguay +598"]);
+    expect(screen.getByRole("option", { name: "Argentina +54" })).toHaveAttribute("aria-selected", "true");
     expect(screen.getByRole("option", { name: "Uruguay +598" })).toBeVisible();
   });
 
@@ -163,15 +165,15 @@ describe("PhoneField", () => {
       http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "whatsapp", countries: countries.map((item) => item.code) }] })),
     );
     renderField({ usage: "whatsapp" });
-    const selector = await screen.findByRole("combobox", { name: "País: Argentina, +54" });
+    const selector = await screen.findByRole("button", { name: "País Argentina" });
     await waitFor(() => expect(selector).toBeEnabled());
     selector.focus();
     const user = userEvent.setup();
     await user.keyboard("{Enter}");
     expect(screen.getAllByRole("option")).toHaveLength(count);
-    if (count === 10) expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
+    if (count === 10) expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
     else {
-      const search = screen.getByRole("searchbox", { name: "Buscar país" });
+      const search = screen.getByRole("combobox", { name: "Buscar en País" });
       await user.type(search, "+598");
       expect(screen.getAllByRole("option").map((item) => item.textContent)).toEqual(["Uruguay +598"]);
       expect(selector).toHaveTextContent("+54");

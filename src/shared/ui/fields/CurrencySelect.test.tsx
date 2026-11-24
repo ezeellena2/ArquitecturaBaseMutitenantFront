@@ -40,7 +40,7 @@ describe("CurrencySelect", () => {
     })));
     renderSelect();
 
-    const select = await screen.findByRole("combobox", { name: "Moneda" });
+    const select = await screen.findByRole("button", { name: /^Moneda/ });
     await waitFor(() => expect(select).toBeEnabled());
     await user.click(select);
     // Tablero Configuración: «Peso argentino (ARS)».
@@ -64,13 +64,13 @@ describe("CurrencySelect", () => {
     })));
     renderSelect();
 
-    const select = await screen.findByRole("combobox", { name: "Moneda" });
+    const select = await screen.findByRole("button", { name: /^Moneda/ });
     await waitFor(() => expect(select).toBeEnabled());
     await user.click(select);
-    await user.type(await screen.findByRole("searchbox", { name: "Buscar moneda" }), "dolar");
+    await user.type(await screen.findByRole("combobox", { name: "Buscar en Moneda" }), "dolar");
     expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual(["Dólar (USD)"]);
-    await user.clear(screen.getByRole("searchbox", { name: "Buscar moneda" }));
-    await user.type(screen.getByRole("searchbox", { name: "Buscar moneda" }), "ars");
+    await user.clear(screen.getByRole("combobox", { name: "Buscar en Moneda" }));
+    await user.type(screen.getByRole("combobox", { name: "Buscar en Moneda" }), "ars");
     expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual(["Peso argentino (ARS)"]);
   });
 
@@ -82,10 +82,10 @@ describe("CurrencySelect", () => {
     }));
     renderSelect();
 
-    expect(screen.getByRole("combobox", { name: "Moneda" })).toBeDisabled();
-    expect(screen.getByRole("combobox", { name: "Moneda" })).toHaveTextContent("Cargando…");
+    expect(screen.getByRole("button", { name: /^Moneda/ })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /^Moneda/ })).toHaveTextContent("Cargando…");
     await waitFor(() => expect(release).toBeDefined());
     release?.();
-    await waitFor(() => expect(screen.getByRole("combobox", { name: "Moneda" })).toBeEnabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /^Moneda/ })).toBeEnabled());
   });
 });

@@ -23,10 +23,10 @@ export function referenceDataFixture(culture = "es-AR"): ReferenceData {
       name: "Argentina", isEnabled: true, sortOrder: 1,
     }],
     timeZones: [{
-      id: "America/Argentina/Buenos_Aires", countryCodes: ["AR"], city: "Buenos Aires",
+      id: "America/Argentina/Buenos_Aires", countryCodes: ["AR"], city: "Buenos Aires", countryTimeName: "hora de Argentina",
       isEnabled: true, sortOrder: 1,
     }, {
-      id: "America/Argentina/Cordoba", countryCodes: ["AR"], city: "Córdoba",
+      id: "America/Argentina/Cordoba", countryCodes: ["AR"], city: "Córdoba", countryTimeName: "hora de Argentina",
       isEnabled: true, sortOrder: 2,
     }],
     cultures: [

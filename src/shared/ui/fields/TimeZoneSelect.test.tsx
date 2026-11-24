@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -18,7 +18,12 @@ function renderSelect() {
   return render(<AppProviders><Harness /></AppProviders>);
 }
 
-const zone = (id: string, city: string, countryCodes: string[] = []) => ({ id, city, countryCodes, isEnabled: true, sortOrder: null });
+const zone = (id: string, city: string, countryCodes: string[] = [], countryTimeName: string | null = null) =>
+  ({ id, city, countryCodes, countryTimeName, isEnabled: true, sortOrder: null });
+
+/** Cada opción: su nombre y su línea gris. */
+const names = (list: HTMLElement) => within(list).getAllByRole("option")
+  .map((option) => [document.getElementById(`${option.id}-label`)?.textContent, document.getElementById(`${option.id}-description`)?.textContent]);
 
 describe("TimeZoneSelect", () => {
   beforeEach(() => {
@@ -26,7 +31,7 @@ describe("TimeZoneSelect", () => {
     localStorage.clear();
   });
 
-  it("ordena por SortOrder, offset actual y ciudad, con signo menos tipográfico", async () => {
+  it("ordena por SortOrder, desfase y ciudad, con la hora de su país y el desfase en gris (262)", async () => {
     const user = userEvent.setup();
     const fixture = referenceDataFixture();
     server.use(http.get("/api/reference-data", () => HttpResponse.json({
@@ -40,37 +45,39 @@ describe("TimeZoneSelect", () => {
     })));
     renderSelect();
 
-    const select = await screen.findByRole("combobox", { name: "Zona horaria" });
+    const select = await screen.findByRole("button", { name: /^Zona horaria/ });
     await waitFor(() => expect(select).toBeEnabled());
     await user.click(select);
-    expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual([
-      "Buenos Aires (GMT−3)", "Oeste (GMT−4)", "UTC (GMT+0)",
+    expect(names(await screen.findByRole("listbox", { name: "Zona horaria" }))).toEqual([
+      ["Buenos Aires", "hora de Argentina · GMT−3"], ["Oeste", "GMT−4"], ["UTC", "GMT+0"],
     ]);
     expect(screen.queryByRole("option", { name: /Este/ })).not.toBeInTheDocument();
   });
 
-  it("con más de 10 zonas busca por ciudad, ID IANA o país y emite el ID sin el offset", async () => {
+  it("con más de 10 zonas busca por ciudad, identificador o país, dice cuántas y emite el identificador", async () => {
     const user = userEvent.setup();
     const fixture = referenceDataFixture();
     const others = Array.from({ length: 10 }, (_, index) => zone(`Etc/GMT+${index + 1}`, `Ciudad ${index + 1}`));
     server.use(http.get("/api/reference-data", () => HttpResponse.json({
       ...fixture,
-      timeZones: [...fixture.timeZones, zone("America/Montevideo", "Montevideo", ["UY"]), ...others],
+      timeZones: [...fixture.timeZones, zone("America/Montevideo", "Montevideo", ["UY"], "hora de Uruguay"), ...others],
     })));
     renderSelect();
 
-    const select = await screen.findByRole("combobox", { name: "Zona horaria" });
+    const select = await screen.findByRole("button", { name: /^Zona horaria/ });
     await waitFor(() => expect(select).toBeEnabled());
     await user.click(select);
-    const search = await screen.findByRole("searchbox", { name: "Buscar zona horaria" });
+    const search = await screen.findByRole("combobox", { name: "Buscar en Zona horaria" });
+    expect(screen.getByText("13 zonas")).toBeInTheDocument();
     await user.type(search, "argentina/buenos");
-    expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual(["Buenos Aires (GMT−3)"]);
+    expect(names(screen.getByRole("listbox")).map(([name]) => name)).toEqual(["Buenos Aires"]);
     await user.clear(search);
-    await user.type(search, "uy");
-    expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual(["Montevideo (GMT−3)"]);
+    await user.type(search, "urug");
+    expect(screen.getByRole("option", { name: "Montevideo" })).toHaveAccessibleDescription("hora de Uruguay · GMT−3");
+    expect(screen.getByText("1 zona")).toBeInTheDocument();
     await user.keyboard("{Enter}");
     expect(screen.getByTestId("selected-zone")).toHaveTextContent("America/Montevideo");
-    expect(select).toHaveTextContent("Montevideo (GMT−3)");
+    expect(select).toHaveAccessibleName("Zona horaria Montevideo · hora de Uruguay · GMT−3");
   });
 
   it("mantiene visible el estado de carga hasta que llega el catálogo", async () => {
@@ -81,7 +88,7 @@ describe("TimeZoneSelect", () => {
     }));
     renderSelect();
 
-    const select = screen.getByRole("combobox", { name: "Zona horaria" });
+    const select = screen.getByRole("button", { name: /^Zona horaria/ });
     expect(select).toBeDisabled();
     expect(select).toHaveTextContent("Cargando…");
     await waitFor(() => expect(release).toBeDefined());

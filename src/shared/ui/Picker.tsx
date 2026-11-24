@@ -33,8 +33,9 @@ export interface PickerOption {
 }
 
 interface PickerBase {
-  /** El nombre del campo: nombra el botón y la lista, y es el título de la lista en el teléfono. */
-  label: string;
+  /** El nombre del campo: nombra el botón y la lista, y es el título de la lista en el teléfono. Adentro de un `FormField`
+   * no hace falta: la pieza se nombra con su etiqueta (`<id>-label`). */
+  label?: string;
   options: readonly PickerOption[];
   /** Lo que dice el campo, en gris, mientras no hay nada elegido («Sin zona», «Elegí un rol»). */
   placeholder?: string;
@@ -86,6 +87,15 @@ const TABBABLE = "a[href], button, input, select, textarea, [tabindex]";
 /** Un botón adentro de la lista deja el foco en el buscador o en la lista: lo que se escribe después sigue buscando. */
 const keepFocus = { onMouseDown: (event: MouseEvent) => event.preventDefault() };
 
+/** El texto de la etiqueta de su `FormField`, sin el asterisco de obligatorio. */
+function labelText(id: string | undefined): string {
+  const element = id ? document.getElementById(id) : null;
+  if (!element) return "";
+  const copy = element.cloneNode(true) as HTMLElement;
+  copy.querySelectorAll("[aria-hidden='true']").forEach((node) => node.remove());
+  return copy.textContent?.trim() ?? "";
+}
+
 const fold = (text: string) => text.normalize("NFD").replace(/\p{M}/gu, "").toLocaleLowerCase();
 
 /** Qué tan bien responde una opción a lo buscado, sin tildes: primero los nombres que empiezan así, después una palabra del
@@ -135,12 +145,14 @@ export function Picker(props: PickerProps) {
   const { t } = useTranslation();
   const { phone } = useAppChrome();
   const uid = useId();
+  const fieldLabelId = props.id ? `${props.id}-label` : undefined;
   const triggerRef = useRef<HTMLButtonElement>(null), listRef = useRef<HTMLUListElement>(null), searchRef = useRef<HTMLInputElement>(null);
   const leaving = useRef<"next" | "back" | null>(null), typed = useRef({ text: "", at: -Infinity });
   const closing = useRef(false), elsewhere = useRef<HTMLElement | null>(null);
   const [open, setOpen] = useState(false);
   const [localSearch, setLocalSearch] = useState("");
   const [active, setActive] = useState(-1);
+  const [title, setTitle] = useState(props.label ?? "");
   // En el teléfono, varias se marcan sobre una copia que «Listo» aplica y la ✕ descarta.
   const [picked, setPicked] = useState<readonly string[]>([]);
 
@@ -212,6 +224,7 @@ export function Picker(props: PickerProps) {
     const index = rows.findIndex((row) => row.selected);
     setActive(index >= 0 ? index : rows.findIndex((row) => !row.disabled));
     setPicked(values);
+    setTitle(props.label ?? labelText(fieldLabelId));
     setOpen(true);
     props.onOpenChange?.(true);
   }
@@ -304,7 +317,7 @@ export function Picker(props: PickerProps) {
     hide();
   }
 
-  const nameId = `${uid}-name`, valueId = `${uid}-value`, reasonId = `${uid}-reason`, listboxId = `${uid}-listbox`, triggerId = props.id ?? `${uid}-trigger`;
+  const nameId = props.label !== undefined || !fieldLabelId ? `${uid}-name` : fieldLabelId, valueId = `${uid}-value`, reasonId = `${uid}-reason`, listboxId = `${uid}-listbox`, triggerId = props.id ?? `${uid}-trigger`;
   const off = props.disabledReason !== undefined;
   const describedBy = [props["aria-describedby"], off ? reasonId : undefined].filter(Boolean).join(" ") || undefined;
   const triggerProps = {
@@ -325,7 +338,7 @@ export function Picker(props: PickerProps) {
     },
     onClick: phone ? show : undefined,
   };
-  const words = <><span id={nameId} hidden>{props.label}</span><span id={valueId} hidden>{spoken}</span></>;
+  const words = <>{nameId === fieldLabelId ? null : <span id={nameId} hidden>{props.label}</span>}<span id={valueId} hidden>{spoken}</span></>;
   const arrow = <ChevronDownIcon aria-hidden="true" strokeWidth={2}
     className="size-3.5 shrink-0 text-[var(--t2)] group-disabled:text-[var(--t3)] group-aria-disabled:text-[var(--t3)] max-md:size-4.5 max-md:text-[var(--t1)]" />;
   const button = props.trigger === "button"
@@ -333,7 +346,7 @@ export function Picker(props: PickerProps) {
     ? <Button {...triggerProps} variant="outline" className={cn("group h-8 gap-1.5 rounded-[0.5rem] px-3 text-[0.8125rem] shadow-none",
       props.active ? "border-[var(--marca)] bg-[var(--marca-t)] font-medium text-[var(--marca-tx)]" : "border-[var(--borde)] bg-[var(--superficie)] font-normal text-[var(--t2)]",
       props.className)}>
-      {words}<span aria-hidden="true" className="truncate">{props.triggerLabel ?? single?.short ?? spoken}</span>
+      <span aria-hidden="true" className="truncate">{props.triggerLabel ?? single?.short ?? spoken}</span>
       <ChevronDownIcon aria-hidden="true" strokeWidth={2} className="size-3.5 shrink-0" />
     </Button>
     // «Criterio · Elegir», Cerrada: un campo con su flecha fina; en el teléfono, de 48 con letra de 16 (sin el zoom de iOS).
@@ -342,7 +355,6 @@ export function Picker(props: PickerProps) {
       "focus-visible:border-[var(--marca)] focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] aria-expanded:border-[var(--marca)] aria-expanded:ring-[3px] aria-expanded:ring-[var(--foco-halo)] aria-invalid:border-destructive",
       "disabled:cursor-default disabled:border-[var(--borde)] disabled:bg-[var(--s2)] disabled:text-[var(--t2)] aria-disabled:cursor-not-allowed aria-disabled:border-[var(--borde)] aria-disabled:bg-[var(--s2)] aria-disabled:text-[var(--t3)]",
       props.className)}>
-      {words}
       {single?.icon && !single.short ? <span aria-hidden="true" className="flex shrink-0">{single.icon}</span> : null}
       {empty ? <span aria-hidden="true" className="min-w-0 flex-1 truncate text-[var(--t3)]">{spoken}</span>
         : multiple ? <ChoiceSummary labels={picks.map((option) => option.label)} />
@@ -366,7 +378,7 @@ export function Picker(props: PickerProps) {
     ? <div className="relative">
       <SearchIcon aria-hidden="true" className={cn("pointer-events-none absolute top-1/2 -translate-y-1/2 text-[var(--t3)]", phone ? "left-3 size-5" : "left-2.5 size-4")} />
       <input ref={searchRef} type="search" role="combobox" aria-expanded="true" aria-controls={listboxId} aria-autocomplete="list"
-        aria-activedescendant={current >= 0 ? optionId(current) : undefined} aria-label={t("picker.search", { label: props.label })}
+        aria-activedescendant={current >= 0 ? optionId(current) : undefined} aria-label={t("picker.search", { label: title })}
         placeholder={t("actions.search")} autoComplete="off" spellCheck={false} value={search}
         onChange={(event) => { setActive(0); if (remote) remote.onSearch(event.target.value); else setLocalSearch(event.target.value); }}
         onKeyDown={onListKeyDown}
@@ -380,7 +392,7 @@ export function Picker(props: PickerProps) {
     </div> : null;
   const header = searchBox || countRow
     ? <div className={cn("border-b border-[var(--borde)]", phone ? "px-4 pt-2.5 pb-2" : "p-1.5")}>{searchBox}{countRow}</div> : null;
-  const options = <ul ref={listRef} id={listboxId} role="listbox" aria-label={props.label} aria-multiselectable={multiple || undefined}
+  const options = <ul ref={listRef} id={listboxId} role="listbox" aria-labelledby={nameId} aria-multiselectable={multiple || undefined}
     tabIndex={searchable ? undefined : -1} aria-activedescendant={!searchable && current >= 0 ? optionId(current) : undefined}
     onKeyDown={searchable ? undefined : onListKeyDown}
     className={cn("relative min-h-0 flex-1 overflow-y-auto outline-none [scrollbar-width:thin]", phone ? "" : "max-h-80 p-1", rows.length === 0 && "hidden")}>
@@ -408,7 +420,9 @@ export function Picker(props: PickerProps) {
       {remote.loading ? t("states.loading") : t("picker.more", { count: props.pageSize ?? 50 })}
     </button> : null;
 
+  // El nombre y lo elegido van afuera del botón: lo nombran sin sumarse a su texto.
   if (phone) return <>
+    {words}
     {trigger}
     <Dialog open={open} onOpenChange={(next) => { if (!next) hide(); }}>
       {/* «Criterio · Elegir», En el teléfono: a pantalla completa, con el nombre del campo, la ✕, el buscador si son más de
@@ -417,7 +431,7 @@ export function Picker(props: PickerProps) {
         onBlur={focusLeaves} onCloseAutoFocus={(event) => { event.preventDefault(); (focusTaken() ?? triggerRef.current)?.focus(); }}
         className="max-md:inset-0 max-md:flex max-md:h-dvh max-md:max-h-none max-md:flex-col max-md:rounded-none [&>[data-slot=dialog-handle]]:hidden">
         <header className="flex min-h-14 shrink-0 items-center gap-2 border-b border-[var(--borde)] pt-[env(safe-area-inset-top)] pr-2 pl-4">
-          <DialogTitle className="min-w-0 flex-1 truncate text-[1.125rem] font-bold text-[var(--t1)]">{props.label}</DialogTitle>
+          <DialogTitle className="min-w-0 flex-1 truncate text-[1.125rem] font-bold text-[var(--t1)]">{title}</DialogTitle>
           <button type="button" aria-label={t("actions.close")} title={t("actions.close")} onClick={hide}
             className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
             <CloseIcon className="size-5.5" />
@@ -434,12 +448,12 @@ export function Picker(props: PickerProps) {
     </Dialog>
   </>;
 
-  return <PopoverPrimitive.Root modal open={open} onOpenChange={(next) => { if (next) show(); else hide(); }}>
+  return <>{words}<PopoverPrimitive.Root modal open={open} onOpenChange={(next) => { if (next) show(); else hide(); }}>
     <PopoverPrimitive.Trigger asChild>{trigger}</PopoverPrimitive.Trigger>
     <PopoverPrimitive.Portal>
       {/* `data-return-focus-to`: una confirmación que abre una elección se abre mientras la lista se cierra, con el foco
           adentro de ella; el atributo le dice que devuelva el foco al botón (useRestoreFocusOnClose). */}
-      <PopoverPrimitive.Content aria-label={props.label} align="start" sideOffset={4} collisionPadding={8} onKeyDown={leaveWithTab} onOpenAutoFocus={focusList} data-return-focus-to={triggerId}
+      <PopoverPrimitive.Content aria-labelledby={nameId} align="start" sideOffset={4} collisionPadding={8} onKeyDown={leaveWithTab} onOpenAutoFocus={focusList} data-return-focus-to={triggerId}
         onBlur={focusLeaves} onCloseAutoFocus={(event) => {
           const direction = leaving.current, taken = focusTaken();
           leaving.current = null;
@@ -460,7 +474,7 @@ export function Picker(props: PickerProps) {
         {more}
       </PopoverPrimitive.Content>
     </PopoverPrimitive.Portal>
-  </PopoverPrimitive.Root>;
+  </PopoverPrimitive.Root></>;
 }
 
 /** Una opción: la tilde o la casilla a la izquierda, el nombre y su línea gris debajo. Apagada, su motivo se abre en un

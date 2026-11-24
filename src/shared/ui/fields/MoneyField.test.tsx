@@ -19,7 +19,7 @@ describe("NumberField y MoneyField", () => {
     render(<AppProviders><FormField label="Tarifa"><MoneyField fixedCurrency currencyCode="ARS" precision="technical-tariff" value={null} onChange={onChange} /></FormField></AppProviders>);
     const input = await screen.findByRole("textbox", { name: "Tarifa" });
     await waitFor(() => expect(input).toBeEnabled());
-    expect(screen.queryByRole("combobox", { name: "Moneda" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^Moneda/ })).not.toBeInTheDocument();
     expect(screen.getByText("ARS")).toBeVisible();
     fireEvent.change(input, { target: { value: "0,123456" } });
     expect(onChange).toHaveBeenLastCalledWith({ amount: 0.123456, currency: "ARS" });
@@ -108,7 +108,7 @@ describe("NumberField y MoneyField", () => {
       onValidityChange={onValidityChange} /></FormField></AppProviders>);
     const input = await screen.findByRole("textbox", { name: "Monto" });
     await waitFor(() => expect(input).toBeEnabled());
-    expect(screen.getByRole("combobox", { name: "Moneda" })).toHaveTextContent("(ARS)");
+    expect(screen.getByRole("button", { name: /^Moneda/ })).toHaveTextContent("(ARS)");
     fireEvent.change(input, { target: { value: "1.234,50" } });
     expect(onChange).toHaveBeenLastCalledWith({ amount: 1234.5, currency: "ARS" });
     fireEvent.change(input, { target: { value: "1.234,567" } });
@@ -140,7 +140,7 @@ describe("NumberField y MoneyField", () => {
     render(<AppProviders><FormField label="Monto"><MoneyField value={null} onChange={onChange} /></FormField></AppProviders>);
     const input = await screen.findByRole("textbox", { name: "Monto" });
     await waitFor(() => expect(input).toBeEnabled());
-    expect(screen.getByRole("combobox", { name: "Moneda" })).toHaveTextContent("(CLP)");
+    expect(screen.getByRole("button", { name: /^Moneda/ })).toHaveTextContent("(CLP)");
     fireEvent.change(input, { target: { value: "1234" } });
     expect(onChange).toHaveBeenLastCalledWith({ amount: 1234, currency: "CLP" });
     fireEvent.change(input, { target: { value: "1.234.567" } });

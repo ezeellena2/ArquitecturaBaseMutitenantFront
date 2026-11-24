@@ -269,7 +269,7 @@ describe("Mi cuenta", () => {
     }));
     const { router, container } = renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
     expect(await screen.findByRole("heading", { name: "Mi cuenta" })).toBeVisible();
-    const culture = screen.getByRole("combobox", { name: "Idioma y región" });
+    const culture = screen.getByRole("button", { name: /^Idioma y región / });
     await waitFor(() => expect(culture).toBeEnabled());
     culture.focus();
     await user.keyboard("{ArrowDown}");

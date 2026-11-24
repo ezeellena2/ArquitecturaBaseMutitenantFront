@@ -46,9 +46,9 @@ async function phoneInput() {
 
 async function selectPreviousCountry() {
   const user = userEvent.setup();
-  await user.click(screen.getByRole("combobox", { name: "País: Argentina, +54" }));
+  await user.click(screen.getByRole("button", { name: "País Argentina" }));
   await user.click(screen.getByRole("option", { name: "Uruguay +598" }));
-  expect(screen.getByRole("combobox", { name: "País: Uruguay, +598" })).toBeVisible();
+  expect(screen.getByRole("button", { name: "País Uruguay" })).toBeVisible();
 }
 
 it.each(["/login", "/login/empresa"])("%s permite país retirado y número local de un método existente sin falsa invalidez", async (path) => {
@@ -112,12 +112,12 @@ it("recuperación permite el país anterior retirado y vuelve al filtro del cana
   expect(previews).toEqual([{ previousPhone }]);
   const next = await phoneInput();
   const user = userEvent.setup();
-  await user.click(screen.getByRole("combobox", { name: "País: Argentina, +54" }));
+  await user.click(screen.getByRole("button", { name: "País Argentina" }));
   expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual(["Argentina +54"]);
   await user.keyboard("{Escape}");
   fireEvent.change(next, { target: { value: "+598 94 123 456" } });
   expect(next).toHaveAttribute("aria-invalid", "true");
-  expect(screen.getByRole("combobox", { name: "País: Argentina, +54" })).toBeVisible();
+  expect(screen.getByRole("button", { name: "País Argentina" })).toBeVisible();
   fireEvent.change(next, { target: { value: "011 15-2345-6789" } });
   expect(next).not.toHaveAttribute("aria-invalid", "true");
   fireEvent.click(screen.getByRole("button", { name: "Enviar código" }));
@@ -130,10 +130,10 @@ it("registro personal conserva únicamente los países del canal para números n
   renderRouteWithProviders("/registro");
   const input = await phoneInput();
   const user = userEvent.setup();
-  await user.click(screen.getByRole("combobox", { name: "País: Argentina, +54" }));
+  await user.click(screen.getByRole("button", { name: "País Argentina" }));
   expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual(["Argentina +54"]);
   await user.keyboard("{Escape}");
   fireEvent.change(input, { target: { value: "+598 94 123 456" } });
   expect(input).toHaveAttribute("aria-invalid", "true");
-  expect(screen.getByRole("combobox", { name: "País: Argentina, +54" })).toBeVisible();
+  expect(screen.getByRole("button", { name: "País Argentina" })).toBeVisible();
 });

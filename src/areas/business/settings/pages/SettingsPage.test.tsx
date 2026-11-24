@@ -100,7 +100,7 @@ describe("SettingsPage", () => {
       }),
     );
     const { queryClient, container } = renderRouteWithProviders("/org/configuracion", { as: "business-e6-admin" });
-    const selector = await screen.findByRole("combobox", { name: "Idioma y región predeterminados" });
+    const selector = await screen.findByRole("button", { name: /^Idioma y región predeterminados / });
     server.use(http.get("/api/me", () => HttpResponse.json({
       ...businessE6Admin, organizationCountryCode: current.defaultCulture === "en-US" ? "US" : "AR",
     })));

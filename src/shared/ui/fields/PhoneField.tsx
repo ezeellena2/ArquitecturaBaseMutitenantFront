@@ -56,7 +56,7 @@ export function PhoneField({ value, onChange, onValidityChange, allowedCountries
   }
 
   return (
-    <div className={variant === "auth" ? "flex gap-2 [&_[role=combobox]]:h-11 [&_[role=combobox]]:rounded-[0.625rem] [&_[role=combobox]]:text-[0.9375rem]" : "flex gap-2"}>
+    <div className={variant === "auth" ? "flex gap-2 [&_button[aria-haspopup]]:h-11 [&_button[aria-haspopup]]:rounded-[0.625rem] [&_button[aria-haspopup]]:text-[0.9375rem]" : "flex gap-2"}>
       {/* El país compacto: la bandera y el prefijo («+54»), decisión del usuario del 2026-10-04, en una caja de 112 en la
           compu y de 124 en el teléfono (lienzo v99); la lista muestra la bandera y el nombre entero. */}
       <div className="w-28 shrink-0 max-md:w-31">

@@ -28,14 +28,14 @@ describe("CultureSelect", () => {
   it("un solo desplegable que ilustra fecha y número de cada idioma y región", async () => {
     const user = userEvent.setup();
     renderSelect();
-    const select = await screen.findByRole("combobox", { name: "Idioma y región" });
+    const select = await screen.findByRole("button", { name: /^Idioma y región/ });
     await waitFor(() => expect(select).toBeEnabled());
     // Tablero «Criterio · Formularios»: un solo control por dato; con dos opciones, sin buscador.
-    expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
     await user.click(select);
     expect(await screen.findByText("27/09/2026, 14:35 · 1.234,50")).toBeVisible();
     expect(screen.getByText("09/27/2026, 2:35 PM · 1,234.50")).toBeVisible();
-    expect(screen.queryByRole("searchbox")).not.toBeInTheDocument();
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument();
     // Tablero Cuenta: cada idioma se nombra en su propia lengua, aunque la pantalla esté en español.
     await user.click(screen.getByRole("option", { name: /English \(United States\)/ }));
     expect(screen.getByRole("status")).toHaveTextContent("en-US");
@@ -53,7 +53,7 @@ describe("CultureSelect", () => {
     })));
     renderSelect();
 
-    const select = await screen.findByRole("combobox", { name: "Idioma y región" });
+    const select = await screen.findByRole("button", { name: /^Idioma y región/ });
     await waitFor(() => expect(select).toBeEnabled());
     expect(select).toHaveTextContent("Elegí un idioma");
     await user.click(select);
@@ -72,7 +72,7 @@ describe("CultureSelect", () => {
     })));
     renderSelect("pt-BR");
 
-    const select = await screen.findByRole("combobox", { name: "Idioma y región" });
+    const select = await screen.findByRole("button", { name: /^Idioma y región/ });
     await waitFor(() => expect(select).toHaveTextContent("Português (Brasil)"));
   });
 });

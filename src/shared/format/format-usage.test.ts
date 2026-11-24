@@ -13,6 +13,8 @@ const cutsText = new Set([
   "shared/ui/select.tsx",
   "shared/ui/SearchSelect.tsx",
   "shared/ui/MultiSelect.tsx",
+  // La pieza para elegir (262): el campo nunca crece, y lo elegido se corta con «y N más».
+  "shared/ui/Picker.tsx",
   "shared/ui/fields/MonthField.tsx",
 ]);
 
