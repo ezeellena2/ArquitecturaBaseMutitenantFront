@@ -8,7 +8,7 @@ import { Button } from "@/shared/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
-import { SearchSelect } from "@/shared/ui/SearchSelect";
+import { Picker } from "@/shared/ui/Picker";
 import type { WhatsAppTeamResponse } from "../../api/types";
 import type { BotPatch } from "../lib/botModel";
 import { useBotDialogSave } from "./useBotDialogSave";
@@ -39,9 +39,8 @@ export function EmployeesTeamDialog({ teamId, teams, onSave, onClose, returnFocu
       <form noValidate onSubmit={(event) => { void send(event); }} className="flex min-h-0 flex-col">
         <DialogBody>
           <FormField label={t("whatsapp:bot.option.team")}>
-            <SearchSelect value={team.field.value} onChange={(value) => { team.field.onChange(value); clear(); }} searchLabel={t("common:actions.search")}
-              placeholder={t("whatsapp:bot.employees.noTeam")}
-              options={[{ value: noTeam, label: t("whatsapp:bot.employees.noTeam") }, ...teams.map((item) => ({ value: item.id, label: item.name }))]} />
+            <Picker value={team.field.value || noTeam} onChange={(value) => { if (value === team.field.value) return; team.field.onChange(value); clear(); }}
+              first={{ value: noTeam, label: t("whatsapp:bot.employees.noTeam") }} options={teams.map((item) => ({ value: item.id, label: item.name }))} />
           </FormField>
           <FormError message={actionErrorMessage(failure, t)} />
         </DialogBody>

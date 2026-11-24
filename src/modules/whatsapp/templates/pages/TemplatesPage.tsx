@@ -13,7 +13,7 @@ import { ImportantNotice } from "@/shared/ui/ImportantNotice";
 import { Page } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions, type RowAction } from "@/shared/ui/RowActions";
-import { SegmentedControl } from "@/shared/ui/SegmentedControl";
+import { Picker } from "@/shared/ui/Picker";
 import { Surface } from "@/shared/ui/Surface";
 import type { WhatsAppTemplateGroup, WhatsAppTemplateResponse } from "../../api/types";
 import { deleteTemplate, fetchTemplatePage, templatesQueryKey, templatesQueryRoot, type TemplateScope, type TemplatesQuery } from "../api/templates";
@@ -30,8 +30,8 @@ const groupFrom = (value: string | undefined): Group => value === systemValue ? 
 
 /// Tableros WA-Plantillas y Plat-WA-Plantillas (y sus M-*): la lista con el estado en Meta, «Nueva plantilla» en la
 /// banda (el «+» en el teléfono) y, en el ⋮, duplicar (una aprobada no se edita: se abre «Nueva plantilla» con sus datos,
-/// CC17) o borrar. Las del sistema de Plataforma son de solo lectura y van en su propia vista, con el segmentado arriba
-/// de la lista (regla F8).
+/// CC17) o borrar. Las del sistema de Plataforma son de solo lectura y van en su propia vista, con su filtro arriba
+/// de la lista (regla F8; sin cantidades, 262).
 function TemplatesPage({ scope }: { scope: TemplateScope }) {
   const { t } = useTranslation(["whatsapp", "common"]);
   const format = useFormat();
@@ -47,9 +47,8 @@ function TemplatesPage({ scope }: { scope: TemplateScope }) {
     meta: { silent: true, blocksView: true },
   });
   const group = groupFrom(filters.values.grupo);
-  // Los conteos de cada vista y el resumen de la banda los trae la lista (CC07 y CC19); en Plataforma, de los dos grupos.
+  // El resumen de la banda lo trae la lista (CC07 y CC19); en Plataforma, de los dos grupos.
   const shown = list.isPlaceholderData ? undefined : list.data;
-  const groupCount = (value: Group) => (value === "System" ? shown?.system : shown?.consultations) ?? undefined;
   const total = platform && shown?.consultations != null && shown.system != null ? shown.consultations + shown.system : shown?.totalCount;
   const summary = shown && total !== undefined
     ? `${t("whatsapp:templates.summary", { count: total })} · ${t("whatsapp:templates.approved", { count: shown.approved })}`
@@ -85,10 +84,10 @@ function TemplatesPage({ scope }: { scope: TemplateScope }) {
       actions={<Button type="button" onClick={create}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("whatsapp:templates.create")}</Button>}>
       <div className="flex flex-col gap-3 md:gap-3.5">
         {platform ? <div className="max-md:px-4 max-md:pt-2">
-          <SegmentedControl aria-label={t("whatsapp:templates.view")} options={groups.map((value) => ({
-            key: value, label: groupLabel(value), detail: groupCount(value), pressed: value === group,
-            onSelect: () => filters.setFilter("grupo", value === "System" ? systemValue : undefined),
-          }))} />
+          {/* 262: el segmentado con cantidad pasa a un filtro con su botón, sin cantidades. */}
+          <Picker trigger="button" label={t("whatsapp:templates.view")} triggerLabel={groupLabel(group)} active={group === "System"} value={group}
+            options={groups.map((value) => ({ value, label: groupLabel(value) }))}
+            onChange={(value) => { if (value !== group) filters.setFilter("grupo", value === "System" ? systemValue : undefined); }} />
         </div> : null}
         <Surface className="overflow-hidden" phoneFlush>
           <DataTable columns={columns} rows={list.data?.items ?? []} rowKey={(template) => template.id}

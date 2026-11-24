@@ -1,6 +1,6 @@
 import type { CompanyResponse, OrganizationUserResponse, RoleResponse } from "@/shared/api/types";
 import type { WhatsAppPhoneImportPreviewResponse } from "../api/types";
-import { api, click, fill, galleryApp, galleryCase, galleryPending, page, press, type GalleryAction, type GalleryCase, type GalleryPending } from "../test/gallery";
+import { api, click, fill, galleryApp, galleryCase, galleryPending, page, press, type GalleryAction, type GalleryCase, type GalleryPending, pickIn } from "../test/gallery";
 
 // Usuarios y «Cargar teléfonos» de los tableros Usuarios, M-Usuarios, WA-Telefonos y M-WA-Telefonos: Grupo Delta, sus tres
 // empresas, sus usuarios (con las tres invitaciones por teléfono de la E11) y los seis teléfonos de la carga.
@@ -82,8 +82,8 @@ const phonesApp = (options: { actions: GalleryAction[]; readyText: string }) => 
 
 /** WA-Telefonos «Pegar o subir»: Delta S.A., «Solo lectura» y los seis teléfonos, uno por renglón. */
 // El desplegable de roles se abre con el teclado: en el teléfono, el clic de jsdom no lo abre (tests.md).
-const paste: GalleryAction[] = [click("Empresa", "combobox"), click("Delta S.A.", "option"), press("Roles en la empresa"),
-  click("Solo lectura", "menuitemcheckbox"), press("Solo lectura", "menuitemcheckbox", "Escape"),
+const paste: GalleryAction[] = [pickIn("Empresa", undefined, true), click("Delta S.A.", "option"), { type: "press", label: "Roles en la empresa", exact: true, key: "Enter" },
+  click("Solo lectura", "option"), press("Solo lectura", "option", "Escape"),
   fill("Uno por renglón, hasta 200", ["11 5555-4521", "11 5555-7310", "11 5555-8812", "11 5555-9934", "11 5555-1200", "11 4444"].join("\n"))];
 const review: GalleryAction[] = [...paste, click("Revisar 6 teléfonos")];
 /** M-WA-Telefonos: en el teléfono, la empresa y los roles se eligen en una hoja, desde su fila con ›. */

@@ -35,6 +35,9 @@ export const click = (name: string, role: NonNullable<GalleryAction["role"]> = "
   ({ type: "click", role, name, exact: true, ...(within ? { within } : {}) });
 /** Abre un desplegable de Radix con el teclado (tests.md): el clic de jsdom no siempre lo abre. */
 export const press = (name: string, role: NonNullable<GalleryAction["role"]> = "button", key = "Enter"): GalleryAction => ({ type: "press", role, name, exact: true, key });
+/** Abre la pieza para elegir (262) por su rótulo: el botón se llama con el rótulo y lo elegido. */
+export const pickIn = (label: string, within?: GalleryAction["within"], exact = false): GalleryAction =>
+  ({ type: "click", label, exact, ...(within ? { within } : {}) });
 export const fill = (name: string, value: string, within?: GalleryAction["within"]): GalleryAction =>
   ({ type: "fill", role: "textbox", name, value, exact: true, ...(within ? { within } : {}) });
 

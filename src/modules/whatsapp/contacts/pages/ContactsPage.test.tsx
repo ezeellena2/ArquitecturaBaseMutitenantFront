@@ -6,6 +6,7 @@ import { server } from "@/test/mocks/server";
 import { asPhone, cardData } from "@/test/utils/phone";
 import { mountWhatsApp, whatsappMember, whatsappOwner } from "../../test/support";
 import { carla, frameHandlers, martina, paged, unnamed, useNativeForms } from "../test/fixtures";
+import { pickerName } from "@/test/picker";
 
 beforeAll(async () => { await import("./ContactsPage"); await import("./ContactPage"); });
 beforeEach(() => frameHandlers());
@@ -102,7 +103,7 @@ describe("Importar contactos", () => {
     expect(within(dialog).getByText("Falta el teléfono")).toBeVisible();
     expect(await axe(dialog)).toHaveNoViolations();
 
-    await user.click(within(dialog).getByRole("combobox", { name: /Etiqueta para todos/ }));
+    await user.click(within(dialog).getByRole("button", { name: pickerName("Etiqueta para todos") }));
     await user.click(await screen.findByRole("option", { name: "Mayorista" }));
     await user.click(within(dialog).getByRole("button", { name: "Importar 48 contactos" }));
     // Sin conexión: el aviso común ofrece «Reintentar», que repite el envío con la misma clave (el aviso queda fuera del
@@ -133,9 +134,9 @@ describe("Importar contactos", () => {
     await user.click(await screen.findByRole("button", { name: "Importar contactos" }));
     const dialog = await screen.findByRole("dialog", { name: "Importar contactos" });
     await user.upload(within(dialog).getByLabelText(/Archivo/), file());
-    const tag = within(dialog).getByRole("combobox", { name: /Etiqueta para todos/ });
+    const tag = within(dialog).getByRole("button", { name: pickerName("Etiqueta para todos") });
     await user.click(tag);
-    const search = await screen.findByRole("searchbox", { name: "Buscar" });
+    const search = await screen.findByRole("combobox", { name: "Buscar en Etiqueta para todos" });
     await user.type(search, "mayorista");
     expect(await screen.findByRole("option", { name: "Mayorista" })).toBeVisible();
     expect(screen.queryByRole("option", { name: /^Crear/ })).not.toBeInTheDocument();

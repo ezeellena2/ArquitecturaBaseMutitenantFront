@@ -3,9 +3,8 @@ import type {
   WhatsAppChatMessageResponse, WhatsAppConversationChannelResponse, WhatsAppConversationRowResponse, WhatsAppTemplateOptionResponse,
 } from "../api/types";
 import {
-  api, click, fill, galleryApp, galleryCase, galleryPending, page, press,
-  type GalleryAction, type GalleryApiResponse, type GalleryCase, type GalleryPending,
-} from "../test/gallery";
+  api, click, fill, galleryApp, galleryCase, galleryPending, page, pickIn, press,
+  type GalleryAction, type GalleryApiResponse, type GalleryCase, type GalleryPending } from "../test/gallery";
 
 // Galería de Chats (WA-Chats*, M-WA-*, Plat-WA-Chats y sus M-*): los datos de ejemplo de cada tablero, a las 11:00 del
 // martes 13/10/2026 en Buenos Aires (14:00 UTC). «Hoy» es el 13, «Ayer» el 12 y «Lunes» el 5.
@@ -155,7 +154,7 @@ const withDollars = api("GET", "/api/reference-data", { ...reference, currencies
   { ...reference.currencies[0], code: "USD", name: "Dólar estadounidense", namePlural: "Dólares estadounidenses", displaySymbol: "US$", symbol: "US$", minorUnits: 2, sortOrder: 2 }] });
 const templateChat = customersChat(martinaClosed, martinaMessages(yesterday), {
   extra: [withDollars, api("GET", `${org}/customers/conversations/c-martina/template-options`, page(templates))] });
-const chooseTemplate = (dialog: string): GalleryAction[] => [click("Elegir plantilla"), click("Plantilla", "combobox", { role: "dialog", name: dialog }),
+const chooseTemplate = (dialog: string): GalleryAction[] => [click("Elegir plantilla"), pickIn("Plantilla", { role: "dialog", name: dialog }),
   click("Pedido listo", "option"), fill("Nombre", "Martina", { role: "dialog", name: dialog }), fill("Número de pedido", "1043", { role: "dialog", name: dialog })];
 
 // Plat-WA-Chats: las Consultas de Plataforma, sin bandejas; Lucía, vinculada a su cuenta, la atiende Martín Sosa.

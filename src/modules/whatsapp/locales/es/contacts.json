@@ -73,6 +73,7 @@
     "tags": "Etiquetas",
     "consent": "Promociones",
     "noTags": "Sin etiquetas",
+    "unsubscribedReason": "Solo la persona puede darse de baja.",
     "tooManyTags": "Podés poner hasta {{count}} etiquetas.",
     "tagTooLong": "Cada etiqueta puede tener hasta {{count}} caracteres.",
     "saved": "Guardamos los cambios del contacto.",

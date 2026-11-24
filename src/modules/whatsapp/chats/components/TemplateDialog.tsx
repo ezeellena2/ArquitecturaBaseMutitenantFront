@@ -17,12 +17,11 @@ import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { Button } from "@/shared/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
-import { EnumText } from "@/shared/ui/format/EnumText";
 import { MoneyText } from "@/shared/ui/format/MoneyText";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { Input } from "@/shared/ui/input";
-import { SearchSelect } from "@/shared/ui/SearchSelect";
+import { Picker } from "@/shared/ui/Picker";
 import type { SendWhatsAppTemplateRequest, WhatsAppChatMessageResponse, WhatsAppConversationRowResponse } from "../../api/types";
 import { chatsScopeQueryRoot, sendTemplate, templateOptions, type ChatsScope } from "../api/chats";
 import { templatePreview } from "../lib/conversation";
@@ -97,11 +96,9 @@ export function TemplateDialog({ scope, row, name, onClose, onSent, onConflict }
         <DialogBody className="md:grid md:grid-cols-2 md:gap-3.5">
           <div className="md:col-span-2">
             <FormField label={t("chats.template.template")} required error={form.formState.errors.templateId?.message}>
-              <SearchSelect value={template.field.value} remote={options.remote} placeholder={t("chats.template.choose")} searchLabel={t("chats.template.search")}
-                aria-label={t("chats.template.template")} title={t("chats.template.template")}
-                onChange={chooseTemplate}
-                selectedLabel={selected?.name}
-                renderValue={(option) => <>{option.label}{" · "}<EnumText enum="WhatsAppTemplateCategory" value={options.knownItems.find((item) => item.templateId === option.value)?.category} /></>}
+              <Picker value={template.field.value || null} remote={options.remote} placeholder={t("chats.template.choose")} describeChosen
+                onChange={(templateId) => { if (templateId !== template.field.value) chooseTemplate(templateId); }}
+                selectedOptions={selected ? [{ value: selected.templateId, label: selected.name, description: format.isLoading ? undefined : format.formatEnum("WhatsAppTemplateCategory", selected.category) }] : []}
                 options={options.items.map((option) => ({ value: option.templateId, label: option.name,
                   description: format.isLoading ? undefined : format.formatEnum("WhatsAppTemplateCategory", option.category) }))} />
             </FormField>

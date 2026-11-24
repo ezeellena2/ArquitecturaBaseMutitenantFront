@@ -6,6 +6,7 @@ import { server } from "@/test/mocks/server";
 import { asPhone, cardData } from "@/test/utils/phone";
 import type { WhatsAppTeamResponse } from "../../api/types";
 import { mountWhatsApp, whatsappMember, whatsappOperator, whatsappOwner } from "../../test/support";
+import { pickerName } from "@/test/picker";
 
 const page = <T,>(items: T[]) => ({ items, page: 1, pageSize: 10, totalCount: items.length, totalPages: 1, hasPrevious: false, hasNext: false });
 const sales: WhatsAppTeamResponse = { id: "team-1", name: "Ventas", inbox: "Customers", memberCount: 2, memberPreview: ["Lucía Fernández", "Carolina Vega"], notifyAfterMinutes: 10, version: 3 };
@@ -70,11 +71,11 @@ describe("Equipos de la organización", () => {
 
     await user.click(within(dialog).getByRole("textbox", { name: "Nombre" }));
     await user.paste("Ventas");
-    await user.click(within(dialog).getByRole("radio", { name: "Internos" }));
-    await user.click(within(dialog).getByRole("button", { name: "Personas" }));
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Carolina Vega" }));
+    await user.click(within(dialog).getByRole("button", { name: pickerName("Bandeja") })); await user.click(await screen.findByRole("option", { name: "Internos" }));
+    await user.click(within(dialog).getByRole("button", { name: pickerName("Personas") }));
+    await user.click(await screen.findByRole("option", { name: "Carolina Vega" }));
     await user.keyboard("{Escape}");
-    await user.click(within(dialog).getByRole("combobox", { name: "Aviso por correo si nadie lo toma" }));
+    await user.click(within(dialog).getByRole("button", { name: pickerName("Aviso por correo si nadie lo toma") }));
     await user.click(await screen.findByRole("option", { name: "No avisar" }));
     await user.click(within(dialog).getByRole("button", { name: "Crear equipo" }));
     await waitFor(() => expect(bodies).toHaveLength(1));
@@ -97,10 +98,10 @@ describe("Equipos de la organización", () => {
     await user.keyboard("{Enter}");
     await user.click(await screen.findByRole("menuitem", { name: "Editar" }));
     const dialog = await screen.findByRole("dialog", { name: "Editar equipo" });
-    expect(await within(dialog).findByRole("button", { name: "Personas" })).toHaveTextContent("Carolina Vega");
-    expect(within(dialog).queryByRole("radio")).not.toBeInTheDocument();
+    expect(await within(dialog).findByRole("button", { name: pickerName("Personas") })).toHaveTextContent("Carolina Vega");
+    expect(within(dialog).queryByRole("button", { name: pickerName("Bandeja") })).not.toBeInTheDocument();
     expect(within(dialog).getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
-    await user.click(within(dialog).getByRole("combobox", { name: "Aviso por correo si nadie lo toma" }));
+    await user.click(within(dialog).getByRole("button", { name: pickerName("Aviso por correo si nadie lo toma") }));
     await user.click(await screen.findByRole("option", { name: "A los 30 minutos" }));
     await user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
     await waitFor(() => expect(puts).toEqual([{ name: "Ventas", memberIds: ["member-1"], notifyAfterMinutes: 30, version: 3 }]));
@@ -133,14 +134,16 @@ describe("Equipos de Plataforma", () => {
     const dialog = await screen.findByRole("dialog", { name: "Crear equipo" });
     await user.click(within(dialog).getByRole("textbox", { name: "Nombre" }));
     await user.paste("Soporte");
-    within(dialog).getByRole("button", { name: "Operadores" }).focus();
+    within(dialog).getByRole("button", { name: pickerName("Operadores") }).focus();
     await user.keyboard("{ArrowDown}");
-    const option = await screen.findByRole("menuitemcheckbox", { name: email });
+    const option = await screen.findByRole("option", { name: email });
     expect(option).toHaveAccessibleName(email);
-    expect(screen.queryByRole("menuitemcheckbox", { name: "" })).not.toBeInTheDocument();
-    expect(await axe(screen.getByRole("menu"))).toHaveNoViolations();
-    await user.keyboard("{Enter}{Escape}");
-    expect(within(dialog).getByRole("button", { name: "Operadores" })).toHaveTextContent(email);
+    expect(screen.queryByRole("option", { name: "" })).not.toBeInTheDocument();
+    expect(await axe(screen.getByRole("listbox"))).toHaveNoViolations();
+    // En el teléfono, varias se aplican con «Listo (N)»; en la compu, al marcar.
+    if (phone) { await user.keyboard("{Enter}"); await user.click(screen.getByRole("button", { name: "Listo (1)" })); }
+    else await user.keyboard("{Enter}{Escape}");
+    expect(within(dialog).getByRole("button", { name: pickerName("Operadores") })).toHaveTextContent(email);
     expect(await axe(dialog)).toHaveNoViolations();
     await user.click(within(dialog).getByRole("button", { name: "Crear equipo" }));
     await waitFor(() => expect(bodies).toEqual([{ name: "Soporte", inbox: null, memberIds: ["operator-1"], notifyAfterMinutes: 10 }]));
@@ -163,11 +166,11 @@ describe("Equipos de Plataforma", () => {
 
     await user.click(screen.getByRole("button", { name: "Crear equipo" }));
     const dialog = await screen.findByRole("dialog", { name: "Crear equipo" });
-    expect(within(dialog).queryByRole("radio")).not.toBeInTheDocument();
+    expect(within(dialog).queryByRole("button", { name: pickerName("Bandeja") })).not.toBeInTheDocument();
     await user.click(within(dialog).getByRole("textbox", { name: "Nombre" }));
     await user.paste("Cuentas");
-    await user.click(within(dialog).getByRole("button", { name: "Operadores" }));
-    await user.click(await screen.findByRole("menuitemcheckbox", { name: "Martín Sosa" }));
+    await user.click(within(dialog).getByRole("button", { name: pickerName("Operadores") }));
+    await user.click(await screen.findByRole("option", { name: "Martín Sosa" }));
     await user.keyboard("{Escape}");
     await user.click(within(dialog).getByRole("button", { name: "Crear equipo" }));
     await waitFor(() => expect(bodies).toEqual([{ name: "Cuentas", inbox: null, memberIds: ["operator-1"], notifyAfterMinutes: 10 }]));

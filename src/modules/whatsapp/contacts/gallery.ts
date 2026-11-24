@@ -59,12 +59,12 @@ const unlinked = { ...martina, linkedToAccount: false };
 /// D10: escribir una etiqueta que no existe ofrece crearla. La búsqueda de «VIP» no encuentra ninguna.
 const noVip = api("GET", `${contacts}/tags`, page([]), 200, { search: "VIP" });
 const typeVip = (within: GalleryAction["within"]): GalleryAction[] => [
-  { type: "click", role: "button", name: "Etiquetas", exact: false, within }, { type: "fill", label: "Buscar", exact: true, value: "VIP" }];
+  { type: "click", label: "Etiquetas", exact: true, within }, { type: "fill", label: "Buscar en Etiquetas", exact: true, value: "VIP" }];
 const editVip = (open: GalleryAction[]) => galleryApp("business", martinaPath, [noVip, ...detail(martina)], {
   actions: [...open, ...typeVip({ role: "dialog", name: "Editar contacto" })], readySelector: "[role=dialog]", readyText: "Crear «VIP»",
 });
 const importVip = (open: GalleryAction) => galleryApp("business", "/org/whatsapp/contactos", [noVip, ...list], {
-  actions: [open, { type: "click", role: "combobox", name: "Etiqueta para todos", exact: false }, { type: "fill", label: "Buscar", exact: true, value: "VIP" }],
+  actions: [open, { type: "click", label: "Etiqueta para todos", exact: true }, { type: "fill", label: "Buscar en Etiqueta para todos", exact: true, value: "VIP" }],
   readySelector: "[role=dialog]", readyText: "Crear «VIP»",
 });
 

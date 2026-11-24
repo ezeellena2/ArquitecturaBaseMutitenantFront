@@ -73,6 +73,7 @@
     "tags": "Tags",
     "consent": "Promotions",
     "noTags": "No tags",
+    "unsubscribedReason": "Only the person can unsubscribe.",
     "tooManyTags": "You can add up to {{count}} tags.",
     "tagTooLong": "Each tag can have up to {{count}} characters.",
     "saved": "We saved the contact's changes.",

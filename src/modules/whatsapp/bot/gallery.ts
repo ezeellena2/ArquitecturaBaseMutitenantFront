@@ -52,7 +52,7 @@ function settingsCases(board: "WA-Respuestas" | "M-WA-Respuestas"): GalleryCase[
     at("Configuración", [], "Pasa a Ventas"),
     at("Editar bienvenida", edit("Bienvenida"), "Guardar", bot(), "[role=dialog]"),
     at("Editar fuera de horario", edit("Fuera de horario"), "Días y horarios de atención", bot(), "[role=dialog]"),
-    at("Elegir el número", [phone ? click(numberPill) : press(numberPill)], "Delta Sur S.R.L.", bot(), phone ? "[role=dialog]" : "[role=menu]"),
+    at("Elegir el número", [phone ? click(numberPill) : press(numberPill)], "Delta Sur S.R.L.", bot(), phone ? "[role=dialog]" : "[role=listbox]"),
     at("Tope de 10 opciones", [], "Trabajar con nosotros", bot({ menu: fullMenu })),
     at("Tope de 10 · qué significa", [click("Agregar opción")], "WhatsApp muestra hasta 10 opciones", bot({ menu: fullMenu }), "[role=dialog]"),
     at("Además apagado", [], "Preguntar por promociones", bot({ askPromotions: false, offerAccountLink: false })),

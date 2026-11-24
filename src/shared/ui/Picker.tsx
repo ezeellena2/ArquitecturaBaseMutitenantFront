@@ -166,8 +166,8 @@ export function Picker(props: PickerProps) {
   const searching = search.trim() !== "";
   const full = multiple && props.max !== undefined && chosen.size >= props.max;
   const known = [...(props.selectedOptions ?? [])];
-  // Lo creado acá todavía no es una opción: se muestra con su texto.
-  if (props.creatable) for (const item of values) if (![...known, ...props.options].some((option) => option.value === item)) known.push({ value: item, label: item });
+  // Lo creado acá todavía no es una opción: se muestra con su texto. «Sin …» (`first`) no es algo creado.
+  if (props.creatable) for (const item of values) if (item !== props.first?.value && ![...known, ...props.options].some((option) => option.value === item)) known.push({ value: item, label: item });
   const others = known.filter((option) => !props.options.some((item) => item.value === option.value));
   const needle = fold(search.trim());
   const shown = remote || !searching ? props.options : props.options.map((option, index) => ({ option, index, rank: rank(option, needle) }))

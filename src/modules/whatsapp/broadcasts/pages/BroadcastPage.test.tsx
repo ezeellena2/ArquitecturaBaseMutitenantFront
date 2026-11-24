@@ -8,6 +8,7 @@ import { asPhone, cardData } from "@/test/utils/phone";
 import { mountWhatsApp, whatsappMember, whatsappOwner } from "../../test/support";
 import { sendFailures } from "../../test/sendFailures";
 import { frameHandlers, paged, recipients, scheduled, sent } from "../test/fixtures";
+import { pickerName } from "@/test/picker";
 
 beforeAll(async () => { await import("./BroadcastPage"); await import("./NewBroadcastPage"); });
 beforeEach(() => frameHandlers());
@@ -142,9 +143,9 @@ describe("Resultados de una difusión", () => {
 
     await waitFor(() => expect(`${router.state.location.pathname}${router.state.location.search}`).toBe("/org/whatsapp/difusiones/nueva?desde=broadcast-sent"));
     expect(await screen.findByDisplayValue("20 % en empanadas")).toBeVisible();
-    expect(screen.getByRole("combobox", { name: /Plantilla/ })).toHaveTextContent("Promo semanal · Marketing");
-    expect(screen.getByRole("radio", { name: "Una etiqueta" })).toBeChecked();
-    expect(screen.getByRole("combobox", { name: /Etiqueta/ })).toHaveTextContent("Minorista");
+    expect(screen.getByRole("button", { name: pickerName("Plantilla") })).toHaveTextContent("Promo semanal · Marketing");
+    expect(screen.getByRole("button", { name: pickerName("Destinatarios") })).toHaveAccessibleName("Destinatarios Una etiqueta");
+    expect(screen.getByRole("button", { name: pickerName("Etiqueta") })).toHaveTextContent("Minorista");
     await user.click(screen.getByRole("button", { name: "Mandar" }));
     const dialog = await screen.findByRole("dialog", { name: "¿Mandar «20 % en empanadas»?" });
     await user.click(within(dialog).getByRole("button", { name: "Mandar" }));

@@ -19,7 +19,7 @@ import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTi
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { Input } from "@/shared/ui/input";
-import { RadioGroupField } from "@/shared/ui/RadioGroupField";
+import { Picker } from "@/shared/ui/Picker";
 import { Textarea } from "@/shared/ui/textarea";
 import type { CreateWhatsAppTemplateRequest, WhatsAppTemplateResponse } from "../../api/types";
 import { createTemplate, templatesQueryRoot, type TemplateScope } from "../api/templates";
@@ -145,9 +145,9 @@ export function TemplateDialog({ scope, original, onClose, returnFocusTo }: {
               <Input autoComplete="off" maxLength={limits.name.maxLength} {...form.register("name", { onChange: () => setFailure(undefined) })} />
             </FormField>
             <FormField label={t("whatsapp:templates.form.category")} required error={errors.category?.message}>
-              <RadioGroupField variant="segmented" label={t("whatsapp:templates.form.category")} value={category.field.value}
+              <Picker value={category.field.value || null}
                 options={categories.map((value) => ({ value, label: t(`enums:WhatsAppTemplateCategory.${value}`) }))}
-                onValueChange={(value) => category.field.onChange(value)} />
+                onChange={(value) => { if (value !== category.field.value) category.field.onChange(value); }} />
             </FormField>
             <div className="flex flex-col gap-2 md:col-span-2">
               <FormField label={t("whatsapp:templates.form.body")} required error={errors.body?.message}>

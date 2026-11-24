@@ -1,5 +1,5 @@
 import type { WhatsAppReferenceResponse, WhatsAppTeamResponse } from "../api/types";
-import { api, click, fill, galleryApp, galleryCase, page, press, type GalleryAction, type GalleryCase, type GalleryPending, type GalleryScope } from "../test/gallery";
+import { api, click, fill, galleryApp, galleryCase, page, press, type GalleryAction, type GalleryCase, type GalleryPending, type GalleryScope, pickIn } from "../test/gallery";
 
 // Los equipos de los tableros WA-Equipos y Plat-WA-Equipos, con sus nombres, bandejas, personas y avisos.
 const team = (id: string, name: string, inbox: WhatsAppTeamResponse["inbox"], memberPreview: string[], notifyAfterMinutes: number | null): WhatsAppTeamResponse =>
@@ -32,28 +32,28 @@ function teamsApp(scope: Exclude<GalleryScope, "consumer">, options: { actions?:
 }
 
 const dialog = { role: "dialog", name: "Crear equipo" } as const;
-// Elegir en un `MultiSelect`: cada opción es un `menuitemcheckbox`; Escape cierra el desplegable y deja el diálogo abierto.
-// Va por rol y no por rótulo: el menú se nombra con su botón, que con una sola elegida dice lo mismo que la opción.
-const choose = (names: readonly string[], field: string): GalleryAction[] => [click(field, "button", dialog),
-  ...names.map((name) => click(name, "menuitemcheckbox")), press(names.at(-1)!, "menuitemcheckbox", "Escape")];
+// Elegir varias en la pieza (262), por su rótulo con el asterisco de obligatorio: cada opción es un `option`; en la compu, Escape cierra la lista y deja el diálogo abierto;
+// en el teléfono, «Listo (N)» las aplica.
+const choose = (names: readonly string[], field: string, phone: boolean): GalleryAction[] => [pickIn(field, dialog, true),
+  ...names.map((name) => click(name, "option")), phone ? click(`Listo (${names.length})`) : press(names.at(-1)!, "option", "Escape")];
 
 /** WA-Equipos-Crear: «Soporte · Delta Sur», bandeja Clientes, Carolina Vega y Paula Méndez, y el aviso a los 10 minutos. */
-const createOrganization: GalleryAction[] = [click("Crear equipo"), fill("Nombre", "Soporte · Delta Sur", dialog), ...choose(["Carolina Vega", "Paula Méndez"], "Personas")];
+const createOrganization = (phone: boolean): GalleryAction[] => [click("Crear equipo"), fill("Nombre", "Soporte · Delta Sur", dialog), ...choose(["Carolina Vega", "Paula Méndez"], "Personas *", phone)];
 /** Plat-WA-Equipos «Crear equipo»: «Cuentas» con Martín Sosa, a los 10 minutos. */
-const createPlatform: GalleryAction[] = [click("Crear equipo"), fill("Nombre", "Cuentas", dialog), ...choose(["Martín Sosa"], "Operadores")];
-const openNotice = press("Aviso por correo si nadie lo toma", "combobox");
+const createPlatform = (phone: boolean): GalleryAction[] => [click("Crear equipo"), fill("Nombre", "Cuentas", dialog), ...choose(["Martín Sosa"], "Operadores *", phone)];
+const openNotice: GalleryAction = { type: "press", label: "Aviso por correo si nadie lo toma", exact: true, key: "Enter" };
 
 /** Galería de la E11 de esta área: un caso por tablero y estado que se fotografía, y lo pendiente con su motivo. */
 export const teamsGalleryCases: readonly GalleryCase[] = [
   galleryCase("equipos", "WA-Equipos", "Lista", teamsApp("business", { readyText: "Atención general" }), { props: {} }),
   galleryCase("equipos", "M-WA-Equipos", "Lista", teamsApp("business", { readyText: "Bandeja Internos" }), { props: {} }),
   ...(["WA-Equipos-Crear", "M-WA-Equipos-Crear"] as const).flatMap((board) => [
-    galleryCase("equipos", board, "Crear equipo", teamsApp("business", { actions: createOrganization, readySelector: "[role='dialog']", readyText: "Carolina Vega, Paula Méndez" })),
-    galleryCase("equipos", board, "Elegir el aviso", teamsApp("business", { actions: [...createOrganization, openNotice], readySelector: "[role='listbox']", readyText: "No avisar" })),
+    galleryCase("equipos", board, "Crear equipo", teamsApp("business", { actions: createOrganization(board.startsWith("M-")), readySelector: "[role='dialog']", readyText: "Carolina Vega, Paula Méndez" })),
+    galleryCase("equipos", board, "Elegir el aviso", teamsApp("business", { actions: [...createOrganization(board.startsWith("M-")), openNotice], readySelector: "[role='listbox']", readyText: "No avisar" })),
   ]),
   galleryCase("equipos", "Plat-WA-Equipos", "Lista", teamsApp("platform", { readyText: "Martín Sosa, Laura Díaz" })),
   galleryCase("equipos", "M-Plat-WA-Equipos", "Lista", teamsApp("platform", { readyText: "Martín Sosa, Laura Díaz" })),
   ...(["Plat-WA-Equipos", "M-Plat-WA-Equipos"] as const).map((board) =>
-    galleryCase("equipos", board, "Crear equipo", teamsApp("platform", { actions: createPlatform, readySelector: "[role='dialog']", readyText: "Aviso por correo si nadie lo toma" }))),
+    galleryCase("equipos", board, "Crear equipo", teamsApp("platform", { actions: createPlatform(board.startsWith("M-")), readySelector: "[role='dialog']", readyText: "Aviso por correo si nadie lo toma" }))),
 ];
 export const teamsGalleryPending: readonly GalleryPending[] = [];

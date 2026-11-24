@@ -1,6 +1,6 @@
 import { referenceDataFixture } from "../../../test/mocks/handlers.ts";
 import type { WhatsAppBroadcastResponse, WhatsAppRecipientResponse, WhatsAppTemplateOptionResponse } from "../api/types";
-import { api, click, fill, galleryApp, galleryCase, page, press, type GalleryAction, type GalleryCase, type GalleryPending } from "../test/gallery";
+import { api, click, fill, galleryApp, galleryCase, page, press, type GalleryAction, type GalleryCase, type GalleryPending, pickIn } from "../test/gallery";
 
 const group = "difusiones";
 const broadcasts = "/api/organization/whatsapp/broadcasts";
@@ -68,10 +68,10 @@ const draft = [
 ];
 const fillDraft: GalleryAction[] = [
   fill("Nombre", "Horario de fiestas"),
-  click("Plantilla", "combobox"), click("Aviso de horario · Marketing", "option"),
+  pickIn("Plantilla"), click("Aviso de horario · Marketing", "option"),
   fill("Nombre del cliente", "Martina"),
-  click("Una etiqueta", "radio"), click("Etiqueta", "combobox"), click("Mayorista", "option"),
-  click("Programar", "radio"), fill("Fecha y hora", "20/12/2026, 09:00"),
+  pickIn("Destinatarios"), click("Una etiqueta", "option"), pickIn("Etiqueta *", undefined, true), click("Mayorista", "option"),
+  pickIn("Cuándo"), click("Programar", "option"), fill("Fecha y hora", "20/12/2026, 09:00"),
 ];
 const newPath = "/org/whatsapp/difusiones/nueva";
 

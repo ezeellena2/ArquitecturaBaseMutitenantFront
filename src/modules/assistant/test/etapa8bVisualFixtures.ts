@@ -179,11 +179,11 @@ export function configurationScenario(board: string, state: string): GalleryApp 
   const plat: PlatformAssistantSettingsResponse = { ...galleryPlatformSettings };
   switch (state) {
     case "Con la clave de la plataforma": case "Configurada": break;
-    case "Elegir el modelo": app.actions = [open("Modelo")]; app.readySelector = '[role="listbox"]'; break;
-    case "Elegir los modelos permitidos": app.actions = [open("Modelos que pueden elegir las organizaciones", "button")]; app.readySelector = '[role="menu"]'; break;
+    case "Elegir el modelo": app.actions = [open(`Modelo ${galleryModels[0].name}`, "button")]; app.readySelector = '[role="listbox"]'; break;
+    case "Elegir los modelos permitidos": app.actions = [open(`Modelos que pueden elegir las organizaciones ${galleryModels[0].name}`, "button")]; app.readySelector = '[role="listbox"]'; break;
     case "Cambios sin guardar":
       // La banda ya no dice «Cambios sin guardar» (base de la 12): el estado del tablero se ve en «Guardar cambios».
-      app.actions = platform ? [fill("Consultas por persona por día", "75")] : [open("Modelo"), click(galleryModels[1].name, "option")];
+      app.actions = platform ? [fill("Consultas por persona por día", "75")] : [open(`Modelo ${galleryModels[0].name}`, "button"), click(galleryModels[1].name, "option")];
       break;
     case "Con su clave": org.mode = "OwnKey"; break;
     case "Cambiar la clave": org.mode = "OwnKey"; app.actions = [click("Cambiar")]; app.readySelector = 'input[data-1p-ignore="true"]'; break;

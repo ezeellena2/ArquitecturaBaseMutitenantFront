@@ -10,6 +10,7 @@ import type {
 } from "../../api/types";
 import { sendFailures } from "../../test/sendFailures";
 import { mountWhatsApp, whatsappMember, whatsappOperator, whatsappOwner } from "../../test/support";
+import { pickerName } from "@/test/picker";
 
 beforeAll(async () => { await import("./ChatsPage"); });
 afterEach(() => { vi.unstubAllGlobals(); });
@@ -161,7 +162,7 @@ describe("Chats de la organización", () => {
     expect(screen.queryByRole("textbox", { name: "Mensaje" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Elegir plantilla" }));
     const dialog = await screen.findByRole("dialog", { name: "Mandar plantilla a Martina López" });
-    await user.click(within(dialog).getByRole("combobox", { name: "Plantilla" }));
+    await user.click(within(dialog).getByRole("button", { name: pickerName("Plantilla") }));
     await user.click(await screen.findByRole("option", { name: /Pedido listo/ }));
     await user.type(within(dialog).getByRole("textbox", { name: "Nombre" }), "Martina");
     await user.type(within(dialog).getByRole("textbox", { name: "Número de pedido" }), "1043");
@@ -194,7 +195,7 @@ describe("Chats de la organización", () => {
     await user.click(await screen.findByRole("button", { name: "Elegir plantilla" }));
     const dialog = await screen.findByRole("dialog", { name: "Mandar plantilla a Martina López" });
     const choose = async (name: RegExp) => {
-      await user.click(within(dialog).getByRole("combobox", { name: "Plantilla" }));
+      await user.click(within(dialog).getByRole("button", { name: pickerName("Plantilla") }));
       await user.click(await screen.findByRole("option", { name }));
     };
     await choose(/Pedido listo/);
@@ -421,7 +422,7 @@ describe("Chats de la organización", () => {
     const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/chats");
     await user.click(await screen.findByRole("button", { name: "Elegir plantilla" }));
     const dialog = await screen.findByRole("dialog", { name: "Mandar plantilla a Martina López" });
-    await user.click(within(dialog).getByRole("combobox", { name: "Plantilla" }));
+    await user.click(within(dialog).getByRole("button", { name: pickerName("Plantilla") }));
     await user.click(await screen.findByRole("option", { name: /Pedido listo/ }));
     const name = within(dialog).getByRole("textbox", { name: "Nombre" });
     await user.type(name, "Martina");

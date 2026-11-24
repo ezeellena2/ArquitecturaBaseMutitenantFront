@@ -7,6 +7,7 @@ import { server } from "@/test/mocks/server";
 import { asPhone } from "@/test/utils/phone";
 import { assistantSettingsKey } from "../api/settings";
 import { firstModel, mountSettings, platformManager, platformSettings, secondModel, settingsHandlers } from "./settingsTestSupport";
+import { pickerName } from "@/test/picker";
 
 beforeAll(async () => { await import("./PlatformAssistantSettingsPage"); });
 beforeEach(() => settingsHandlers());
@@ -50,7 +51,7 @@ describe("catálogo y configuración de plataforma", () => {
     const app = mountSettings(platformManager);
     const key = assistantSettingsKey({ access: "platform", tenantId: platformManager.activeTenantId ?? null, userId: platformManager.id });
     try {
-      await waitFor(() => expect(screen.getByRole("combobox", { name: "Modelo por defecto" })).toHaveTextContent(firstModel.name));
+      await waitFor(() => expect(screen.getByRole("button", { name: pickerName("Modelo por defecto") })).toHaveTextContent(firstModel.name));
       fireEvent.change(screen.getByRole("textbox", { name: "Consultas por persona por día" }), { target: { value: "75" } });
       await app.user.click(screen.getByRole("button", { name: "Guardar cambios" })); await waitFor(() => expect(reads).toBe(2));
       await waitFor(() => expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled());
@@ -80,7 +81,7 @@ describe("catálogo y configuración de plataforma", () => {
       http.put("/api/platform/assistant/settings", async ({ request }) => { bodies.push(await request.json() as UpdatePlatformAssistantSettingsRequest); return HttpResponse.json({ version: 20 + bodies.length }); }));
     const app = mountSettings(platformManager);
     try {
-      await waitFor(() => expect(screen.getByRole("combobox", { name: "Modelo por defecto" })).toHaveTextContent(firstModel.name));
+      await waitFor(() => expect(screen.getByRole("button", { name: pickerName("Modelo por defecto") })).toHaveTextContent(firstModel.name));
       fireEvent.change(screen.getByRole("textbox", { name: "Consultas por persona por día" }), { target: { value: "75" } });
       await app.user.click(screen.getByRole("button", { name: "Guardar cambios" }));
       await waitFor(() => expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled()); await waitFor(() => expect(reads).toBe(2));
@@ -102,7 +103,7 @@ describe("catálogo y configuración de plataforma", () => {
       http.put("/api/platform/assistant/settings", async ({ request }) => { bodies.push(await request.json() as UpdatePlatformAssistantSettingsRequest); return HttpResponse.json({ version: 20 + bodies.length }); }));
     const app = mountSettings(platformManager);
     try {
-      await waitFor(() => expect(screen.getByRole("combobox", { name: "Modelo por defecto" })).toHaveTextContent(firstModel.name));
+      await waitFor(() => expect(screen.getByRole("button", { name: pickerName("Modelo por defecto") })).toHaveTextContent(firstModel.name));
       fireEvent.change(screen.getByLabelText(/Clave de la plataforma/), { target: { value: "private-double-write-key" } });
       await app.user.click(screen.getByRole("button", { name: "Guardar cambios" }));
       await waitFor(() => expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled()); await waitFor(() => expect(reads).toBe(2));
@@ -120,9 +121,9 @@ describe("catálogo y configuración de plataforma", () => {
   });
   it("modelos permitidos describen tarifas de API con la presentación monetaria central", async () => {
     const app = mountSettings(platformManager);
-    await waitFor(() => expect(screen.getByRole("combobox", { name: "Modelo por defecto" })).toHaveTextContent(firstModel.name));
-    screen.getByRole("button", { name: "Modelos que pueden elegir las organizaciones" }).focus(); await app.user.keyboard("{Enter}");
-    const option = await screen.findByRole("menuitemcheckbox", { name: firstModel.name });
+    await waitFor(() => expect(screen.getByRole("button", { name: pickerName("Modelo por defecto") })).toHaveTextContent(firstModel.name));
+    screen.getByRole("button", { name: pickerName("Modelos que pueden elegir las organizaciones") }).focus(); await app.user.keyboard("{Enter}");
+    const option = await screen.findByRole("option", { name: firstModel.name });
     expect(option).toHaveAccessibleDescription("Entrada USD 0,13 · salida USD 1,00 por millón de tokens");
     await app.user.keyboard("{Escape}");
   });
@@ -136,15 +137,16 @@ describe("catálogo y configuración de plataforma", () => {
     expect(screen.queryByText("Cambios sin guardar")).not.toBeInTheDocument(); expect(screen.getByText("Sin configurar")).toBeVisible();
     await app.user.click(screen.getByRole("button", { name: "Descartar cambios" })); expect(screen.getByText("Sin configurar")).toBeVisible();
   });
-  it("esfuerzo expone tres radios visibles, admite flechas y guarda la elección", async () => {
+  it("el esfuerzo se elige en la pieza, con las flechas, y guarda la elección (262)", async () => {
     let body: UpdatePlatformAssistantSettingsRequest | undefined;
     server.use(http.put("/api/platform/assistant/settings", async ({ request }) => { body = await request.json() as UpdatePlatformAssistantSettingsRequest; return HttpResponse.json({ version: 21 }); }));
     const app = mountSettings(platformManager);
-    const group = await screen.findByRole("radiogroup", { name: "Esfuerzo" });
-    expect(within(group).getAllByRole("radio")).toHaveLength(3);
-    const medium = within(group).getByRole("radio", { name: "Medio" }); expect(medium).toBeChecked();
-    act(() => medium.focus()); await app.user.keyboard("{ArrowRight>}");
-    await waitFor(() => expect(within(group).getByRole("radio", { name: "Alto" })).toBeChecked()); await app.user.keyboard("{/ArrowRight}");
+    const effort = await screen.findByRole("button", { name: pickerName("Esfuerzo") });
+    expect(effort).toHaveAccessibleName("Esfuerzo Medio");
+    act(() => effort.focus()); await app.user.keyboard("{ArrowDown}");
+    expect(await screen.findAllByRole("option")).toHaveLength(3);
+    await app.user.keyboard("{ArrowDown}{Enter}");
+    await waitFor(() => expect(effort).toHaveAccessibleName("Esfuerzo Alto"));
     await app.user.click(screen.getByRole("button", { name: "Guardar cambios" })); await waitFor(() => expect(body?.effort).toBe("high"));
   });
   it("carga todas las páginas para la selección y guarda modelo/esfuerzo/ids del catálogo", async () => {
@@ -154,7 +156,7 @@ describe("catálogo y configuración de plataforma", () => {
     server.use(http.get("/api/platform/assistant/models", ({ request }) => { const page = Number(new URL(request.url).searchParams.get("page")); pages.push(page); return HttpResponse.json({ items: page === 1 ? firstPage : [secondModel], page, pageSize: 100, totalCount: 101 }); }),
       http.put("/api/platform/assistant/settings", async ({ request }) => { body = await request.json() as UpdatePlatformAssistantSettingsRequest; return HttpResponse.json({ version: 21 }); }));
     const app = mountSettings(platformManager);
-    await waitFor(() => expect(screen.getByRole("combobox", { name: "Modelo por defecto" })).toHaveTextContent(secondModel.name));
+    await waitFor(() => expect(screen.getByRole("button", { name: pickerName("Modelo por defecto") })).toHaveTextContent(secondModel.name));
     expect(pages).toEqual([1, 2]);
     fireEvent.change(screen.getByRole("textbox", { name: "Consultas por persona por día" }), { target: { value: "51" } });
     await app.user.click(screen.getByRole("button", { name: "Guardar cambios" }));
@@ -164,7 +166,7 @@ describe("catálogo y configuración de plataforma", () => {
   it("la selección persistida inactiva queda visible y no se sustituye al guardar", async () => {
     server.use(http.get("/api/platform/assistant/models", () => HttpResponse.json({ items: [{ ...firstModel, isActive: false }, secondModel], page: 1, pageSize: 100, totalCount: 2 })));
     const app = mountSettings(platformManager);
-    await waitFor(() => expect(screen.getByRole("combobox", { name: "Modelo por defecto" })).toHaveTextContent(`${firstModel.name} · No disponible`));
+    await waitFor(() => expect(screen.getByRole("button", { name: pickerName("Modelo por defecto") })).toHaveTextContent(`${firstModel.name} · No disponible`));
     fireEvent.change(screen.getByRole("textbox", { name: "Consultas por persona por día" }), { target: { value: "51" } });
     await app.user.click(screen.getByRole("button", { name: "Guardar cambios" }));
     expect(await screen.findAllByText("Elegí un modelo activo permitido.")).not.toHaveLength(0);

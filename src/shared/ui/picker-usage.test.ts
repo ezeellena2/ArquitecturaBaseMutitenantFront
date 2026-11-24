@@ -14,24 +14,6 @@ const twoViews = new Map([
   ["modules/whatsapp/chats/components/ChatsWorkspace.tsx", "«Clientes | Internos»: dos vistas de la bandeja (tablero Criterio-Elegir)"],
 ]);
 
-// Lo que todavía no pasó a la pieza (F11 de la segunda parte de la base, a medias): cada archivo sale de la lista cuando
-// se migra, y el test falla si uno de la lista ya no usa la pieza vieja.
-const pending = new Set([
-  "modules/assistant/settings/AssistantSettingsEditor.tsx",
-  "modules/assistant/settings/ModelSelect.tsx",
-  "modules/whatsapp/bot/components/EmployeesTeamDialog.tsx",
-  "modules/whatsapp/bot/components/NumberPicker.tsx",
-  "modules/whatsapp/bot/components/OptionDialog.tsx",
-  "modules/whatsapp/broadcasts/pages/NewBroadcastPage.tsx",
-  "modules/whatsapp/chats/components/TemplateDialog.tsx",
-  "modules/whatsapp/contacts/components/EditContactDialog.tsx",
-  "modules/whatsapp/contacts/components/ImportContactsDialog.tsx",
-  "modules/whatsapp/phones/pages/LoadPhonesPage.tsx",
-  "modules/whatsapp/teams/components/TeamDialog.tsx",
-  "modules/whatsapp/templates/components/TemplateDialog.tsx",
-  "modules/whatsapp/templates/pages/TemplatesPage.tsx",
-]);
-
 function sourceFiles(directory: string): string[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const full = path.join(directory, entry.name);
@@ -75,21 +57,8 @@ describe("una sola pieza para elegir (262)", () => {
   it("nadie elige de una lista con otra pieza", () => {
     const problems = sourceFiles(srcRoot).flatMap((file) => {
       const relative = path.relative(srcRoot, file).replaceAll("\\", "/");
-      if (pending.has(relative)) return [];
       return violations(relative, readFileSync(file, "utf8")).map((error) => `${relative}: ${error}`);
     });
     expect(problems).toEqual([]);
-  });
-
-  it("la lista de lo que falta migrar solo tiene archivos que todavía usan una pieza vieja", () => {
-    const done = [...pending].filter((relative) => {
-      const file = path.join(srcRoot, relative);
-      try {
-        return violations(relative, readFileSync(file, "utf8")).length === 0;
-      } catch {
-        return true;
-      }
-    });
-    expect(done).toEqual([]);
   });
 });

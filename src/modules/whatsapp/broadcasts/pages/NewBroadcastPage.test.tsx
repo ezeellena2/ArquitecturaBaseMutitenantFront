@@ -7,6 +7,7 @@ import { server } from "@/test/mocks/server";
 import { asPhone } from "@/test/utils/phone";
 import { mountWhatsApp, whatsappOwner } from "../../test/support";
 import { frameHandlers, paged, promoTemplate, scheduled } from "../test/fixtures";
+import { pickerName } from "@/test/picker";
 
 beforeAll(async () => { await import("./NewBroadcastPage"); await import("./BroadcastPage"); });
 afterEach(() => vi.unstubAllGlobals());
@@ -34,7 +35,7 @@ describe("Nueva difusión", () => {
     const { user, container } = mountWhatsApp(whatsappOwner, "/org/whatsapp/difusiones/nueva");
     expect(await screen.findByRole("heading", { level: 1, name: "Nueva difusión" })).toBeVisible();
     await user.type(await screen.findByLabelText(/^Nombre/, { selector: "input[name=name]" }), "Horario de fiestas");
-    await user.click(screen.getByRole("combobox", { name: /Plantilla/ }));
+    await user.click(screen.getByRole("button", { name: pickerName("Plantilla") }));
     await user.click(await screen.findByRole("option", { name: "Aviso de horario · Marketing" }));
     await user.type(await screen.findByLabelText(/^Nombre/, { selector: "input[name='variables.0']" }), "Martina");
     expect(await screen.findByText(/Hola Martina, el 24 y el 31 atendemos de 9 a 13\./)).toBeVisible();
@@ -42,8 +43,8 @@ describe("Nueva difusión", () => {
     expect(estimates.at(-1)?.searchParams.get("kind")).toBe("AllAccepting");
     expect(estimates.at(-1)?.searchParams.has("tag")).toBe(false);
 
-    await user.click(screen.getByRole("radio", { name: "Una etiqueta" }));
-    await user.click(screen.getByRole("combobox", { name: /Etiqueta/ }));
+    await user.click(screen.getByRole("button", { name: pickerName("Destinatarios") })); await user.click(await screen.findByRole("option", { name: "Una etiqueta" }));
+    await user.click(screen.getByRole("button", { name: pickerName("Etiqueta") }));
     await user.click(await screen.findByRole("option", { name: "Mayorista" }));
     expect(await screen.findByText("48 contactos")).toBeVisible();
     expect(screen.getByText("Tienen la etiqueta «Mayorista» y aceptan promociones")).toBeVisible();
@@ -69,10 +70,10 @@ describe("Nueva difusión", () => {
     const app = mountWhatsApp(whatsappOwner, "/org/whatsapp/difusiones/nueva");
     const { user } = app;
     fireEvent.change(await screen.findByLabelText(/^Nombre/, { selector: "input[name=name]" }), { target: { value: "Horario de fiestas" } });
-    await user.click(screen.getByRole("combobox", { name: /Plantilla/ }));
+    await user.click(screen.getByRole("button", { name: pickerName("Plantilla") }));
     await user.click(await screen.findByRole("option", { name: "Aviso de horario · Marketing" }));
     fireEvent.change(await screen.findByLabelText(/^Nombre/, { selector: "input[name='variables.0']" }), { target: { value: "Martina" } });
-    await user.click(screen.getByRole("radio", { name: "Programar" }));
+    await user.click(screen.getByRole("button", { name: pickerName("Cuándo") })); await user.click(await screen.findByRole("option", { name: "Programar" }));
     fireEvent.change(await screen.findByRole("textbox", { name: /Fecha y hora/ }), { target: { value: "20/12/2026, 09:00" } });
     await screen.findByText("312 contactos");
     await user.click(screen.getByRole("button", { name: "Programar" }));
@@ -104,7 +105,7 @@ describe("Nueva difusión", () => {
       { status: 400, code: "WhatsApp.Broadcast.NoRecipients", detail: "Ningún contacto con esa etiqueta acepta promociones." }, { status: 400 })));
     const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/difusiones/nueva");
     fireEvent.change(await screen.findByLabelText(/^Nombre/, { selector: "input[name=name]" }), { target: { value: "Horario de fiestas" } });
-    await user.click(screen.getByRole("combobox", { name: /Plantilla/ }));
+    await user.click(screen.getByRole("button", { name: pickerName("Plantilla") }));
     await user.click(await screen.findByRole("option", { name: "Aviso de horario · Marketing" }));
     fireEvent.change(await screen.findByLabelText(/^Nombre/, { selector: "input[name='variables.0']" }), { target: { value: "Martina" } });
     await user.click(screen.getByRole("button", { name: "Mandar" }));
@@ -113,7 +114,7 @@ describe("Nueva difusión", () => {
     await user.click(within(dialog).getByRole("button", { name: "Mandar" }));
     expect(await screen.findByText("Ningún contacto con esa etiqueta acepta promociones.")).toBeVisible();
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
-    expect(screen.getByRole("radiogroup", { name: "Destinatarios" })).toHaveAttribute("aria-invalid", "true");
+    expect(screen.getByRole("button", { name: pickerName("Destinatarios") })).toHaveAttribute("aria-invalid", "true");
   });
 
   // Ninguna elección se descarta en silencio (162): cambiar la plantilla conserva lo escrito en las variables de cada una, y
@@ -139,7 +140,7 @@ describe("Nueva difusión", () => {
       return {
         user: app.user,
         async chooseTemplate(name: string) {
-          await app.user.click(screen.getByRole("combobox", { name: /Plantilla/ }));
+          await app.user.click(screen.getByRole("button", { name: pickerName("Plantilla") }));
           await app.user.click(await screen.findByRole("option", { name }));
         },
         async send() {
@@ -175,14 +176,14 @@ describe("Nueva difusión", () => {
       await page.chooseTemplate("Aviso de horario · Marketing");
       fireEvent.change(await variable("Nombre", 0), { target: { value: "Martina" } });
 
-      await user.click(screen.getByRole("radio", { name: "Una etiqueta" }));
-      await user.click(screen.getByRole("combobox", { name: /Etiqueta/ }));
+      await user.click(screen.getByRole("button", { name: pickerName("Destinatarios") })); await user.click(await screen.findByRole("option", { name: "Una etiqueta" }));
+      await user.click(screen.getByRole("button", { name: pickerName("Etiqueta") }));
       await user.click(await screen.findByRole("option", { name: "Mayorista" }));
-      await user.click(screen.getByRole("radio", { name: "Todos los que aceptan" }));
-      expect(screen.queryByRole("combobox", { name: /Etiqueta/ })).not.toBeInTheDocument();
-      await user.click(screen.getByRole("radio", { name: "Una etiqueta" }));
-      expect(screen.getByRole("combobox", { name: /Etiqueta/ })).toHaveTextContent("Mayorista");
-      await user.click(screen.getByRole("radio", { name: "Todos los que aceptan" }));
+      await user.click(screen.getByRole("button", { name: pickerName("Destinatarios") })); await user.click(await screen.findByRole("option", { name: "Todos los que aceptan" }));
+      expect(screen.queryByRole("button", { name: pickerName("Etiqueta") })).not.toBeInTheDocument();
+      await user.click(screen.getByRole("button", { name: pickerName("Destinatarios") })); await user.click(await screen.findByRole("option", { name: "Una etiqueta" }));
+      expect(screen.getByRole("button", { name: pickerName("Etiqueta") })).toHaveTextContent("Mayorista");
+      await user.click(screen.getByRole("button", { name: pickerName("Destinatarios") })); await user.click(await screen.findByRole("option", { name: "Todos los que aceptan" }));
 
       expect(await page.send()).toEqual([{ name: "Horario de fiestas", templateId: "template-hours", variables: ["Martina"],
         audience: { kind: "AllAccepting", tag: null }, scheduledAtUtc: null }]);
@@ -194,13 +195,13 @@ describe("Nueva difusión", () => {
       await page.chooseTemplate("Aviso de horario · Marketing");
       fireEvent.change(await variable("Nombre", 0), { target: { value: "Martina" } });
 
-      await user.click(screen.getByRole("radio", { name: "Programar" }));
+      await user.click(screen.getByRole("button", { name: pickerName("Cuándo") })); await user.click(await screen.findByRole("option", { name: "Programar" }));
       fireEvent.change(await screen.findByRole("textbox", { name: /Fecha y hora/ }), { target: { value: "20/12/2026, 09:00" } });
-      await user.click(screen.getByRole("radio", { name: "Ahora" }));
+      await user.click(screen.getByRole("button", { name: pickerName("Cuándo") })); await user.click(await screen.findByRole("option", { name: "Ahora" }));
       expect(screen.queryByRole("textbox", { name: /Fecha y hora/ })).not.toBeInTheDocument();
-      await user.click(screen.getByRole("radio", { name: "Programar" }));
+      await user.click(screen.getByRole("button", { name: pickerName("Cuándo") })); await user.click(await screen.findByRole("option", { name: "Programar" }));
       expect((await screen.findByRole("textbox", { name: /Fecha y hora/ }) as HTMLInputElement).value).toMatch(/^20\/12\/2026\D+09:00$/);
-      await user.click(screen.getByRole("radio", { name: "Ahora" }));
+      await user.click(screen.getByRole("button", { name: pickerName("Cuándo") })); await user.click(await screen.findByRole("option", { name: "Ahora" }));
 
       expect(await page.send()).toEqual([{ name: "Horario de fiestas", templateId: "template-hours", variables: ["Martina"],
         audience: { kind: "AllAccepting", tag: null }, scheduledAtUtc: null }]);
@@ -210,10 +211,10 @@ describe("Nueva difusión", () => {
   it("a 390 px el costo va abajo, junto a «Mandar»", async () => {
     asPhone();
     const { container, user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/difusiones/nueva");
-    await user.click(await screen.findByRole("combobox", { name: /Plantilla/ }));
+    await user.click(await screen.findByRole("button", { name: pickerName("Plantilla") }));
     await user.click(await screen.findByRole("option", { name: "Aviso de horario · Marketing" }));
     expect(await screen.findByText(/312 contactos/)).toBeVisible();
-    expect(screen.getByRole("radio", { name: "Los que aceptan" })).toBeChecked();
+    expect(screen.getByRole("button", { name: pickerName("Destinatarios") })).toHaveAccessibleName("Destinatarios Los que aceptan");
     expect(screen.getByRole("button", { name: "Mandar" })).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
   });

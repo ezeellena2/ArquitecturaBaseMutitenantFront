@@ -6,6 +6,7 @@ import { server } from "@/test/mocks/server";
 import { asPhone } from "@/test/utils/phone";
 import type { WhatsAppTemplateResponse } from "../../api/types";
 import { mountWhatsApp, whatsappMember, whatsappOperator, whatsappOwner } from "../../test/support";
+import { pickerName } from "@/test/picker";
 
 const page = <T,>(items: T[]) => ({ items, page: 1, pageSize: 10, totalCount: items.length, totalPages: 1, hasPrevious: false, hasNext: false });
 const template = (values: Partial<WhatsAppTemplateResponse>): WhatsAppTemplateResponse => ({
@@ -91,7 +92,7 @@ describe("Plantillas de la organización", () => {
     const dialog = await screen.findByRole("dialog", { name: "Nueva plantilla" });
     await user.click(within(dialog).getByRole("textbox", { name: "Nombre" }));
     await user.paste("Pedido listo");
-    await user.click(within(dialog).getByRole("radio", { name: "Marketing" }));
+    await user.click(within(dialog).getByRole("button", { name: pickerName("Tipo") })); await user.click(await screen.findByRole("option", { name: "Marketing" }));
     await user.click(within(dialog).getByRole("textbox", { name: "Texto" }));
     await user.paste("Hola ");
     await user.click(within(dialog).getByRole("button", { name: "Nombre del contacto" }));
@@ -171,14 +172,16 @@ describe("Plantillas de Plataforma", () => {
     }));
     const { user, router, container } = mountWhatsApp(whatsappOperator(), "/plataforma/whatsapp/plantillas");
     expect(await screen.findByText("Seguimos tu consulta")).toBeVisible();
-    const view = screen.getByRole("group", { name: "Ver" });
-    expect(within(view).getByRole("button", { name: /Para consultas/ })).toHaveAttribute("aria-pressed", "true");
-    await waitFor(() => expect(within(view).getByRole("button", { name: /Del sistema/ })).toHaveTextContent("Del sistema 2"));
+    // 262: el grupo es un filtro con su botón, sin cantidades.
+    const view = screen.getByRole("button", { name: "Para consultas" });
+    expect(view).toHaveAttribute("aria-haspopup", "listbox");
     expect(screen.getByText("3 plantillas · 3 aprobadas")).toBeVisible();
     expect(screen.getByRole("button", { name: "Acciones de Seguimos tu consulta" })).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
 
-    await user.click(within(view).getByRole("button", { name: /Del sistema/ }));
+    await user.click(view);
+    expect(screen.getAllByRole("option").map((option) => option.textContent)).toEqual(["Para consultas", "Del sistema"]);
+    await user.click(screen.getByRole("option", { name: "Del sistema" }));
     expect(await screen.findByText("Invitación a una organización")).toBeVisible();
     expect(router.state.location.search).toBe("?grupo=sistema");
     expect(groups).toEqual(["Consultations", "System"]);

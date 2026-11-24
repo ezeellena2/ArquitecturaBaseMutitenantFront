@@ -12,8 +12,7 @@ import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, Dia
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { Input } from "@/shared/ui/input";
-import { RadioGroupField } from "@/shared/ui/RadioGroupField";
-import { SearchSelect } from "@/shared/ui/SearchSelect";
+import { Picker } from "@/shared/ui/Picker";
 import { Textarea } from "@/shared/ui/textarea";
 import type { WhatsAppBotAction, WhatsAppBotMenuOption, WhatsAppTeamResponse } from "../../api/types";
 import type { BotPatch } from "../lib/botModel";
@@ -74,13 +73,13 @@ export function OptionDialog({ menu, index, teams, onSave, onClose, returnFocusT
   const asked = useRef(false);
 
   // La pregunta arranca con el foco en «Cancelar» (Criterio-Dialogos, «Decidir a propósito»). Al responderla, el foco
-  // vuelve a «Qué hace», a la acción que quedó elegida, como vuelve el de un diálogo a lo que lo abrió; antes de que
+  // vuelve al campo «Qué hace», que ya dice la acción que quedó elegida, como vuelve el de un diálogo a lo que lo abrió; antes de que
   // Radix lo mande al diálogo entero porque se fue el botón que lo tenía.
   useLayoutEffect(() => {
     if (switching) { asked.current = true; return; }
     if (!asked.current) return;
     asked.current = false;
-    document.getElementById(actionsId)?.querySelector<HTMLElement>("[role=radio][aria-checked=true]")?.focus();
+    document.getElementById(actionsId)?.focus();
   }, [switching, actionsId]);
 
   const apply = (next: WhatsAppBotAction) => { action.field.onChange(next); clear(); };
@@ -127,12 +126,12 @@ export function OptionDialog({ menu, index, teams, onSave, onClose, returnFocusT
             <Input maxLength={labelLimit} {...form.register("label", { onChange: clear })} />
           </FormField>
           <FormField label={t("whatsapp:bot.option.action")}>
-            <RadioGroupField id={actionsId} variant="segmented" label={t("whatsapp:bot.option.action")} value={action.field.value} onValueChange={choose}
+            <Picker id={actionsId} value={action.field.value} onChange={choose}
               options={actions.map((value) => ({ value, label: format.formatEnum("WhatsAppBotAction", value) }))} />
           </FormField>
           {chosen === "Team" ? <FormField label={t("whatsapp:bot.option.team")} required error={errors.teamId?.message}>
-            <SearchSelect value={team.field.value} onChange={(value) => { team.field.onChange(value); clear(); }}
-              placeholder={teams.length === 0 ? t("whatsapp:bot.option.noTeams") : t("whatsapp:bot.option.chooseTeam")} searchLabel={t("common:actions.search")}
+            <Picker value={team.field.value || null} onChange={(value) => { if (value === team.field.value) return; team.field.onChange(value); clear(); }}
+              placeholder={teams.length === 0 ? t("whatsapp:bot.option.noTeams") : t("whatsapp:bot.option.chooseTeam")}
               options={teams.map((item) => ({ value: item.id, label: item.name }))} />
           </FormField> : <FormField label={t("whatsapp:bot.text")} required error={errors.reply?.message}>
             <Textarea rows={3} maxLength={replyLimit} {...form.register("reply", { onChange: clear })} />

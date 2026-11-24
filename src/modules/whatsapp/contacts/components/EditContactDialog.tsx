@@ -22,8 +22,7 @@ import { PhoneText } from "@/shared/ui/format/PhoneText";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { Input } from "@/shared/ui/input";
-import { MultiSelect } from "@/shared/ui/MultiSelect";
-import { RadioGroupField } from "@/shared/ui/RadioGroupField";
+import { Picker } from "@/shared/ui/Picker";
 import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
 import type { WhatsAppConsent, WhatsAppContactResponse } from "../../api/types";
 import { contactsQueryRoot, contactTagOptions, updateContact } from "../api/contacts";
@@ -100,7 +99,7 @@ export function EditContactDialog({ contact, onClose, returnFocusTo }: {
   });
 
   const consentOptions = [...editableConsents, ...(contact.consent === "Unsubscribed" ? ["Unsubscribed" as const] : [])]
-    .map((value) => ({ value, label: format.formatEnum("WhatsAppConsent", value), disabled: value === "Unsubscribed" }));
+    .map((value) => ({ value, label: format.formatEnum("WhatsAppConsent", value), disabledReason: value === "Unsubscribed" ? t("whatsapp:contacts.edit.unsubscribedReason") : undefined }));
   const tagOption = (tag: string) => ({ value: tag, label: tag });
 
   return <Dialog open onOpenChange={(open) => { if (!open) close(); }}>
@@ -114,15 +113,15 @@ export function EditContactDialog({ contact, onClose, returnFocusTo }: {
           <ReadOnlyField label={t("whatsapp:contacts.edit.phone")}><PhoneText value={contact.displayNumber} /></ReadOnlyField>
           <div className="md:col-span-2">
             <FormField label={t("whatsapp:contacts.edit.tags")} error={errors.tags?.message}>
-              <MultiSelect creatable remote={tagOptions.remote} options={tagOptions.items.map(tagOption)}
+              <Picker multiple creatable remote={tagOptions.remote} options={tagOptions.items.map(tagOption)}
                 selectedOptions={[...contact.tags, ...tagOptions.knownItems].map(tagOption)} value={tags.field.value}
                 onChange={(next) => { tags.field.onChange(next); clear(); }} placeholder={t("whatsapp:contacts.edit.noTags")} />
             </FormField>
           </div>
           <div className="md:col-span-2">
             <FormField label={t("whatsapp:contacts.edit.consent")} error={errors.consent?.message}>
-              <RadioGroupField variant="segmented" label={t("whatsapp:contacts.edit.consent")} options={consentOptions}
-                value={consent.field.value} onValueChange={(next) => { consent.field.onChange(next); clear(); }} />
+              <Picker options={consentOptions}
+                value={consent.field.value} onChange={(next) => { if (next === consent.field.value) return; consent.field.onChange(next); clear(); }} />
             </FormField>
           </div>
           <div className="md:col-span-2 empty:hidden"><FormError message={actionErrorMessage(failure, t)} /></div>

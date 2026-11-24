@@ -8,6 +8,7 @@ import { server } from "@/test/mocks/server";
 import { asPhone } from "@/test/utils/phone";
 import { mountWhatsApp, whatsappOwner } from "../../test/support";
 import { frameHandlers, martina, paged } from "../test/fixtures";
+import { pickerName } from "@/test/picker";
 
 beforeAll(async () => { await import("./ContactPage"); });
 afterEach(() => vi.unstubAllGlobals());
@@ -62,7 +63,7 @@ describe("Ficha del contacto", () => {
     expect(save).toBeDisabled();
     await user.clear(within(dialog).getByRole("textbox", { name: /Nombre/ }));
     await user.type(within(dialog).getByRole("textbox", { name: /Nombre/ }), "Martina L.");
-    await user.click(within(dialog).getByRole("radio", { name: "No acepta" }));
+    await user.click(within(dialog).getByRole("button", { name: pickerName("Promociones") })); await user.click(await screen.findByRole("option", { name: "No acepta" }));
     expect(await axe(dialog)).toHaveNoViolations();
     await user.click(save);
 
@@ -91,17 +92,17 @@ describe("Ficha del contacto", () => {
     const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/contactos/contact-martina");
     await user.click(await screen.findByRole("button", { name: "Editar contacto" }));
     const dialog = await screen.findByRole("dialog", { name: "Editar contacto" });
-    await user.click(within(dialog).getByRole("button", { name: /Etiquetas/ }));
-    const search = await screen.findByRole("searchbox", { name: "Buscar" });
+    await user.click(within(dialog).getByRole("button", { name: pickerName("Etiquetas") }));
+    const search = await screen.findByRole("combobox", { name: "Buscar en Etiquetas" });
 
     await user.type(search, "vip");
-    expect(await screen.findByRole("menuitemcheckbox", { name: "VIP" })).toBeVisible();
-    expect(screen.queryByRole("menuitem", { name: /^Crear/ })).not.toBeInTheDocument();
+    expect(await screen.findByRole("option", { name: "VIP" })).toBeVisible();
+    expect(screen.queryByRole("option", { name: /^Crear/ })).not.toBeInTheDocument();
 
     await user.clear(search);
     await user.type(search, "VIP Oro");
-    await user.click(await screen.findByRole("menuitem", { name: "Crear «VIP Oro»" }));
-    expect(screen.getByRole("menuitemcheckbox", { name: "VIP Oro" })).toHaveAttribute("aria-checked", "true");
+    await user.click(await screen.findByRole("option", { name: "Crear «VIP Oro»" }));
+    expect(screen.getByRole("option", { name: "VIP Oro" })).toHaveAttribute("aria-selected", "true");
     await user.keyboard("{Escape}");
     await user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
     await waitFor(() => expect(sent).toHaveLength(1));
@@ -124,9 +125,9 @@ describe("Ficha del contacto", () => {
     await user.click(await screen.findByRole("button", { name: "Editar contacto" }));
     const dialog = await screen.findByRole("dialog", { name: "Editar contacto" });
     expect(within(dialog).getByRole("textbox", { name: "Nombre" })).not.toBeRequired();
-    await user.click(within(dialog).getByRole("button", { name: /Etiquetas/ }));
-    await user.type(await screen.findByRole("searchbox", { name: "Buscar" }), "Recorrido");
-    await user.click(await screen.findByRole("menuitem", { name: "Crear «Recorrido»" }));
+    await user.click(within(dialog).getByRole("button", { name: pickerName("Etiquetas") }));
+    await user.type(await screen.findByRole("combobox", { name: "Buscar en Etiquetas" }), "Recorrido");
+    await user.click(await screen.findByRole("option", { name: "Crear «Recorrido»" }));
     await user.keyboard("{Escape}");
     await user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
     await waitFor(() => expect(sent).toHaveLength(1));
@@ -144,10 +145,10 @@ describe("Ficha del contacto", () => {
     const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/contactos/contact-martina");
     await user.click(await screen.findByRole("button", { name: "Editar contacto" }));
     const dialog = await screen.findByRole("dialog", { name: "Editar contacto" });
-    await user.click(within(dialog).getByRole("button", { name: /Etiquetas/ }));
-    await user.click(await screen.findByRole("searchbox", { name: "Buscar" }));
+    await user.click(within(dialog).getByRole("button", { name: pickerName("Etiquetas") }));
+    await user.click(await screen.findByRole("combobox", { name: "Buscar en Etiquetas" }));
     await user.paste("x".repeat(validationConstraints.UpdateWhatsAppContactHttpRequest.tags.items.maxLength + 1));
-    await user.click(await screen.findByRole("menuitem", { name: /^Crear/ }));
+    await user.click(await screen.findByRole("option", { name: /^Crear/ }));
     await user.keyboard("{Escape}");
     await user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
     expect(await within(dialog).findByText(/Cada etiqueta puede tener hasta \d+ caracteres\./)).toBeVisible();

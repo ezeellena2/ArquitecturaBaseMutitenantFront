@@ -25,15 +25,13 @@ import { NumberText } from "@/shared/ui/format/NumberText";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { Input } from "@/shared/ui/input";
-import { MultiSelect, type MultiSelectOption } from "@/shared/ui/MultiSelect";
+import { Picker, type PickerOption } from "@/shared/ui/Picker";
 import { Page } from "@/shared/ui/Page";
 import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
-import { RadioGroupField } from "@/shared/ui/RadioGroupField";
 import { InfoButton } from "@/shared/ui/InfoButton";
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import { Section, SectionFields } from "@/shared/ui/Section";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { StatusDot } from "@/shared/ui/StatusDot";
 import { activeOrganization } from "@/tenancy/access";
 import { assistantModelsRoot, fetchAssistantModelOptions } from "../api/models";
@@ -206,16 +204,16 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
     <Section title={t("assistant:settings.keyAndModel")} phone="inset"><SectionFields className="grid gap-3.5 md:grid-cols-2 md:gap-x-5">
       {!platform ? settings.allowOwnKey || ownKey ? <div>
         <FormField label={t("assistant:settings.mode")} error={errors.mode?.message}>
-          <RadioGroupField variant="segmented" label={t("assistant:settings.mode")} value={values.mode}
-            options={(["PlatformKey", "OwnKey"] as const).map((mode) => ({ value: mode, label: t(`assistant:settings.modeLabels.${mode}`), disabled: mode === "OwnKey" && !settings.allowOwnKey }))}
-            onValueChange={(mode) => { changed("mode"); form.setValue("mode", mode as SettingsValues["mode"], { shouldDirty: true }); }} />
+          <Picker value={values.mode ?? null}
+            options={(["PlatformKey", "OwnKey"] as const).map((mode) => ({ value: mode, label: t(`assistant:settings.modeLabels.${mode}`),
+              disabledReason: mode === "OwnKey" && !settings.allowOwnKey ? t("assistant:settings.ownKeyUnavailable", { organization: activeOrganization(me)?.name }) : undefined }))}
+            onChange={(mode) => { if (mode === values.mode) return; changed("mode"); form.setValue("mode", mode as SettingsValues["mode"], { shouldDirty: true }); }} />
         </FormField>
         {ownKey && (!settings.hasAlertRecipient || errors.mode?.type === "alertRecipient") ? <>{!errors.mode ? <p role="alert" className="mt-1 text-[0.8125rem] text-[var(--peligro)]">{t("assistant:settings.recipientRequired", { organization: activeOrganization(me)?.name })}</p> : null}<Button type="button" variant="link" onClick={() => setAddEmailOpen(true)}>{t("assistant:settings.addEmail")}</Button></> : null}
       </div> : <ReadOnlyField label={t("assistant:settings.mode")}><span className="inline-flex items-center gap-1.5">{t("assistant:settings.modeLabels.PlatformKey")}<InfoButton label={t("assistant:settings.ownKeyUnavailable", { organization: activeOrganization(me)?.name })} onClick={() => setInfo("ownKey")} /></span></ReadOnlyField> : null}
-      {paused ? <FormField label={t("assistant:settings.provider")}><Select value={provider} onValueChange={(value) => { changed(); setProvider(value); }}>
-        <SelectTrigger className="w-full"><SelectValue placeholder={t("assistant:settings.selectProvider")} /></SelectTrigger>
-        <SelectContent><SelectItem value="Anthropic">{t("enums:AssistantProvider.Anthropic")}</SelectItem></SelectContent>
-      </Select></FormField> : <ReadOnlyField label={t("assistant:settings.provider")}>{t("enums:AssistantProvider.Anthropic")}</ReadOnlyField>}
+      {paused ? <FormField label={t("assistant:settings.provider")}><Picker value={provider || null} placeholder={t("assistant:settings.selectProvider")}
+        options={[{ value: "Anthropic", label: t("enums:AssistantProvider.Anthropic") }]} onChange={(value) => { if (value === provider) return; changed(); setProvider(value); }} />
+      </FormField> : <ReadOnlyField label={t("assistant:settings.provider")}>{t("enums:AssistantProvider.Anthropic")}</ReadOnlyField>}
       {platform || ownKey ? <div>
         {inputKey ? <FormField label={t(platform ? "assistant:settings.platformKey" : "assistant:settings.key")} required error={errors.keyAction?.message}>
           <Input ref={password} type="text" autoComplete="off" spellCheck={false} autoCapitalize="none" autoCorrect="off"
@@ -232,11 +230,11 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
         <ModelSelect models={models} value={values.modelId ?? ""} onChange={(value) => { changed("modelId"); form.setValue("modelId", value, { shouldDirty: true }); }} />
       </FormField>
       {platform ? <>
-        <FormField label={t("assistant:settings.effort")} error={errors.effort?.message}><RadioGroupField variant="segmented" label={t("assistant:settings.effort")} value={values.effort}
+        <FormField label={t("assistant:settings.effort")} error={errors.effort?.message}><Picker value={values.effort ?? null}
           options={(["low", "medium", "high"] as const).map((effort) => ({ value: effort, label: t(`enums:AssistantEffort.${effort}`) }))}
-          onValueChange={(value) => { changed("effort"); form.setValue("effort", value as SettingsValues["effort"], { shouldDirty: true }); }} /></FormField>
-        <div className="md:col-span-2"><FormField label={t("assistant:settings.allowedModels")} error={errors.allowedModelIds?.message}><MultiSelect
-          options={models.filter((model) => model.isActive || values.allowedModelIds?.includes(model.id)).map((model): MultiSelectOption => ({ value: model.id, label: model.isActive ? model.name : `${model.name} · ${t("assistant:settings.unavailableModel")}`,
+          onChange={(value) => { if (value === values.effort) return; changed("effort"); form.setValue("effort", value as SettingsValues["effort"], { shouldDirty: true }); }} /></FormField>
+        <div className="md:col-span-2"><FormField label={t("assistant:settings.allowedModels")} error={errors.allowedModelIds?.message}><Picker multiple
+          options={models.filter((model) => model.isActive || values.allowedModelIds?.includes(model.id)).map((model): PickerOption => ({ value: model.id, label: model.isActive ? model.name : `${model.name} · ${t("assistant:settings.unavailableModel")}`,
             description: <Trans i18nKey="assistant:settings.modelPriceDescription" components={{ inputPrice: <MoneyText value={model.inputPricePerMillion} />, outputPrice: <MoneyText value={model.outputPricePerMillion} /> }} />,
           })).concat((values.allowedModelIds ?? []).filter((id) => !models.some((model) => model.id === id)).map((id) => ({ value: id, label: `${id} · ${t("assistant:settings.unavailableModel")}` })))}
           value={values.allowedModelIds ?? []} placeholder={t("assistant:settings.noModels")} onChange={(ids) => { changed("allowedModelIds"); form.setValue("allowedModelIds", ids, { shouldDirty: true }); }} /></FormField></div>

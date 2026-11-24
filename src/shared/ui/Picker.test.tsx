@@ -374,4 +374,20 @@ describe("Picker en el teléfono", () => {
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     expect(screen.getByRole("button", { name: "Roles de la organización Ventas" })).toBeInTheDocument();
   });
+
+  it("con «Sin …» primero y crear, «Sin …» elegida no es algo creado: va una sola vez, con su tilde", async () => {
+    const user = userEvent.setup();
+    function Tag() {
+      const [value, setValue] = useState("none");
+      return <Picker label="Etiqueta para todos" creatable value={value} onChange={setValue}
+        first={{ value: "none", label: "Sin etiqueta" }} options={[{ value: "Mayorista", label: "Mayorista" }]} />;
+    }
+    renderWithProviders(<Tag />);
+    await user.click(screen.getByRole("button", { name: "Etiqueta para todos Sin etiqueta" }));
+    expect(screen.getAllByRole("option").map((option) => [option.textContent, option.getAttribute("aria-selected")]))
+      .toEqual([["Sin etiqueta", "true"], ["Mayorista", "false"]]);
+    await user.type(screen.getByRole("combobox", { name: "Buscar en Etiqueta para todos" }), "VIP");
+    await user.click(screen.getByRole("option", { name: "Crear «VIP»" }));
+    expect(screen.getByRole("button", { name: "Etiqueta para todos VIP" })).toBeInTheDocument();
+  });
 });

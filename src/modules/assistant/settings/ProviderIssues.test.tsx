@@ -6,6 +6,7 @@ import type { OrganizationAssistantSettingsResponse, PlatformAssistantSettingsRe
 import { server } from "@/test/mocks/server";
 import { asPhone } from "@/test/utils/phone";
 import { businessManager, firstModel, mountSettings, organizationSettings, platformManager, platformSettings, settingsHandlers } from "./settingsTestSupport";
+import { pickerName } from "@/test/picker";
 
 // Cada falla del proveedor en las dos configuraciones (0064 §6 y §7; Asistente-Config-Org, Plat-Asistente-Config y sus M-):
 // en la clave, en el modelo o en la banda, según quién paga. El back manda solo la que arregla quien mira.
@@ -33,7 +34,7 @@ describe("las fallas del proveedor en la configuración", () => {
 
   it("con su clave, el modelo no aceptado va en el modelo hasta que se elige otro", async () => {
     organization(ownKey({ providerIssue: "Assistant.Provider.ModelRejected" }));
-    const model = await screen.findByRole("combobox", { name: "Modelo" });
+    const model = await screen.findByRole("button", { name: pickerName("Modelo") });
     expect(model).toHaveAccessibleDescription("El proveedor no aceptó el modelo configurado. Elegí otro.");
     expect(screen.queryByRole("status", { name: /cupo|conectarnos/u })).not.toBeInTheDocument();
   });
@@ -66,8 +67,8 @@ describe("las fallas del proveedor en la configuración", () => {
     server.use(http.put("/api/organization/assistant/settings", async ({ request }) => { puts.push(await request.json()); return HttpResponse.json({ version: 11 }); }));
     const app = organization(ownKey({ unsupportedProvider: true }));
     expect(await screen.findByText("La conexión quedó en pausa: esta versión no reconoce el proveedor guardado. Guardá para elegir uno y cargar la clave.")).toBeVisible();
-    expect(screen.getByRole("combobox", { name: "Proveedor" })).toHaveTextContent("Elegí un proveedor");
-    expect(screen.getByRole("combobox", { name: "Modelo" })).toHaveTextContent("Elegí un modelo");
+    expect(screen.getByRole("button", { name: pickerName("Proveedor") })).toHaveTextContent("Elegí un proveedor");
+    expect(screen.getByRole("button", { name: pickerName("Modelo") })).toHaveTextContent("Elegí un modelo");
     expect(screen.getByLabelText(/Clave de Anthropic/u)).toHaveValue("");
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
     fireEvent.change(screen.getByLabelText(/Clave de Anthropic/u), { target: { value: "clave-nueva-de-prueba" } });
@@ -81,7 +82,7 @@ describe("las fallas del proveedor en la configuración", () => {
     platform({ ...platformSettings(), providerIssue: "Assistant.Provider.Unavailable" });
     const band = await screen.findByText("No pudimos conectarnos con el proveedor. No se envió nada.");
     expect(band.closest("[data-slot=page-subline]") === null).toBe(phone);
-    await waitFor(() => expect(screen.getByRole("combobox", { name: "Modelo por defecto" })).toHaveTextContent(firstModel.name));
+    await waitFor(() => expect(screen.getByRole("button", { name: pickerName("Modelo por defecto") })).toHaveTextContent(firstModel.name));
   });
 
   it("en Plataforma, la clave rechazada y el proveedor desconocido", async () => {
@@ -92,7 +93,7 @@ describe("las fallas del proveedor en la configuración", () => {
     view.unmount();
     platform({ ...platformSettings(), unsupportedProvider: true });
     expect(await screen.findByText(/La conexión quedó en pausa/u)).toBeVisible();
-    expect(screen.getByRole("combobox", { name: "Modelo por defecto" })).toHaveTextContent("Elegí un modelo");
+    expect(screen.getByRole("button", { name: pickerName("Modelo por defecto") })).toHaveTextContent("Elegí un modelo");
     expect(screen.getByLabelText(/Clave de la plataforma/u)).toHaveValue("");
   });
 });

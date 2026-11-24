@@ -20,10 +20,8 @@ import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTi
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { Input } from "@/shared/ui/input";
-import { MultiSelect } from "@/shared/ui/MultiSelect";
-import { RadioGroupField } from "@/shared/ui/RadioGroupField";
+import { Picker } from "@/shared/ui/Picker";
 import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { Spinner } from "@/shared/ui/Spinner";
 import type { CreateWhatsAppTeamRequest, UpdateWhatsAppTeamRequest, WhatsAppTeamDetailResponse, WhatsAppTeamResponse } from "../../api/types";
 import { createTeam, fetchTeam, teamMemberOptions, teamQueryKey, teamsQueryRoot, updateTeam, type TeamScope } from "../api/teams";
@@ -157,13 +155,13 @@ function TeamFormBody({ scope, team, onClose }: { scope: TeamScope; team?: Whats
         {organization ? team
           ? <ReadOnlyField label={t("whatsapp:teams.form.inbox")}>{t(`whatsapp:teams.inboxOption.${inbox.field.value}`)}</ReadOnlyField>
           : <FormField label={t("whatsapp:teams.form.inbox")} required error={errors.inbox?.message}>
-            <RadioGroupField variant="segmented" label={t("whatsapp:teams.form.inbox")} value={inbox.field.value}
+            <Picker value={inbox.field.value || null}
               options={inboxes.map((value) => ({ value, label: t(`whatsapp:teams.inboxOption.${value}`) }))}
-              onValueChange={(value) => inbox.field.onChange(value)} />
+              onChange={(value) => { if (value !== inbox.field.value) inbox.field.onChange(value); }} />
           </FormField> : null}
         <div className="md:col-span-2">
           <FormField label={membersLabel} required error={errors.memberIds?.message}>
-            <MultiSelect remote={options.remote} value={members.field.value} onChange={(value) => { clear(); members.field.onChange(value); }}
+            <Picker multiple remote={options.remote} value={members.field.value} onChange={(value) => { clear(); members.field.onChange(value); }}
               selectedOptions={known.map((member) => ({ value: member.id, label: member.name }))}
               options={options.items.map((member) => ({ value: member.id, label: member.name }))}
               placeholder={t(organization ? "whatsapp:teams.form.noMembers" : "whatsapp:teams.form.noOperators")} />
@@ -171,13 +169,9 @@ function TeamFormBody({ scope, team, onClose }: { scope: TeamScope; team?: Whats
         </div>
         <div className="md:col-span-2">
           <FormField label={t("whatsapp:teams.form.notice")} error={errors.notice?.message}>
-            <Select value={notice.field.value} onValueChange={(value) => { clear(); notice.field.onChange(value); }}>
-              <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {noticeMinutes.map((minutes) => <SelectItem key={minutes} value={String(minutes)}>{t("whatsapp:teams.notice.after", { minutes })}</SelectItem>)}
-                <SelectItem value={noNotice}>{t("whatsapp:teams.notice.none")}</SelectItem>
-              </SelectContent>
-            </Select>
+            <Picker value={notice.field.value} onChange={(value) => { if (value === notice.field.value) return; clear(); notice.field.onChange(value); }}
+              options={[...noticeMinutes.map((minutes) => ({ value: String(minutes), label: t("whatsapp:teams.notice.after", { minutes }) })),
+                { value: noNotice, label: t("whatsapp:teams.notice.none") }]} />
           </FormField>
         </div>
       </div>

@@ -1,7 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
-import { ChevronDown } from "lucide-react";
 import { useMemo, useRef, useState, type ChangeEvent } from "react";
 import { useController, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -24,10 +23,9 @@ import { CheckboxField } from "@/shared/ui/CheckboxField";
 import { DataTable } from "@/shared/ui/DataTable";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
-import { MultiSelect } from "@/shared/ui/MultiSelect";
 import { Page } from "@/shared/ui/Page";
 import { RemoteOptionFooter, RemoteOptionSearch } from "@/shared/ui/RemoteOptionControls";
-import { SearchSelect } from "@/shared/ui/SearchSelect";
+import { Picker } from "@/shared/ui/Picker";
 import { Section, SectionFields } from "@/shared/ui/Section";
 import { Surface } from "@/shared/ui/Surface";
 import { Textarea } from "@/shared/ui/textarea";
@@ -181,19 +179,20 @@ export function LoadPhonesPage() {
               onClick={company.field.value ? () => setSheet("roles") : undefined} />
           </ul> : <>
           <FormField label={t("whatsapp:phones.form.company")}>
-            <SearchSelect value={company.field.value || noCompany} onChange={(value) => { company.field.onChange(value === noCompany ? "" : value); roleIds.field.onChange([]); }}
-              remote={companies.remote} selectedLabel={companies.knownItems.find((item) => item.id === company.field.value)?.name}
-              placeholder={t("whatsapp:phones.form.noCompany")} searchLabel={t("common:actions.search")} aria-label={t("whatsapp:phones.form.company")}
-              options={[{ value: noCompany, label: t("whatsapp:phones.form.noCompany") }, ...companies.items.filter((item) => item.status === "Active").map((item) => ({ value: item.id, label: item.name }))]} />
+            <Picker value={company.field.value || noCompany} onChange={(value) => {
+              const next = value === noCompany ? "" : value;
+              if (next === company.field.value) return;
+              company.field.onChange(next); roleIds.field.onChange([]);
+            }} remote={companies.remote} first={{ value: noCompany, label: t("whatsapp:phones.form.noCompany") }}
+              selectedOptions={companies.knownItems.filter((item) => item.id === company.field.value).map((item) => ({ value: item.id, label: item.name }))}
+              options={companies.items.filter((item) => item.status === "Active").map((item) => ({ value: item.id, label: item.name }))} />
           </FormField>
           <FormField label={t("whatsapp:phones.form.roles")}>
             {company.field.value
-              ? <MultiSelect remote={companyRoles.remote} value={roleIds.field.value} onChange={roleIds.field.onChange} placeholder={t("whatsapp:phones.form.noRoles")}
+              ? <Picker multiple remote={companyRoles.remote} value={roleIds.field.value} onChange={roleIds.field.onChange} placeholder={t("whatsapp:phones.form.noRoles")}
                 selectedOptions={companyRoles.knownItems.map((role) => ({ value: role.id, label: role.name }))}
                 options={roles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined }))} />
-              : <button type="button" disabled className="flex h-9 w-full min-w-0 items-center justify-between gap-2 rounded-[0.5rem] border border-[var(--borde2)] bg-[var(--s2)] px-3 text-left text-[0.8125rem] text-[var(--t3)] max-md:h-12 max-md:rounded-[0.75rem] max-md:text-[1rem]">
-                {t("whatsapp:phones.form.chooseCompanyFirst")}<ChevronDown aria-hidden="true" className="size-4 shrink-0" />
-              </button>}
+              : <Picker multiple disabled value={[]} options={[]} onChange={() => {}} placeholder={t("whatsapp:phones.form.chooseCompanyFirst")} />}
           </FormField>
           </>}
           {reviewed ? <div className="md:col-span-2">

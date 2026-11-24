@@ -25,8 +25,7 @@ import { Input } from "@/shared/ui/input";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { NotFoundPage } from "@/shared/ui/NotFoundPage";
 import { Page } from "@/shared/ui/Page";
-import { RadioGroupField } from "@/shared/ui/RadioGroupField";
-import { SearchSelect } from "@/shared/ui/SearchSelect";
+import { Picker } from "@/shared/ui/Picker";
 import { Section, SectionFields } from "@/shared/ui/Section";
 import { homeOf } from "@/tenancy/access";
 import type { CreateWhatsAppBroadcastRequest, WhatsAppBroadcastResponse, WhatsAppTemplateOptionResponse } from "../../api/types";
@@ -208,28 +207,28 @@ function BroadcastEditor({ initial, initialTemplate }: { initial: BroadcastForm;
       <Input {...form.register("name")} maxLength={nameMaxLength} autoComplete="off" />
     </FormField>
     <FormField label={t("whatsapp:broadcasts.form.template")} required error={templateError}>
-      <SearchSelect value={templateField.field.value} onChange={chooseTemplate} remote={templates.remote}
+      <Picker value={templateField.field.value || null} onChange={(next) => { if (next !== templateField.field.value) chooseTemplate(next); }} remote={templates.remote}
         options={templates.items.map((option) => ({ value: option.templateId, label: templateLabel(option) }))}
-        selectedLabel={template ? templateLabel(template) : undefined}
-        placeholder={t("whatsapp:broadcasts.form.chooseTemplate")} searchLabel={t("common:actions.search")} />
+        selectedOptions={template ? [{ value: template.templateId, label: templateLabel(template) }] : []}
+        placeholder={t("whatsapp:broadcasts.form.chooseTemplate")} />
     </FormField>
     {(template?.variables ?? []).map((variable, index) => <FormField key={`${templateId}-${index}`} label={variable} required error={errors.variables?.[index]?.message}>
       <Input maxLength={variableLimit} {...form.register(`variables.${index}`)} autoComplete="off" />
     </FormField>)}
     <FormField label={t("whatsapp:broadcasts.form.audience")} required error={kindError}>
-      <RadioGroupField variant="segmented" label={t("whatsapp:broadcasts.form.audience")} value={kindField.field.value}
-        onValueChange={(next) => kindField.field.onChange(next === "Tag" ? "Tag" : "AllAccepting")}
+      <Picker value={kindField.field.value || null}
+        onChange={(next) => { if (next !== kindField.field.value) kindField.field.onChange(next === "Tag" ? "Tag" : "AllAccepting"); }}
         options={[{ value: "AllAccepting", label: t(phone ? "whatsapp:broadcasts.form.allAcceptingShort" : "whatsapp:broadcasts.form.allAccepting") },
           { value: "Tag", label: t("whatsapp:broadcasts.form.oneTag") }]} />
     </FormField>
     {kind === "Tag" ? <FormField label={t("whatsapp:broadcasts.form.tag")} required error={errors.tag?.message}>
-      <SearchSelect value={tagField.field.value} onChange={tagField.field.onChange} remote={tags.remote}
-        options={tags.items.map((option) => ({ value: option, label: option }))} selectedLabel={tag || undefined}
-        placeholder={t("whatsapp:broadcasts.form.chooseTag")} searchLabel={t("common:actions.search")} />
+      <Picker value={tagField.field.value || null} onChange={(next) => { if (next !== tagField.field.value) tagField.field.onChange(next); }} remote={tags.remote}
+        options={tags.items.map((option) => ({ value: option, label: option }))} selectedOptions={tag ? [{ value: tag, label: tag }] : []}
+        placeholder={t("whatsapp:broadcasts.form.chooseTag")} />
     </FormField> : null}
     <FormField label={t("whatsapp:broadcasts.form.when")}>
-      <RadioGroupField variant="segmented" label={t("whatsapp:broadcasts.form.when")} value={whenField.field.value}
-        onValueChange={(next) => whenField.field.onChange(next === "schedule" ? "schedule" : "now")}
+      <Picker value={whenField.field.value}
+        onChange={(next) => { if (next !== whenField.field.value) whenField.field.onChange(next === "schedule" ? "schedule" : "now"); }}
         options={[{ value: "now", label: t("whatsapp:broadcasts.form.now") }, { value: "schedule", label: t("whatsapp:broadcasts.form.later") }]} />
     </FormField>
     {scheduled ? <FormField label={t("whatsapp:broadcasts.form.dateTime")} required error={errors.scheduledAtUtc?.message}>

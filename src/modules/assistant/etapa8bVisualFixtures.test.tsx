@@ -323,7 +323,7 @@ it.each(["Asistente-Config-Org", "Plat-Asistente-Config"])("%s cambia por contro
 it("Plataforma abre los modelos permitidos con su capability y tarifas", async () => {
   const app = configurationScenario("Plat-Asistente-Config", "Elegir los modelos permitidos")!; const mounted = mount(app);
   await actions(app, mounted.user);
-  expect(screen.getByRole("menuitemcheckbox", { name: "Modelo de prueba A" })).toHaveAccessibleDescription("Entrada USD 0,13 · salida USD 1,00 por millón de tokens");
+  expect(screen.getByRole("option", { name: "Modelo de prueba A" })).toHaveAccessibleDescription("Entrada USD 0,13 · salida USD 1,00 por millón de tokens");
 });
 
 it.each(["Plat-Asistente-Config", "M-Plat-Asistente-Config"].flatMap((board) =>

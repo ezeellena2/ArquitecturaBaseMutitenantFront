@@ -8,6 +8,7 @@ import { server } from "@/test/mocks/server";
 import { asPhone } from "@/test/utils/phone";
 import type { UpdateWhatsAppBotRequest, WhatsAppBotMenuOption, WhatsAppBotResponse, WhatsAppNumberResponse, WhatsAppTeamResponse } from "../../api/types";
 import { mountWhatsApp, whatsappMember, whatsappOwner } from "../../test/support";
+import { pickerName } from "@/test/picker";
 
 const central: WhatsAppNumberResponse = { id: "11111111-1111-4111-8111-111111111111", displayNumber: "+5491155550100", verifiedName: "Grupo Delta",
   company: null, status: "Connected", coexistence: false, serviceMessagesThisMonth: 640, freeServiceMessages: 1000, chargedServiceMessagesThisMonth: 0,
@@ -112,7 +113,7 @@ describe("Bot de la organización", () => {
     await second.user.click(await screen.findByRole("button", { name: "Agregar opción" }));
     const dialog = await screen.findByRole("dialog", { name: "Agregar opción" });
     await second.user.type(within(dialog).getByRole("textbox", { name: "Texto de la opción" }), "Reclamos");
-    await second.user.click(within(dialog).getByRole("radio", { name: "Contesta un texto" }));
+    await second.user.click(within(dialog).getByRole("button", { name: pickerName("Qué hace") })); await second.user.click(await screen.findByRole("option", { name: "Contesta un texto" }));
     await second.user.type(within(dialog).getByRole("textbox", { name: "Texto" }), "Escribinos");
     await second.user.click(within(dialog).getByRole("button", { name: "Guardar" }));
     expect(await within(dialog).findByText("El menú admite hasta 10 opciones.")).toBeVisible();
@@ -153,7 +154,7 @@ describe("Bot de la organización", () => {
     const pill = await screen.findByRole("button", { name: /Número: .*555-0100 · Toda la organización/ });
     pill.focus();
     await page.user.keyboard("{Enter}");
-    const options = await screen.findAllByRole("menuitemradio");
+    const options = await screen.findAllByRole("option");
     expect(options).toHaveLength(2);
     await page.user.click(options[1]);
     await waitFor(() => expect(reads).toContain(south.id));
@@ -205,7 +206,7 @@ describe("Bot de la organización", () => {
     const page = mountWhatsApp(whatsappOwner, "/org/whatsapp/bot");
     await page.user.click(within(await openMenu(page.user, "Horarios y dirección")).getByRole("menuitem", { name: "Editar" }));
     const dialog = await screen.findByRole("dialog", { name: "Editar opción 3" });
-    await page.user.click(within(dialog).getByRole("radio", { name: "Pasa a un equipo" }));
+    await page.user.click(within(dialog).getByRole("button", { name: pickerName("Qué hace") })); await page.user.click(await screen.findByRole("option", { name: "Pasa a un equipo" }));
 
     const question = await screen.findByRole("alertdialog", { name: "¿Cambiar a «Pasa a un equipo»?" });
     expect(question).toHaveAccessibleDescription("Se quita el texto.");
@@ -218,14 +219,14 @@ describe("Bot de la organización", () => {
     await page.user.click(within(question).getByRole("button", { name: "Cancelar" }));
     const back = await screen.findByRole("dialog", { name: "Editar opción 3" });
     expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
-    expect(within(back).getByRole("radio", { name: "Contesta un texto" })).toBeChecked();
-    expect(within(back).getByRole("radio", { name: "Contesta un texto" })).toHaveFocus();
+    expect(within(back).getByRole("button", { name: pickerName("Qué hace") })).toHaveAccessibleName("Qué hace Contesta un texto");
+    expect(within(back).getByRole("button", { name: pickerName("Qué hace") })).toHaveFocus();
     expect(within(back).getByRole("textbox", { name: "Texto" })).toHaveValue("Estamos en Av. Corrientes 1234, de 9 a 18");
     expect(within(back).getByRole("textbox", { name: "Texto de la opción" })).toHaveValue("Horarios y dirección");
     expect(within(back).getByRole("button", { name: "Guardar" })).toBeDisabled();
 
     // Escape también es «Cancelar»: vuelve a la opción, sin cerrarla.
-    await page.user.click(within(back).getByRole("radio", { name: "Pasa a un equipo" }));
+    await page.user.click(within(back).getByRole("button", { name: pickerName("Qué hace") })); await page.user.click(await screen.findByRole("option", { name: "Pasa a un equipo" }));
     await screen.findByRole("alertdialog", { name: "¿Cambiar a «Pasa a un equipo»?" });
     await page.user.keyboard("{Escape}");
     expect(await screen.findByRole("dialog", { name: "Editar opción 3" })).toBeVisible();
@@ -238,20 +239,20 @@ describe("Bot de la organización", () => {
     const page = mountWhatsApp(whatsappOwner, "/org/whatsapp/bot");
     await page.user.click(within(await openMenu(page.user, "Horarios y dirección")).getByRole("menuitem", { name: "Editar" }));
     const dialog = await screen.findByRole("dialog", { name: "Editar opción 3" });
-    await page.user.click(within(dialog).getByRole("radio", { name: "Pasa a un equipo" }));
+    await page.user.click(within(dialog).getByRole("button", { name: pickerName("Qué hace") })); await page.user.click(await screen.findByRole("option", { name: "Pasa a un equipo" }));
     await page.user.click(within(await screen.findByRole("alertdialog", { name: "¿Cambiar a «Pasa a un equipo»?" })).getByRole("button", { name: "Cambiar" }));
 
     const back = await screen.findByRole("dialog", { name: "Editar opción 3" });
-    expect(within(back).getByRole("radio", { name: "Pasa a un equipo" })).toBeChecked();
-    expect(within(back).getByRole("radio", { name: "Pasa a un equipo" })).toHaveFocus();
+    expect(within(back).getByRole("button", { name: pickerName("Qué hace") })).toHaveAccessibleName("Qué hace Pasa a un equipo");
+    expect(within(back).getByRole("button", { name: pickerName("Qué hace") })).toHaveFocus();
     // El texto se quitó: al volver a «Contesta un texto» está vacío, y sin nada escrito no se pregunta.
-    await page.user.click(within(back).getByRole("radio", { name: "Contesta un texto" }));
+    await page.user.click(within(back).getByRole("button", { name: pickerName("Qué hace") })); await page.user.click(await screen.findByRole("option", { name: "Contesta un texto" }));
     expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
     expect(within(back).getByRole("textbox", { name: "Texto" })).toHaveValue("");
-    await page.user.click(within(back).getByRole("radio", { name: "Pasa a un equipo" }));
+    await page.user.click(within(back).getByRole("button", { name: pickerName("Qué hace") })); await page.user.click(await screen.findByRole("option", { name: "Pasa a un equipo" }));
     expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
 
-    await page.user.click(within(back).getByRole("combobox", { name: "Equipo" }));
+    await page.user.click(within(back).getByRole("button", { name: pickerName("Equipo") }));
     await page.user.click(await screen.findByRole("option", { name: "Soporte" }));
     await page.user.click(within(back).getByRole("button", { name: "Guardar" }));
     await waitFor(() => expect(sent).toHaveLength(1));
@@ -266,7 +267,7 @@ describe("Bot de la organización", () => {
       const page = mountWhatsApp(whatsappOwner, "/org/whatsapp/bot");
       await page.user.click(await screen.findByRole("button", { name: /Hacer un pedido/ }));
       const dialog = await screen.findByRole("dialog", { name: "Editar opción 1" });
-      await page.user.click(within(dialog).getByRole("radio", { name: "Contesta un texto" }));
+      await page.user.click(within(dialog).getByRole("button", { name: pickerName("Qué hace") })); await page.user.click(await screen.findByRole("option", { name: "Contesta un texto" }));
 
       const question = await screen.findByRole("alertdialog", { name: "¿Cambiar a «Contesta un texto»?" });
       expect(question).toHaveAccessibleDescription("Se quita el equipo.");
@@ -277,10 +278,10 @@ describe("Bot de la organización", () => {
 
       await page.user.click(within(question).getByRole("button", { name: "Cancelar" }));
       const back = await screen.findByRole("dialog", { name: "Editar opción 1" });
-      expect(within(back).getByRole("radio", { name: "Pasa a un equipo" })).toBeChecked();
-      expect(within(back).getByRole("combobox", { name: "Equipo" })).toHaveTextContent("Ventas");
+      expect(within(back).getByRole("button", { name: pickerName("Qué hace") })).toHaveAccessibleName("Qué hace Pasa a un equipo");
+      expect(within(back).getByRole("button", { name: pickerName("Equipo") })).toHaveTextContent("Ventas");
 
-      await page.user.click(within(back).getByRole("radio", { name: "Contesta un texto" }));
+      await page.user.click(within(back).getByRole("button", { name: pickerName("Qué hace") })); await page.user.click(await screen.findByRole("option", { name: "Contesta un texto" }));
       await page.user.click(within(await screen.findByRole("alertdialog", { name: "¿Cambiar a «Contesta un texto»?" })).getByRole("button", { name: "Cambiar" }));
       const text = within(await screen.findByRole("dialog", { name: "Editar opción 1" })).getByRole("textbox", { name: "Texto" });
       expect(text).toHaveValue("");
@@ -298,14 +299,14 @@ describe("Bot de la organización", () => {
     await page.user.click(await screen.findByRole("button", { name: "Agregar opción" }));
     const dialog = await screen.findByRole("dialog", { name: "Agregar opción" });
     await page.user.type(within(dialog).getByRole("textbox", { name: "Texto de la opción" }), "Reclamos");
-    await page.user.click(within(dialog).getByRole("radio", { name: "Contesta un texto" }));
+    await page.user.click(within(dialog).getByRole("button", { name: pickerName("Qué hace") })); await page.user.click(await screen.findByRole("option", { name: "Contesta un texto" }));
     expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
-    expect(within(dialog).getByRole("radio", { name: "Contesta un texto" })).toBeChecked();
+    expect(within(dialog).getByRole("button", { name: pickerName("Qué hace") })).toHaveAccessibleName("Qué hace Contesta un texto");
     // Unos espacios no son un texto escrito.
     await page.user.type(within(dialog).getByRole("textbox", { name: "Texto" }), "   ");
-    await page.user.click(within(dialog).getByRole("radio", { name: "Pasa a un equipo" }));
+    await page.user.click(within(dialog).getByRole("button", { name: pickerName("Qué hace") })); await page.user.click(await screen.findByRole("option", { name: "Pasa a un equipo" }));
     expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
-    expect(within(dialog).getByRole("radio", { name: "Pasa a un equipo" })).toBeChecked();
+    expect(within(dialog).getByRole("button", { name: pickerName("Qué hace") })).toHaveAccessibleName("Qué hace Pasa a un equipo");
     expect(within(dialog).getByRole("textbox", { name: "Texto de la opción" })).toHaveValue("Reclamos");
     expect(await axe(dialog)).toHaveNoViolations();
   });

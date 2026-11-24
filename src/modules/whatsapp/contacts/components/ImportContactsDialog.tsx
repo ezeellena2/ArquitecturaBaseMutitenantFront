@@ -17,7 +17,7 @@ import { DetailGrid, type DetailGridItem } from "@/shared/ui/DetailGrid";
 import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
-import { SearchSelect } from "@/shared/ui/SearchSelect";
+import { Picker } from "@/shared/ui/Picker";
 import type { WhatsAppImportPreviewResponse } from "../../api/types";
 import { contactsQueryRoot, contactTagOptions, fetchImportSample, importContacts, previewImport, tagMaxLength, type ImportContactsInput } from "../api/contacts";
 import { importErrorField } from "../errors";
@@ -28,6 +28,8 @@ import { FileInput } from "./FileInput";
 const acceptedFiles = ".xlsx,.csv";
 // «Sin etiqueta» es la opción vacía del desplegable: la etiqueta es optativa.
 const noTag = "";
+/** «Sin etiqueta» en la pieza: un valor que ninguna etiqueta puede tener. */
+const untagged = "\u0000";
 
 const sameImport = (previous: ImportContactsInput, next: ImportContactsInput) => previous.file === next.file && previous.tag === next.tag;
 
@@ -97,10 +99,12 @@ export function ImportContactsDialog({ onClose, returnFocusTo }: { onClose: () =
               action={t(file ? "whatsapp:contacts.import.change" : "whatsapp:contacts.import.choose")} onFile={choose} />
           </FormField>
           <FormField label={t("whatsapp:contacts.import.tag")} error={tagError}>
-            <SearchSelect creatable value={tag} onChange={(next) => { setTag(next); setTagError(undefined); clear(); }} remote={tagOptions.remote}
-              options={[{ value: noTag, label: t("whatsapp:contacts.import.noTag") }, ...tagOptions.items.map(tagOption)]}
-              selectedLabel={tag || t("whatsapp:contacts.import.noTag")}
-              placeholder={t("whatsapp:contacts.import.noTag")} searchLabel={t("common:actions.search")} />
+            <Picker creatable value={tag === noTag ? untagged : tag} remote={tagOptions.remote} onChange={(chosen) => {
+              const next = chosen === untagged ? noTag : chosen;
+              if (next === tag) return;
+              setTag(next); setTagError(undefined); clear();
+            }} first={{ value: untagged, label: t("whatsapp:contacts.import.noTag") }} options={tagOptions.items.map(tagOption)}
+              selectedOptions={tag ? [tagOption(tag)] : []} placeholder={t("whatsapp:contacts.import.noTag")} />
           </FormField>
           {summary && summary.rejected.totalCount > 0 ? <ImportPreview preview={summary} phone={phone} /> : null}
           <FormError message={actionErrorMessage(failure, t)} />
