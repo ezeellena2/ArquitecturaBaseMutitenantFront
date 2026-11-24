@@ -97,7 +97,7 @@ describe("Publicar documento legal", () => {
     expect(await screen.findByText("Política de privacidad · versión 9")).toBeVisible();
     expect(screen.getByText("Al publicarla, todas las cuentas tienen que aceptarla de nuevo para seguir usando el servicio. Una versión publicada no se edita.")).toBeVisible();
     expect(screen.getByRole("heading", { name: "Versión" })).toBeVisible(); expect(screen.getByRole("heading", { name: "Contenido" })).toBeVisible();
-    expect(screen.getByRole("combobox", { name: "Documento" })).toHaveTextContent("Política de privacidad");
+    expect(screen.getByRole("button", { name: /^Documento( |$)/ })).toHaveTextContent("Política de privacidad");
     expect(screen.getByRole("textbox", { name: "En español" })).toHaveAttribute("maxlength", "100000"); expect(screen.getByRole("textbox", { name: "En inglés" })).toBeVisible();
     expect(screen.getByRole("region", { name: "Contenido" }).firstElementChild?.nextElementSibling).toHaveClass("lg:grid-cols-2");
     expect(screen.getByRole("button", { name: "Publicar" })).toBeEnabled(); expect(await axe(container)).toHaveNoViolations();

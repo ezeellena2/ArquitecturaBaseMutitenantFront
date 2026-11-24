@@ -27,7 +27,7 @@ it("agrega WhatsApp con país/número nacional, un solo código y destino enmasc
     }),
   );
   renderWithProviders(<AddLoginMethodDialog open onOpenChange={() => {}} onComplete={complete} />);
-  await user.click(await screen.findByRole("button", { name: "WhatsApp" }));
+  await user.click(await screen.findByRole("button", { name: /^Qué querés agregar( |$)/ })); await user.click(await screen.findByRole("option", { name: "WhatsApp" }));
   await user.type(screen.getByRole("textbox", { name: "Número" }), "1155554521");
   await user.click(screen.getByRole("button", { name: "Enviar código" }));
   const dialog = await screen.findByRole("dialog", { name: "Verificar tu WhatsApp" });
@@ -62,11 +62,11 @@ it("suma correo: el título dice el paso, el código incorrecto va debajo de los
     }),
   );
   renderWithProviders(<AddLoginMethodDialog open onOpenChange={() => {}} onComplete={complete} />);
-  expect(screen.queryByRole("button", { name: "WhatsApp" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /^Qué querés agregar( |$)/ })).not.toBeInTheDocument();
 
   const add = await screen.findByRole("dialog", { name: "Agregar correo" });
   // Cuenta-Agregar «Sin el módulo de WhatsApp»: el correo solo, sin el control de un único segmento.
-  expect(within(add).queryByRole("group", { name: "Qué querés agregar" })).not.toBeInTheDocument();
+  expect(within(add).queryByRole("button", { name: /^Qué querés agregar( |$)/ })).not.toBeInTheDocument();
   await user.type(within(add).getByRole("textbox", { name: "Correo" }), "nuevo@example.test");
   await user.click(within(add).getByRole("button", { name: "Enviar código" }));
 
@@ -112,11 +112,11 @@ it("con el módulo de WhatsApp dice «Agregar correo o teléfono» y deja elegir
 
   expect(await screen.findByRole("dialog", { name: "Agregar correo o teléfono" })).toBeVisible();
   const add = await screen.findByRole("dialog", { name: "Agregar correo o teléfono" });
-  expect(within(add).getByRole("group", { name: "Qué querés agregar" })).toBeVisible();
+  expect(within(add).getByRole("button", { name: /^Qué querés agregar( |$)/ })).toBeVisible();
 });
 
 async function chooseWhatsApp(user: ReturnType<typeof userEvent.setup>) {
-  await user.click(await screen.findByRole("button", { name: "WhatsApp" }));
+  await user.click(await screen.findByRole("button", { name: /^Qué querés agregar( |$)/ })); await user.click(await screen.findByRole("option", { name: "WhatsApp" }));
   await user.type(screen.getByRole("textbox", { name: "Número" }), "1155554521");
 }
 function enableWhatsApp(countries = ["AR"]) {
@@ -159,7 +159,7 @@ it("valida Número vacío en el campo sin mandar un código", async () => {
   const user = userEvent.setup(); enableWhatsApp();
   const send = vi.fn(); server.use(http.post("/api/me/login-methods", () => { send(); return new HttpResponse(null, { status: 202 }); }));
   renderWithProviders(<AddLoginMethodDialog open onOpenChange={() => {}} onComplete={vi.fn()} />);
-  await user.click(await screen.findByRole("button", { name: "WhatsApp" }));
+  await user.click(await screen.findByRole("button", { name: /^Qué querés agregar( |$)/ })); await user.click(await screen.findByRole("option", { name: "WhatsApp" }));
   await user.click(screen.getByRole("button", { name: "Enviar código" }));
   expect(await screen.findByRole("alert")).toHaveTextContent("Ingresá un número de celular válido.");
   expect(send).not.toHaveBeenCalled();
@@ -176,8 +176,8 @@ it("conserva la clave tras 5xx idéntico y la renueva tras cambiar y volver al m
   await chooseWhatsApp(user);
   for (let index = 0; index < 2; index++) { await user.click(screen.getByRole("button", { name: "Enviar código" })); await screen.findByRole("alert"); }
   expect(keys[0]).toBe(keys[1]);
-  await user.click(screen.getByRole("button", { name: "Correo" }));
-  await user.click(screen.getByRole("button", { name: "WhatsApp" }));
+  await user.click(await screen.findByRole("button", { name: /^Qué querés agregar( |$)/ })); await user.click(await screen.findByRole("option", { name: "Correo" }));
+  await user.click(await screen.findByRole("button", { name: /^Qué querés agregar( |$)/ })); await user.click(await screen.findByRole("option", { name: "WhatsApp" }));
   expect(screen.getByRole("textbox", { name: "Número" })).toHaveValue("11 5555-4521");
   await user.click(screen.getByRole("button", { name: "Enviar código" })); await screen.findByRole("alert");
   expect(keys[2]).not.toBe(keys[1]);
@@ -196,10 +196,10 @@ it("pasar entre «Correo» y «WhatsApp» conserva el correo y el número, y man
   await user.type(await screen.findByRole("textbox", { name: "Correo" }), "ana@");
   await chooseWhatsApp(user);
 
-  await user.click(screen.getByRole("button", { name: "Correo" }));
-  expect(screen.getByRole("button", { name: "Correo" })).toHaveAttribute("aria-pressed", "true");
+  await user.click(await screen.findByRole("button", { name: /^Qué querés agregar( |$)/ })); await user.click(await screen.findByRole("option", { name: "Correo" }));
+  expect(screen.getByRole("button", { name: /^Qué querés agregar( |$)/ })).toHaveAccessibleName("Qué querés agregar Correo");
   expect(screen.getByRole("textbox", { name: "Correo" })).toHaveValue("ana@");
-  await user.click(screen.getByRole("button", { name: "WhatsApp" }));
+  await user.click(await screen.findByRole("button", { name: /^Qué querés agregar( |$)/ })); await user.click(await screen.findByRole("option", { name: "WhatsApp" }));
   expect(screen.getByRole("textbox", { name: "Número" })).toHaveValue("11 5555-4521");
 
   // El correo a medias no frena el WhatsApp ni viaja con él.

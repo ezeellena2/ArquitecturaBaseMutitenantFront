@@ -6,7 +6,7 @@ import { FormField } from "@/shared/ui/FormField";
 import { EmailField } from "@/shared/ui/fields/EmailField";
 import { PhoneField } from "@/shared/ui/fields/PhoneField";
 import { MailIcon } from "@/shared/ui/icons";
-import { SegmentedControl } from "@/shared/ui/SegmentedControl";
+import { Picker } from "@/shared/ui/Picker";
 
 interface AuthDestinationFieldProps {
   channel: "email" | "phone";
@@ -31,14 +31,15 @@ export function AuthDestinationField({ channel, onChannelChange, email, onEmailC
   }, [channels.isPending, hasWhatsApp, channel, onChannelChange]);
   const showPhone = hasWhatsApp && channel === "phone";
   return <div className="flex flex-col gap-5.5">
-    {/* Tablero Ingreso (.seg2): el segmentado común, con la elegida rellena (142). */}
-    {hasWhatsApp ? <SegmentedControl fullWidth aria-label={t("login.channelLabel")} options={(["email", "phone"] as const).map((value) => ({
-      key: value,
-      pressed: (showPhone ? "phone" : "email") === value,
-      onSelect: () => onChannelChange(value),
-      icon: value === "email" ? <MailIcon className="size-4 shrink-0" aria-hidden="true" /> : <svg className="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.2 19z" /><path d="M9.5 9.5c.3 1.8 2.2 3.8 4 4.2l1.2-1.2 1.8.8c0 1-.8 1.8-1.8 1.8-3.3 0-6.5-3.2-6.5-6.5 0-1 .8-1.8 1.8-1.8l.8 1.8z" /></svg>,
-      label: t(value === "phone" ? "login.whatsappChannel" : "login.emailChannel"),
-    }))} /> : null}
+    {/* 262: «Correo | WhatsApp» se elige en la pieza, como todo lo que se elige de una lista. */}
+    {hasWhatsApp ? <FormField label={t("login.channelLabel")} variant="auth">
+      <Picker value={showPhone ? "phone" : "email"} onChange={(value) => { if (value !== (showPhone ? "phone" : "email")) onChannelChange(value as "email" | "phone"); }}
+        options={(["email", "phone"] as const).map((value) => ({
+          value,
+          label: t(value === "phone" ? "login.whatsappChannel" : "login.emailChannel"),
+          icon: value === "email" ? <MailIcon className="size-4 shrink-0" aria-hidden="true" /> : <svg className="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 20l1.3-4A8 8 0 1 1 8.2 19z" /><path d="M9.5 9.5c.3 1.8 2.2 3.8 4 4.2l1.2-1.2 1.8.8c0 1-.8 1.8-1.8 1.8-3.3 0-6.5-3.2-6.5-6.5 0-1 .8-1.8 1.8-1.8l.8 1.8z" /></svg>,
+        }))} />
+    </FormField> : null}
     {showPhone ? <FormField label={phoneLabel ?? t("login.phoneLabel")} variant="auth" error={error}>
       <PhoneField usage={phoneUsage} value={phone} onChange={onPhoneChange} variant="auth" />
     </FormField> : <FormField label={emailLabel ?? t("login.emailLabel")} variant="auth" error={error}>

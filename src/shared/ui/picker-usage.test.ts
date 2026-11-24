@@ -17,11 +17,6 @@ const twoViews = new Map([
 // Lo que todavía no pasó a la pieza (F11 de la segunda parte de la base, a medias): cada archivo sale de la lista cuando
 // se migra, y el test falla si uno de la lista ya no usa la pieza vieja.
 const pending = new Set([
-  "areas/platform/legal/pages/PublishLegalVersionPage.tsx",
-  "areas/platform/settings/components/RateLimitsSection.tsx",
-  "areas/platform/settings/pages/PlatformSettingsPage.tsx",
-  "areas/public/auth/components/AuthDestinationField.tsx",
-  "areas/public/errors/pages/OtherAccessPage.tsx",
   "modules/assistant/settings/AssistantSettingsEditor.tsx",
   "modules/assistant/settings/ModelSelect.tsx",
   "modules/whatsapp/bot/components/EmployeesTeamDialog.tsx",
@@ -35,7 +30,6 @@ const pending = new Set([
   "modules/whatsapp/teams/components/TeamDialog.tsx",
   "modules/whatsapp/templates/components/TemplateDialog.tsx",
   "modules/whatsapp/templates/pages/TemplatesPage.tsx",
-  "shared/account/AddLoginMethodDialog.tsx",
 ]);
 
 function sourceFiles(directory: string): string[] {

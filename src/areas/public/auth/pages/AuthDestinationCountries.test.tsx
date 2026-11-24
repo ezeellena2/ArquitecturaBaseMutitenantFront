@@ -12,6 +12,7 @@ import "./LoginPage";
 import "./SignupPage";
 import "./BusinessSignupPage";
 import "./RecoverAccountPage";
+import { pick } from "@/test/picker";
 
 // País todavía habilitado en el catálogo, retirado únicamente de las altas del canal.
 const previousPhone = { country: "UY", number: "094 123 456" };
@@ -38,7 +39,7 @@ beforeEach(() => {
 afterEach(() => restorePhone());
 
 async function phoneInput() {
-  fireEvent.click(await screen.findByRole("button", { name: "WhatsApp" }));
+  await screen.findByRole("button", { name: /^Método de ingreso( |$)/ }); pick("Método de ingreso", "WhatsApp");
   const input = screen.getByRole("textbox", { name: /número de WhatsApp/i });
   await waitFor(() => expect(input).toBeEnabled());
   return input;

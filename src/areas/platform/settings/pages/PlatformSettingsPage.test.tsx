@@ -44,8 +44,8 @@ describe("Configuración de Plataforma", { timeout: 15_000 }, () => {
     expect(await screen.findByRole("textbox", { name: "Correo de ventas" })).toHaveValue("ventas@ejemplo.com");
     expect(screen.getByRole("textbox", { name: "Correo de soporte" })).toHaveValue("soporte@ejemplo.com");
     expect(screen.getByRole("textbox", { name: "Organizaciones propias por persona" })).toHaveValue("3");
-    expect(screen.getByRole("combobox", { name: "Registro de personas" })).toHaveTextContent("Abierto");
-    expect(screen.getByRole("combobox", { name: "Alta de organizaciones" })).toHaveTextContent("Requiere aprobación");
+    expect(screen.getByRole("button", { name: /^Registro de personas( |$)/ })).toHaveTextContent("Abierto");
+    expect(screen.getByRole("button", { name: /^Alta de organizaciones( |$)/ })).toHaveTextContent("Requiere aprobación");
     expect(screen.getByRole("region", { name: "Registro y altas" })).toBeVisible(); expect(screen.getByRole("region", { name: "Contacto" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled(); expect(screen.getByRole("button", { name: "Descartar cambios" })).toBeEnabled();
     expect(screen.queryByText(/gracia/i)).not.toBeInTheDocument(); expect(await axe(container)).toHaveNoViolations();
@@ -54,10 +54,10 @@ describe("Configuración de Plataforma", { timeout: 15_000 }, () => {
   });
   it("opciones con explicaciones exactas del tablero", async () => {
     const user = userEvent.setup(); renderRouteWithProviders("/plataforma/configuracion", { as: "platform-operator" });
-    const consumer = await screen.findByRole("combobox", { name: "Registro de personas" }); consumer.focus(); await user.keyboard("{Enter}");
+    const consumer = await screen.findByRole("button", { name: /^Registro de personas( |$)/ }); consumer.focus(); await user.keyboard("{Enter}");
     expect(screen.getByRole("option", { name: /Abierto/ })).toHaveTextContent("Cualquiera crea su cuenta con su correo o su WhatsApp.");
     expect(screen.getByRole("option", { name: /Cerrado/ })).toHaveTextContent("Solo entran las personas invitadas a una organización.");
-    await user.click(screen.getByRole("option", { name: /Cerrado/ })); screen.getByRole("combobox", { name: "Alta de organizaciones" }).focus(); await user.keyboard("{Enter}");
+    await user.click(screen.getByRole("option", { name: /Cerrado/ })); screen.getByRole("button", { name: /^Alta de organizaciones( |$)/ }).focus(); await user.keyboard("{Enter}");
     expect(screen.getByRole("option", { name: /Abierta/ })).toHaveTextContent("La organización queda activa al crearla.");
     expect(screen.getByRole("option", { name: /Requiere aprobación/ })).toHaveTextContent("Queda esperando hasta que un operador la aprueba.");
     expect(screen.getByRole("option", { name: /Cerrada/ })).toHaveTextContent("Solo la plataforma crea organizaciones.");

@@ -69,7 +69,7 @@ it.each(["pending", "error", "absent"] as const)("con capacidades %s conserva da
     const user = userEvent.setup();
     await user.click(screen.getByRole("button", { name: "Agregar correo" }));
     const dialog = screen.getByRole("dialog");
-    expect(within(dialog).queryByRole("button", { name: "WhatsApp" })).not.toBeInTheDocument();
+    expect(within(dialog).queryByRole("button", { name: /^Qué querés agregar( |$)/ })).not.toBeInTheDocument();
     await user.type(within(dialog).getByRole("textbox", { name: "Correo" }), "nuevo@example.test");
     await user.click(within(dialog).getByRole("button", { name: "Enviar código" }));
     expect(await within(dialog).findByRole("textbox", { name: "Código 1" })).toBeVisible();
@@ -442,7 +442,7 @@ it.each(["consumer-empty", "business-admin", "platform-operator"] as const)("Pho
     expect(await screen.findByText("011 15-5555-4521")).toBeVisible();
     expect(screen.queryByRole("button", { name: "Acciones de 011 15-5555-4521" })).not.toBeInTheDocument();
     await user.click(await screen.findByRole("button", { name: "Agregar correo o teléfono" }));
-    await user.click(await screen.findByRole("button", { name: "WhatsApp" }));
+    await user.click(await screen.findByRole("button", { name: /^Qué querés agregar( |$)/ })); await user.click(await screen.findByRole("option", { name: "WhatsApp" }));
     expect(screen.getByRole("textbox", { name: "Número" })).toBeVisible();
     await user.click(screen.getByRole("button", { name: "Cancelar" }));
     expect(router.state.location.pathname).toBe("/cuenta");
@@ -556,7 +556,7 @@ it("alta Phone cancelada muestra el método pendiente cuando la creación termin
   );
   renderRouteWithProviders("/cuenta", { as: "consumer-empty" });
   await user.click(await screen.findByRole("button", { name: "Agregar correo o teléfono" }));
-  await user.click(screen.getByRole("button", { name: "WhatsApp" }));
+  await user.click(await screen.findByRole("button", { name: /^Qué querés agregar( |$)/ })); await user.click(await screen.findByRole("option", { name: "WhatsApp" }));
   await user.type(screen.getByRole("textbox", { name: "Número" }), "1155554521");
   await user.click(screen.getByRole("button", { name: "Enviar código" }));
   await waitFor(() => expect(writing).toHaveBeenCalledOnce());

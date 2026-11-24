@@ -21,7 +21,7 @@ import { FormError } from "@/shared/ui/FormError";
 import { EmailField } from "@/shared/ui/fields/EmailField";
 import { PhoneField } from "@/shared/ui/fields/PhoneField";
 import { OtpInput } from "@/shared/ui/OtpInput";
-import { SegmentedControl } from "@/shared/ui/SegmentedControl";
+import { Picker } from "@/shared/ui/Picker";
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { accountMethodsQueryKey, addLoginMethod, sendLoginMethodCode, verifyLoginMethod } from "./api/loginMethods";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
@@ -189,13 +189,11 @@ function AddLoginMethodFlow({ onOpenChange, onComplete, method }: Props) {
             {phone ? <p className="text-xs text-[var(--t3)]">{t("common:code.whatsappNotice")}</p> : null}
             {isPhone ? resendAction : null}
           </> : method ? <DialogDescription>{request.isPending ? t("common:code.sending") : phone ? maskPhone(method.value ?? "") : maskEmail(method.value ?? "")}</DialogDescription> : <>
-            {/* Tablero Cuenta-Agregar (.p-seg): el segmentado común, con la elegida rellena (142). */}
-            {whatsApp ? <SegmentedControl fullWidth disabled={busy} aria-label={t("account:chooseMethod")} options={(["email", "phone"] as const).map((choice) => ({
-              key: choice,
-              pressed: type === choice,
-              onSelect: () => { if (choice !== type) { edit(); form.setValue("type", choice); } },
-              label: t(choice === "phone" ? "account:phone" : "account:email"),
-            }))} /> : null}
+            {/* 262: el correo o el teléfono se elige en la pieza, como todo lo que se elige de una lista. */}
+            {whatsApp ? <FormField label={t("account:chooseMethod")}>
+              <Picker disabled={busy} value={type} onChange={(choice) => { if (choice !== type) { edit(); form.setValue("type", choice as "email" | "phone"); } }}
+                options={(["email", "phone"] as const).map((choice) => ({ value: choice, label: t(choice === "phone" ? "account:phone" : "account:email") }))} />
+            </FormField> : null}
             {type === "phone" && whatsApp ? <Controller control={form.control} name="phone" render={({ field }) => <FormField label={t("account:phoneNumber")} error={form.getFieldState("phone", form.formState).error?.message}>
               <PhoneField usage="whatsapp" name={field.name} value={field.value} onChange={(value) => { edit(); field.onChange(value); }} disabled={busy} />
             </FormField>} /> : <Controller control={form.control} name="email" render={({ field }) => <FormField label={t("account:email")} error={form.getFieldState("email", form.formState).error?.message}>

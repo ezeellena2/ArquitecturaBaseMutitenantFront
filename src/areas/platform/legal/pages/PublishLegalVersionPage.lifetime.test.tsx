@@ -45,8 +45,8 @@ describe("vida y reintentos nativos de publicación", () => {
     const user = userEvent.setup(); let calls = 0;
     server.use(http.post("/api/platform/legal-documents", () => { calls++; return HttpResponse.error(); }));
     renderRouteWithProviders("/plataforma/legales/nueva", { as: "platform-operator" }); await fill(); await send(user); const retry = await screen.findByRole("button", { name: "Reintentar" });
-    screen.getByRole("combobox", { name: "Documento" }).focus(); await user.keyboard("{Enter}"); await user.click(await screen.findByRole("option", { name: "Política de privacidad" }));
-    screen.getByRole("combobox", { name: "Documento" }).focus(); await user.keyboard("{Enter}"); await user.click(await screen.findByRole("option", { name: "Términos y condiciones" })); await act(async () => { fireEvent.click(retry); }); expect(calls).toBe(1); expect(screen.getByRole("textbox", { name: "En español" })).toHaveValue("Texto es");
+    screen.getByRole("button", { name: /^Documento( |$)/ }).focus(); await user.keyboard("{Enter}"); await user.click(await screen.findByRole("option", { name: "Política de privacidad" }));
+    screen.getByRole("button", { name: /^Documento( |$)/ }).focus(); await user.keyboard("{Enter}"); await user.click(await screen.findByRole("option", { name: "Términos y condiciones" })); await act(async () => { fireEvent.click(retry); }); expect(calls).toBe(1); expect(screen.getByRole("textbox", { name: "En español" })).toHaveValue("Texto es");
   });
   it("cancelar la confirmación abandona Retry aun con borrador idéntico", async () => {
     const user = userEvent.setup(); const keys: (string | null)[] = [];

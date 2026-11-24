@@ -15,6 +15,7 @@ import { render } from "@testing-library/react";
 import { LoginPage } from "./LoginPage";
 import { SignupPage } from "./SignupPage";
 import { BusinessSignupPage } from "./BusinessSignupPage";
+import { pick } from "@/test/picker";
 
 const authorize = "/connect/authorize?client_id=web&state=original-state&code_challenge=original-pkce";
 const phone = { country: "AR", number: "011 15-2345-6789" };
@@ -47,7 +48,7 @@ function show(path: string, state?: unknown) {
 }
 
 async function fillPhone() {
-  fireEvent.click(await screen.findByRole("button", { name: "WhatsApp" }));
+  await screen.findByRole("button", { name: /^Método de ingreso( |$)/ }); pick("Método de ingreso", "WhatsApp");
   const input = screen.getByRole("textbox", { name: /^(Tu )?número de WhatsApp$/i });
   await waitFor(() => expect(input).toBeEnabled());
   fireEvent.change(input, { target: { value: phone.number } });
@@ -236,8 +237,8 @@ it("tras error 5xx conserva clave al reintentar número, pero corregirlo cambia 
   fireEvent.click(screen.getByRole("button", { name: "Enviar código" }));
   await waitFor(() => expect(keys).toHaveLength(3));
   expect(keys[1]).toBe(keys[0]); expect(keys[2]).not.toBe(keys[0]);
-  fireEvent.click(screen.getByRole("button", { name: "Correo" }));
-  fireEvent.click(screen.getByRole("button", { name: "WhatsApp" }));
+  pick("Método de ingreso", "Correo");
+  pick("Método de ingreso", "WhatsApp");
   fireEvent.click(screen.getByRole("button", { name: "Enviar código" }));
   await waitFor(() => expect(keys).toHaveLength(4));
   expect(keys[3]).not.toBe(keys[2]);
@@ -267,7 +268,7 @@ it.each(["cargando", "apagado"])("no ofrece WhatsApp con capacidad %s", async (s
   server.use(http.get("/api/auth/methods", async () => { if (status === "cargando") await delay("infinite"); return HttpResponse.json({ channels: [{ key: "email", countries: [] }] }); }));
   const { container } = show(`/login?${new URLSearchParams({ returnUrl: authorize })}`);
   expect(await screen.findByRole("textbox", { name: "Correo electrónico" })).toBeVisible();
-  expect(screen.queryByRole("button", { name: "WhatsApp" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /^Método de ingreso( |$)/ })).not.toBeInTheDocument();
   expect(await axe(container)).toHaveNoViolations();
 });
 
@@ -315,8 +316,8 @@ it.each(["/registro", "/registro/empresa"])("%s conserva clave ante 5xx, disting
   fireEvent.change(input, { target: { value: "011 15-2345-6788" } });
   submit(); await waitFor(() => expect(keys).toHaveLength(3));
   expect(keys[2]).not.toBe(keys[1]);
-  fireEvent.click(screen.getByRole("button", { name: "Correo" }));
-  fireEvent.click(screen.getByRole("button", { name: "WhatsApp" }));
+  pick("Método de ingreso", "Correo");
+  pick("Método de ingreso", "WhatsApp");
   submit(); await waitFor(() => expect(keys).toHaveLength(4));
   expect(keys[3]).not.toBe(keys[2]);
 });

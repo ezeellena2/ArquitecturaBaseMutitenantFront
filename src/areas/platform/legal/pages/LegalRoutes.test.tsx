@@ -46,13 +46,13 @@ describe("rutas reales de Documentos legales", () => {
   });
   it("query documento inválida conserva default Terms y otro documento abandona formulario/confirmación", async () => {
     const user = userEvent.setup(); const page = renderRouteWithProviders("/plataforma/legales/nueva?documento=otro", { as: "platform-operator" });
-    expect(await screen.findByRole("combobox", { name: "Documento" })).toHaveTextContent("Términos y condiciones");
+    expect(await screen.findByRole("button", { name: /^Documento( |$)/ })).toHaveTextContent("Términos y condiciones");
     fireEvent.change(screen.getByRole("textbox", { name: "Vigente desde" }), { target: { value: "01/11/2026" } });
     fireEvent.change(screen.getByRole("textbox", { name: "En español" }), { target: { value: "Texto es" } });
     fireEvent.change(screen.getByRole("textbox", { name: "En inglés" }), { target: { value: "Text en" } });
     await user.click(screen.getByRole("button", { name: "Publicar" })); await screen.findByRole("alertdialog");
     await act(async () => { void page.router.navigate("/plataforma/legales/nueva?documento=Privacy"); });
-    expect(await screen.findByRole("combobox", { name: "Documento" })).toHaveTextContent("Política de privacidad");
+    expect(await screen.findByRole("button", { name: /^Documento( |$)/ })).toHaveTextContent("Política de privacidad");
     expect(screen.getByRole("textbox", { name: "En español" })).toHaveValue(""); expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
   });
   it("publicar vigente vuelve inmediatamente y aceptación requerida sigue el gate existente", async () => {

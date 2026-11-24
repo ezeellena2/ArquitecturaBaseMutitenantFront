@@ -11,6 +11,7 @@ import { configureI18n } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
 import { SignupPage } from "./SignupPage";
+import { pick } from "@/test/picker";
 
 const methods = { channels: [{ key: "email", countries: [] }, { key: "whatsapp", countries: ["AR"] }] };
 const signinRedirect = vi.fn(async () => {});
@@ -35,7 +36,7 @@ function show(url = "/registro?channel=whatsapp", state?: unknown) {
 it("el marcador público elige WhatsApp disponible sin cargar identidad ni aceptar términos", async () => {
   show("/registro?channel=whatsapp&phone=se-ignora&email=se-ignora&token=se-ignora");
   expect(await screen.findByRole("textbox", { name: /^(Tu )?número de WhatsApp$/i })).toHaveValue("");
-  expect(screen.getByRole("button", { name: "WhatsApp" })).toHaveAttribute("aria-pressed", "true");
+  expect(screen.getByRole("button", { name: /^Método de ingreso( |$)/ })).toHaveAccessibleName("Método de ingreso WhatsApp");
   expect(screen.getByRole("checkbox")).not.toBeChecked();
   expect(signinRedirect).not.toHaveBeenCalled();
 });
@@ -50,14 +51,14 @@ it.each(["sin módulo", "error"])("el marcador conserva Email con capacidades %s
   await waitFor(() => expect(answered).toBe(true));
   await waitFor(() => expect(client.getQueryState(loginMethodsQueryKey)?.fetchStatus).toBe("idle"));
   expect(screen.getByRole("textbox", { name: "Correo electrónico" })).toHaveValue("");
-  expect(screen.queryByRole("button", { name: "WhatsApp" })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /^Método de ingreso( |$)/ })).not.toBeInTheDocument();
 });
 
 it.each(["/registro", "/registro?channel=email", "/registro?channel=phone", "/registro?channel=WHATSAPP"])("%s conserva el canal Email", async (url) => {
   show(url);
-  await screen.findByRole("button", { name: "WhatsApp" });
+  await screen.findByRole("button", { name: /^Método de ingreso( |$)/ });
   expect(screen.getByRole("textbox", { name: "Correo electrónico" })).toHaveValue("");
-  expect(screen.getByRole("button", { name: "Correo" })).toHaveAttribute("aria-pressed", "true");
+  expect(screen.getByRole("button", { name: /^Método de ingreso( |$)/ })).toHaveAccessibleName("Método de ingreso Correo");
 });
 
 it("selecciona WhatsApp cuando methods llega después del catálogo sin reiniciar el formulario", async () => {
@@ -82,20 +83,20 @@ it("no pisa correo escrito mientras espera capabilities", async () => {
   show();
   fireEvent.change(screen.getByRole("textbox", { name: "Correo electrónico" }), { target: { value: "ana@example.test" } });
   await act(async () => { resolveMethods(); await pending; });
-  await screen.findByRole("button", { name: "WhatsApp" });
+  await screen.findByRole("button", { name: /^Método de ingreso( |$)/ });
   expect(screen.getByRole("textbox", { name: "Correo electrónico" })).toHaveValue("ana@example.test");
 });
 
 it.each([{ email: "ana@example.test" }, { phone: { country: "AR", number: "011 15-2345-6789" } }])("conserva el destino interno %j sobre el marcador público", async (state) => {
   show(undefined, state);
-  await screen.findByRole("button", { name: "WhatsApp" });
+  await screen.findByRole("button", { name: /^Método de ingreso( |$)/ });
   expect(await screen.findByRole("textbox", { name: "email" in state ? "Correo electrónico" : /^(Tu )?número de WhatsApp$/i })).toHaveValue("email" in state ? state.email : state.phone.number);
 });
 
 it("permite cambiar a correo y no reaplica el marcador al releer capacidades", async () => {
   const { client } = show();
   await screen.findByRole("textbox", { name: /^(Tu )?número de WhatsApp$/i });
-  fireEvent.click(screen.getByRole("button", { name: "Correo" }));
+  pick("Método de ingreso", "Correo");
   await act(async () => { await client.invalidateQueries({ queryKey: loginMethodsQueryKey }); });
   expect(screen.getByRole("textbox", { name: "Correo electrónico" })).toBeVisible();
 });
@@ -108,7 +109,7 @@ it("si el módulo se apaga vuelve a Email y no reaplica el marcador al habilitar
   expect(await screen.findByRole("textbox", { name: "Correo electrónico" })).toBeVisible();
   server.use(http.get("/api/auth/methods", () => HttpResponse.json(methods)));
   await act(async () => { await client.invalidateQueries({ queryKey: loginMethodsQueryKey }); });
-  await screen.findByRole("button", { name: "WhatsApp" });
+  await screen.findByRole("button", { name: /^Método de ingreso( |$)/ });
   expect(screen.getByRole("textbox", { name: "Correo electrónico" })).toBeVisible();
 });
 

@@ -44,7 +44,7 @@ describe("Documentos legales", () => {
     const trigger = await screen.findByRole("button", { name: "Acciones de Política de privacidad" }); trigger.focus(); await user.keyboard("{ArrowDown}");
     await user.click(await screen.findByRole("menuitem", { name: "Publicar versión nueva" }));
     await waitFor(() => expect(router.state.location.pathname + router.state.location.search).toBe("/plataforma/legales/nueva?documento=Privacy"));
-    expect(await screen.findByRole("combobox", { name: "Documento" })).toHaveTextContent("Política de privacidad");
+    expect(await screen.findByRole("button", { name: /^Documento( |$)/ })).toHaveTextContent("Política de privacidad");
   });
   // M-Filas-Base2 (M-Legales, 263): cada documento es una tarjeta con cada dato nombrado, sin datos unidos con «·».
   it("390 muestra cada documento como una tarjeta con sus datos nombrados, y el FAB", async () => {

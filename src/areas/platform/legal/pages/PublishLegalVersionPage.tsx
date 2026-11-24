@@ -26,7 +26,7 @@ import { FormField } from "@/shared/ui/FormField";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { Page } from "@/shared/ui/Page";
 import { Section, SectionFields } from "@/shared/ui/Section";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
+import { Picker } from "@/shared/ui/Picker";
 import { Textarea } from "@/shared/ui/textarea";
 import { fetchLegalDocuments, legalDocumentsQueryKey, publishLegalDocument } from "../api/legalDocuments";
 import { LegalPublicationOwner } from "../components/LegalPublicationOwner";
@@ -126,9 +126,8 @@ function LegalVersionEditor({ initialKind, cultures, documents }: { initialKind:
         {edit.formError}
         <Section title={t("platformLegal:versionTitle")} phone="untitled"><SectionFields className="grid gap-3.5 lg:grid-cols-2 lg:gap-x-5">
           <FormField label={t("platformLegal:fields.document")} required error={form.formState.errors.kind?.message}>
-            <Select value={kind.field.value} onValueChange={(value) => { abandon(); kind.field.onChange(value); form.clearErrors("kind"); }} disabled={busy}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger><SelectContent>
-              <SelectItem value="Terms">{t("enums:LegalDocumentKind.Terms")}</SelectItem><SelectItem value="Privacy">{t("enums:LegalDocumentKind.Privacy")}</SelectItem>
-            </SelectContent></Select>
+            <Picker value={kind.field.value || null} disabled={busy} onChange={(value) => { if (value === kind.field.value) return; abandon(); kind.field.onChange(value); form.clearErrors("kind"); }}
+              options={[{ value: "Terms", label: t("enums:LegalDocumentKind.Terms") }, { value: "Privacy", label: t("enums:LegalDocumentKind.Privacy") }]} />
           </FormField>
           <FormField label={t("platformLegal:fields.effectiveOn")} required error={form.formState.errors.effectiveOn?.message}>
             <DateField value={date.field.value} disabled={busy} placeholder={t("platformLegal:datePlaceholder")} invalidMessage={form.formState.errors.effectiveOn ? null : t("platformLegal:validation.dateInvalid")}

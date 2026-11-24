@@ -7,6 +7,7 @@ import { server } from "@/test/mocks/server";
 import { asPhone } from "@/test/utils/phone";
 import { renderRouteWithProviders } from "@/test/utils/renderWithProviders";
 import "./RecoverAccountPage";
+import { pick } from "@/test/picker";
 
 beforeAll(async () => {
   await configureI18n([
@@ -67,8 +68,8 @@ describe("RecoverAccountPage", () => {
     expect(await screen.findByText(value === previousEmail ? "Tiene que ser un correo distinto del de antes." : "Ingresá un correo electrónico válido.")).toBeVisible();
     expect(input).toHaveAttribute("aria-invalid", "true");
     expect(requested).not.toHaveBeenCalled();
-    expect(screen.queryByRole("button", { name: "Correo" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "WhatsApp" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^Método de ingreso( |$)/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^Método de ingreso( |$)/ })).not.toBeInTheDocument();
   });
 
   it.each([previousEmail, "otra@old.example.test"])("usa el mismo nonce y tres claves idempotentes con una cuenta existente (%s)", async (lostEmail) => {
@@ -409,7 +410,7 @@ describe("RecoverAccountPage", () => {
     asPhone();
     const { container } = await showNewEmail();
     expect(screen.getByRole("textbox", { name: "Correo electrónico nuevo" })).toHaveClass("h-11");
-    expect(screen.queryByRole("button", { name: "WhatsApp" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^Método de ingreso( |$)/ })).not.toBeInTheDocument();
     expect(await axe(container)).toHaveNoViolations();
   });
 
@@ -428,7 +429,7 @@ describe("Recuperar por WhatsApp", () => {
   beforeEach(() => server.use(http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "email", countries: [] }, { key: "whatsapp", countries: ["AR"] }] }))));
   async function previousPhone() {
     const view = renderRouteWithProviders("/recuperar");
-    fireEvent.click(await screen.findByRole("button", { name: "WhatsApp" }));
+    await screen.findByRole("button", { name: /^Método de ingreso( |$)/ }); pick("Método de ingreso", "WhatsApp");
     const input = screen.getByRole("textbox", { name: "Número de WhatsApp" });
     await waitFor(() => expect(input).toBeEnabled()); fireEvent.change(input, { target: { value: oldPhone.number } });
     return { ...view, input };
@@ -436,7 +437,7 @@ describe("Recuperar por WhatsApp", () => {
   async function newPhoneStep() {
     const view = await previousPhone(); fireEvent.click(screen.getByRole("button", { name: "Seguir" }));
     await screen.findByRole("heading", { name: "¿Dónde te escribimos?" });
-    fireEvent.click(screen.getByRole("button", { name: "WhatsApp" }));
+    pick("Método de ingreso", "WhatsApp");
     const input = screen.getByRole("textbox", { name: "Número de WhatsApp nuevo" });
     await waitFor(() => expect(input).toBeEnabled()); fireEvent.change(input, { target: { value: newPhone.number } });
     return { ...view, input };
@@ -482,7 +483,7 @@ describe("Recuperar por WhatsApp", () => {
     let release: (() => void) | undefined;
     server.use(http.post("/api/account-recovery/preview", async () => { await new Promise<void>((resolve) => { release = resolve; }); return new HttpResponse(null, { status: 204 }); }));
     await previousPhone(); fireEvent.click(screen.getByRole("button", { name: "Seguir" })); await waitFor(() => expect(release).toBeDefined());
-    fireEvent.click(screen.getByRole("button", { name: "Correo" })); await act(async () => { release?.(); });
+    pick("Método de ingreso", "Correo"); await act(async () => { release?.(); });
     expect(screen.getByRole("heading", { name: "Recuperar mi cuenta" })).toBeVisible(); expect(screen.queryByRole("heading", { name: "¿Dónde te escribimos?" })).not.toBeInTheDocument();
   });
 });

@@ -28,7 +28,7 @@ import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { FormSkeleton } from "@/shared/ui/FormSkeleton";
 import { Page } from "@/shared/ui/Page";
 import { Section, SectionFields } from "@/shared/ui/Section";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
+import { Picker } from "@/shared/ui/Picker";
 import { fetchPlatformSettings, platformSettingsKey, updatePlatformSettings } from "../api/platformSettings";
 import { RateLimitsSection } from "../components/RateLimitsSection";
 import { draftsOf, rateLimitBounds, rateLimitProfiles, rateLimitsInput, sameRateLimits, validPermitLimit, validWindow } from "../lib/rateLimits";
@@ -149,17 +149,12 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
       <form id="platform-settings-editor" noValidate aria-label={t("platformSettings:title")} onSubmit={(event) => { void submit(event); }} className="flex flex-col gap-3.5">
         <Section title={t("platformSettings:signupTitle")} phone="inset"><SectionFields className="grid gap-3.5 lg:grid-cols-2 lg:gap-x-5">
           <FormField label={t("platformSettings:fields.consumerSignup")} error={errors.consumerSignup?.message}>
-            <Select value={consumer.field.value} onValueChange={(value) => { changed("consumerSignup"); consumer.field.onChange(value); }}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger><SelectContent>
-              <SelectItem value="Open" description={t("platformSettings:consumer.Open.description")}>{t("platformSettings:consumer.Open.label")}</SelectItem>
-              <SelectItem value="Closed" description={t("platformSettings:consumer.Closed.description")}>{t("platformSettings:consumer.Closed.label")}</SelectItem>
-            </SelectContent></Select>
+            <Picker value={consumer.field.value} onChange={(value) => { if (value === consumer.field.value) return; changed("consumerSignup"); consumer.field.onChange(value); }}
+              options={(["Open", "Closed"] as const).map((value) => ({ value, label: t(`platformSettings:consumer.${value}.label`), description: t(`platformSettings:consumer.${value}.description`) }))} />
           </FormField>
           <FormField label={t("platformSettings:fields.businessSignup")} error={errors.businessSignup?.message}>
-            <Select value={business.field.value} onValueChange={(value) => { changed("businessSignup"); business.field.onChange(value); }}><SelectTrigger className="w-full"><SelectValue /></SelectTrigger><SelectContent>
-              <SelectItem value="Open" description={t("platformSettings:business.Open.description")}>{t("platformSettings:business.Open.label")}</SelectItem>
-              <SelectItem value="RequiresApproval" description={t("platformSettings:business.RequiresApproval.description")}>{t("platformSettings:business.RequiresApproval.label")}</SelectItem>
-              <SelectItem value="Closed" description={t("platformSettings:business.Closed.description")}>{t("platformSettings:business.Closed.label")}</SelectItem>
-            </SelectContent></Select>
+            <Picker value={business.field.value} onChange={(value) => { if (value === business.field.value) return; changed("businessSignup"); business.field.onChange(value); }}
+              options={(["Open", "RequiresApproval", "Closed"] as const).map((value) => ({ value, label: t(`platformSettings:business.${value}.label`), description: t(`platformSettings:business.${value}.description`) }))} />
           </FormField>
           <FormField label={t("platformSettings:fields.maxOwnedOrganizations")} error={errors.maxOwnedOrganizations?.message}>
             <NumberField name={count.field.name} value={count.field.value} onChange={(value) => { changed("maxOwnedOrganizations"); count.field.onChange(value); }} />

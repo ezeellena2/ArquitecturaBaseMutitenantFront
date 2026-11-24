@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { NumberField } from "@/shared/ui/fields/NumberField";
 import { Section, SectionFields } from "@/shared/ui/Section";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
+import { Picker } from "@/shared/ui/Picker";
 import { rateLimitProfiles, type RateLimitProfile, type RateLimitUnit } from "../lib/rateLimits";
 import type { SettingsForm } from "../pages/PlatformSettingsPage";
 
@@ -51,10 +51,9 @@ function RateLimitRow({ control, profile, errors, phone, onChange }: {
     aria-invalid={Boolean(permitError)} aria-describedby={permitError ? permitErrorId : undefined} onChange={(value) => { onChange(); permits.field.onChange(value); }} />;
   const amountField = <NumberField name={amount.field.name} value={amount.field.value} aria-label={t("rateLimits.everyOf", { name })}
     aria-invalid={Boolean(windowError)} aria-describedby={windowError ? windowErrorId : undefined} onChange={(value) => { onChange(); amount.field.onChange(value); }} />;
-  const unitField = <Select value={unit.field.value} onValueChange={(value) => { onChange(); unit.field.onChange(value); }}>
-    <SelectTrigger className="w-full" aria-label={t("rateLimits.unitOf", { name })} aria-invalid={Boolean(windowError) || undefined}><SelectValue /></SelectTrigger>
-    <SelectContent>{units.map((value) => <SelectItem key={value} value={value}>{t(`rateLimits.units.${value}`, { count })}</SelectItem>)}</SelectContent>
-  </Select>;
+  const unitField = <Picker label={t("rateLimits.unitOf", { name })} value={unit.field.value} aria-invalid={Boolean(windowError) || undefined}
+    onChange={(value) => { if (value === unit.field.value) return; onChange(); unit.field.onChange(value); }}
+    options={units.map((value) => ({ value, label: t(`rateLimits.units.${value}`, { count }) }))} />;
   const permitMessage = permitError ? <span id={permitErrorId} role="alert" className="text-[0.78125rem] text-[var(--peligro)] max-md:text-[0.8125rem]">{permitError}</span> : null;
   const windowMessage = windowError ? <span id={windowErrorId} role="alert" className="text-[0.78125rem] text-[var(--peligro)] max-md:text-[0.8125rem]">{windowError}</span> : null;
 

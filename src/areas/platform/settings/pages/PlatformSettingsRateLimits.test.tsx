@@ -32,10 +32,10 @@ describe("Límites de uso", { timeout: 15_000 }, () => {
     expect(within(group).getAllByRole("textbox", { name: /^Pedidos · / })).toHaveLength(12);
     expect(field("Pedidos · Por dirección IP")).toHaveValue("300");
     expect(field("Cada · Por dirección IP")).toHaveValue("1");
-    expect(screen.getByRole("combobox", { name: "Unidad · Por dirección IP" })).toHaveTextContent("minuto");
+    expect(screen.getByRole("button", { name: /^Unidad · Por dirección IP( |$)/ })).toHaveTextContent("minuto");
     expect(field("Pedidos · Pedir un código")).toHaveValue("20");
     expect(field("Cada · Pedir un código")).toHaveValue("15");
-    expect(screen.getByRole("combobox", { name: "Unidad · Pedir un código" })).toHaveTextContent("minutos");
+    expect(screen.getByRole("button", { name: /^Unidad · Pedir un código( |$)/ })).toHaveTextContent("minutos");
     expect(field("Pedidos · Por organización")).toHaveValue("600");
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -46,7 +46,7 @@ describe("Límites de uso", { timeout: 15_000 }, () => {
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
     type("Pedidos · Consultas fijas", "30");
     type("Cada · Probar una clave nueva", "1");
-    const unit = screen.getByRole("combobox", { name: "Unidad · Probar una clave nueva" }); unit.focus(); await user.keyboard("{Enter}");
+    const unit = screen.getByRole("button", { name: /^Unidad · Probar una clave nueva( |$)/ }); unit.focus(); await user.keyboard("{Enter}");
     await user.click(await screen.findByRole("option", { name: "hora" }));
     await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
     const dialog = await screen.findByRole("dialog", { name: "¿Guardar la configuración?" });
