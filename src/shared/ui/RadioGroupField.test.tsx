@@ -2,6 +2,7 @@ import { act, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
+import { axe } from "vitest-axe";
 import { RadioGroupField } from "./RadioGroupField";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
 
@@ -104,5 +105,50 @@ describe("RadioGroupField", () => {
 
     expect(screen.getByRole("alert")).toHaveTextContent("Elegí por dónde mandarla.");
     expect(screen.getByRole("radiogroup", { name: "Por dónde" })).toHaveAccessibleDescription("Elegí por dónde mandarla.");
+  });
+
+  // 211: una opción apagada con su motivo sigue en el Tab y en las flechas del grupo, con su nombre, «no disponible» y el
+  // motivo de descripción. Responde el renglón entero: el clic, el toque, Enter o Espacio muestran el motivo arriba del
+  // punto y no la eligen.
+  describe("una opción apagada con su motivo (211)", () => {
+    const reason = "Cargá un correo para usar esta opción.";
+    const offOptions = [
+      { value: "WhatsApp", label: "Por WhatsApp" },
+      { value: "Email", label: "Por correo", disabled: true, disabledReason: reason },
+    ];
+
+    it.each(["list", "segmented"] as const)("%s: el clic, el toque o el foco con las flechas muestran el motivo y no la eligen; pasa axe", async (variant) => {
+      const onValueChange = vi.fn();
+      const { container } = renderWithProviders(<main><RadioGroupField variant={variant} label="Por dónde" options={offOptions} value="WhatsApp" onValueChange={onValueChange} /></main>);
+      const email = screen.getByRole("radio", { name: "Por correo" });
+
+      expect(email).toHaveAttribute("aria-disabled", "true");
+      expect(email).not.toBeDisabled();
+      expect(email).toHaveAccessibleDescription(reason);
+      expect(screen.queryByText(reason)).not.toBeVisible();
+
+      await userEvent.click(screen.getByText("Por correo"));
+      expect(await screen.findByRole("tooltip")).toHaveTextContent(reason);
+      await userEvent.pointer({ keys: "[TouchA]", target: document.body });
+      expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+      await userEvent.pointer({ keys: "[TouchA]", target: email });
+      expect(await screen.findByRole("tooltip")).toHaveTextContent(reason);
+      await userEvent.keyboard("{Escape}");
+
+      act(() => screen.getByRole("radio", { name: "Por WhatsApp" }).focus());
+      await userEvent.keyboard(variant === "segmented" ? "{ArrowRight}" : "{ArrowDown}");
+      expect(email).toHaveFocus();
+      expect(await screen.findByRole("tooltip")).toHaveTextContent(reason);
+      await userEvent.keyboard("{Escape}");
+      await userEvent.keyboard("{Enter}");
+      expect(await screen.findByRole("tooltip")).toHaveTextContent(reason);
+      await userEvent.keyboard("{Escape}");
+      await userEvent.keyboard(" ");
+      expect(await screen.findByRole("tooltip")).toHaveTextContent(reason);
+
+      expect(onValueChange).not.toHaveBeenCalled();
+      expect(email).not.toBeChecked();
+      expect(await axe(container)).toHaveNoViolations();
+    });
   });
 });

@@ -17,7 +17,8 @@
     "close": "Cerrar",
     "clearFilters": "Limpiar filtros",
     "done": "Listo",
-    "back": "Volver"
+    "back": "Volver",
+    "moreInfo": "Más información sobre {{label}}"
   },
   "notice": {
     "whatCanYouDo": "Qué podés hacer",

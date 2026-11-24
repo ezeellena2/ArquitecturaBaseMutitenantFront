@@ -69,7 +69,7 @@ export interface PageTabs {
 
 interface PageProps {
   title: string;
-  /** La ayuda que sirve (116): una (i) junto al título, con su tooltip; en el teléfono, tocarla abre la hoja chica. */
+  /** La ayuda que sirve (116): una (i) junto al título, con su tooltip, que también se abre con un toque (211). */
   help?: string;
   summary?: ReactNode;
   backTo?: { to: string; label: string };

@@ -3,9 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "cn"
 import { Slot } from "radix-ui"
 import { useTranslation } from "react-i18next"
-import { toast } from "sonner"
-import { useAppChrome } from "./app/AppChrome"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./tooltip"
+import { InformativeTooltip } from "./InformativeTooltip"
 
 // Tablero «Criterio · Botones»: cuatro tipos y tres tamaños, iguales en todas las pantallas. El de ícono (⋮, ✕, ☰)
 // mide 32 × 32 y siempre lleva nombre para el lector de pantalla.
@@ -65,20 +63,19 @@ function Button({
     /** Lo que dice mientras tanto: «Guardando…» si no se pasa; «Invitando…», «Enviando…» o el del tablero, si no. Una
      * acción de peligro dice lo que hace («Quitando…», «Desvinculando…», «Dando de baja…»), nunca su propio texto. */
     pendingLabel?: React.ReactNode
-    /** «Criterio · Botones» (116): por qué está apagado, si no es obvio. Va en su tooltip y, en el teléfono, tocarlo lo
-     * muestra en la franja oscura de abajo. Apagado así, el botón sigue en el recorrido del teclado (`aria-disabled`),
-     * para que se lea su motivo, y no hace nada. */
+    /** «Criterio · Botones» (116 y 211): por qué está apagado, si no es obvio. Va en un tooltip sobre el botón, que se
+     * abre con el mouse, el foco, un clic, un toque, Enter o Espacio, igual en el teléfono. Apagado así, el botón sigue en
+     * el recorrido del teclado (`aria-disabled`), con el motivo de descripción, y no hace nada ni manda su formulario. */
     disabledReason?: string
   }) {
   const Comp = asChild ? Slot.Root : "button"
   const working = pending && !asChild
   const reasonId = React.useId()
-  const { phone } = useAppChrome()
   const off = disabledReason !== undefined && !working && !asChild
   const reasonProps = off ? {
     "aria-disabled": true,
     "aria-describedby": [props["aria-describedby"], reasonId].filter(Boolean).join(" "),
-    onClick: (event: React.MouseEvent<HTMLButtonElement>) => { event.preventDefault(); if (phone) toast(disabledReason) },
+    onClick: (event: React.MouseEvent<HTMLButtonElement>) => event.preventDefault(),
   } : { onClick }
 
   const element = (
@@ -100,12 +97,7 @@ function Button({
   )
   if (!off) return element
   return <>
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>{element}</TooltipTrigger>
-        <TooltipContent>{disabledReason}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <InformativeTooltip text={disabledReason}>{element}</InformativeTooltip>
     <span id={reasonId} hidden>{disabledReason}</span>
   </>
 }

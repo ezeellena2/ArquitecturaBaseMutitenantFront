@@ -30,8 +30,9 @@ describe("FormField", () => {
     expect(input).toHaveAccessibleDescription("Ingresá un correo válido.");
   });
 
-  // 116 («Criterio · Formularios», .i-ay): la ayuda va en una (i) junto al rótulo, con su tooltip, y es la descripción
-  // del campo; sin leyenda debajo, y la (i) no toma el foco ni se suma al nombre del campo.
+  // 116 y 211 («Criterio · Formularios», .i-ay): la ayuda va en una (i) junto al rótulo, con su tooltip, y es la
+  // descripción del campo; sin leyenda debajo. La (i) va fuera del rótulo, así no se suma al nombre del campo, y se
+  // alcanza con Tab: Enter la abre, y un clic la abre sin pasarle el foco al campo.
   it("puts the help in the (i) next to the label, as the field's description", async () => {
     const user = userEvent.setup();
     const { container } = render(
@@ -43,12 +44,22 @@ describe("FormField", () => {
     const input = screen.getByRole("textbox", { name: "Código" });
     expect(input).toHaveAccessibleDescription("Te lo mandamos por email.");
     expect(screen.queryByText("Te lo mandamos por email.")).not.toBeVisible();
-    const info = container.querySelector("[data-slot='info-tip']")!;
-    expect(info).toHaveAttribute("aria-hidden", "true");
-    expect(info).not.toHaveAttribute("tabindex");
-    await user.hover(info);
+    const info = screen.getByRole("button", { name: "Más información sobre Código" });
+    expect(info).toHaveAccessibleDescription("Te lo mandamos por email.");
+    expect(info.closest("label")).toBeNull();
+    await user.click(info);
     expect(await screen.findByRole("tooltip")).toHaveTextContent("Te lo mandamos por email.");
+    expect(input).not.toHaveFocus();
     expect(await axe(container)).toHaveNoViolations();
+
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    (document.activeElement as HTMLElement | null)?.blur();
+    await user.tab();
+    expect(info).toHaveFocus();
+    await user.keyboard("{Escape}");
+    await user.keyboard("{Enter}");
+    expect(await screen.findByRole("tooltip")).toHaveTextContent("Te lo mandamos por email.");
   });
 
   it("announces a required field and uses the compact field label style", () => {

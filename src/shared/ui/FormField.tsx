@@ -29,13 +29,14 @@ export function FormField({ label, htmlFor, help, error, required, aside, varian
 
   // «Criterio · Formularios»: rótulo de 12,5 a 6 del campo; en el teléfono de la app (tableros M-*, .ap-cmp .rt), de 13,5
   // con el interlineado normal. En ingreso y registro (tableros Ingreso, Registro y sus M-*), de 12,5 en cualquier tamaño.
-  const labelElement = <Label htmlFor={controlId} className={cn("gap-1! text-[0.78125rem] font-semibold text-[var(--t2)]", variant === "auth" ? "" : "max-md:text-[0.84375rem] max-md:leading-[normal]")}>
+  const labelText = <Label htmlFor={controlId} className={cn("gap-1! text-[0.78125rem] font-semibold text-[var(--t2)]", variant === "auth" ? "" : "max-md:text-[0.84375rem] max-md:leading-[normal]")}>
     {label}
     {/* Tablero «Criterio · Formularios»: el asterisco de obligatorio va en rojo. */}
     {required ? <span aria-hidden="true" className="text-[var(--peligro)]">{" *"}</span> : null}
-    {/* «Criterio · Formularios» (.i-ay): la (i), después del asterisco. */}
-    {help ? <InfoTip id={helpId} text={help} title={label} /> : null}
   </Label>;
+  // «Criterio · Formularios» (.i-ay): la (i), después del asterisco, a la misma distancia. Va fuera del rótulo: es un botón
+  // (211), y adentro se sumaría al nombre del campo y tocarla le pasaría el foco.
+  const labelElement = help ? <span className="flex items-center gap-1">{labelText}<InfoTip id={helpId} text={help} title={label} /></span> : labelText;
 
   return (
     <div className="flex flex-col gap-1.5">

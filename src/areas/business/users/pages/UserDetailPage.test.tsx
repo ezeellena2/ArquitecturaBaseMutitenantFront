@@ -346,7 +346,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
   // «Criterio · Botones» y tablero Usuario (v104): «Sumar» nunca se apaga; sin empresa, el campo queda en rojo con
   // «Elegí una empresa.» y se limpia al elegir una.
   // 211: con todas las empresas asignadas, «Agregar empresa» queda apagado y dice por qué, sobre el mismo botón; se alcanza
-  // con el teclado y no abre el diálogo. En el teléfono, tocarlo lo muestra.
+  // con el teclado y no abre el diálogo. El clic o el toque muestran el motivo encima, igual en el teléfono.
   it.each([false, true])("con todas las empresas, «Agregar empresa» se apaga con su motivo (teléfono: %s)", async (onPhone) => {
     const restore = onPhone ? asPhone() : () => {};
     try {
@@ -360,7 +360,8 @@ describe("UserDetailPage (tablero Usuario)", () => {
       expect(add).toHaveAccessibleDescription("Ya tiene acceso a todas las empresas.");
       await user.click(add);
       expect(screen.queryByRole("dialog", { name: "Agregar empresa" })).not.toBeInTheDocument();
-      if (onPhone) expect(await screen.findByText("Ya tiene acceso a todas las empresas.", { selector: "[data-sonner-toast] *" })).toBeInTheDocument();
+      expect(await screen.findByRole("tooltip")).toHaveTextContent("Ya tiene acceso a todas las empresas.");
+      expect(screen.queryByText("Ya tiene acceso a todas las empresas.", { selector: "[data-sonner-toast] *" })).not.toBeInTheDocument();
     } finally {
       restore();
     }

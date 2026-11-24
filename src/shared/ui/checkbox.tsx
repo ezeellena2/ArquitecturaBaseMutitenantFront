@@ -15,8 +15,9 @@ function Checkbox({
       className={cn(
         "peer size-4 shrink-0 rounded-[0.25rem] border border-input transition-shadow outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:bg-input/30 dark:aria-invalid:ring-destructive/40 dark:data-[state=checked]:bg-primary",
         // Tablero Rol (un rol de sistema): bloqueada va gris, como las casillas bloqueadas del navegador, y no en el
-        // verde de la marca a media transparencia.
+        // verde de la marca a media transparencia. Igual apagada con su motivo (`aria-disabled`, 211).
         "disabled:opacity-100 disabled:border-[var(--borde2)] disabled:bg-[var(--s2)] disabled:data-[state=checked]:border-[var(--borde2)] disabled:data-[state=checked]:bg-[var(--borde2)]",
+        "aria-disabled:cursor-not-allowed aria-disabled:border-[var(--borde2)] aria-disabled:bg-[var(--s2)] aria-disabled:data-[state=checked]:border-[var(--borde2)] aria-disabled:data-[state=checked]:bg-[var(--borde2)]",
         className
       )}
       {...props}

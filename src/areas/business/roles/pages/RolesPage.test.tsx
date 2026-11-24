@@ -142,8 +142,8 @@ describe("RolesPage", () => {
     expect(within(system).getAllByRole("menuitem").map((item) => item.textContent)).toEqual(["Ver permisos"]);
   });
 
-  // R10 (pantallas-y-ui, 13/10): con usuarios, «Dar de baja» va apagado y con el motivo debajo, en la compu y en el teléfono;
-  // sin usuarios, abre «¿Dar de baja el rol …?».
+  // R10 y 211: con usuarios, «Dar de baja» va apagado y el clic o el toque abren su motivo sobre la opción, sin correrla, en
+  // la compu y en el teléfono; Escape cierra primero el motivo y después el menú. Sin usuarios, abre «¿Dar de baja el rol …?».
   it.each([["la compu", false], ["el teléfono", true]] as const)("en %s, «Dar de baja» va apagado con su motivo si el rol tiene usuarios", async (_, phone) => {
     const user = userEvent.setup();
     const inUse = { ...companyReader, id: "role-in-use", name: "Auditor", userCount: 1 };
@@ -161,8 +161,11 @@ describe("RolesPage", () => {
       expect(blocked).toHaveAttribute("aria-disabled", "true");
       expect(blocked).toHaveAccessibleDescription("Lo tiene 1 usuario. Quitáselo primero.");
       await user.click(blocked);
+      expect(await screen.findByRole("tooltip")).toHaveTextContent("Lo tiene 1 usuario. Quitáselo primero.");
       expect(screen.getByRole("menuitem", { name: "Dar de baja" })).toBeVisible();
       expect(screen.queryByRole("dialog", { name: /¿Dar de baja el rol/ })).not.toBeInTheDocument();
+      await user.keyboard("{Escape}");
+      expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
       await user.keyboard("{Escape}");
       await waitFor(() => expect(screen.queryByRole("menuitem", { name: "Dar de baja" })).not.toBeInTheDocument());
 

@@ -106,20 +106,51 @@ describe("Button · Criterio · Botones", () => {
     expect(button).not.toBeDisabled();
     expect(button).toHaveClass("opacity-50");
     expect(button).toHaveAccessibleDescription("Guardá los cambios antes de publicar.");
-    // Primero el mouse encima: el tooltip dice el motivo. Un clic de Radix lo cierra, así que va después.
     await user.hover(button);
     expect((await screen.findByRole("tooltip")).textContent).toContain("Guardá los cambios antes de publicar.");
+    // 211: el clic muestra el motivo y no hace la acción; el tooltip sigue abierto.
     await user.click(button);
     expect(onClick).not.toHaveBeenCalled();
+    expect(screen.getByRole("tooltip")).toHaveTextContent("Guardá los cambios antes de publicar.");
     expect(toast).not.toHaveBeenCalled();
   });
 
-  it("en el teléfono, tocar un botón apagado muestra su motivo en la franja oscura de abajo", async () => {
+  // 211: Enter o Espacio muestran el motivo, no hacen la acción y no mandan el formulario, tampoco con Enter en un campo.
+  it("apagado con su motivo: Enter o Espacio lo muestran sin hacer la acción ni mandar el formulario", async () => {
+    const onClick = vi.fn();
+    const onSubmit = vi.fn((event: { preventDefault: () => void }) => event.preventDefault());
+    const user = userEvent.setup();
+    render(<form onSubmit={onSubmit}>
+      <input aria-label="Nombre" />
+      <Button type="submit" disabledReason="Guardá los cambios antes de publicar." onClick={onClick}>{"Publicar"}</Button>
+    </form>);
+
+    await user.type(screen.getByRole("textbox", { name: "Nombre" }), "Ana{Enter}");
+    await user.tab();
+    const button = screen.getByRole("button", { name: "Publicar" });
+    expect(button).toHaveFocus();
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    await user.keyboard("{Enter}");
+    expect(await screen.findByRole("tooltip")).toHaveTextContent("Guardá los cambios antes de publicar.");
+    await user.keyboard("{Escape}");
+    await user.keyboard(" ");
+    expect(await screen.findByRole("tooltip")).toHaveTextContent("Guardá los cambios antes de publicar.");
+    expect(onClick).not.toHaveBeenCalled();
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  // 211: en el teléfono, tocar un botón apagado abre el motivo en un tooltip sobre el botón, como en la compu, y lo cierra
+  // tocar afuera; ya no va en la franja oscura de abajo.
+  it("en el teléfono, tocar un botón apagado abre su motivo sobre el botón y tocar afuera lo cierra", async () => {
     render(<AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}>
       <Button disabledReason="Guardá los cambios antes de publicar.">{"Publicar"}</Button>
     </AppChromeProvider>);
 
-    await userEvent.click(screen.getByRole("button", { name: "Publicar" }));
-    expect(toast).toHaveBeenCalledWith("Guardá los cambios antes de publicar.");
+    await userEvent.pointer({ keys: "[TouchA]", target: screen.getByRole("button", { name: "Publicar" }) });
+    expect(await screen.findByRole("tooltip")).toHaveTextContent("Guardá los cambios antes de publicar.");
+    expect(toast).not.toHaveBeenCalled();
+    await userEvent.pointer({ keys: "[TouchA]", target: document.body });
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
   });
 });

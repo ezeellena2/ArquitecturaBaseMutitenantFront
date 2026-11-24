@@ -17,7 +17,8 @@
     "close": "Close",
     "clearFilters": "Clear filters",
     "done": "Done",
-    "back": "Back"
+    "back": "Back",
+    "moreInfo": "More about {{label}}"
   },
   "notice": {
     "whatCanYouDo": "What you can do",

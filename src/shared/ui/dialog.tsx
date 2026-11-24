@@ -64,6 +64,7 @@ function DialogContent({
   showCloseButton = true,
   size = "default",
   onInteractOutside,
+  onOpenAutoFocus,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   /** `"desktop"`: la ✕ solo en la compu, para un diálogo que en el teléfono es la hoja de una confirmación (Cuenta-Baja).
@@ -76,6 +77,17 @@ function DialogContent({
 }) {
   const { t } = useTranslation()
   const concealed = React.useContext(ConcealedContext)
+  // Radix pone el foco en lo primero que se alcanza con Tab; si es una (i) (211), su tooltip taparía el contenido. El foco
+  // va a lo que sigue, y la (i) queda un Tab atrás.
+  const skipInfoTip = (event: Event) => {
+    onOpenAutoFocus?.(event)
+    if (event.defaultPrevented || !(event.currentTarget instanceof HTMLElement)) return
+    const tabbable = [...event.currentTarget.querySelectorAll<HTMLElement>("button, [href], input:not([type=hidden]), select, textarea, [tabindex]")]
+      .filter((element) => element.tabIndex >= 0 && !element.matches(":disabled") && !element.closest("[hidden], [inert]"))
+    if (tabbable[0]?.dataset.slot !== "info-tip") return
+    event.preventDefault()
+    tabbable.find((element) => element.dataset.slot !== "info-tip")?.focus()
+  }
 
   return (
     <DialogPortal data-slot="dialog-portal">
@@ -93,6 +105,7 @@ function DialogContent({
           concealed && "hidden"
         )}
         {...props}
+        onOpenAutoFocus={skipInfoTip}
         // Criterio-Dialogos: se cierra con ✕, Cancelar o Escape; un clic afuera no lo cierra.
         onInteractOutside={(event) => {
           onInteractOutside?.(event)

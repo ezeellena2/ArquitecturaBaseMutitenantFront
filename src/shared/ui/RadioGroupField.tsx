@@ -1,16 +1,19 @@
-import { useId, type ReactNode } from "react";
+import { Fragment, useId, type MouseEvent, type ReactNode } from "react";
 import { RadioGroup } from "radix-ui";
 import { cn } from "@/shared/lib/utils";
 import { InfoTip } from "./InfoTip";
+import { InformativeTooltip } from "./InformativeTooltip";
 import { Label } from "./label";
 
 export interface RadioOption {
   value: string;
   label: string;
-  /// La ayuda de la opción (116): una (i) al final, con su tooltip; es su descripción. En una opción apagada, es el
-  /// porqué ("Cargá un correo para usar esta opción").
+  /// La ayuda de la opción (116): una (i) al final, con su tooltip; es su descripción. Tocarla no la elige.
   help?: string;
   disabled?: boolean;
+  /// Por qué está apagada, si no es obvio (211): un tooltip arriba de la opción, sin texto ni ícono al lado, y su
+  /// descripción accesible. Solo cuenta mientras está apagada.
+  disabledReason?: string;
 }
 
 interface RadioGroupFieldProps {
@@ -29,6 +32,10 @@ interface RadioGroupFieldProps {
   error?: string;
 }
 
+/// El clic solo muestra el motivo: Radix saltea la elección después de un `preventDefault`, también la que hace al
+/// llegar con las flechas.
+const showOnly = (event: MouseEvent) => event.preventDefault();
+
 /// Una elección entre pocas opciones («Criterio · Formularios», «Lo elegido, sin dudas» (142)). Es el Radio Group de
 /// Radix, que da el rol `radiogroup`, las flechas para moverse y el foco en la elegida.
 /// - `segmented` (`.seg`): dos o tres opciones fijas que cambian lo que se pide abajo, en una vía blanca con su borde;
@@ -36,6 +43,11 @@ interface RadioGroupFieldProps {
 ///   44 × 44 (187). Un rótulo largo baja de renglón, entero (174).
 /// - `list` («Tarjetas de opción», `.r311-cards2`): una tarjeta por opción, una debajo de la otra, con su punto; la
 ///   elegida suma un borde de 2 px y el tinte de la marca, sin moverse.
+///
+/// Una opción apagada con su motivo (211) sigue en el Tab y en las flechas del grupo, con `aria-disabled` en lugar de
+/// `disabled`: el lector dice su nombre, «no disponible» y el motivo, y el clic, el toque, Enter o Espacio solo muestran
+/// el motivo. Responde la tarjeta o el segmento entero: su envoltorio toma el puntero y abre el motivo, que se ancla en el
+/// punto o en el segmento.
 export function RadioGroupField({ label, options, value, onValueChange, error, variant = "list", id: fieldId,
   "aria-invalid": invalid, "aria-describedby": describedBy }: RadioGroupFieldProps): ReactNode {
   const id = useId();
@@ -59,13 +71,27 @@ export function RadioGroupField({ label, options, value, onValueChange, error, v
         {options.map((option) => {
           const optionId = `${id}-${option.value}`;
           const helpId = `${optionId}-help`;
+          const reasonId = `${optionId}-reason`;
+          const off = option.disabled === true && option.disabledReason !== undefined;
+          const reason = off ? <span id={reasonId} hidden>{option.disabledReason}</span> : null;
+          const offProps = off ? { "aria-disabled": true, onClick: showOnly } : {};
+          // Apagada con motivo, el envoltorio toma el puntero y abre el motivo; el punto o el segmento, no.
+          const withReason = (item: ReactNode, className: string) => off
+            ? <InformativeTooltip text={option.disabledReason}><span data-slot="disabled-reason" className={cn("cursor-not-allowed", className)}>{item}</span></InformativeTooltip>
+            : item;
 
-          if (variant === "segmented") return <RadioGroup.Item key={option.value} value={option.value} disabled={option.disabled}
-            className="relative flex min-h-7.5 min-w-0 items-center justify-center rounded-[0.5rem] px-2 py-1 text-center text-[0.8125rem] leading-[1.25] font-semibold text-[var(--t2)] [overflow-wrap:anywhere] outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] data-[state=unchecked]:enabled:hover:bg-[var(--s2)] data-[state=checked]:bg-[var(--marca)] data-[state=checked]:text-[var(--superficie)] disabled:cursor-not-allowed disabled:opacity-50 max-md:min-h-11 max-md:min-w-11 max-md:rounded-[0.5625rem] max-md:text-[0.90625rem]">
-            {option.label}
-          </RadioGroup.Item>;
+          if (variant === "segmented") return <Fragment key={option.value}>
+            {withReason(<RadioGroup.Item value={option.value} disabled={option.disabled && !off} {...offProps}
+              aria-describedby={off ? reasonId : undefined}
+              className={cn("relative flex min-h-7.5 min-w-0 items-center justify-center rounded-[0.5rem] px-2 py-1 text-center text-[0.8125rem] leading-[1.25] font-semibold text-[var(--t2)] [overflow-wrap:anywhere] outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] data-[state=unchecked]:enabled:hover:bg-[var(--s2)] data-[state=checked]:bg-[var(--marca)] data-[state=checked]:text-[var(--superficie)] disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:opacity-50 max-md:min-h-11 max-md:min-w-11 max-md:rounded-[0.5625rem] max-md:text-[0.90625rem]",
+                off && "pointer-events-none")}>
+              {option.label}
+            </RadioGroup.Item>, "grid min-w-0")}
+            {reason}
+          </Fragment>;
 
           const checked = value === option.value;
+          const describedByOption = [option.help ? helpId : undefined, off ? reasonId : undefined].filter(Boolean).join(" ");
           return (
             // `relative`: dentro de un formulario, Radix pone al lado del botón un input escondido y posicionado, para
             // que el valor viaje con el formulario. Sin un ancestro posicionado cerca, se ubica contra el diálogo. La
@@ -73,30 +99,33 @@ export function RadioGroupField({ label, options, value, onValueChange, error, v
             <div key={option.value} data-slot="option-card" data-state={checked ? "checked" : "unchecked"}
               className={cn("relative grid grid-cols-[1.125rem_minmax(0,1fr)] items-center gap-2.5 rounded-[0.625rem] text-[0.8125rem]",
                 checked ? "border-2 border-[var(--marca)] bg-[var(--marca-t)] px-2.75 py-2.25" : "border border-[var(--borde)] bg-[var(--superficie)] px-3 py-2.5")}>
-              <RadioGroup.Item
+              {withReason(<RadioGroup.Item
                 id={optionId}
                 value={option.value}
-                disabled={option.disabled}
-                aria-describedby={option.help ? helpId : undefined}
+                disabled={option.disabled && !off}
+                {...offProps}
+                aria-describedby={describedByOption || undefined}
                 className={cn(
                   "size-4 shrink-0 rounded-full border-[1.5px] border-[var(--borde2)] bg-[var(--superficie)] outline-none",
                   "focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] data-[state=checked]:border-[0.3125rem] data-[state=checked]:border-[var(--marca)]",
-                  "disabled:cursor-not-allowed disabled:opacity-50",
+                  "disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:opacity-50",
+                  off && "pointer-events-none",
                 )}
-              />
+              />, "inline-flex after:absolute after:inset-0")}
               <span className="flex min-w-0 items-center gap-1">
                 {/* El rótulo cubre la tarjeta entera: tocarla en cualquier lado elige la opción. */}
                 <Label
                   htmlFor={optionId}
                   className={cn(
-                    "leading-[1.25] font-semibold [overflow-wrap:anywhere] after:absolute after:inset-0",
-                    option.disabled ? "text-[var(--t2)]" : "cursor-pointer",
+                    "leading-[1.25] font-semibold [overflow-wrap:anywhere]",
+                    option.disabled ? "text-[var(--t2)]" : "cursor-pointer after:absolute after:inset-0",
                   )}
                 >
                   {option.label}
                 </Label>
                 {option.help ? <InfoTip id={helpId} text={option.help} title={option.label} /> : null}
               </span>
+              {reason}
             </div>
           );
         })}

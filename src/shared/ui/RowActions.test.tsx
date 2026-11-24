@@ -129,14 +129,16 @@ describe("RowActions", () => {
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   });
 
-  // R10 y 116 («Criterio · Menús»; tablero M-WA-Chats-Formulario, .ap-menu span.off): una opción que no se puede usar por
-  // algo que se puede resolver va apagada, en gris y sin texto debajo; el motivo va en su tooltip (en el teléfono, tocarla
-  // lo muestra en la franja oscura de abajo) y es su descripción. Se lee con el teclado, pero no hace nada.
+  // R10, 116 y 211 («Criterio · Menús»; tablero M-WA-Chats-Formulario, .ap-menu span.off): una opción que no se puede usar
+  // por algo que se puede resolver va apagada, en gris y sin texto debajo; el motivo va en un tooltip sobre ella, que el
+  // clic, el toque, Enter o Espacio abren sin correrla, igual en la compu y en la hoja del teléfono (ya no en la franja
+  // oscura), y es su descripción. Se lee con el teclado, pero no hace nada ni cierra el menú.
   it.each([["la compu", false], ["el teléfono", true]] as const)("en %s, una opción apagada dice su motivo sin texto debajo y no corre", async (_, phone) => {
     const onSelect = vi.fn();
+    const reason = "Lo tiene 1 usuario. Quitáselo primero.";
     renderWithProviders(<AppChromeProvider value={{ phone, parent: null, subtitle: null, hideBottomNav: () => {} }}>
       <RowActions label="Acciones de Auditor" actions={[action(),
-        action({ label: "Inactivar", accessibleName: "Inactivar", destructive: true, onSelect, disabledReason: "Lo tiene 1 usuario. Quitáselo primero." })]} />
+        action({ label: "Inactivar", accessibleName: "Inactivar", destructive: true, onSelect, disabledReason: reason })]} />
     </AppChromeProvider>);
 
     const trigger = screen.getByRole("button", { name: "Acciones de Auditor" });
@@ -144,19 +146,30 @@ describe("RowActions", () => {
     await userEvent.keyboard("{Enter}");
     const off = await screen.findByRole("menuitem", { name: "Inactivar" });
     expect(off).toHaveAttribute("aria-disabled", "true");
-    expect(off).toHaveAccessibleDescription("Lo tiene 1 usuario. Quitáselo primero.");
+    expect(off).toHaveAccessibleDescription(reason);
     expect(off).toHaveClass("text-[var(--t3)]");
     // Apagada no va en rojo, aunque sea de peligro.
     if (phone) expect(off).not.toHaveClass("text-[var(--peligro)]"); else expect(off).toHaveAttribute("data-variant", "default");
-    expect(screen.queryByText("Lo tiene 1 usuario. Quitáselo primero.")).not.toBeVisible();
+    expect(screen.queryByText(reason)).not.toBeVisible();
     if (!phone) {
       await userEvent.hover(off);
-      expect((await screen.findByRole("tooltip")).textContent).toContain("Lo tiene 1 usuario. Quitáselo primero.");
+      expect((await screen.findByRole("tooltip")).textContent).toContain(reason);
     }
     await userEvent.click(off);
+    expect(await screen.findByRole("tooltip")).toHaveTextContent(reason);
+    await userEvent.pointer({ keys: "[TouchA]", target: off });
+    expect(screen.getByRole("tooltip")).toHaveTextContent(reason);
+    off.focus();
+    await userEvent.keyboard("{Escape}");
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    await userEvent.keyboard("{Enter}");
+    expect(await screen.findByRole("tooltip")).toHaveTextContent(reason);
+    await userEvent.keyboard("{Escape}");
+    await userEvent.keyboard(" ");
+    expect(await screen.findByRole("tooltip")).toHaveTextContent(reason);
     expect(onSelect).not.toHaveBeenCalled();
     expect(screen.getByRole("menuitem", { name: "Inactivar" })).toBeVisible();
-    if (phone) expect(toast).toHaveBeenCalledWith("Lo tiene 1 usuario. Quitáselo primero.");
+    expect(toast).not.toHaveBeenCalled();
   });
 
   // 115: mientras una opción que va directo a la red espera, el ⋮ cambia su dibujo por el aro y no se abre, en la compu y en

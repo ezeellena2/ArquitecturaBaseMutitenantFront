@@ -1,52 +1,40 @@
 import { Info } from "lucide-react";
-import { useState, type MouseEvent } from "react";
+import { useId } from "react";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/shared/lib/utils";
 import { useAppChrome } from "./app/AppChrome";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "./Sheet";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./tooltip";
+import { InformativeTooltip } from "./InformativeTooltip";
 
-/// La (i) de una ayuda («Criterio · Formularios», `.i-ay`; 116): gris, de 14, junto al rótulo de un campo, al título de
-/// una caja o de una página, o al final de una opción. En la compu, el texto sale en su tooltip al pasar el mouse; en el
-/// teléfono, tocarla abre una hoja chica con el texto, con `title` de título (el rótulo que acompaña).
+/// La (i) de una ayuda («Criterio · Formularios», `.i-ay`; 116 y 211): gris, de 14, junto al rótulo de un campo, al título
+/// de una caja o de una página, o al final de una opción. Su texto sale en un tooltip sobre ella, que se abre con el mouse,
+/// el foco, un clic, un toque, Enter o Espacio, igual en la compu y en el teléfono, y lo cierran Escape o tocar afuera.
+/// Tocarla no hace nada más: no marca la casilla ni elige la opción que acompaña, ni le pasa el foco al campo.
 ///
-/// El texto es la descripción accesible de lo que acompaña: quien la usa pone `id` en su `aria-describedby` y el lector
-/// lo lee al llegar al campo. Va escondido (`hidden`), así no se suma al nombre de un rótulo que lo contiene. La (i) no
-/// toma el foco: no se lo roba al campo cuando se abre un diálogo.
+/// Es un botón que se alcanza con Tab, «Más información sobre {title}», descrito por su texto. El texto también es la
+/// descripción accesible de lo que acompaña: quien la usa pone `id` en su `aria-describedby` y el lector lo lee al llegar
+/// al campo. Va escondido (`hidden`) y la (i) va fuera del rótulo, así no se suman a su nombre. Un diálogo que se abre no
+/// le da el foco aunque sea lo primero (`DialogContent`).
 ///
-/// `standalone` es la (i) del estado en la banda (175, `.t10n-i`): no acompaña a un campo, así que se enfoca sola y la
-/// frase es su nombre («El 18/09/2026, 16:45. Motivo: dos meses sin pago.»).
+/// `standalone` es la (i) del estado en la banda (175, `.t10n-i`): no acompaña a un campo, así que la frase es su nombre
+/// («El 18/09/2026, 16:45. Motivo: dos meses sin pago.»).
 export function InfoTip({ id, text, title, className, standalone = false }: { id?: string; text: string; title: string; className?: string; standalone?: boolean }) {
+  const { t } = useTranslation();
   const { phone } = useAppChrome();
-  const [open, setOpen] = useState(false);
+  const generatedId = useId();
+  const textId = id ?? generatedId;
   const icon = <Info aria-hidden="true" strokeWidth={2} className="size-3.5" />;
-  const base = cn("relative inline-flex shrink-0 align-middle text-[var(--t3)]", standalone && "rounded-full focus-visible:outline-2 focus-visible:outline-[var(--foco)]", className);
-  const description = standalone ? null : <span id={id} hidden>{text}</span>;
-  // La (i) sola tiene nombre y foco; la de un campo es solo un dibujo y su texto describe al campo.
-  const role = standalone ? { role: "img", tabIndex: 0, "aria-label": text } : { "aria-hidden": true as const };
+  // El área que se toca llega a 44 × 44 en el teléfono sin mover nada (187).
+  const base = cn("relative inline-flex shrink-0 cursor-default items-center justify-center rounded-full align-middle text-[var(--t3)] outline-none focus-visible:outline-2 focus-visible:outline-[var(--foco)]",
+    phone && "after:absolute after:-inset-3.75", className);
 
-  if (phone) {
-    // Dentro de un rótulo, tocarla no tiene que pasarle el foco al campo.
-    const show = (event: MouseEvent) => { event.preventDefault(); event.stopPropagation(); setOpen(true); };
-    return <>
-      {description}
-      {/* El área que se toca llega a 44 × 44 sin mover nada (187). */}
-      <span {...role} data-slot="info-tip" onClick={show} className={cn(base, "after:absolute after:-inset-3.75")}>{icon}</span>
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent size="sm">
-          <SheetHeader><SheetTitle>{title}</SheetTitle></SheetHeader>
-          <SheetDescription className="px-5 pb-[calc(2.125rem+env(safe-area-inset-bottom))] text-[0.9375rem] leading-[1.45] text-[var(--t1)]">{text}</SheetDescription>
-        </SheetContent>
-      </Sheet>
-    </>;
-  }
+  if (standalone) return <InformativeTooltip text={text}>
+    <span role="img" tabIndex={0} aria-label={text} data-slot="info-tip" className={base}>{icon}</span>
+  </InformativeTooltip>;
 
   return <>
-    {description}
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild><span {...role} data-slot="info-tip" className={base}>{icon}</span></TooltipTrigger>
-        <TooltipContent>{text}</TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <span id={textId} hidden>{text}</span>
+    <InformativeTooltip text={text}>
+      <button type="button" data-slot="info-tip" aria-label={t("actions.moreInfo", { label: title })} aria-describedby={textId} className={base}>{icon}</button>
+    </InformativeTooltip>
   </>;
 }
