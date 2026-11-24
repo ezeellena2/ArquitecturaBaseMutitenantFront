@@ -27,6 +27,17 @@ describe("SelectTrigger · Criterio v65", () => {
     // Tableros M-Configuracion, M-Cuenta y M-Usuario-Empresa (.in2 svg): en el teléfono, la flechita de 18 y casi negra.
     expect(regular.querySelector("svg")).toHaveClass("max-md:size-4.5", "max-md:text-[var(--t1)]", "max-md:opacity-100");
   });
+
+  // «Criterio · Menús» (213): en el teléfono, un desplegable mide 48, nunca menos de 44, con letra de 16; también el
+  // chico de la compu.
+  it("en el teléfono mide 48 con letra de 16, también el chico", () => {
+    render(<>
+      <Select value="value"><SelectTrigger aria-label="Tipo de dato"><SelectValue /></SelectTrigger></Select>
+      <Select value="10"><SelectTrigger size="sm" className="h-7" aria-label="Filas por página"><SelectValue /></SelectTrigger></Select>
+    </>);
+
+    for (const trigger of screen.getAllByRole("combobox")) expect(trigger).toHaveClass("max-md:h-12", "max-md:text-[1rem]");
+  });
 });
 
 // «Criterio · Formularios», Desplegable (decisión del usuario del 2026-10-05): todo desplegable se abre debajo del campo y

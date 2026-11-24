@@ -57,10 +57,40 @@ describe("RadioGroupField", () => {
     expect(onValueChange).toHaveBeenCalledWith("members");
   });
 
+  // «Criterio · Formularios», «Una cosa, una zona» (213): el título de un grupo de opciones lleva su (i), como un campo.
+  it("dibuja el título del grupo con su (i), y el grupo se llama como su título", async () => {
+    const { container } = renderWithProviders(<main><RadioGroupField label="Disponibilidad" showLabel help={"Pausada no atiende consultas.\nLo guardado se conserva."}
+      options={[{ value: "on", label: "Disponible" }, { value: "off", label: "Pausada" }]} value="on" onValueChange={vi.fn()} /></main>);
+
+    const group = screen.getByRole("radiogroup", { name: "Disponibilidad" });
+    expect(group).toHaveAttribute("aria-labelledby");
+    expect(group).not.toHaveAttribute("aria-label");
+    // Como en un campo, la ayuda de la (i) es la descripción del grupo.
+    expect(group).toHaveAccessibleDescription(/^Pausada no atiende consultas\.\s+Lo guardado se conserva\.$/);
+    expect(screen.getByText("Disponibilidad")).toBeVisible();
+    // La (i) va fuera del título: no se suma al nombre del grupo, y tocarla no elige ninguna opción.
+    const info = screen.getByRole("button", { name: "Más información sobre Disponibilidad" });
+    expect(group).not.toContainElement(info);
+    await userEvent.click(info);
+    expect(await screen.findByRole("tooltip")).toHaveTextContent("Pausada no atiende consultas.");
+    expect(screen.getByRole("radio", { name: "Disponible" })).toBeChecked();
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("sin ayuda, el título del grupo va solo, sin (i)", () => {
+    renderWithProviders(<RadioGroupField label="Disponibilidad" showLabel
+      options={[{ value: "on", label: "Disponible" }, { value: "off", label: "Pausada" }]} value="on" onValueChange={vi.fn()} />);
+
+    expect(screen.getByRole("radiogroup", { name: "Disponibilidad" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Más información/ })).not.toBeInTheDocument();
+  });
+
   it("names the group and each option with its label", () => {
     renderWithProviders(<RadioGroupField label="Por dónde" options={options} value="WhatsApp" onValueChange={vi.fn()} />);
 
     expect(screen.getByRole("radiogroup", { name: "Por dónde" })).toBeInTheDocument();
+    // Sin `showLabel`, el nombre del grupo no se dibuja: lo dice lo de arriba.
+    expect(screen.queryByText("Por dónde")).not.toBeInTheDocument();
     expect(screen.getByRole("radio", { name: "Por WhatsApp" })).toBeChecked();
     expect(screen.getByRole("radio", { name: "Por correo" })).not.toBeChecked();
   });

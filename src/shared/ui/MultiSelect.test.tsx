@@ -29,6 +29,8 @@ describe("MultiSelect", () => {
     expect(screen.getByRole("button", { name: "Roles" })).toHaveTextContent("Sin roles");
     // Tablero Usuario: el vacío, como «Ninguno», en el gris de campo vacío.
     expect(screen.getByRole("button", { name: "Roles" })).toHaveClass("text-[var(--t3)]");
+    // «Criterio · Menús» (213): en el teléfono, un desplegable mide 48 con letra de 16.
+    expect(screen.getByRole("button", { name: "Roles" })).toHaveClass("max-md:h-12", "max-md:text-[1rem]");
   });
 
   it("shows the picked options separated by commas", () => {

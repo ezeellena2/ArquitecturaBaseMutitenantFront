@@ -34,6 +34,8 @@ describe("SearchSelect en el teléfono", () => {
   it("abre una hoja con el título del campo y elige tocando una fila", async () => {
     const user = userEvent.setup();
     renderWithProviders(<AppChromeProvider value={phone}><Harness options={few} initial="es-AR" /></AppChromeProvider>);
+    // «Criterio · Menús» (213): en el teléfono, un desplegable mide 48 con letra de 16.
+    expect(screen.getByRole("combobox", { name: "Idioma y región" })).toHaveClass("max-md:h-12", "max-md:text-[1rem]");
 
     await user.click(screen.getByRole("combobox", { name: "Idioma y región" }));
     const sheet = await screen.findByRole("dialog", { name: "Idioma y región" });

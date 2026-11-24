@@ -50,6 +50,15 @@ describe("TaxIdField", () => {
     expect(screen.queryByRole("option", { name: "DNI" })).not.toBeInTheDocument();
   });
 
+  // «Criterio · Menús» (213): en el teléfono, el desplegable del tipo mide 48 con letra de 16, como el número al lado.
+  it("en el teléfono, el desplegable del tipo mide 48 como el número", () => {
+    renderField();
+    const select = screen.getByRole("combobox", { name: "Tipo de identificación" });
+
+    expect(select).toHaveClass("max-md:h-12", "max-md:rounded-[0.75rem]", "max-md:text-[1rem]");
+    expect(screen.getByRole("textbox", { name: "Número fiscal" })).toHaveClass("max-md:h-12");
+  });
+
   it("emite código completo más número sin separadores y valida con stdnum", async () => {
     const { onValidityChange } = renderField();
     const select = screen.getByRole("combobox", { name: "Tipo de identificación" });

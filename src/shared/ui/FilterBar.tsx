@@ -2,7 +2,8 @@ import { useState } from "react";
 import { ListFilter } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Popover as PopoverPrimitive } from "radix-ui";
-import { CheckIcon, ChevronDownIcon, ChevronLeftIcon, CloseIcon, SearchIcon } from "./icons";
+import { CheckIcon, ChevronDownIcon, ChevronLeftIcon, SearchIcon } from "./icons";
+import { FilterChip } from "./FilterChip";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 import {
@@ -197,15 +198,10 @@ export function FilterBar({
         </div>
       </div>
       {more.length > 0 && hasFilters ? <div data-slot="filter-chips" className="flex flex-wrap items-center gap-2">
-        {applied.map((filter) => <span key={filter.key} data-slot="filter-chip"
-          className="inline-flex h-7 items-center gap-1 rounded-[0.5rem] border border-[var(--borde2)] bg-[var(--superficie)] pr-1 pl-2.5 text-[0.8125rem] text-[var(--t1)]">
+        {applied.map((filter) => <FilterChip key={filter.key} removeLabel={t("filters.remove", { filter: chipText(filter) })}
+          onRemove={() => filter.onChange(filter.options[0]?.value ?? "")}>
           {chipText(filter)}
-          <button type="button" aria-label={t("filters.remove", { filter: chipText(filter) })} title={t("filters.remove", { filter: chipText(filter) })}
-            onClick={() => filter.onChange(filter.options[0]?.value ?? "")}
-            className="inline-flex size-5 items-center justify-center rounded-[0.25rem] text-[var(--t3)] hover:bg-[var(--s2)] hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
-            <CloseIcon className="size-3.5" strokeWidth={2} />
-          </button>
-        </span>)}
+        </FilterChip>)}
         <ClearButton onClick={onClear}>{t("filters.clearAll")}</ClearButton>
       </div> : null}
     </Surface>

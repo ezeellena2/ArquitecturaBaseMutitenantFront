@@ -1,6 +1,7 @@
 import { Fragment, useId, type MouseEvent, type ReactNode } from "react";
 import { RadioGroup } from "radix-ui";
 import { cn } from "@/shared/lib/utils";
+import { GroupLabel } from "./GroupLabel";
 import { InfoTip } from "./InfoTip";
 import { InformativeTooltip } from "./InformativeTooltip";
 import { Label } from "./label";
@@ -22,9 +23,13 @@ interface RadioGroupFieldProps {
   id?: string;
   "aria-invalid"?: boolean;
   "aria-describedby"?: string;
-  /// El nombre accesible del grupo. No se dibuja: en el tablero, lo que dice de qué se trata es la casilla de arriba
-  /// ("Mandarle una invitación"), y las opciones se leen solas ("Por correo", "Por WhatsApp").
+  /// El nombre accesible del grupo. Sin `showLabel` no se dibuja: en el tablero, lo que dice de qué se trata es la casilla
+  /// de arriba ("Mandarle una invitación"), y las opciones se leen solas ("Por correo", "Por WhatsApp").
   label: string;
+  /// Dibuja `label` como título del grupo (`GroupLabel`), y el grupo se llama como su título (213).
+  showLabel?: boolean;
+  /// La ayuda del grupo, en la (i) junto a su título, y su descripción, como en un campo (213). Solo con `showLabel`.
+  help?: string;
   options: readonly RadioOption[];
   /// Undefined es "ninguna elegida".
   value: string | undefined;
@@ -48,18 +53,23 @@ const showOnly = (event: MouseEvent) => event.preventDefault();
 /// `disabled`: el lector dice su nombre, «no disponible» y el motivo, y el clic, el toque, Enter o Espacio solo muestran
 /// el motivo. Responde la tarjeta o el segmento entero: su envoltorio toma el puntero y abre el motivo, que se ancla en el
 /// punto o en el segmento.
-export function RadioGroupField({ label, options, value, onValueChange, error, variant = "list", id: fieldId,
+export function RadioGroupField({ label, showLabel = false, help, options, value, onValueChange, error, variant = "list", id: fieldId,
   "aria-invalid": invalid, "aria-describedby": describedBy }: RadioGroupFieldProps): ReactNode {
   const id = useId();
   const errorId = `${id}-error`;
+  const labelId = `${id}-label`;
+  // El texto de la (i) del título es la descripción del grupo, como en un campo (`GroupLabel`).
+  const groupHelp = showLabel && help ? `${labelId}-help` : undefined;
 
   return (
     <div className="flex flex-col gap-1.5">
+      {showLabel ? <GroupLabel id={labelId} help={help}>{label}</GroupLabel> : null}
       <RadioGroup.Root
         id={fieldId}
-        aria-label={label}
+        aria-label={showLabel ? undefined : label}
+        aria-labelledby={showLabel ? labelId : undefined}
         aria-invalid={invalid || !!error}
-        aria-describedby={[describedBy, error ? errorId : undefined].filter(Boolean).join(" ") || undefined}
+        aria-describedby={[groupHelp, describedBy, error ? errorId : undefined].filter(Boolean).join(" ") || undefined}
         // Radix toma `undefined` como "no controlado": la cadena vacía no coincide con ninguna opción.
         value={value ?? ""}
         onValueChange={onValueChange}
