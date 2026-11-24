@@ -4,7 +4,7 @@ import { RemoteOptionFooter, RemoteOptionSearch } from "@/shared/ui/RemoteOption
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueries, useQueryClient } from "@tanstack/react-query";
 import { Building2 } from "lucide-react";
-import { CloseIcon, RotateIcon, ShieldIcon, UserMinusIcon } from "@/shared/ui/icons";
+import { CloseIcon, ShieldIcon, UserMinusIcon } from "@/shared/ui/icons";
 import { useRef, useState } from "react";
 import { useController } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
@@ -22,9 +22,12 @@ import { useEditForm } from "@/shared/hooks/useEditForm";
 import { useEditPage } from "@/shared/hooks/useEditPage";
 import { orderLike } from "@/shared/lib/orderLike";
 import { InfoTip } from "@/shared/ui/InfoTip";
+import { useResendInvitation } from "@/shared/hooks/useResendInvitation";
+import { InvitationDeliveryBadge, InvitationSection, ResendInvitationDialog } from "@/shared/ui/InvitationDelivery";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { EmptyState } from "@/shared/ui/EmptyState";
+import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { FormField } from "@/shared/ui/FormField";
 import { List, ListItem } from "@/shared/ui/List";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
@@ -40,7 +43,7 @@ import { DateText } from "@/shared/ui/format/DateText";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 import { activeOrganization, homeOf } from "@/tenancy/access";
 import { fetchUser, removeUser, resendUserInvitation, revokeUserInvitation, updateUser, userQueryKey, usersQueryRoot } from "../api/users";
-import { userContact, userContactText, userStateTones } from "../columns";
+import { userContact, userContactText, userInvitationChannel, userStateTones } from "../columns";
 import { useFormat } from "@/shared/format/useFormat";
 import { ChoiceSheet, CheckRow, RadioRow } from "@/shared/ui/app/ChoiceSheet";
 import { RolesField } from "../components/RolesField";
@@ -182,8 +185,11 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
     onError: (error) => toastActionError(error, t),
   });
   const resend = useIdempotentMutation((invitationId: string, key) => resendUserInvitation(invitationId, key));
+  // Usuario-Base2 (0066 §4): si la anterior quedó «Sin confirmar», reenviar pide revisar con la persona antes.
+  const confirmResend = useResendInvitation(member.invitationDelivery, resendInvitation);
 
   const displayName = member.displayName || userContactText(member, format);
+  const channel = userInvitationChannel(member);
   const shownState: UserState = isMember ? (current.isActive ? "Active" : "Inactive") : member.state;
   const dialogError = actionErrorMessage(dialogFailure, t);
   const { preserved: preservedCompanyIds, changeable: changeableAssignments } = companyAssignments(member.companies, registry);
@@ -256,7 +262,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
     setFailure(undefined);
   }
 
-  function resendInvitation() {
+  function resendInvitation(settled?: () => void) {
     if (!member.invitationId) return;
     resend.mutate(member.invitationId, {
       onSuccess: async () => {
@@ -264,6 +270,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
         await client.invalidateQueries({ queryKey: userQueryKey(memberId) });
       },
       onError: (error) => toastActionError(error, t),
+      onSettled: settled,
     });
   }
 
@@ -302,8 +309,8 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   return <>
     <Page banner={edit.banner} backTo={{ to: "/org/usuarios", label: t("users:back") }} title={displayName || t("users:detail.title")} summary={summary}
       phoneSubtitle={userContact(member) ?? undefined} phoneBody="gray"
-      moreActions={canManage && !pendingDeletion ? { label: t("users:detail.moreActions"), pending: resend.isPending, items: [
-        { label: t("users:actions.resend"), icon: RotateIcon, onSelect: resendInvitation, hidden: !isInvitation || !canInvite || !member.invitationId },
+      // Usuario-Base2: «Reenviar invitación» va a la vista, en la caja «Invitación»; el ⋮ queda con revocarla o quitar (209).
+      moreActions={canManage && !pendingDeletion ? { label: t("users:detail.moreActions"), items: [
         { label: t("users:actions.revoke"), icon: CloseIcon, onSelect: () => setConfirmAction("revoke"), destructive: true, hidden: !isInvitation || !member.invitationId },
         { label: t("users:actions.remove"), icon: UserMinusIcon, onSelect: openRemove, destructive: true, hidden: !isMember },
       ] } : undefined}
@@ -320,6 +327,15 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
         {/* Tablero Usuario: el error de guardado, en una franja debajo de la banda. En el teléfono va en la banda debajo de
             la barra (M-Usuario, v106): la pone useEditPage en `banner`. */}
         {edit.formError}
+
+        {/* Tableros Usuario-Base2 y M-Usuario-Base2 (0066 §4): la caja «Invitación», primera en el cuerpo, con por dónde salió,
+            a quién, hasta cuándo vale y su entrega; «Reenviar invitación» en su encabezado. */}
+        {isInvitation ? <InvitationSection details={[
+          { key: "channel", label: t("common:invitationDelivery.box.channel"), value: t(channel === "email" ? "common:invitationDelivery.box.channelEmail" : "common:invitationDelivery.box.channelWhatsApp") },
+          { key: "contact", label: t(channel === "email" ? "common:invitationDelivery.box.email" : "common:invitationDelivery.box.phone"), value: userContact(member) ?? <EmptyValue /> },
+          { key: "expires", label: t("common:invitationDelivery.box.expires"), value: <DateText value={member.invitationExpiresAtUtc} kind="dateTime" /> },
+          { key: "delivery", label: t("common:invitationDelivery.column"), value: <InvitationDeliveryBadge value={member.invitationDelivery} channel={channel} /> },
+        ]} resend={canInvite && member.invitationId ? { onClick: () => confirmResend.start(), pending: resend.isPending } : undefined} /> : null}
 
         <Section title={t("users:detail.accessTitle")}>
           <form id="user-access" noValidate aria-label={displayName || t("users:detail.title")} onSubmit={(event) => { void submit(event); }}>
@@ -393,6 +409,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
       title={confirmation?.title ?? ""} description={confirmation?.description} confirmLabel={confirmation?.label ?? ""}
       pending={confirmation?.pending ?? false} pendingLabel={confirmation?.pendingLabel}
       onConfirm={() => confirmation?.run()} />
+    <ResendInvitationDialog resend={confirmResend} name={displayName} person={member.displayName} channel={channel} pending={resend.isPending} />
     {edit.leaveDialog}
   </>;
 }

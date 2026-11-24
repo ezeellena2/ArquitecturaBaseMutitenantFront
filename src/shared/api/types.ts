@@ -87,6 +87,8 @@ export type PendingGroup = ApiSchemas["PendingGroup"];
 export type NotificationItem = ApiSchemas["NotificationItem"];
 export type NotificationListResponse = ApiSchemas["NotificationListResponse"];
 export type OrganizationInvitationIssuedResponse = ApiSchemas["OrganizationInvitationIssuedResponse"];
+/** La entrega de una invitación pendiente (0066 §4), en Usuarios, los miembros de una empresa y las cuentas de Plataforma. */
+export type InvitationDeliveryStatus = NonNullable<ApiSchemas["InvitationDeliveryStatus"]>;
 export type UpdateOrganizationUserRequest = ApiSchemas["UpdateOrganizationUserHttpRequest"];
 export type ChangeOrganizationUserStatusRequest = ApiSchemas["ChangeOrganizationUserStatusHttpRequest"];
 export type CompanyResponse = ApiSchemas["CompanyResponse"];

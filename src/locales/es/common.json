@@ -232,5 +232,33 @@
   "roleChoice": {
     "notGrantable": "Tiene permisos que no tenés.",
     "notGrantableIn": "Tiene permisos que no tenés en {{company}}."
+  },
+  "invitationDelivery": {
+    "column": "Entrega",
+    "why": {
+      "Pending": "Está en la cola: sale en unos minutos.",
+      "UncertainEmail": "No sabemos si llegó: el servidor de correo no confirmó el envío. Revisá con la persona antes de reenviarla.",
+      "UncertainWhatsApp": "No sabemos si llegó: WhatsApp no confirmó el envío. Revisá con la persona antes de reenviarla.",
+      "FailedEmail": "El servidor de correo no la aceptó. Revisá la dirección y reenviala.",
+      "FailedWhatsApp": "WhatsApp no pudo entregarla a ese número."
+    },
+    "box": {
+      "title": "Invitación",
+      "channel": "Por",
+      "channelEmail": "Correo",
+      "channelWhatsApp": "WhatsApp",
+      "email": "Correo",
+      "phone": "Teléfono",
+      "expires": "Vence",
+      "resend": "Reenviar invitación"
+    },
+    "resend": {
+      "title": "¿Reenviar la invitación a {{name}}?",
+      "descriptionEmail": "No sabemos si le llegó la anterior: el servidor de correo no confirmó el envío. Revisá con {{person}} antes de reenviarla, así no le llegan dos.",
+      "descriptionWhatsApp": "No sabemos si le llegó la anterior: WhatsApp no confirmó el envío. Revisá con {{person}} antes de reenviarla, así no le llegan dos.",
+      "thePerson": "la persona",
+      "confirm": "Reenviar",
+      "pending": "Reenviando…"
+    }
   }
 }

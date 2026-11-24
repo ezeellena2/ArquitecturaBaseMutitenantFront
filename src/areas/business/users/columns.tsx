@@ -11,6 +11,7 @@ import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 import { EmailText } from "@/shared/ui/format/EmailText";
 import { PhoneText } from "@/shared/ui/format/PhoneText";
 import type { FormatState } from "@/shared/format/useFormat";
+import { InvitationDeliveryBadge, type InvitationChannel } from "@/shared/ui/InvitationDelivery";
 
 /// CC25 (E11): una invitación por teléfono no tiene correo; la persona se nombra por el número invitado, en E.164.
 export function userContact(user: OrganizationUserResponse): ReactNode {
@@ -21,6 +22,13 @@ export function userContact(user: OrganizationUserResponse): ReactNode {
 export function userContactText(user: OrganizationUserResponse, format: FormatState): string {
   return user.email ?? (user.phone && !format.isLoading ? format.formatPhone(user.phone) : "");
 }
+
+/// Por dónde salió la invitación de una persona: por correo o, la de un teléfono (CC25), por WhatsApp.
+export function userInvitationChannel(user: OrganizationUserResponse): InvitationChannel {
+  return !user.email && user.phone ? "whatsapp" : "email";
+}
+
+const isUserInvitation = (user: OrganizationUserResponse) => user.state === "Invited" || user.state === "Expired";
 
 /// Tablero Usuarios (ESTADOS_USUARIO): activo en verde, la invitación pendiente en celeste, la vencida y la baja pedida
 /// en ámbar, deshabilitado en gris. También los usa la ficha de Usuario.
@@ -36,15 +44,17 @@ function companiesText(user: OrganizationUserResponse, t: TFunction): string | n
 }
 
 /// Tablero M-Usuarios-Base2 (263): en el teléfono cada persona es una tarjeta con su círculo, su estado, sus roles de la
-/// organización y su empresa; una invitación lleva el estado, la empresa y hasta cuándo vale. Cada dato con su nombre, sin
-/// el correo. Una invitación sin nombre lleva «@», o el teléfono si es por teléfono, y se nombra por su correo o su número.
+/// organización y su empresa; una invitación lleva el estado, su entrega (0066 §4), la empresa y hasta cuándo vale. Cada dato
+/// con su nombre, sin el correo. Una invitación sin nombre lleva «@», o el teléfono si es por teléfono, y se nombra por su
+/// correo o su número. La entrega va sin su (i): la tarjeta abre la ficha, que la muestra con su porqué.
 export function userPhoneRow(user: OrganizationUserResponse, t: TFunction, trailing: ReactNode): ReactNode {
-  const invitation = user.state === "Invited" || user.state === "Expired";
+  const invitation = isUserInvitation(user);
   const state = { label: t("users:columns.state"), value: <StatusBadge tones={userStateTones} value={user.state} /> };
   const company = { label: t("users:columns.companies"), value: companiesText(user, t) ?? <EmptyValue /> };
   const roles = user.roles.filter((role) => role.scope === "Organization").map((role) => role.name).join(", ");
   const fields = invitation
-    ? [state, company, { label: t("users:columns.expires"), value: <DateText value={user.invitationExpiresAtUtc} kind="dateTime" /> }]
+    ? [state, { label: t("common:invitationDelivery.column"), value: <InvitationDeliveryBadge value={user.invitationDelivery} channel={userInvitationChannel(user)} info={false} /> },
+      company, { label: t("users:columns.expires"), value: <DateText value={user.invitationExpiresAtUtc} kind="dateTime" /> }]
     : [state, { label: t("users:card.role"), value: roles || <EmptyValue /> }, company];
   const named = Boolean(user.displayName);
   return <ListCard key={user.memberId} to={`/org/usuarios/${encodeURIComponent(user.memberId)}`}
@@ -75,9 +85,12 @@ export function createUserColumns(t: TFunction): Column<OrganizationUserResponse
       },
     },
     { id: "state", header: t("users:columns.state"), type: "status", tones: userStateTones, value: (user) => user.state, mobile: "status", className: "w-40.5 max-md:w-[38%]" },
+    // Tablero Usuarios-Base2 (0066 §4): cómo salió la invitación, después del estado, con su porqué en la (i).
+    { id: "invitationDelivery", header: t("common:invitationDelivery.column"), type: "custom", className: "w-40",
+      cell: (user) => <InvitationDeliveryBadge value={isUserInvitation(user) ? user.invitationDelivery : null} channel={userInvitationChannel(user)} /> },
     {
       id: "invitationExpiresAtUtc", header: t("users:columns.expires"), type: "date", className: "w-30",
-      value: (user) => user.state === "Invited" || user.state === "Expired" ? user.invitationExpiresAtUtc ?? null : null,
+      value: (user) => isUserInvitation(user) ? user.invitationExpiresAtUtc ?? null : null,
     },
   ];
 }

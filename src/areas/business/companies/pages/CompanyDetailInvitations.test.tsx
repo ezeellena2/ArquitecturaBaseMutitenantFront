@@ -26,7 +26,7 @@ const member = (memberId: string, displayName: string, email: string, extra: Rec
 });
 const valentina = member("member-valentina", "Valentina Ruiz", "valentina.ruiz@gmail.com", { roles: [administrator] });
 const sofia = member("member-sofia", "Sofía Herrera", "sofia.herrera@delta.ejemplo.com",
-  { state: "Invited", invitationId: "inv-sofia", invitationExpiresAtUtc: "2026-10-02T15:00:00Z" });
+  { state: "Invited", invitationId: "inv-sofia", invitationExpiresAtUtc: "2026-10-02T15:00:00Z", invitationDelivery: "Sent" });
 const martin = member("member-martin", "Martín Paz", "martin.paz@delta.ejemplo.com",
   { state: "Invited", invitationId: "inv-martin", invitationExpiresAtUtc: "2026-09-29T15:00:00Z" });
 const roleRow = { ...reader, description: null, userCount: 3, permissions: ["company.members.read"], version: 1, createdAtUtc: "2026-09-27T12:00:00Z" };
@@ -132,6 +132,38 @@ describe("CompanyDetailPage: las invitaciones de la empresa (6e)", () => {
 
     expect(await screen.findByText("Reenviamos la invitación a sofia.herrera@delta.ejemplo.com.")).toBeVisible();
     expect(calls.resend).toEqual([{ invitationId: "inv-sofia", key: expect.stringMatching(/^[0-9a-f-]{36}$/i) }]);
+  });
+
+  // Tablero Empresa-Base2 (0066 §4): «Entrega», después del estado, dice cómo salió la invitación, con su porqué en la (i).
+  // Si quedó «Sin confirmar», reenviar pide revisar con la persona antes; «Cancelar» no manda nada.
+  it("tablero Empresa-Base2: «Entrega» con su (i), y reenviar una sin confirmar pide revisar con la persona", async () => {
+    const user = userEvent.setup();
+    const calls = companyApi([valentina, { ...sofia, invitationDelivery: "Uncertain" }]);
+    const { container } = renderRouteWithProviders("/org/empresas/company-1", { as: companyAdmin });
+
+    const row = (await screen.findByText("Sofía Herrera")).closest("tr")!;
+    const headers = screen.getAllByRole("columnheader").map((header) => header.textContent);
+    expect(headers.indexOf("Entrega")).toBe(headers.indexOf("Estado") + 1);
+    expect(within(row).getByRole("button", { name: "Más información sobre Sin confirmar" }))
+      .toHaveAccessibleDescription("No sabemos si llegó: el servidor de correo no confirmó el envío. Revisá con la persona antes de reenviarla.");
+    expect(within(screen.getByText("Valentina Ruiz").closest("tr")!).getAllByRole("cell")[headers.indexOf("Entrega")]).toHaveTextContent("—");
+    expect(await axe(container)).toHaveNoViolations();
+
+    await openActions(user, "Sofía Herrera");
+    await user.click(await screen.findByRole("menuitem", { name: "Reenviar invitación" }));
+    let dialog = await screen.findByRole("dialog", { name: "¿Reenviar la invitación a Sofía Herrera?" });
+    expect(dialog).toHaveTextContent("No sabemos si le llegó la anterior: el servidor de correo no confirmó el envío. Revisá con Sofía Herrera antes de reenviarla, así no le llegan dos.");
+    await user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(calls.resend).toEqual([]);
+
+    await openActions(user, "Sofía Herrera");
+    await user.click(await screen.findByRole("menuitem", { name: "Reenviar invitación" }));
+    dialog = await screen.findByRole("dialog", { name: "¿Reenviar la invitación a Sofía Herrera?" });
+    await user.click(within(dialog).getByRole("button", { name: "Reenviar" }));
+    expect(await screen.findByText("Reenviamos la invitación a sofia.herrera@delta.ejemplo.com.")).toBeVisible();
+    expect(calls.resend.map((call) => call.invitationId)).toEqual(["inv-sofia"]);
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   });
 
   // Tablero Empresa: revocar es de peligro y pide confirmación con el correo; «Revocar» la cancela entera (decisión 97).
@@ -265,18 +297,18 @@ describe("CompanyDetailPage: reenvíos por invitación (R04)", () => {
 describe("CompanyDetailPage en el teléfono: las invitaciones de la empresa (M-Empresa, 6e)", () => {
   // Tablero M-Empresa (v108): en la línea de abajo, los roles, el estado y «vence 02/10» o «venció 29/09», con la fecha
   // corta del teléfono.
-  // M-Empresa-Base2 (263): cada miembro es una tarjeta con sus datos nombrados; la invitación lleva el estado, los roles y
-  // hasta cuándo vale, sin datos unidos con «·».
+  // M-Empresa-Base2 (263): cada miembro es una tarjeta con sus datos nombrados; la invitación lleva el estado, su entrega
+  // (0066 §4), los roles y hasta cuándo vale, sin datos unidos con «·».
   it("la tarjeta de la invitación dice hasta cuándo vale, cada dato con su nombre", async () => {
     asPhone();
     companyApi([valentina, sofia, martin]);
     renderRouteWithProviders("/org/empresas/company-1", { as: companyAdmin });
 
     const sofiaRow = (await screen.findByText("Sofía Herrera")).closest("li")!;
-    expect(cardData(sofiaRow).map(([label]) => label)).toEqual(["Estado", "Roles", "Vence"]);
-    expect(cardData(sofiaRow).slice(0, 2)).toEqual([["Estado", "Invitación pendiente"], ["Roles", "Solo lectura"]]);
-    expect(cardData(sofiaRow)[2][1]).toMatch(/^02\/10/);
-    expect(cardData(screen.getByText("Martín Paz").closest("li")!).slice(0, 2)).toEqual([["Estado", "Invitación vencida"], ["Roles", "Solo lectura"]]);
+    expect(cardData(sofiaRow).map(([label]) => label)).toEqual(["Estado", "Entrega", "Roles", "Vence"]);
+    expect(cardData(sofiaRow).slice(0, 3)).toEqual([["Estado", "Invitación pendiente"], ["Entrega", "Enviada"], ["Roles", "Solo lectura"]]);
+    expect(cardData(sofiaRow)[3][1]).toMatch(/^02\/10/);
+    expect(cardData(screen.getByText("Martín Paz").closest("li")!).slice(0, 3)).toEqual([["Estado", "Invitación vencida"], ["Entrega", "—"], ["Roles", "Solo lectura"]]);
     expect(cardData(screen.getByText("Valentina Ruiz").closest("li")!)).toEqual([["Roles", "Administrador"], ["Estado", "Activo"]]);
     expect(sofiaRow.textContent).not.toContain("·");
   });

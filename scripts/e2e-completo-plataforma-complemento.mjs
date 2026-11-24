@@ -15,7 +15,6 @@ import { parseLegalPublicationReceipt, acceptPublishedLegalAndReturn, assertPend
 import { journeyDate } from "./recorrido-usuario.mjs";
 import { createAssistantControl } from "./assistant-real-control.mjs";
 import { acceptAssistantNoticeFromHome } from "./assistant-real-ui.mjs";
-import { openBarMenu } from "./e2e-completo-menu-barra.mjs";
 import { selectMobileBarCases } from "./e2e-completo-seleccion-movil.mjs";
 
 const definition = (number, actor, action, route, expected, covers = []) => ({ id: `PLAT-C-${String(number).padStart(2, "0")}`, area: "Complemento de Plataforma", actor, action, route, expected, covers, critical: true, source: "scripts/e2e-completo-plataforma-complemento.mjs" });
@@ -181,14 +180,10 @@ async function clickHttp(page, button, route, status, method = "POST") {
 }
 export { clickHttp as clickSupplementHttp };
 
-/** En la ficha, escritorio presenta Reenviar como botón; el teléfono lo incluye en la hoja de acciones. */
-export async function operatorInvitationResendControl(h, page, email) {
-  if (h.width === 390) {
-    const opened = await openBarMenu(page, page.getByRole("button", { name: `Acciones de ${email}`, exact: true }), { title: email });
-    const item = opened.menu.getByRole("menuitem", { name: "Reenviar invitación", exact: true });
-    return { click: async (options) => { await item.click(options); await opened.waitForClosed(); } };
-  }
-  assert.equal(h.width, 1440);
+/** En la ficha, Reenviar es un botón a la vista: en la banda en el escritorio y en el título del grupo «Invitación» en el
+ * teléfono (Cuenta-Plat-Base2 y M-Cuenta-Plat-Base2, F10). */
+export async function operatorInvitationResendControl(h, page) {
+  assert.ok(h.width === 1440 || h.width === 390);
   return page.getByRole("button", { name: "Reenviar invitación", exact: true });
 }
 async function read(h, page, route) {
@@ -231,7 +226,7 @@ async function inviteOperator(h, page, email, status = 201) {
 
 async function operatorInvitationLifecycle(h, page, disposable) {
   await page.goto(new URL(`/plataforma/cuentas/${disposable.id}`, h.base).href);
-  const resend = await operatorInvitationResendControl(h, page, disposable.email);
+  const resend = await operatorInvitationResendControl(h, page);
   const before = new Set(await h.env.files());
   const resent = await clickHttp(page, resend, `/api/platform/operators/${disposable.id}/invitation/resend`, 200);
   const renewed = await resent.json(); assert.ok(Date.parse(renewed.expiresAtUtc) > Date.parse(disposable.expiresAtUtc));

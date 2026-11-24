@@ -232,5 +232,33 @@
   "roleChoice": {
     "notGrantable": "It has permissions you don't have.",
     "notGrantableIn": "It has permissions you don't have in {{company}}."
+  },
+  "invitationDelivery": {
+    "column": "Delivery",
+    "why": {
+      "Pending": "It's in the queue: it goes out in a few minutes.",
+      "UncertainEmail": "We don't know if it arrived: the mail server didn't confirm the delivery. Check with the person before resending it.",
+      "UncertainWhatsApp": "We don't know if it arrived: WhatsApp didn't confirm the delivery. Check with the person before resending it.",
+      "FailedEmail": "The mail server didn't accept it. Check the address and resend it.",
+      "FailedWhatsApp": "WhatsApp couldn't deliver it to that number."
+    },
+    "box": {
+      "title": "Invitation",
+      "channel": "Via",
+      "channelEmail": "Email",
+      "channelWhatsApp": "WhatsApp",
+      "email": "Email",
+      "phone": "Phone",
+      "expires": "Expires",
+      "resend": "Resend invitation"
+    },
+    "resend": {
+      "title": "Resend the invitation to {{name}}?",
+      "descriptionEmail": "We don't know if the previous one arrived: the mail server didn't confirm the delivery. Check with {{person}} before resending it, so they don't get two.",
+      "descriptionWhatsApp": "We don't know if the previous one arrived: WhatsApp didn't confirm the delivery. Check with {{person}} before resending it, so they don't get two.",
+      "thePerson": "the person",
+      "confirm": "Resend",
+      "pending": "Resending…"
+    }
   }
 }

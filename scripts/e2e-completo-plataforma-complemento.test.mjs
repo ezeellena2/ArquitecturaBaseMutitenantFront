@@ -7,27 +7,13 @@ import * as platform from "./e2e-completo-plataforma-complemento.mjs";
 import { createPlatformRecorder } from "./e2e-completo-plataforma.mjs";
 import { EventEmitter } from "node:events";
 
-test("el reenvío de la ficha usa el botón en escritorio y el menú real sólo en móvil", async () => {
+test("el reenvío de la ficha es el botón a la vista en escritorio y en el teléfono", async () => {
   for (const width of [1440, 390]) {
-    const calls = []; const email = "operador-propio@example.test";
-    const control = { own: true };
-    const item = { click: async (options) => { assert.deepEqual(options, { timeout: 123 }); calls.push("reenviar"); } };
-    const menu = { waitFor: async () => {}, getByRole: (role, options) => { assert.equal(role, "menuitem"); assert.deepEqual(options, { name: "Reenviar invitación", exact: true }); return item; } };
-    const sheet = { waitFor: async (options) => { if (options?.state === "hidden") calls.push("hoja cerrada"); }, getByRole: (role) => { assert.equal(role, "menu"); return menu; } };
-    const page = { viewportSize: () => ({ width }), getByRole: (role, options) => {
-      calls.push([role, options.name]); assert.equal(options.exact, true);
-      if (role === "dialog") { assert.equal(options.name, email); return sheet; }
-      if (options.name === `Acciones de ${email}`) {
-        assert.equal(width, 390); assert.equal(role, "button");
-        return { waitFor: async (options) => assert.deepEqual(options, { state: "visible" }), getAttribute: async (name) => { assert.equal(name, "aria-haspopup"); return "dialog"; }, click: async () => calls.push("abrir hoja") };
-      }
-      assert.equal(options.name, "Reenviar invitación"); assert.equal(role, "button");
-      return control;
-    } };
-    const result = await platform.operatorInvitationResendControl({ width }, page, email);
-    if (width === 1440) assert.equal(result, control);
-    else await result.click({ timeout: 123 });
-    assert.deepEqual(calls, width === 1440 ? [["button", "Reenviar invitación"]] : [["button", `Acciones de ${email}`], "abrir hoja", ["dialog", email], "reenviar", "hoja cerrada"]);
+    const calls = []; const control = { own: true };
+    const page = { getByRole: (role, options) => { calls.push([role, options.name]); assert.equal(options.exact, true); return control; } };
+    const result = await platform.operatorInvitationResendControl({ width }, page);
+    assert.equal(result, control);
+    assert.deepEqual(calls, [["button", "Reenviar invitación"]]);
   }
 });
 

@@ -14,12 +14,16 @@ import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { useMountedRef } from "@/shared/hooks/useMountedRef";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { InfoTip } from "@/shared/ui/InfoTip";
+import { useResendInvitation } from "@/shared/hooks/useResendInvitation";
+import { InvitationDeliveryBadge, InvitationSection, ResendInvitationDialog } from "@/shared/ui/InvitationDelivery";
+import { EmailText } from "@/shared/ui/format/EmailText";
+import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { endWithPeriod } from "@/shared/format/phrase";
 import { Button } from "@/shared/ui/button";
 import { DateText } from "@/shared/ui/format/DateText";
 import { NumberText } from "@/shared/ui/format/NumberText";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
-import { Pencil, Power, RotateCw, Trash2 } from "lucide-react";
+import { Pencil, Power, Trash2 } from "lucide-react";
 import { CloseIcon, LockIcon, LogOutIcon } from "@/shared/ui/icons";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { NotFoundPage } from "@/shared/ui/NotFoundPage";
@@ -97,6 +101,8 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
     (_response, operation) => { toast.success(t("platformAccounts:messages.resent", { name: operation.name })); void client.invalidateQueries({ queryKey: accountsQueryRoot }); }),
     { meta: action.meta, sameOperation: (previous, next) => previous.id === next.id });
   const busy = action.isPending;
+  // Cuenta-Plat-Base2 (0066 §4): si la invitación quedó «Sin confirmar», reenviarla pide revisar con la persona antes.
+  const confirmResend = useResendInvitation(data.invitationDelivery, (settled) => resend.mutate({ id: data.id, name }, { onSettled: settled }));
   // Tablero Cuenta-Plat, en cada estado: «Cerrar sesiones», solo con la cuenta activa; «Reactivar», suspendida; «Suspender»,
   // activa o por recuperar. Van en el ⋮ de la banda, también en la compu (209): no son la tarea de la pantalla.
   const accountActions: AccountAction[] = mutable && canManage && !operator && !invitation
@@ -139,18 +145,25 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
       : data.state === "NeedsRecovery" && ended?.endedAtUtc
         ? t("platformAccounts:detail.why.recovery", { date: format.formatDateTime(ended.endedAtUtc), organization: managed?.managedByOrganizationName || format.formatEmpty() })
         : null;
+  // Tableros Cuenta-Plat-Base2 y M-Cuenta-Plat-Base2 (0066 §4): la invitación de un operador, primera en el cuerpo, con el
+  // correo, hasta cuándo vale y su entrega. En la compu, «Reenviar invitación» sigue en la banda; en el teléfono, en su título.
+  const invitationBox = <InvitationSection details={[
+    { key: "email", label: t("common:invitationDelivery.box.email"), value: data.primaryEmail ? <EmailText value={data.primaryEmail} /> : <EmptyValue /> },
+    { key: "expires", label: t("common:invitationDelivery.box.expires"), value: <DateText value={data.invitationExpiresAtUtc} kind="dateTime" /> },
+    { key: "delivery", label: t("common:invitationDelivery.column"), value: <InvitationDeliveryBadge value={data.invitationDelivery} channel="email" /> },
+  ]} resend={phone && canResend ? { onClick: () => confirmResend.start(), pending: busy } : undefined} />;
   return <>
     <Page title={name} backTo={{ to: "/plataforma/cuentas", label: t("platformAccounts:detail.back") }} phoneBody="flush"
       summary={<><StatusBadge tones={accountStateTones} value={data.state} />{why ? <InfoTip standalone className="ml-1" text={why} title={format.formatEnum("PlatformAccountState", data.state)} /> : null}<SublineSeparator />{operator ? operatorSummary : personSummary}</>}
       phoneSubtitle={<><StatusBadge tones={accountStateTones} value={data.state} />{" · "}{operator ? invitation ? expires : <>{t("platformAccounts:detail.operatorInline")} {" · "}<NumberText value={permissionCount} /> {t("platformAccounts:detail.permissionCount", { count: permissionCount })}</> : <>{t(data.state === "Deleted" ? "platformAccounts:detail.deletedInline" : "platformAccounts:detail.lastSignInInline")} <DateText value={data.state === "Deleted" ? data.deletedAtUtc : data.lastSignInAtUtc} kind={data.state === "Deleted" ? "date" : "dateTime"} /></>}</>}
       actions={!phone ? <>{mutable && canOperators && operator && !invitation ? <Button variant="outline" onClick={(event) => open("permissions", event.currentTarget)}>{t("platformAccounts:operator.change")}</Button> : null}
-        {canResend ? <Button variant="outline" pending={busy} pendingLabel={t("platformAccounts:detail.resending")} onClick={() => resend.mutate({ id: data.id, name })}>{t("platformAccounts:actions.resend")}</Button> : null}</> : undefined}
+        {canResend ? <Button variant="outline" pending={busy} pendingLabel={t("platformAccounts:detail.resending")} onClick={(event) => confirmResend.start(event.currentTarget)}>{t("platformAccounts:actions.resend")}</Button> : null}</> : undefined}
       // «Criterio · Menús»: cada opción con su ícono gris (Cuenta-Plat: candado en «Restablecer el autenticador», ✕ en «Quitar
       // operador», tacho en «Dar de baja»; las demás, las del ⋮ de la lista de Cuentas). En el teléfono, la hoja (M-Cuenta-Plat).
-      moreActions={{ label: t("platformAccounts:rowActions", { name }), pending: phone && resend.isPending, items: [
+      // M-Cuenta-Plat-Base2: en el teléfono, «Reenviar invitación» va a la vista, en el título del grupo «Invitación».
+      moreActions={{ label: t("platformAccounts:rowActions", { name }), items: [
         ...accountActions.map((action) => ({ label: t(action === "revoke-sessions" ? "platformAccounts:detail.closeSessions" : `platformAccounts:actions.${action}`), icon: accountActionIcons[action], destructive: action === "suspend", onSelect: (trigger: HTMLElement | null) => open(action, trigger) })),
         { label: t("platformAccounts:operator.change"), icon: Pencil, hidden: !phone || !mutable || !canOperators || !operator || invitation, onSelect: (trigger) => open("permissions", trigger) },
-        { label: t("platformAccounts:actions.resend"), icon: RotateCw, hidden: !phone || !canResend || busy, onSelect: () => resend.mutate({ id: data.id, name }) },
         // Tablero Cuenta-Plat («Operador: acciones»): «Restablecer el autenticador» y, de peligro, «Quitar operador». Nunca
         // sobre la propia cuenta ni sobre una invitación sin aceptar.
         { label: t("platformAccounts:operator.reset"), icon: LockIcon, hidden: !mutable || !canOperators || !operator || invitation, onSelect: (trigger) => open("resetAuthenticator", trigger) },
@@ -161,7 +174,9 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
       tabs={{ label: t("platformAccounts:detail.tabsLabel"), value: tab, onValueChange: setTab, phoneColumns: 2, items: [
         { value: "methods", label: t("platformAccounts:detail.methods"), count: data.loginMethods.length, hidden: operator, content: <AccountMethodsTab methods={data.loginMethods} /> },
         { value: "organizations", label: t("platformAccounts:detail.organizations"), count: data.organizations.length, hidden: operator, content: <AccountOrganizationsTab organizations={data.organizations} /> },
-        { value: "permissions", label: t("platformAccounts:detail.permissions"), count: permissionCount, hidden: !operator, content: <AccountPermissionsTab permissions={data.operatorPermissions ?? []} /> },
+        { value: "permissions", label: t("platformAccounts:detail.permissions"), count: permissionCount, hidden: !operator, content: invitation
+          ? <div className="flex flex-col gap-4 max-md:gap-3">{invitationBox}<AccountPermissionsTab permissions={data.operatorPermissions ?? []} /></div>
+          : <AccountPermissionsTab permissions={data.operatorPermissions ?? []} /> },
         { value: "history", label: t("platformAccounts:detail.history"), hidden: !canAudit || invitation, content: canAudit && !invitation ? <AccountHistoryTab id={data.id} /> : null },
       ] }} />
     {confirmation ? confirmation.action === "permissions" ? <OperatorPermissionsDialog account={confirmation.account} returnFocusTo={confirmation.trigger} onClose={(conflicted) => { if (conflicted) { onConflict(); invalidate(); } close(); }} onSaved={(response, permissions) => {
@@ -174,5 +189,6 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
       void client.invalidateQueries({ queryKey: platformAuditQueryRoot });
     }} /> : confirmation.action === "revoke" ? <RevokeInvitationDialog confirmation={confirmation} onClose={close} onSuccess={() => success(undefined)} />
       : confirmation.action === "deletion" ? <AccountDeletionDialog confirmation={confirmation} onClose={close} onSuccess={success} /> : <AccountReasonDialog confirmation={confirmation} onClose={close} onSuccess={success} /> : null}
+    <ResendInvitationDialog resend={confirmResend} name={name} person={data.displayName} channel="email" pending={resend.isPending} />
   </>;
 }

@@ -233,14 +233,15 @@ describe("CompanyDetailPage", () => {
 
   // Tablero Empresa (base de la 12): la tabla de miembros tiene las columnas del tablero, en su orden; las acciones, sin
   // rótulo visible.
-  it("los miembros van con Miembro, Correo, Roles en la empresa, Estado, Vence y Acciones, como el tablero", async () => {
+  // Empresa-Base2 (0066 §4): «Entrega» va después del estado.
+  it("los miembros van con Miembro, Correo, Roles en la empresa, Estado, Entrega, Vence y Acciones, como el tablero", async () => {
     detailApi([member]);
     renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
 
     const members = await screen.findByRole("tabpanel");
     await within(members).findByText("Lucía Fernández");
     expect(within(members).getAllByRole("columnheader").map((header) => header.textContent))
-      .toEqual(["Miembro▲", "Correo", "Roles en la empresa", "Estado", "Vence", "Acciones"]);
+      .toEqual(["Miembro▲", "Correo", "Roles en la empresa", "Estado", "Entrega", "Vence", "Acciones"]);
   });
 
   // F1: el 403 bloquea la vista solo si viene de la consulta principal; el de los roles (una consulta secundaria)

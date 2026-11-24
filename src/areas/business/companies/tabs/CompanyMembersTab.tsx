@@ -18,6 +18,8 @@ import { FilterBar } from "@/shared/ui/FilterBar";
 import { FormError } from "@/shared/ui/FormError";
 import { Pagination } from "@/shared/ui/Pagination";
 import { CloseIcon, RotateIcon } from "@/shared/ui/icons";
+import { useResendInvitation } from "@/shared/hooks/useResendInvitation";
+import { ResendInvitationDialog } from "@/shared/ui/InvitationDelivery";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
 import {
@@ -26,13 +28,14 @@ import {
   resendCompanyInvitation,
   revokeCompanyInvitation,
 } from "../api/companies";
-import { companyMemberPhoneRow, createCompanyMemberColumns, isCompanyInvitation } from "../columns";
+import { companyMemberPhoneRow, createCompanyMemberColumns, isCompanyInvitation, memberInvitationChannel } from "../columns";
 import { MemberRolesDialog } from "../components/MemberRolesDialog";
 import { memberStates, type CompanyMembersList } from "./useCompanyMembers";
 
 /// El ⋮ de una invitación de la empresa. El reenvío vive por invitación (R04), como AccountActions de Plataforma: cada una con
 /// su clave y su dueño, así reenviar otra no le cambia la clave y un reintento conserva sus avisos. Reenviar manda la misma
-/// invitación (decisión 97); la lista se vuelve a leer con la invitación nueva y su vencimiento.
+/// invitación (decisión 97); la lista se vuelve a leer con la invitación nueva y su vencimiento. Si la anterior quedó «Sin
+/// confirmar», reenviar pide revisar con la persona antes (Empresa-Base2, 0066 §4).
 function InvitationRowActions({ company, member, hidden, onRevoke }: { company: CompanyResponse; member: CompanyMemberResponse; hidden: boolean;
   onRevoke: (trigger: HTMLButtonElement | null) => void }) {
   const { t } = useTranslation(["companies", "common"]);
@@ -41,12 +44,18 @@ function InvitationRowActions({ company, member, hidden, onRevoke }: { company: 
   const resend = useIdempotentMutation(action.guarded((operation, key: string) => resendCompanyInvitation(company.id, operation.invitationId, key),
     (_response, operation) => { toast.success(t("companies:messages.invitationResent", { email: operation.email })); void queryClient.invalidateQueries({ queryKey: companiesQueryRoot }); }),
     { meta: action.meta, sameOperation: (previous, next) => previous.invitationId === next.invitationId });
-  return <RowActions label={t("companies:memberActions", { name: member.displayName })} title={member.displayName} pending={resend.isPending} actions={[
-    { label: t("companies:actions.resendInvitation"), accessibleName: t("companies:actions.resendInvitation"), icon: RotateIcon, hidden,
-      onSelect: () => { if (member.invitationId) resend.mutate({ invitationId: member.invitationId, email: member.email ?? member.displayName }); } },
-    // «Criterio · Menús» y tablero Empresa (v109): abajo, después de la franja, en rojo y con la ✕.
-    { label: t("companies:actions.revokeInvitation"), accessibleName: t("companies:actions.revokeInvitation"), icon: CloseIcon, destructive: true, hidden, onSelect: onRevoke },
-  ]} />;
+  const send = (settled?: () => void) => {
+    if (member.invitationId) resend.mutate({ invitationId: member.invitationId, email: member.email ?? member.displayName }, { onSettled: settled });
+  };
+  const confirmResend = useResendInvitation(member.invitationDelivery, send);
+  return <>
+    <RowActions label={t("companies:memberActions", { name: member.displayName })} title={member.displayName} pending={resend.isPending} actions={[
+      { label: t("companies:actions.resendInvitation"), accessibleName: t("companies:actions.resendInvitation"), icon: RotateIcon, hidden, onSelect: confirmResend.start },
+      // «Criterio · Menús» y tablero Empresa (v109): abajo, después de la franja, en rojo y con la ✕.
+      { label: t("companies:actions.revokeInvitation"), accessibleName: t("companies:actions.revokeInvitation"), icon: CloseIcon, destructive: true, hidden, onSelect: onRevoke },
+    ]} />
+    <ResendInvitationDialog resend={confirmResend} name={member.displayName || member.email || ""} person={member.displayName} channel={memberInvitationChannel(member)} pending={resend.isPending} />
+  </>;
 }
 
 /// Un miembro elegido desde su ⋮: el diálogo le devuelve el foco a ese botón al cerrar.

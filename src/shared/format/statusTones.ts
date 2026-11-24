@@ -8,8 +8,9 @@ export const statusTones = {
   available: ["success", "warning", "danger", "neutral", "pending"],
 } as const satisfies { available: readonly StatusTone[] };
 
-/// Los enums del contrato (`schema.d.ts`): el nombre del esquema y sus valores.
-type ContractEnums = { [Name in keyof ApiSchemas as ApiSchemas[Name] extends string ? Name : never]: ApiSchemas[Name] };
+/// Los enums del contrato (`schema.d.ts`): el nombre del esquema y sus valores. Un enum que el contrato declara con `null`
+/// («sin dato», como `InvitationDeliveryStatus`) registra solo sus valores: el vacío lo pinta `StatusBadge`.
+type ContractEnums = { [Name in keyof ApiSchemas as NonNullable<ApiSchemas[Name]> extends string ? Name : never]: NonNullable<ApiSchemas[Name]> };
 
 /** Los tonos de un enum de estado: su texto sale de `enums.<Enum>.<Valor>` y su punto, del tono de cada valor. */
 export interface StatusTones<TState extends string = string> {
@@ -36,3 +37,8 @@ export const tenantDomainStatusTones = defineStatusTones("TenantDomainStatus", {
 /** Compartidos por las fichas/listados de Plataforma y Para resolver. */
 export const tenantStatusTones = defineStatusTones("TenantStatus", { PendingApproval: "pending", Provisioning: "danger", Active: "success", Suspended: "warning", Closed: "neutral" });
 export const recoveryStatusTones = defineStatusTones("AccountRecoveryStatus", { Pending: "pending", Approved: "success", Rejected: "danger" });
+
+/// La entrega de una invitación (`invitationDelivery`, 0066 §4), en Usuarios, Usuario, los miembros de una empresa, Cuentas y
+/// la ficha de un operador (tableros `-Base2`): en la cola en celeste, enviada en verde, sin confirmar en ámbar y la que no
+/// se pudo enviar en rojo.
+export const invitationDeliveryTones = defineStatusTones("InvitationDeliveryStatus", { Pending: "pending", Sent: "success", Uncertain: "warning", Failed: "danger" });

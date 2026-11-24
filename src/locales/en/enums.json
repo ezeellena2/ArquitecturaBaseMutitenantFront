@@ -51,6 +51,12 @@
   "TestStatus": {
     "Active": "Active"
   },
+  "InvitationDeliveryStatus": {
+    "Pending": "Pending",
+    "Sent": "Sent",
+    "Uncertain": "Unconfirmed",
+    "Failed": "Couldn't be sent"
+  },
   "OrganizationUserState": {
     "Active": "Active",
     "PendingDeletion": "To be deleted",

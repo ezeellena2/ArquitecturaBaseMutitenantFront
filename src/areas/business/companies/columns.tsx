@@ -13,6 +13,7 @@ import type { CompanyMemberState } from "@/shared/api/types";
 import { DateText } from "@/shared/ui/format/DateText";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 import { isPast } from "@/shared/time/serverClock";
+import { InvitationDeliveryBadge, type InvitationChannel } from "@/shared/ui/InvitationDelivery";
 
 /// Tableros Empresas y Empresa: la empresa activa en verde y la inactiva en gris. También los usa la banda de la ficha.
 export const companyStatusTones = defineStatusTones("CompanyStatus", { Active: "success", Inactive: "neutral" });
@@ -55,19 +56,31 @@ function memberState(member: CompanyMember): CompanyMemberDisplayState {
   return isCompanyInvitation(member) && member.invitationExpiresAtUtc && isPast(member.invitationExpiresAtUtc) ? "Expired" : member.state;
 }
 
+/// Por dónde salió la invitación de un miembro: por correo o, la de un teléfono (sin correo), por WhatsApp.
+export function memberInvitationChannel(member: CompanyMember): InvitationChannel {
+  return member.email ? "email" : "whatsapp";
+}
+
+/// Cómo salió la invitación pendiente de un miembro (Empresa-Base2, 0066 §4), con su porqué en la (i); sin invitación, la raya.
+function invitationDelivery(member: CompanyMember): ReactNode {
+  return <InvitationDeliveryBadge value={isCompanyInvitation(member) ? member.invitationDelivery : null} channel={memberInvitationChannel(member)} />;
+}
+
 /// Hasta cuándo vale una invitación, en su columna «Vence» (un dato por celda) y en su dato de la tarjeta del teléfono.
 function invitationExpiresAt(member: CompanyMember): string | null {
   return isCompanyInvitation(member) ? member.invitationExpiresAtUtc ?? null : null;
 }
 
 /// Tablero M-Empresa-Base2 (263): en el teléfono cada miembro es una tarjeta con su círculo, sus roles y su estado; una
-/// invitación lleva primero el estado y suma hasta cuándo vale. Cada dato con su nombre, sin el correo.
+/// invitación lleva primero el estado y su entrega (0066 §4), con su (i), y suma hasta cuándo vale. Cada dato con su nombre,
+/// sin el correo.
 export function companyMemberPhoneRow(member: CompanyMember, t: TFunction, trailing: ReactNode): ReactNode {
   const roles = { label: t("companies:card.roles"), value: member.roles.map((role) => role.name).join(", ") || <EmptyValue /> };
   const state = { label: t("companies:memberColumns.state"), value: <StatusBadge tones={companyMemberStateTones} value={memberState(member)} /> };
   const expiresAt = invitationExpiresAt(member);
   return <ListCard key={member.memberId} leading={<RowAvatar name={member.displayName} />} title={member.displayName}
-    fields={expiresAt ? [state, roles, { label: t("companies:memberColumns.expires"), value: <DateText value={expiresAt} kind="dateTime" /> }] : [roles, state]}
+    fields={expiresAt ? [state, { label: t("common:invitationDelivery.column"), value: invitationDelivery(member) }, roles,
+      { label: t("companies:memberColumns.expires"), value: <DateText value={expiresAt} kind="dateTime" /> }] : [roles, state]}
     trailing={trailing} />;
 }
 
@@ -93,6 +106,8 @@ export function createCompanyMemberColumns(t: TFunction): Column<CompanyMember>[
     { id: "email", header: t("companies:memberColumns.email"), type: "text", value: (member) => member.email },
     { id: "roles", header: t("companies:memberColumns.roles"), type: "text", value: (member) => member.roles.map((role) => role.name).join(", ") || null },
     { id: "state", header: t("companies:memberColumns.state"), type: "status", tones: companyMemberStateTones, value: memberState, mobile: "status", className: "w-40.5 max-md:w-[38%]" },
+    // Tablero Empresa-Base2 (0066 §4): cómo salió la invitación, después del estado.
+    { id: "invitationDelivery", header: t("common:invitationDelivery.column"), type: "custom", className: "w-40", cell: invitationDelivery },
     { id: "invitationExpiresAtUtc", header: t("companies:memberColumns.expires"), type: "date", className: "w-30", value: invitationExpiresAt },
   ];
 }

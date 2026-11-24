@@ -18,6 +18,8 @@ import { FilterBar } from "@/shared/ui/FilterBar";
 import { CloseIcon, LogOutIcon, RotateIcon } from "@/shared/ui/icons";
 import { Page } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
+import { useResendInvitation } from "@/shared/hooks/useResendInvitation";
+import { ResendInvitationDialog } from "@/shared/ui/InvitationDelivery";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
 import { accountCountsQueryKey, accountQueryKey, accountsQueryKey, accountsQueryRoot, fetchAccountCounts, fetchAccounts, type AccountsQuery } from "../api/accounts";
@@ -31,7 +33,8 @@ const filterKeys = ["kind", "state"] as const;
 const kinds: readonly (PlatformAccountKind | undefined)[] = [undefined, "Person", "Operator"];
 const states: readonly (PlatformAccountState | undefined)[] = [undefined, "Active", "Invited", "InvitationExpired", "Suspended", "NeedsRecovery", "PendingDeletion", "Deleted"];
 
-/** El hook vive por cuenta: Retry A funciona aunque otro envío haya retirado su observer. */
+/** El hook vive por cuenta: Retry A funciona aunque otro envío haya retirado su observer. Si la invitación quedó «Sin
+ * confirmar», reenviarla pide revisar con la persona antes (Cuentas-Base2, 0066 §4). */
 function AccountActions({ account, self, canManage, canInvite, route, onConfirm }: { account: PlatformAccountResponse; self: boolean; canManage: boolean; canInvite: boolean; route: string; onConfirm: (confirmation: Confirmation) => void }) {
   const { t } = useTranslation("platformAccounts"); const client = useQueryClient(); const invitation = isOperatorInvitation(account);
   const allowed = !self && canInvite && invitation;
@@ -46,16 +49,19 @@ function AccountActions({ account, self, canManage, canInvite, route, onConfirm 
     (_response, operation) => { toast.success(t("messages.resent", { name: operation.name })); void client.invalidateQueries({ queryKey: accountsQueryRoot }); }),
     { meta: action.meta, sameOperation: (previous, next) => previous.id === next.id });
   const busy = action.isPending;
+  const confirmResend = useResendInvitation(account.invitationDelivery,
+    (settled) => resend.mutate({ id: account.id, name: accountLabel(account, t) }, { onSettled: settled }));
   if (self || account.state === "PendingDeletion" || account.state === "Deleted") return null;
   const confirm = (action: Confirmation["action"], trigger: HTMLElement | null) => onConfirm({ account, action, trigger, route });
-  return <RowActions label={t("rowActions", { name: accountLabel(account, t) })} title={accountLabel(account, t)} pending={resend.isPending} actions={[
-    { label: t("actions.resend"), accessibleName: t("actions.resend"), icon: RotateIcon, hidden: !canInvite || !invitation || busy, onSelect: () => resend.mutate({ id: account.id, name: accountLabel(account, t) }) },
+  return <><RowActions label={t("rowActions", { name: accountLabel(account, t) })} title={accountLabel(account, t)} pending={resend.isPending} actions={[
+    { label: t("actions.resend"), accessibleName: t("actions.resend"), icon: RotateIcon, hidden: !canInvite || !invitation || busy, onSelect: confirmResend.start },
     { label: t("actions.revoke-sessions"), accessibleName: t("actions.revoke-sessions"), icon: LogOutIcon, hidden: !canManage || invitation, onSelect: (trigger) => confirm("revoke-sessions", trigger) },
     { label: t("actions.reactivate"), accessibleName: t("actions.reactivate"), icon: Power, hidden: !canManage || account.state !== "Suspended", onSelect: (trigger) => confirm("reactivate", trigger) },
     { label: t("actions.revoke"), accessibleName: t("actions.revoke"), icon: CloseIcon, destructive: true, hidden: !canInvite || !invitation || busy, onSelect: (trigger) => confirm("revoke", trigger) },
     { label: t("actions.suspend"), accessibleName: t("actions.suspend"), icon: Power, destructive: true, hidden: !canManage || !["Active", "NeedsRecovery"].includes(account.state), onSelect: (trigger) => confirm("suspend", trigger) },
     { label: t("actions.deletion"), accessibleName: t("actions.deletion"), icon: Trash2, destructive: true, hidden: !canManage || invitation, onSelect: (trigger) => confirm("deletion", trigger) },
-  ]} />;
+  ]} />
+  <ResendInvitationDialog resend={confirmResend} name={accountLabel(account, t)} person={account.displayName} channel="email" pending={resend.isPending} /></>;
 }
 
 export function AccountsPage() {

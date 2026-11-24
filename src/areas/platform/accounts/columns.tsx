@@ -10,6 +10,7 @@ import type { Column } from "@/shared/ui/DataTable";
 import { DateText } from "@/shared/ui/format/DateText";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
+import { InvitationDeliveryBadge } from "@/shared/ui/InvitationDelivery";
 
 export const accountStateTones = defineStatusTones("PlatformAccountState", { Active: "success", Suspended: "warning", NeedsRecovery: "danger", PendingDeletion: "warning", Deleted: "neutral", Invited: "pending", InvitationExpired: "warning" });
 export const accountPath = (id: string) => `/plataforma/cuentas/${encodeURIComponent(id)}`;
@@ -23,8 +24,9 @@ function profiles(account: PlatformAccountResponse, t: TFunction): ReactNode {
   return account.organizationCount > 0 ? t("platformAccounts:profiles.personalOrganizations", { count: account.organizationCount }) : t("platformAccounts:profiles.personal");
 }
 /// Tablero M-Cuentas-Base2 (263): en el teléfono cada cuenta es una tarjeta con su círculo, sus perfiles, su estado y el último
-/// ingreso; una invitación de operador lleva hasta cuándo vale en lugar del último ingreso. Cada dato con su nombre, sin el
-/// correo. Un correo se parte después de la @.
+/// ingreso; una invitación de operador lleva su entrega (0066 §4) y hasta cuándo vale en lugar del último ingreso. Cada dato
+/// con su nombre, sin el correo. Un correo se parte después de la @. La entrega va sin su (i): la tarjeta abre la ficha, que la
+/// muestra con su porqué.
 export function accountPhoneRow(account: PlatformAccountResponse, t: TFunction, trailing: ReactNode): ReactNode {
   const invitation = isOperatorInvitation(account); const named = Boolean(account.displayName);
   const name = accountName(account);
@@ -33,8 +35,10 @@ export function accountPhoneRow(account: PlatformAccountResponse, t: TFunction, 
     title={name ? <EmailText value={name} /> : <EmptyValue />} fields={[
       { label: t("platformAccounts:columns.profiles"), value: profiles(account, t) },
       { label: t("platformAccounts:columns.state"), value: <StatusBadge tones={accountStateTones} value={account.state} /> },
-      invitation ? { label: t("platformAccounts:columns.expires"), value: <DateText value={account.invitationExpiresAtUtc} kind="dateTime" /> }
-        : { label: t("platformAccounts:columns.lastSignIn"), value: <DateText value={account.lastSignInAtUtc} kind="dateTime" />, wide: true },
+      ...invitation ? [
+        { label: t("common:invitationDelivery.column"), value: <InvitationDeliveryBadge value={account.invitationDelivery} channel="email" info={false} /> },
+        { label: t("platformAccounts:columns.expires"), value: <DateText value={account.invitationExpiresAtUtc} kind="dateTime" /> },
+      ] : [{ label: t("platformAccounts:columns.lastSignIn"), value: <DateText value={account.lastSignInAtUtc} kind="dateTime" />, wide: true }],
     ]} trailing={trailing} />;
 }
 export function createAccountColumns(t: TFunction): Column<PlatformAccountResponse>[] {
@@ -49,5 +53,8 @@ export function createAccountColumns(t: TFunction): Column<PlatformAccountRespon
     { id: "lastSignInAtUtc", header: t("platformAccounts:columns.lastSignIn"), type: "custom", className: "w-40",
       cell: (account) => isOperatorInvitation(account) ? t("platformAccounts:columns.never") : <DateText value={account.lastSignInAtUtc} kind="dateTime" /> },
     { id: "state", header: t("platformAccounts:columns.state"), type: "status", tones: accountStateTones, value: (account) => account.state, mobile: "status" },
+    // Tablero Cuentas-Base2 (0066 §4): cómo salió la invitación de un operador, que va siempre por correo, con su porqué en la (i).
+    { id: "invitationDelivery", header: t("common:invitationDelivery.column"), type: "custom", className: "w-40",
+      cell: (account) => <InvitationDeliveryBadge value={isOperatorInvitation(account) ? account.invitationDelivery : null} channel="email" /> },
   ];
 }

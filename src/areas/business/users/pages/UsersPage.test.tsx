@@ -70,7 +70,8 @@ describe("UsersPage", () => {
   });
 
   // Lienzo v99 («Fecha corta»): en la lista del teléfono, cuándo vence va sin el año si es del año en curso; si no, completa.
-  // M-Usuarios-Base2 (263): la invitación es una tarjeta con su estado, su empresa y hasta cuándo vale, cada dato nombrado.
+  // M-Usuarios-Base2 (263): la invitación es una tarjeta con su estado, su entrega, su empresa y hasta cuándo vale, cada dato
+  // nombrado.
   it("en el teléfono, la invitación es una tarjeta que dice hasta cuándo vale, con la fecha completa", async () => {
     vi.useFakeTimers({ toFake: ["Date"] });
     vi.setSystemTime(new Date("2026-10-01T15:00:00Z"));
@@ -79,7 +80,7 @@ describe("UsersPage", () => {
       const invitation = { ...member, userId: null, roles: [], state: "Invited" as const, invitationId: "invitation-1", invitationIssuedAtUtc: "2026-09-25T12:00:00Z" };
       server.use(
         http.get("/api/users/paged", () => HttpResponse.json({ items: [
-          { ...invitation, memberId: "member-2", displayName: "Sofía Herrera", email: "sofia@example.com", invitationExpiresAtUtc: "2026-10-02T12:00:00Z" },
+          { ...invitation, memberId: "member-2", displayName: "Sofía Herrera", email: "sofia@example.com", invitationExpiresAtUtc: "2026-10-02T12:00:00Z", invitationDelivery: "Uncertain" },
           { ...invitation, memberId: "member-3", displayName: "Valentina Ruiz", email: "valentina@example.com", invitationExpiresAtUtc: "2027-01-05T12:00:00Z" },
         ], page: 1, pageSize: 10, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false })),
         http.get("/api/users/filter-counts", () => HttpResponse.json({ all: 2, active: 0, pendingDeletion: 0, invited: 2, expired: 0, inactive: 0 })),
@@ -90,7 +91,9 @@ describe("UsersPage", () => {
       const thisYear = (await screen.findByRole("link", { name: /Sofía Herrera/ })).closest("li")!;
       // formatos.md (base de la 12): la fecha va completa, con su año, también la del año en curso.
       expect(within(thisYear).getByText("02/10/2026, 09:00")).toHaveAttribute("datetime", "2026-10-02T12:00:00Z");
-      expect(cardData(thisYear)).toEqual([["Estado", "Invitación pendiente"], ["Empresa", "—"], ["Vence", "02/10/2026, 09:00"]]);
+      // M-Usuarios-Base2 (0066 §4): la entrega va segunda, sin su (i), que no se toca dentro de la tarjeta: la dice la ficha.
+      expect(cardData(thisYear)).toEqual([["Estado", "Invitación pendiente"], ["Entrega", "Sin confirmar"], ["Empresa", "—"], ["Vence", "02/10/2026, 09:00"]]);
+      expect(within(thisYear).queryByRole("button", { name: /^Más información/ })).not.toBeInTheDocument();
       expect(thisYear.textContent).not.toContain("·");
       const nextYear = screen.getByRole("link", { name: /Valentina Ruiz/ }).closest("li")!;
       expect(within(nextYear).getByText("05/01/2027, 09:00")).toBeInTheDocument();
@@ -219,7 +222,8 @@ describe("UsersPage", () => {
     renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
 
     const state = await screen.findByText("Invitación vencida");
-    expect(state.closest("tr")!.querySelectorAll("td")[5]).toHaveTextContent(/^29\/09\/2026$/);
+    // La fecha va en «Vence», la columna que sigue a «Entrega» (Usuarios-Base2).
+    expect(state.closest("tr")!.querySelectorAll("td")[6]).toHaveTextContent(/^29\/09\/2026$/);
     expect(screen.queryByText(/^Vence /)).not.toBeInTheDocument();
   });
 
@@ -276,6 +280,86 @@ describe("UsersPage", () => {
     const revoke = await screen.findByRole("dialog", { name: /^¿Revocar la invitación a .*555-0200\?$/ });
     await user.click(within(revoke).getByRole("button", { name: "Revocar" }));
     expect(await screen.findByText(/^Revocamos la invitación a .*555-0200\.$/)).toBeVisible();
+  });
+
+  // Tablero Usuarios-Base2 (0066 §4): «Entrega», después del estado, dice cómo salió cada invitación, con su porqué en la
+  // (i) según el canal; la enviada va sin (i) y quien no tiene invitación pendiente, con la raya.
+  it("tablero Usuarios-Base2: «Entrega» dice cómo salió cada invitación, con su porqué en la (i)", async () => {
+    const invitation = { ...member, userId: null, roles: [], state: "Invited" as const, invitationIssuedAtUtc: "2026-09-25T12:00:00Z", invitationExpiresAtUtc: "2027-10-02T12:00:00Z" };
+    server.use(
+      http.get("/api/users/paged", () => HttpResponse.json({ items: [
+        { ...member, invitationDelivery: null },
+        { ...invitation, memberId: "member-2", displayName: "Sofía Herrera", email: "sofia@example.com", invitationId: "inv-2", invitationDelivery: "Uncertain" },
+        { ...invitation, memberId: "member-3", displayName: "", email: null, phone: "+5493515550200", invitationId: "inv-3", invitationDelivery: "Failed" },
+        { ...invitation, memberId: "member-4", displayName: "Ana Gómez", email: "ana@example.com", invitationId: "inv-4", invitationDelivery: "Sent" },
+        { ...invitation, memberId: "member-5", displayName: "Beto Ruiz", email: "beto@example.com", invitationId: "inv-5", invitationDelivery: "Pending" },
+      ], page: 1, pageSize: 10, totalCount: 5, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/users/filter-counts", () => HttpResponse.json({ all: 5, active: 1, pendingDeletion: 0, invited: 4, expired: 0, inactive: 0 })),
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+    );
+    const { container } = renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
+
+    const sofia = (await screen.findByRole("link", { name: "Sofía Herrera" })).closest("tr")!;
+    const headers = screen.getAllByRole("columnheader").map((header) => header.textContent);
+    expect(headers.indexOf("Entrega")).toBe(headers.indexOf("Estado") + 1);
+    expect(within(sofia).getByText("Sin confirmar")).toBeVisible();
+    expect(within(sofia).getByRole("button", { name: "Más información sobre Sin confirmar" }))
+      .toHaveAccessibleDescription("No sabemos si llegó: el servidor de correo no confirmó el envío. Revisá con la persona antes de reenviarla.");
+    const byPhone = screen.getByRole("link", { name: /555-0200/ }).closest("tr")!;
+    expect(within(byPhone).getByRole("button", { name: "Más información sobre No se pudo enviar" }))
+      .toHaveAccessibleDescription("WhatsApp no pudo entregarla a ese número.");
+    const ana = screen.getByRole("link", { name: "Ana Gómez" }).closest("tr")!;
+    expect(within(ana).getByText("Enviada")).toBeVisible();
+    expect(within(ana).queryByRole("button", { name: /^Más información/ })).not.toBeInTheDocument();
+    expect(within(screen.getByRole("link", { name: "Beto Ruiz" }).closest("tr")!).getByRole("button", { name: "Más información sobre Pendiente" }))
+      .toHaveAccessibleDescription("Está en la cola: sale en unos minutos.");
+    const lucia = screen.getByRole("link", { name: "Lucía Fernández" }).closest("tr")!;
+    expect(within(lucia).getAllByRole("cell")[headers.indexOf("Entrega")]).toHaveTextContent("—");
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
+  // Tablero Usuarios-Base2, «Reenviar una invitación sin confirmar» (0066 §4): no sabemos si le llegó la anterior, así que
+  // reenviar pide revisar con la persona antes; «Cancelar» no manda nada y la confirmación espera la respuesta.
+  it("reenviar una invitación sin confirmar pide revisar con la persona antes", async () => {
+    const user = userEvent.setup();
+    const invitation = { ...member, userId: null, roles: [], state: "Invited" as const, invitationIssuedAtUtc: "2026-09-25T12:00:00Z", invitationExpiresAtUtc: "2027-10-02T12:00:00Z" };
+    const sent: string[] = [];
+    let release: (() => void) | undefined;
+    server.use(
+      http.get("/api/users/paged", () => HttpResponse.json({ items: [
+        { ...invitation, memberId: "member-2", displayName: "Sofía Herrera", email: "sofia@example.com", invitationId: "inv-2", invitationDelivery: "Uncertain" },
+        { ...invitation, memberId: "member-3", displayName: "", email: null, phone: "+5493515550200", invitationId: "inv-3", invitationDelivery: "Uncertain" },
+      ], page: 1, pageSize: 10, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/users/filter-counts", () => HttpResponse.json({ all: 2, active: 0, pendingDeletion: 0, invited: 2, expired: 0, inactive: 0 })),
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.post("/api/users/invitations/:invitationId/resend", async ({ params }) => {
+        sent.push(String(params.invitationId));
+        await new Promise<void>((resolve) => { release = resolve; });
+        return HttpResponse.json("inv-new");
+      }),
+    );
+    renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
+    const resend = async (name: string | RegExp) => {
+      const trigger = await screen.findByRole("button", { name }); trigger.focus(); await user.keyboard("{Enter}");
+      await user.click(await screen.findByRole("menuitem", { name: "Reenviar invitación" }));
+    };
+
+    await resend(/^Acciones de .*555-0200$/);
+    const byPhone = await screen.findByRole("dialog", { name: /^¿Reenviar la invitación a .*555-0200\?$/ });
+    expect(byPhone).toHaveTextContent("No sabemos si le llegó la anterior: WhatsApp no confirmó el envío. Revisá con la persona antes de reenviarla, así no le llegan dos.");
+    await user.click(within(byPhone).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(sent).toEqual([]);
+
+    await resend("Acciones de Sofía Herrera");
+    const dialog = await screen.findByRole("dialog", { name: "¿Reenviar la invitación a Sofía Herrera?" });
+    expect(dialog).toHaveTextContent("No sabemos si le llegó la anterior: el servidor de correo no confirmó el envío. Revisá con Sofía Herrera antes de reenviarla, así no le llegan dos.");
+    await user.click(within(dialog).getByRole("button", { name: "Reenviar" }));
+    await waitFor(() => expect(sent).toEqual(["inv-2"]));
+    expect(within(dialog).getByRole("button", { name: "Cancelar" })).toBeDisabled();
+    release?.();
+    expect(await screen.findByText("Reenviamos la invitación a sofia@example.com.")).toBeVisible();
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
   });
 
   // Límite de 20 s: invita dos veces, escribe los correos con user-event y elige roles y empresa en tres desplegables; con toda la suite tarda unos 6,5 s.

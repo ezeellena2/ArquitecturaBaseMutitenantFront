@@ -173,6 +173,42 @@ describe("Cuentas de Plataforma", () => {
     await action(user, "Revocar invitación", "julieta@example.com"); expect(screen.queryByRole("textbox", { name: "Motivo" })).not.toBeInTheDocument(); await user.click(screen.getByRole("button", { name: "Revocar" }));
     expect(await screen.findByText("Revocamos la invitación a julieta@example.com.")).toBeVisible(); expect(revokes).toBe(1);
   });
+  // Cuentas-Base2 (0066 §4): «Entrega», después del estado, dice cómo salió la invitación de un operador, con su porqué en la
+  // (i); si quedó «Sin confirmar», reenviar pide revisar con la persona antes y «Cancelar» no manda nada.
+  it("Cuentas-Base2: «Entrega» con su (i), y reenviar una sin confirmar pide revisar con la persona", async () => {
+    const user = userEvent.setup(); let resends = 0;
+    server.use(http.get("/api/platform/accounts/paged", () => HttpResponse.json(list([person, { ...invitation, invitationDelivery: "Uncertain" }]))),
+      http.post("/api/platform/operators/invite/invitation/resend", () => { resends++; return HttpResponse.json({ id: "invite", expiresAtUtc: "2026-10-08T12:00:00Z" }); }));
+    const { container } = renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" });
+    const row = (await screen.findByRole("link", { name: "julieta@example.com" })).closest("tr")!;
+    const headers = screen.getAllByRole("columnheader").map((header) => header.textContent);
+    expect(headers.indexOf("Entrega")).toBe(headers.indexOf("Estado") + 1);
+    expect(within(row).getByRole("button", { name: "Más información sobre Sin confirmar" }))
+      .toHaveAccessibleDescription("No sabemos si llegó: el servidor de correo no confirmó el envío. Revisá con la persona antes de reenviarla.");
+    expect(within(screen.getByRole("link", { name: "Lucía Fernández" }).closest("tr")!).getAllByRole("cell")[headers.indexOf("Entrega")]).toHaveTextContent("—");
+    expect(await axe(container)).toHaveNoViolations();
+    await action(user, "Reenviar invitación", "julieta@example.com");
+    let dialog = await screen.findByRole("dialog", { name: "¿Reenviar la invitación a julieta@example.com?" });
+    expect(dialog).toHaveTextContent("No sabemos si le llegó la anterior: el servidor de correo no confirmó el envío. Revisá con la persona antes de reenviarla, así no le llegan dos.");
+    await user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument()); expect(resends).toBe(0);
+    await action(user, "Reenviar invitación", "julieta@example.com");
+    dialog = await screen.findByRole("dialog", { name: "¿Reenviar la invitación a julieta@example.com?" });
+    await user.click(within(dialog).getByRole("button", { name: "Reenviar" }));
+    expect(await screen.findByText("Reenviamos la invitación a julieta@example.com.")).toBeVisible(); expect(resends).toBe(1);
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  });
+  // M-Cuentas-Base2: la tarjeta de una invitación lleva su entrega después del estado, sin la (i), que no se toca dentro de la
+  // tarjeta: la dice la ficha.
+  it("390: la invitación de un operador lleva su entrega y hasta cuándo vale", async () => {
+    asPhone();
+    server.use(http.get("/api/platform/accounts/paged", () => HttpResponse.json(list([{ ...invitation, invitationDelivery: "Failed" }]))));
+    renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" });
+    const card = (await screen.findByRole("link", { name: /julieta@/u })).closest("li")!;
+    expect(cardData(card).map(([label]) => label)).toEqual(["Perfiles", "Estado", "Entrega", "Vence"]);
+    expect(cardData(card)[2]).toEqual(["Entrega", "No se pudo enviar"]);
+    expect(within(card).queryByRole("button", { name: /^Más información/ })).not.toBeInTheDocument();
+  });
   it("sólo lectura no ofrece invitación ni acciones", async () => {
     renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator-reader" }); await screen.findByRole("link", { name: "Lucía Fernández" });
     expect(screen.queryByRole("button", { name: "Invitar operador" })).not.toBeInTheDocument(); expect(screen.queryByRole("button", { name: /Acciones de/ })).not.toBeInTheDocument();

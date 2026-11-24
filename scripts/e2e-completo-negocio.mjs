@@ -933,10 +933,9 @@ export async function runBusinessCases(h) {
     ownInvitation = await invite(h, page, email);
     firstInvitationToken = await invitationTokenFromMail(h, email, firstMail);
     await page.goto(new URL(`/org/usuarios/${ownInvitation.memberId}`, h.base).href);
-    const opened = await openBusinessBarMenu(page);
+    // Usuario-Base2 y M-Usuario-Base2 (F10): «Reenviar invitación» va a la vista, en la caja «Invitación», en las dos medidas.
     const nextMail = new Set(await h.env.files());
-    const response = await clickForResponse(page, opened.menu.getByRole("menuitem", { name: "Reenviar invitación", exact: true }), `/api/users/invitations/${ownInvitation.invitationId}/resend`, "POST");
-    await opened.waitForClosed();
+    const response = await clickForResponse(page, page.getByRole("region", { name: "Invitación", exact: true }).getByRole("button", { name: "Reenviar invitación", exact: true }), `/api/users/invitations/${ownInvitation.invitationId}/resend`, "POST");
     const nextId = await response.json(); assert.match(nextId, /^[0-9a-f-]{36}$/i);
     ownInvitation.invitationId = nextId;
     resentInvitationToken = await invitationTokenFromMail(h, email, nextMail);

@@ -457,6 +457,48 @@ describe("Ficha de Cuenta de Plataforma", () => {
     await act(async () => { await vi.advanceTimersByTimeAsync(29_000); }); expect(requests).toBe(30); expect(screen.queryByText("El reenvío sigue en curso.")).not.toBeInTheDocument();
     await act(async () => { await vi.advanceTimersByTimeAsync(1_050); }); expect(requests).toBe(31); expect(new Set(keys).size).toBe(1); expect(screen.getAllByText("El reenvío sigue en curso.")).toHaveLength(1);
   });
+  // Cuenta-Plat-Base2 (0066 §4): la caja «Invitación», primera en el cuerpo, con el correo, hasta cuándo vale y su entrega,
+  // con el porqué en la (i); «Reenviar invitación» sigue en la banda y, si quedó «Sin confirmar», pide revisar antes.
+  it("Cuenta-Plat-Base2: la caja «Invitación» con su entrega, y reenviar una sin confirmar pide revisar antes", async () => {
+    data = { ...platformAccountDetailFixture({ kind: "Invitación de operador pendiente" }), invitationDelivery: "Uncertain" }; let resends = 0;
+    server.use(http.post("/api/platform/operators/:id/invitation/resend", () => { resends++; return HttpResponse.json({ id: data.id, expiresAtUtc: "2026-10-08T12:00:00Z" }); }));
+    const user = userEvent.setup(); const { container } = open();
+    const box = await screen.findByRole("region", { name: "Invitación" });
+    expect([...box.querySelectorAll("dt")].map((term) => term.textContent)).toEqual(["Correo", "Vence", "Entrega"]);
+    expect([...box.querySelectorAll("dd")].slice(0, 2).map((value) => value.textContent)).toEqual(["julieta.molina@arquitecturabase.ejemplo.com", "04/10/2026, 17:35"]);
+    expect(within(box).getByRole("button", { name: "Más información sobre Sin confirmar" }))
+      .toHaveAccessibleDescription("No sabemos si llegó: el servidor de correo no confirmó el envío. Revisá con la persona antes de reenviarla.");
+    expect(within(box).queryByRole("button", { name: "Reenviar invitación" })).not.toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
+    await user.click(screen.getByRole("button", { name: "Reenviar invitación" }));
+    let dialog = await screen.findByRole("dialog", { name: "¿Reenviar la invitación a julieta.molina@arquitecturabase.ejemplo.com?" });
+    expect(dialog).toHaveTextContent("No sabemos si le llegó la anterior: el servidor de correo no confirmó el envío. Revisá con la persona antes de reenviarla, así no le llegan dos.");
+    await user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument()); expect(resends).toBe(0);
+    await user.click(screen.getByRole("button", { name: "Reenviar invitación" }));
+    dialog = await screen.findByRole("dialog", { name: "¿Reenviar la invitación a julieta.molina@arquitecturabase.ejemplo.com?" });
+    await user.click(within(dialog).getByRole("button", { name: "Reenviar" }));
+    expect(await screen.findByText("Reenviamos la invitación a julieta.molina@arquitecturabase.ejemplo.com.")).toBeVisible(); expect(resends).toBe(1);
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  });
+  // M-Cuenta-Plat-Base2: en el teléfono, «Reenviar invitación» va en el título del grupo «Invitación», no en el ⋮; una que no
+  // se pudo enviar se reenvía directo.
+  it("M-Cuenta-Plat-Base2: «Reenviar invitación» en el grupo «Invitación» y no en el ⋮", async () => {
+    asPhone();
+    data = { ...platformAccountDetailFixture({ kind: "Invitación de operador pendiente" }), invitationDelivery: "Failed" }; let resends = 0;
+    server.use(http.post("/api/platform/operators/:id/invitation/resend", () => { resends++; return HttpResponse.json({ id: data.id, expiresAtUtc: "2026-10-08T12:00:00Z" }); }));
+    const user = userEvent.setup(); open();
+    const box = await screen.findByRole("region", { name: "Invitación" });
+    expect([...box.querySelectorAll("li")].map((row) => row.textContent)[2]).toMatch(/^EntregaNo se pudo enviar/);
+    expect(within(box).getByRole("button", { name: "Más información sobre No se pudo enviar" }))
+      .toHaveAccessibleDescription("El servidor de correo no la aceptó. Revisá la dirección y reenviala.");
+    await user.click(screen.getByRole("button", { name: `Acciones de ${data.primaryEmail}` }));
+    expect((await screen.findAllByRole("menuitem")).map((item) => item.textContent)).not.toContain("Reenviar invitación");
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(screen.queryByRole("menu")).not.toBeInTheDocument());
+    await user.click(within(box).getByRole("button", { name: "Reenviar invitación" }));
+    await waitFor(() => expect(resends).toBe(1)); expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
   it("quitar y volver a poner un permiso no cambia la selección ni habilita Guardar", async () => {
     data = platformAccountDetailFixture({ kind: "Operador" }); const user = userEvent.setup(); open(); await user.click(await screen.findByRole("button", { name: "Cambiar permisos" }));
     await user.click(await screen.findByRole("checkbox", { name: "Ver organizaciones" })); await user.click(screen.getByRole("checkbox", { name: "Ver organizaciones" }));

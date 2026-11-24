@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react";
-import { createContext, useContext, useId, type ReactNode } from "react";
+import { createContext, useContext, useId, type ComponentType, type ReactNode } from "react";
 import { cn } from "@/shared/lib/utils";
 import { useAppChrome } from "./app/AppChrome";
 import { Button } from "./button";
@@ -10,8 +10,10 @@ type SectionPhone = "card" | "inset" | "untitled";
 interface SectionProps {
   title: string;
   /** A lo sumo una acción chica: «Agregar dominio», «Sumar empresa». Apagada por algo que no es obvio, `disabledReason` dice
-   * por qué, como en `Button` (211). */
-  action?: { label: string; onClick: () => void; disabled?: boolean; disabledReason?: string };
+   * por qué, como en `Button` (211). En la compu lleva el «+»; otra acción trae su dibujo en `icon` (el de reenviar, en
+   * «Reenviar invitación»), y una que va directo a la red muestra que trabaja con `pending` (115). */
+  action?: { label: string; onClick: () => void; disabled?: boolean; disabledReason?: string; icon?: ComponentType<{ className?: string; strokeWidth?: number }>;
+    pending?: boolean; pendingLabel?: string };
   /** Lo que cuenta la caja, en gris a la derecha del título: «1 de 2 elegidos». */
   meta?: ReactNode;
   /** La ayuda que sirve (116): una (i) junto al título, con su tooltip; es la descripción de la caja. */
@@ -37,6 +39,9 @@ export function Section({ title, action, meta, help, phone = "card", children }:
   // Con ayuda, la (i) va junto al título; sin ayuda, el título va solo, como siempre.
   const titled = (heading: ReactNode) => help ? <span className="inline-flex items-center gap-1">{heading}<InfoTip id={helpId} text={help} title={title} /></span> : heading;
   const chrome = useAppChrome();
+  // Los íconos propios (`shared/ui/icons`) ya van escondidos para el lector.
+  const ActionIcon = action?.icon;
+  const actionIcon = ActionIcon ? <ActionIcon className="size-3.5" strokeWidth={2.25} /> : <Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />;
   const body = <SectionPhoneContext.Provider value={phone}>{children}</SectionPhoneContext.Provider>;
 
   if (chrome.phone) {
@@ -49,6 +54,7 @@ export function Section({ title, action, meta, help, phone = "card", children }:
         {titled(<h2 id={id} className="text-[0.84375rem] font-semibold text-[var(--t2)]">{title}</h2>)}
         {meta ? <span className="text-[0.84375rem] text-[var(--t3)]">{meta}</span> : null}
         {action ? <Button type="button" variant="link" onClick={action.onClick} disabled={action.disabled} disabledReason={action.disabledReason}
+          pending={action.pending} pendingLabel={action.pendingLabel}
           className="text-[0.90625rem] font-semibold text-[var(--marca-tx)] disabled:opacity-45">{action.label}</Button> : null}
       </div>
       <div className={cn("overflow-hidden rounded-[0.875rem] bg-[var(--superficie)] shadow-[0_0_0_1px_var(--borde)]", phone === "card" ? "mx-4" : "")}>{body}</div>
@@ -65,7 +71,8 @@ export function Section({ title, action, meta, help, phone = "card", children }:
         {titled(<h2 id={id}>{title}</h2>)}
         {/* Tablero Rol (.w-cab > span): lo que cuenta la caja, en 13 y peso 500, gris claro. */}
         {meta ? <span className="pr-3 text-[0.8125rem] font-medium text-[var(--t3)]">{meta}</span> : null}
-        {action ? <Button type="button" variant="outline" size="sm" onClick={action.onClick} disabled={action.disabled} disabledReason={action.disabledReason}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{action.label}</Button> : null}
+        {action ? <Button type="button" variant="outline" size="sm" onClick={action.onClick} disabled={action.disabled} disabledReason={action.disabledReason}
+          pending={action.pending} pendingLabel={action.pendingLabel}>{actionIcon}{action.label}</Button> : null}
       </header>
       {body}
     </section>

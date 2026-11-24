@@ -298,7 +298,7 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(await screen.findByText("Quitamos a Lucía Fernández de Empresa A.")).toBeVisible();
   });
 
-  it("invitación: estado fijo, vencimiento en la banda y ⋮ con Reenviar y Revocar", async () => {
+  it("invitación: estado fijo, vencimiento en la banda, «Reenviar invitación» en su caja y ⋮ con Revocar", async () => {
     const user = userEvent.setup();
     const deleted: string[] = [];
     api({ ...member, userId: null, displayName: "", email: "sofia@example.com", state: "Invited" as never,
@@ -313,14 +313,88 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(within(access).queryByText("Estado")).not.toBeInTheDocument();
     expect(within(access).queryByText("Invitación pendiente")).not.toBeInTheDocument();
 
+    // Usuario-Base2: reenviar va a la vista, en el encabezado de la caja «Invitación»; el ⋮ queda con revocarla.
+    expect(within(screen.getByRole("region", { name: "Invitación" })).getByRole("button", { name: "Reenviar invitación" })).toBeVisible();
     await open(user, screen.getByRole("button", { name: "Más acciones" }));
-    expect((await screen.findAllByRole("menuitem")).map((item) => item.textContent)).toEqual(["Reenviar invitación", "Revocar invitación"]);
+    expect((await screen.findAllByRole("menuitem")).map((item) => item.textContent)).toEqual(["Revocar invitación"]);
     await user.click(screen.getByRole("menuitem", { name: "Revocar invitación" }));
     const dialog = await screen.findByRole("dialog", { name: "¿Revocar la invitación a sofia@example.com?" });
     expect(dialog).toHaveTextContent("El enlace deja de funcionar. Podés volver a invitarla cuando quieras.");
     await user.click(within(dialog).getByRole("button", { name: "Revocar" }));
     await waitFor(() => expect(deleted).toEqual(["invitation"]));
     expect(await screen.findByText("Revocamos la invitación a sofia@example.com.")).toBeVisible();
+  });
+
+  // Tablero Usuario-Base2 (0066 §4): la caja «Invitación», primera en el cuerpo, dice por dónde salió, a quién, hasta cuándo
+  // vale y su entrega, con el porqué en la (i). Si quedó «Sin confirmar», reenviar pide revisar con la persona antes; con
+  // «Reenviar» sale y la confirmación espera la respuesta.
+  it("tablero Usuario-Base2: la caja «Invitación» con su entrega, y reenviar una sin confirmar pide revisar antes", async () => {
+    const user = userEvent.setup();
+    const sent: string[] = [];
+    let release: (() => void) | undefined;
+    api({ ...member, userId: null, displayName: "Sofía Herrera", email: "sofia@example.com", state: "Invited" as never, roles: [], invitationId: "inv-1",
+      invitationIssuedAtUtc: "2026-09-25T12:00:00Z", invitationExpiresAtUtc: "2026-10-02T21:00:00Z", invitationDelivery: "Uncertain" } as typeof member);
+    server.use(http.post("/api/users/invitations/inv-1/resend", async () => {
+      sent.push("inv-1");
+      await new Promise<void>((resolve) => { release = resolve; });
+      return HttpResponse.json("inv-2");
+    }));
+    const { container } = renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+
+    const box = await screen.findByRole("region", { name: "Invitación" });
+    expect(screen.getAllByRole("region")[0]).toBe(box);
+    expect([...box.querySelectorAll("dt")].map((term) => term.textContent)).toEqual(["Por", "Correo", "Vence", "Entrega"]);
+    // El porqué de la (i) va escondido junto a ella, como su descripción: la entrega empieza con su palabra.
+    const values = [...box.querySelectorAll("dd")].map((value) => value.textContent);
+    expect(values.slice(0, 3)).toEqual(["Correo", "sofia@example.com", "02/10/2026, 18:00"]);
+    expect(values[3]).toMatch(/^Sin confirmar/);
+    expect(within(box).getByRole("button", { name: "Más información sobre Sin confirmar" }))
+      .toHaveAccessibleDescription("No sabemos si llegó: el servidor de correo no confirmó el envío. Revisá con la persona antes de reenviarla.");
+    expect(await axe(container)).toHaveNoViolations();
+
+    await user.click(within(box).getByRole("button", { name: "Reenviar invitación" }));
+    let dialog = await screen.findByRole("dialog", { name: "¿Reenviar la invitación a Sofía Herrera?" });
+    expect(dialog).toHaveTextContent("No sabemos si le llegó la anterior: el servidor de correo no confirmó el envío. Revisá con Sofía Herrera antes de reenviarla, así no le llegan dos.");
+    await user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(sent).toEqual([]);
+
+    await user.click(within(box).getByRole("button", { name: "Reenviar invitación" }));
+    dialog = await screen.findByRole("dialog", { name: "¿Reenviar la invitación a Sofía Herrera?" });
+    await user.click(within(dialog).getByRole("button", { name: "Reenviar" }));
+    await waitFor(() => expect(sent).toEqual(["inv-1"]));
+    expect(within(dialog).getByRole("button", { name: "Cancelar" })).toBeDisabled();
+    release?.();
+    expect(await screen.findByText("Reenviamos la invitación a sofia@example.com.")).toBeVisible();
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  });
+
+  // M-Usuario-Base2: en el teléfono, el grupo «Invitación» con «Reenviar invitación» en su título y cada dato con su nombre;
+  // una enviada reenvía directo, sin confirmación.
+  it("tablero M-Usuario-Base2: el grupo «Invitación» por WhatsApp, y una enviada se reenvía directo", async () => {
+    const restore = asPhone();
+    try {
+      const user = userEvent.setup();
+      const sent: string[] = [];
+      api({ ...member, userId: null, displayName: "", email: null, phone: "+5493515550200", state: "Invited" as never, roles: [], invitationId: "inv-1",
+        invitationIssuedAtUtc: "2026-09-25T12:00:00Z", invitationExpiresAtUtc: "2026-10-20T21:00:00Z", invitationDelivery: "Failed" } as unknown as typeof member);
+      server.use(http.post("/api/users/invitations/inv-1/resend", () => { sent.push("inv-1"); return HttpResponse.json("inv-2"); }));
+      renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+
+      const box = await screen.findByRole("region", { name: "Invitación" });
+      const rows = [...box.querySelectorAll("li")].map((row) => row.textContent);
+      expect(rows[0]).toBe("PorWhatsApp");
+      expect(rows[1]).toMatch(/^Teléfono.*555-0200$/);
+      expect(rows[2]).toBe("Vence20/10/2026, 18:00");
+      expect(rows[3]).toMatch(/^EntregaNo se pudo enviar/);
+      expect(within(box).getByRole("button", { name: "Más información sobre No se pudo enviar" }))
+        .toHaveAccessibleDescription("WhatsApp no pudo entregarla a ese número.");
+      await user.click(within(box).getByRole("button", { name: "Reenviar invitación" }));
+      await waitFor(() => expect(sent).toEqual(["inv-1"]));
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    } finally {
+      restore();
+    }
   });
 
   // Tablero Usuario (175): sin cartel; la banda dice el estado una vez y cuándo se borra va en la frase de su (i).

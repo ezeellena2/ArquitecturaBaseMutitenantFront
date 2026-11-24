@@ -23,12 +23,14 @@ import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { Surface } from "@/shared/ui/Surface";
 import { toast } from "sonner";
 import { changeUserStatus, fetchUserCounts, fetchUsers, removeUser, resendUserInvitation, revokeUserInvitation, userCountsQueryKey, usersQueryKey, usersQueryRoot, type UsersQuery } from "../api/users";
-import { createUserColumns, userContactText, userPhoneRow } from "../columns";
+import { createUserColumns, userContactText, userInvitationChannel, userPhoneRow } from "../columns";
 import { InviteUserDialog } from "../components/InviteUserDialog";
 import { activeOrganization } from "@/tenancy/access";
 import { useModulePageActions } from "@/shared/modules/useModules";
 import { useFormat } from "@/shared/format/useFormat";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
+import { useResendInvitation } from "@/shared/hooks/useResendInvitation";
+import { ResendInvitationDialog } from "@/shared/ui/InvitationDelivery";
 
 const userFilterKeys = ["state", "companyId"] as const;
 // Orden del filtro «Estado» del tablero Usuarios.
@@ -37,9 +39,10 @@ const userStates: readonly (OrganizationUserState | undefined)[] = [undefined, "
 const withoutCompanyValue = "none";
 
 /// El ⋮ de un usuario. El reenvío vive por invitación (R04), como AccountActions de Plataforma: cada una con su clave y su
-/// dueño, así reenviar otra no le cambia la clave y un reintento conserva sus avisos.
+/// dueño, así reenviar otra no le cambia la clave y un reintento conserva sus avisos. Si la anterior quedó «Sin confirmar»,
+/// reenviar pide revisar con la persona antes (Usuarios-Base2, 0066 §4).
 function UserRowActions({ member, label, title, actions, pending }: { member: OrganizationUserResponse; label: string; title: string;
-  actions: (resend: () => void) => readonly RowAction[]; pending: boolean }) {
+  actions: (resend: (trigger: HTMLElement | null) => void) => readonly RowAction[]; pending: boolean }) {
   const { t } = useTranslation(["users", "common"]);
   const client = useQueryClient();
   const action = useResourceAction<{ invitationId: string; email: string }>({ onError: (error) => toastActionError(error, t) });
@@ -47,9 +50,15 @@ function UserRowActions({ member, label, title, actions, pending }: { member: Or
     (_response, operation) => { toast.success(t("users:messages.resent", { email: operation.email })); void client.invalidateQueries({ queryKey: usersQueryRoot }); }),
     { meta: action.meta, sameOperation: (previous, next) => previous.invitationId === next.invitationId });
   const format = useFormat();
-  const send = () => { if (member.invitationId) resend.mutate({ invitationId: member.invitationId, email: userContactText(member, format) }); };
+  const send = (settled?: () => void) => {
+    if (member.invitationId) resend.mutate({ invitationId: member.invitationId, email: userContactText(member, format) }, { onSettled: settled });
+  };
+  const confirmResend = useResendInvitation(member.invitationDelivery, send);
   // Reenviar y Reactivar van directo a la red: mientras esperan, el ⋮ muestra que trabaja (115).
-  return <RowActions label={label} title={title} actions={actions(send)} pending={pending || resend.isPending} />;
+  return <>
+    <RowActions label={label} title={title} actions={actions(confirmResend.start)} pending={pending || resend.isPending} />
+    <ResendInvitationDialog resend={confirmResend} name={title} person={member.displayName} channel={userInvitationChannel(member)} pending={resend.isPending} />
+  </>;
 }
 
 export function UsersPage() {
