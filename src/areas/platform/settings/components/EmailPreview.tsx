@@ -22,7 +22,7 @@ export function EmailPreview({ appName, senderName, logoUrl }: { appName: string
         </div>
         <p className="font-semibold">{t("preview.heading")}</p>
         <p className="mt-1.5">{t("preview.body", { app })}</p>
-        <p className="my-3 text-[1.5rem] font-bold tracking-[4px]">{code}</p>
+        <p className="my-3 text-[1.5rem] font-bold tracking-[0.25rem]">{code}</p>
         <p className="text-[0.75rem] text-[var(--t2)]">{t("preview.note")}</p>
       </div>
     </div>
