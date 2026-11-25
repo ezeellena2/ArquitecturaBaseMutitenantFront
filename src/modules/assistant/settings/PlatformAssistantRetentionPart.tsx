@@ -1,23 +1,22 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
-import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { useController } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { useCurrentUser } from "@/auth/useCurrentUser";
-import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
-import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import { validationConstraints } from "@/shared/api/generated/validation";
 import { useFormat, type FormatState } from "@/shared/format/useFormat";
 import { useEditForm } from "@/shared/hooks/useEditForm";
-import type { PlatformSettingsPartHandle, PlatformSettingsPartProps } from "@/shared/modules/types";
+import type { PlatformSettingsPartProps } from "@/shared/modules/types";
+import { usePlatformSettingsPart } from "@/shared/modules/usePlatformSettingsPart";
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { NumberField } from "@/shared/ui/fields/NumberField";
 import type { PlatformAssistantSettingsResponse } from "../api/types";
-import type { AssistantScope } from "../api/assistant";
+import { assistantStateQueryKey, type AssistantScope } from "../api/assistant";
 import { assistantSettingsKey, fetchPlatformAssistantSettings, updateAssistantSettings } from "../api/settings";
 
 /** De 1 a 30 días (Config-Plat-Base2), como los publica el contrato y los valida el back. */
@@ -47,41 +46,20 @@ export function PlatformAssistantRetentionPart(props: PlatformSettingsPartProps)
 function PartEditor({ scope, settings, reload, register, onChange }: PlatformSettingsPartProps & { scope: AssistantScope;
   settings: PlatformAssistantSettingsResponse; reload: () => Promise<PlatformAssistantSettingsResponse | undefined> }) {
   const { t } = useTranslation("assistant");
-  const client = useQueryClient(); const format = useFormat();
+  const format = useFormat();
   const schema = useMemo(() => partSchema(t, format), [t, format]);
-  const { form, version, resetTo, wrote } = useEditForm({ read: settings, toValues: valuesOf, resolver: zodResolver(schema) });
+  const edit = useEditForm({ read: settings, toValues: valuesOf, resolver: zodResolver(schema) });
+  const { form } = edit;
   const days = useController({ control: form.control, name: "retentionDays" });
-  const isDirty = form.formState.isDirty;
-  const settingsKey = assistantSettingsKey(scope);
-
-  const latest = useRef<Omit<PlatformSettingsPartHandle, "isDirty"> | null>(null);
-  useLayoutEffect(() => {
-    latest.current = {
-      validate: () => form.trigger(),
-      save: async () => {
-        const values = form.getValues(); const sentVersion = version;
-        const { defaultModelId, allowedModelIds, effort, dailyMessageLimit, monthlyOrganizationBudget, personalEnabled } = settings;
-        try {
-          const result = await updateAssistantSettings(scope, { defaultModelId, allowedModelIds, effort, dailyMessageLimit, personalEnabled,
-            monthlyOrganizationBudget: { amount: monthlyOrganizationBudget.amount, currency: monthlyOrganizationBudget.currency },
-            retentionDays: values.retentionDays, keyAction: "keep", version: sentVersion }, crypto.randomUUID(), new AbortController().signal);
-          form.reset(values);
-          await client.invalidateQueries({ queryKey: settingsKey });
-          wrote(sentVersion, result.version, client.getQueryData<PlatformAssistantSettingsResponse>(settingsKey));
-          return true;
-        } catch (error) {
-          if (error instanceof ApiError && applyApiErrorToForm(error, form.setError, { retentionDays: "retentionDays" })) return false;
-          throw error;
-        }
-      },
-      discard: () => resetTo(settings),
-      reload: async () => { const fresh = await reload(); if (fresh) resetTo(fresh); },
-    };
-  });
-  useEffect(() => {
-    register({ isDirty, validate: () => latest.current!.validate(), save: () => latest.current!.save(), discard: () => latest.current!.discard(), reload: () => latest.current!.reload() });
-  }, [isDirty, register]);
-  useEffect(() => () => register(null), [register]);
+  usePlatformSettingsPart({ register, edit, settings, reload, queryKey: assistantSettingsKey(scope), serverFields: { retentionDays: "retentionDays" },
+    // El Inicio dice el plazo en la (i) del historial y en el diálogo de retención: lo relee al volver.
+    shownIn: [assistantStateQueryKey(scope)],
+    send: (values, version) => {
+      const { defaultModelId, allowedModelIds, effort, dailyMessageLimit, monthlyOrganizationBudget, personalEnabled } = settings;
+      return updateAssistantSettings(scope, { defaultModelId, allowedModelIds, effort, dailyMessageLimit, personalEnabled,
+        monthlyOrganizationBudget: { amount: monthlyOrganizationBudget.amount, currency: monthlyOrganizationBudget.currency },
+        retentionDays: values.retentionDays, keyAction: "keep", version }, crypto.randomUUID(), new AbortController().signal);
+    } });
 
   return <FormField label={t("settings.retentionPart.label")} error={form.formState.errors.retentionDays?.message}
     help={t("settings.retentionPart.help", { min: format.formatInteger(retention.min), max: format.formatInteger(retention.max) })}>

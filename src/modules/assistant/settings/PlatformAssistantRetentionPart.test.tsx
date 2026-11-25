@@ -8,6 +8,7 @@ import { platformOperator } from "@/test/mocks/currentUsers";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { platformSettingsFixture } from "@/test/mocks/platformSettings";
 import { server } from "@/test/mocks/server";
+import { assistantStateQueryKey } from "../api/assistant";
 import { mountSettings, platformSettings, settingsHandlers } from "./settingsTestSupport";
 
 const operator: MeResponse = { ...platformOperator, moduleCapabilities: [{ key: "assistant", available: true, canConfigure: true, canReadUsage: false }] };
@@ -38,6 +39,17 @@ describe("Configuración de Plataforma: las conversaciones del Inicio", { timeou
     await waitFor(() => expect(sent).toEqual([{ defaultModelId: read.defaultModelId, allowedModelIds: read.allowedModelIds, effort: read.effort, dailyMessageLimit: read.dailyMessageLimit,
       personalEnabled: read.personalEnabled, monthlyOrganizationBudget: read.monthlyOrganizationBudget, retentionDays: 15, keyAction: "keep", version: read.version }]));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("guardado, el Inicio vuelve a leer su estado: la (i) del historial y el diálogo de retención dicen el plazo nuevo", async () => {
+    const { user, client } = mountSettings(operator, "/plataforma/configuracion");
+    const home = assistantStateQueryKey({ access: "platform", tenantId: operator.activeTenantId ?? null, userId: operator.id });
+    client.setQueryData(home, { retentionDays: 30 });
+    await waitFor(() => expect(field()).toHaveValue("30"));
+    fireEvent.change(field(), { target: { value: "7" } }); fireEvent.blur(field());
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+    await waitFor(() => expect(sent).toHaveLength(1));
+    await waitFor(() => expect(client.getQueryState(home)?.isInvalidated).toBe(true));
   });
 
   it("más de 30 días no se guarda", async () => {

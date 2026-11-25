@@ -22,7 +22,7 @@ import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { Input } from "@/shared/ui/input";
 import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
-import type { AssistantScope } from "../api/assistant";
+import { assistantStateQueryKey, type AssistantScope } from "../api/assistant";
 import { assistantModelsRoot, createAssistantModel, updateAssistantModel } from "../api/models";
 import { modelErrorFields, modelFormSchema, modelFormValues, type ModelFormOutput, type ModelFormValues } from "./modelForm";
 import { ModelTechnicalFields, type ModelTechnicalPart } from "./ModelTechnicalFields";
@@ -86,6 +86,8 @@ export function ModelEditorDialog({ scope, cancellationSignal, model, currency, 
     success: (body, response) => {
       if (model) wrote((body as UpdateAssistantModelRequest).version!, response.version, undefined);
       toast.success(t("assistant:settings.modelSaved")); onClose(); void client.invalidateQueries({ queryKey: assistantModelsRoot(scope) });
+      // El Inicio nombra los modelos que se pueden elegir: un nombre nuevo se ve al volver.
+      void client.invalidateQueries({ queryKey: assistantStateQueryKey(scope) });
     },
     failure: (error) => {
       if (error instanceof ApiError && error.code === "General.ConcurrencyConflict") { conflict.current = true; setStep("data"); }

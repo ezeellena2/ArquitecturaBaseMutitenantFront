@@ -5,6 +5,7 @@ import { axe } from "vitest-axe";
 import type { AssistantModelPriceResponse, CreateAssistantModelRequest, UpdateAssistantModelRequest, UpdatePlatformAssistantSettingsRequest } from "@/modules/assistant/api/types";
 import { server } from "@/test/mocks/server";
 import { asPhone } from "@/test/utils/phone";
+import { assistantStateQueryKey } from "../api/assistant";
 import { assistantSettingsKey } from "../api/settings";
 import { firstModel, mountSettings, platformManager, platformSettings, secondModel, settingsHandlers } from "./settingsTestSupport";
 import { pickerName } from "@/test/picker";
@@ -281,6 +282,20 @@ describe("catálogo y configuración de plataforma", () => {
       await act(async () => { release(); await gate; });
     }
     await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  });
+  it("un modelo guardado hace releer el estado del Inicio, que nombra los modelos que se pueden elegir", async () => {
+    server.use(http.put(`/api/platform/assistant/models/${firstModel.id}`, () => HttpResponse.json({ version: 4 })));
+    const app = mountSettings(platformManager, catalogPath);
+    const home = assistantStateQueryKey({ access: platformManager.access, tenantId: platformManager.activeTenantId ?? null, userId: platformManager.id });
+    app.client.setQueryData(home, { models: [{ id: firstModel.id, name: firstModel.name }] });
+    (await screen.findByRole("button", { name: `Acciones de ${firstModel.name}` })).focus();
+    await app.user.keyboard("{Enter}");
+    await app.user.click(await screen.findByRole("menuitem", { name: `Editar ${firstModel.name}` }));
+    const dialog = await screen.findByRole("dialog", { name: "Editar modelo" });
+    fireEvent.change(within(dialog).getByRole("textbox", { name: "Nombre" }), { target: { value: "Nombre nuevo" } });
+    await app.user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(app.client.getQueryState(home)?.isInvalidated).toBe(true);
   });
   it("la pestaña vive en URL y protege el borrador antes de abandonarlo", async () => {
     const app = mountSettings(platformManager);

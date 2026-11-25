@@ -6,6 +6,7 @@ import { currentUserQueryKey } from "@/auth/useCurrentUser";
 import type { UpdateOrganizationAssistantSettingsRequest } from "@/modules/assistant/api/types";
 import { server } from "@/test/mocks/server";
 import { asPhone } from "@/test/utils/phone";
+import { assistantStateQueryKey } from "../api/assistant";
 import { assistantSettingsKey } from "../api/settings";
 import { businessManager, firstModel, mountSettings, organizationSettings, platformManager, secondModel, settingsHandlers } from "./settingsTestSupport";
 import { choose, pickerName } from "@/test/picker";
@@ -149,6 +150,17 @@ describe("configuración real de gestión", () => {
       await waitFor(() => expect(sent).toHaveLength(2));
       expect(sent[1]).toMatchObject({ version: 11, monthlyBudget: { amount: 125, currency: "USD" }, keyAction: "keep" });
     }
+  });
+  it("guardada, el Inicio vuelve a leer su estado con el modelo nuevo", async () => {
+    const settings = organizationSettings(); settings.platformKeyModels.push(secondModel); settingsHandlers(settings);
+    server.use(http.put("/api/organization/assistant/settings", () => HttpResponse.json({ version: 11 })));
+    const app = mountSettings();
+    const home = assistantStateQueryKey(scope);
+    app.client.setQueryData(home, { retentionDays: 30 });
+    (await screen.findByRole("button", { name: pickerName("Modelo") })).focus(); await app.user.keyboard("{Enter}");
+    await app.user.click(await screen.findByRole("option", { name: secondModel.name }));
+    await app.user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+    await waitFor(() => expect(app.client.getQueryState(home)?.isInvalidated).toBe(true));
   });
   it("PlatformKey omite topes; la versión propia precede un GET ajeno y el siguiente guardado recibe 409", async () => {
     const sent: UpdateOrganizationAssistantSettingsRequest[] = [];

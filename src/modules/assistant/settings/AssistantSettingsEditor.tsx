@@ -35,6 +35,7 @@ import { Section, SectionFields } from "@/shared/ui/Section";
 import { StatusDot } from "@/shared/ui/StatusDot";
 import { activeOrganization } from "@/tenancy/access";
 import { assistantModelsRoot, fetchAssistantModelOptions } from "../api/models";
+import { assistantStateQueryKey } from "../api/assistant";
 import { assistantSettingsKey, updateAssistantSettings } from "../api/settings";
 import { ModelCatalog } from "./ModelCatalog";
 import { ModelEditorDialog } from "./ModelEditorDialog";
@@ -122,6 +123,8 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
       setChangingKey(false); setFailure(undefined);
       toast.success(t("assistant:settings.saved"));
       void client.invalidateQueries({ queryKey: settingsKey });
+      // El Inicio muestra los modelos, el cupo y el plazo que se acaban de guardar.
+      void client.invalidateQueries({ queryKey: assistantStateQueryKey(scope) });
     },
     failure: (error) => {
       if (error instanceof ApiError) {
