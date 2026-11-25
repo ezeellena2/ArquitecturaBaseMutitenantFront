@@ -8297,7 +8297,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Configuración de WhatsApp de la organización (272): chatRetentionDays, de 1 al máximo de la plataforma, con version en el PUT y el 409 de siempre. Un valor fuera de su mínimo o su máximo es el 400 de validación en su campo. */
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Configuración de WhatsApp de la organización (272): chatRetentionDays, de 1 al máximo de la plataforma, con version en el PUT y el 409 de siempre. Un valor fuera de 1 y 3650 es el 400 de validación en su campo; uno por encima del máximo que fija la plataforma al guardar, el 400 WhatsApp.Settings.ChatRetentionOutOfRange en chatRetentionDays, con ese máximo en el texto. */
         get: {
             parameters: {
                 query?: never;
@@ -8358,7 +8358,7 @@ export interface paths {
                 };
             };
         };
-        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Configuración de WhatsApp de la organización (272): chatRetentionDays, de 1 al máximo de la plataforma, con version en el PUT y el 409 de siempre. Un valor fuera de su mínimo o su máximo es el 400 de validación en su campo. */
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Configuración de WhatsApp de la organización (272): chatRetentionDays, de 1 al máximo de la plataforma, con version en el PUT y el 409 de siempre. Un valor fuera de 1 y 3650 es el 400 de validación en su campo; uno por encima del máximo que fija la plataforma al guardar, el 400 WhatsApp.Settings.ChatRetentionOutOfRange en chatRetentionDays, con ese máximo en el texto. */
         put: {
             parameters: {
                 query?: never;
@@ -8385,7 +8385,7 @@ export interface paths {
                         "text/json": components["schemas"]["VersionResponse"];
                     };
                 };
-                /** @description Bad Request; Validation.Failed */
+                /** @description Bad Request; Validation.Failed; WhatsApp.Settings.ChatRetentionOutOfRange */
                 400: {
                     headers: {
                         [name: string]: unknown;
