@@ -3,7 +3,7 @@
 ## Cómo se hace
 - useFormat resuelve cultura efectiva, zona de `/api/me` y moneda del dato; sin sesión, relaciones del catálogo.
 - Los instantes se comparan con `shared/time`: el reloj toma `Date` de cada respuesta API y avanza con `performance.now`, independiente de la fecha del dispositivo. Las esperas de reenvío usan tiempo monotónico y su texto m:ss sale de `shared/format/countdown`; la de un 429 (`formatWait`), desde una hora, va en horas y minutos redondeados para arriba («22 h 53 min»), porque un tope diario pide esperar hasta un día (0063).
-- Cultura: cuenta → selección del navegador → predeterminada habilitada; define idioma y formato. La zona es la de la cuenta en los tres accesos; fechas civiles y períodos no se convierten.
+- Cultura: cuenta → selección del navegador → predeterminada habilitada; define idioma y formato. La zona es la de la cuenta en los tres accesos, salvo la hora en que vuelve el cupo del día dentro de una organización, que va en la zona de la organización y la nombra (`DateInTimeZoneText`, decisión 283 de formularios); fechas civiles y períodos no se convierten.
 - La moneda del dato es explícita; DefaultCurrency solo precarga un importe nuevo.
 - shared/referenceData entrega todas las filas traducidas con isEnabled; los selectores ofrecen habilitadas y el formato acepta valores guardados deshabilitados.
 - Cultures aporta patrones, separadores y AmDesignator/PmDesignator; cultureProfiles adapta sin perfiles fijos. Currencies aporta MinorUnits; CurrencyTranslations, DisplaySymbol. Símbolos alfabéticos pegados al número reciben espacio CLDR.
