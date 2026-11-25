@@ -78,6 +78,22 @@ describe("Configuración de WhatsApp de la organización (WA-Config-Base2)", () 
     expect(await field()).toHaveAttribute("aria-invalid", "true");
   });
 
+  it("un plazo que no es un número dice un solo error debajo del campo, también uno que se lee de dos maneras", async () => {
+    const { sent } = handlers();
+    const page = mountWhatsApp(whatsappOwner, path);
+    for (const text of ["abc", "1.500"]) {
+      await page.user.clear(await field());
+      await page.user.type(await field(), text);
+      await page.user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+      expect(await screen.findByText("Tiene que ser de 1 a 3.650.")).toBeVisible();
+      expect(screen.queryByText("Ingresá un número válido.")).not.toBeInTheDocument();
+      expect(screen.queryByText(/Se puede leer de dos maneras/)).not.toBeInTheDocument();
+      expect(screen.getAllByRole("alert")).toHaveLength(1);
+      expect(await field()).toHaveAttribute("aria-invalid", "true");
+    }
+    expect(sent).toEqual([]);
+  });
+
   it("el máximo es el que fija la plataforma, en la (i) y en el error", async () => {
     const { sent } = handlers({ chatRetentionDays: 90, maxOrganizationChatRetentionDays: 365, version: 4 });
     const page = mountWhatsApp(whatsappOwner, path);

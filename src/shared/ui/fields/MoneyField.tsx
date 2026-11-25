@@ -67,7 +67,9 @@ export function MoneyField({ value, onChange, onValidityChange, id, name, disabl
   }
 
   const showError = invalid && touched;
-  const description = [externalDescription, showError ? messageId : undefined].filter(Boolean).join(" ") || undefined;
+  // Un solo dueño por error (como MonthField): si el campo de afuera ya lo marca y lo dice, el aviso propio se calla.
+  const showMessage = showError && !(externalInvalid && externalDescription);
+  const description = [externalDescription, showMessage ? messageId : undefined].filter(Boolean).join(" ") || undefined;
   return <div className="flex flex-col gap-2">
     <div className="relative">{fixedCurrency ? <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-[var(--t2)]">{currency}</span> : null}<Input ref={inputRef} id={id} name={name} type="text" inputMode="decimal" value={inputValue} className={fixedCurrency ? "pl-14 max-md:pl-14" : undefined}
       onBlur={() => { if (invalid) setTouched(true); else setDraft(null); }}
@@ -83,6 +85,6 @@ export function MoneyField({ value, onChange, onValidityChange, id, name, disabl
         }}
         disabled={disabled} aria-invalid={externalInvalid || showError} />
     </div> : null}
-    {showError && <p id={messageId} role="alert" className="text-[0.8125rem] text-[var(--peligro)]">{t(`fields.${problem}`)}</p>}
+    {showMessage && <p id={messageId} role="alert" className="text-[0.8125rem] text-[var(--peligro)]">{t(`fields.${problem}`)}</p>}
   </div>;
 }

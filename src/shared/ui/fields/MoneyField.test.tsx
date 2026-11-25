@@ -178,4 +178,24 @@ describe("NumberField y MoneyField", () => {
     fireEvent.blur(input);
     expect(screen.getByRole("alert")).toHaveTextContent("Ingresá un monto válido");
   });
+
+  it("un texto que no se lee avisa en el campo, y calla su aviso cuando el formulario ya dice el error: uno solo", async () => {
+    const { rerender } = render(<AppProviders><FormField label="Plazo"><NumberField value={null} onChange={vi.fn()} /></FormField></AppProviders>);
+    const input = await screen.findByRole("textbox", { name: "Plazo" });
+    await waitFor(() => expect(input).toBeEnabled());
+    fireEvent.change(input, { target: { value: "abc" } });
+    fireEvent.blur(input);
+    expect(screen.getByRole("alert")).toHaveTextContent("Ingresá un número válido.");
+
+    rerender(<AppProviders><FormField label="Plazo" error="Tiene que ser de 1 a 30."><NumberField value={null} onChange={vi.fn()} /></FormField></AppProviders>);
+    expect(screen.getAllByRole("alert").map((alert) => alert.textContent)).toEqual(["Tiene que ser de 1 a 30."]);
+    expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(input).toHaveAccessibleDescription("Tiene que ser de 1 a 30.");
+
+    rerender(<AppProviders><FormField label="Monto" error="Revisá el presupuesto."><MoneyField fixedCurrency currencyCode="ARS" value={null} onChange={vi.fn()} /></FormField></AppProviders>);
+    const money = await screen.findByRole("textbox", { name: "Monto" });
+    fireEvent.change(money, { target: { value: "abc" } });
+    fireEvent.blur(money);
+    expect(screen.getAllByRole("alert").map((alert) => alert.textContent)).toEqual(["Revisá el presupuesto."]);
+  });
 });

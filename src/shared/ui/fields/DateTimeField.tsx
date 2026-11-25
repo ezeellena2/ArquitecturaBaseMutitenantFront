@@ -46,13 +46,15 @@ export function DateTimeField({ value, onChange, onValidityChange, id, name, dis
   }
 
   const showError = invalid && touched;
-  const description = [externalDescription, showError ? messageId : undefined].filter(Boolean).join(" ") || undefined;
+  // Un solo dueño por error (como MonthField): si el campo de afuera ya lo marca y lo dice, el aviso propio se calla.
+  const showMessage = showError && !(externalInvalid && externalDescription);
+  const description = [externalDescription, showMessage ? messageId : undefined].filter(Boolean).join(" ") || undefined;
   return <>
     <Input ref={inputRef} id={id} name={name} type="text" inputMode="numeric" value={inputValue}
       onBlur={() => { if (invalid) setTouched(true); else setDraft(null); }}
       onChange={(event) => change(event.target.value)} disabled={disabled || format.isLoading}
       required={required} placeholder={placeholder} aria-busy={format.isLoading}
       aria-invalid={externalInvalid || showError} aria-describedby={description} />
-    {showError && <p id={messageId} role="alert" className="text-[0.8125rem] text-[var(--peligro)]">{t("fields.invalidDateTime")}</p>}
+    {showMessage && <p id={messageId} role="alert" className="text-[0.8125rem] text-[var(--peligro)]">{t("fields.invalidDateTime")}</p>}
   </>;
 }

@@ -60,9 +60,11 @@ export function NumberField({ value, onChange, onValidityChange, digits, id, nam
   }
 
   const showError = invalid && touched;
+  // Un solo dueño por error (como MonthField): si el campo de afuera ya lo marca y lo dice, el aviso propio se calla.
+  const showMessage = showError && !(externalInvalid && externalDescription);
   const off = disabled === true && disabledReason !== undefined;
   const reasonId = `${messageId}-reason`;
-  const description = [externalDescription, showError ? messageId : undefined, off ? reasonId : undefined].filter(Boolean).join(" ") || undefined;
+  const description = [externalDescription, showMessage ? messageId : undefined, off ? reasonId : undefined].filter(Boolean).join(" ") || undefined;
   const input = <Input ref={inputRef} id={id} name={name} type="text" inputMode="decimal" value={inputValue} className={unit ? "w-27.5 flex-none" : undefined}
     onBlur={() => { if (invalid) setTouched(true); else setDraft(null); }}
     onChange={(event) => change(event.target.value)} disabled={disabled || format.isLoading}
@@ -75,6 +77,6 @@ export function NumberField({ value, onChange, onValidityChange, digits, id, nam
     {/* Tableros Config-Plat-Base2 y WA-Config-Base2 (.b2-num): el campo de 110 y la unidad a 8, en gris. */}
     {unit ? <span className="flex items-center gap-2">{control}<span className="text-[0.875rem] text-[var(--t2)]">{unit}</span></span> : control}
     {off ? <span id={reasonId} hidden>{disabledReason}</span> : null}
-    {showError && <p id={messageId} role="alert" className="text-[0.8125rem] text-[var(--peligro)]">{t(`fields.${problem}`)}</p>}
+    {showMessage && <p id={messageId} role="alert" className="text-[0.8125rem] text-[var(--peligro)]">{t(`fields.${problem}`)}</p>}
   </>;
 }

@@ -49,7 +49,8 @@ export function DateField({ value, onChange, onValidityChange, id, name, disable
   }
 
   const showError = invalid && touched;
-  const showMessage = showError && message !== null;
+  // Un solo dueño por error (como MonthField): si el campo de afuera ya lo marca y lo dice, el aviso propio se calla.
+  const showMessage = showError && message !== null && !(externalInvalid && externalDescription);
   const description = [externalDescription, showMessage ? messageId : undefined].filter(Boolean).join(" ") || undefined;
   return <>
     <Input ref={inputRef} id={id} name={name} type="text" inputMode="numeric" value={inputValue}
