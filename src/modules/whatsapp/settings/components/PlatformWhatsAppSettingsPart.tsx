@@ -1,17 +1,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { useController, type Control } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
-import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
-import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import { validationConstraints } from "@/shared/api/generated/validation";
 import { useFormat, type FormatState } from "@/shared/format/useFormat";
 import { useEditForm } from "@/shared/hooks/useEditForm";
-import type { PlatformSettingsPartHandle, PlatformSettingsPartProps } from "@/shared/modules/types";
+import type { PlatformSettingsPartProps } from "@/shared/modules/types";
+import { usePlatformSettingsPart } from "@/shared/modules/usePlatformSettingsPart";
 import { enabledOptions } from "@/shared/referenceData/referenceData";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
 import { FormError } from "@/shared/ui/FormError";
@@ -55,40 +54,16 @@ export function PlatformWhatsAppSettingsPart(props: PlatformSettingsPartProps) {
 function PartEditor({ settings, reload, register, onChange }: PlatformSettingsPartProps & {
   settings: PlatformWhatsAppSettingsResponse; reload: () => Promise<PlatformWhatsAppSettingsResponse | undefined> }) {
   const { t } = useTranslation(["whatsapp", "common"]);
-  const client = useQueryClient(); const format = useFormat();
+  const format = useFormat();
   const { data: reference } = useReferenceData();
   const schema = useMemo(() => partSchema(t, format), [t, format]);
-  const { form, version, resetTo, wrote } = useEditForm({ read: settings, toValues: valuesOf, resolver: zodResolver(schema) });
+  const edit = useEditForm({ read: settings, toValues: valuesOf, resolver: zodResolver(schema) });
+  const { form } = edit;
   const countries = useController({ control: form.control, name: "allowedCountries" });
   // El aviso de costo: el último país que se sumó, hasta que se guarda, se descarta o se lo saca.
   const [added, setAdded] = useState<string | null>(null);
-  const isDirty = form.formState.isDirty;
-
-  const latest = useRef<Omit<PlatformSettingsPartHandle, "isDirty"> | null>(null);
-  useLayoutEffect(() => {
-    latest.current = {
-      validate: () => form.trigger(),
-      save: async () => {
-        const values = form.getValues(); const sentVersion = version;
-        try {
-          const result = await updatePlatformWhatsAppSettings({ ...values, version: sentVersion });
-          form.reset(values); setAdded(null);
-          await client.invalidateQueries({ queryKey: platformWhatsAppSettingsKey });
-          wrote(sentVersion, result.version, client.getQueryData<PlatformWhatsAppSettingsResponse>(platformWhatsAppSettingsKey));
-          return true;
-        } catch (error) {
-          if (error instanceof ApiError && applyApiErrorToForm(error, form.setError, serverFields)) return false;
-          throw error;
-        }
-      },
-      discard: () => { resetTo(settings); setAdded(null); },
-      reload: async () => { const fresh = await reload(); if (fresh) resetTo(fresh); setAdded(null); },
-    };
-  });
-  useEffect(() => {
-    register({ isDirty, validate: () => latest.current!.validate(), save: () => latest.current!.save(), discard: () => latest.current!.discard(), reload: () => latest.current!.reload() });
-  }, [isDirty, register]);
-  useEffect(() => () => register(null), [register]);
+  usePlatformSettingsPart({ register, edit, settings, reload, queryKey: platformWhatsAppSettingsKey, serverFields,
+    send: (values, version) => updatePlatformWhatsAppSettings({ ...values, version }), onReset: () => setAdded(null) });
 
   const enabled = enabledOptions(reference?.countries ?? [])
     .sort((left, right) => (left.sortOrder ?? Number.MAX_SAFE_INTEGER) - (right.sortOrder ?? Number.MAX_SAFE_INTEGER) || left.name.localeCompare(right.name, reference?.culture));
