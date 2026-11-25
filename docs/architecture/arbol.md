@@ -175,6 +175,10 @@ El árbol ubica responsabilidades. Solo enumera archivos que sirven como modelo 
     │       │   ├── components/
     │       │   ├── lib/
     │       │   └── pages/
+    │       ├── settings/  /org/whatsapp/configuracion (el plazo de los chats) y la sección «WhatsApp» de la Configuración de Plataforma
+    │       │   ├── api/
+    │       │   ├── components/
+    │       │   └── pages/
     │       ├── teams/  /org/whatsapp/equipos y /plataforma/whatsapp/equipos
     │       │   ├── api/
     │       │   ├── components/
