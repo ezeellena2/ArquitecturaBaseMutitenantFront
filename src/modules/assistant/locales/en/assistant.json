@@ -173,6 +173,7 @@
     }
   },
 "settings": {
+  "retentionPart": { "label": "Home conversations", "help": "From {{min}} to {{max}} days. The conversations with the assistant.", "days_one": "day", "days_other": "days", "validation": "It has to be from {{min}} to {{max}}." },
   "title": "Settings",
   "keyAndModel": "Key and model",
   "provider": "Provider",

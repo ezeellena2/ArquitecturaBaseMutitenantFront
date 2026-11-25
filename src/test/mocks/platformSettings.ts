@@ -27,6 +27,8 @@ export function platformSettingsCaptureResponses({ conflict = false } = {}) {
   const saved: ApiSchemas["VersionResponse"] = { version: 2 };
   return [
     { method: "GET", path: "/api/platform/settings", status: 200, body: platformSettingsFixture },
+    // La sección «WhatsApp» que el módulo suma a la pantalla (Config-Plat-Base2).
+    { method: "GET", path: "/api/platform/whatsapp/settings", status: 200, body: platformWhatsAppSettingsFixture },
     { method: "PUT", path: "/api/platform/settings", status: conflict ? 409 : 200,
       body: conflict ? { type: "about:blank", title: "Conflicto", status: 409,
         code: "General.ConcurrencyConflict", traceId: "capture-settings-conflict" } : saved },

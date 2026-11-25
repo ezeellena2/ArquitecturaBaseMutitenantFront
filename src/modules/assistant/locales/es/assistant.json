@@ -173,6 +173,7 @@
     }
   },
 "settings": {
+  "retentionPart": { "label": "Conversaciones del Inicio", "help": "De {{min}} a {{max}} días. Las conversaciones con el asistente.", "days_one": "día", "days_other": "días", "validation": "Tiene que ser de {{min}} a {{max}}." },
   "title": "Configuración",
   "keyAndModel": "Clave y modelo",
   "provider": "Proveedor",

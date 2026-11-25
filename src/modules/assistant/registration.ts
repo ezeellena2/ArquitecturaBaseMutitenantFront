@@ -35,6 +35,9 @@ const PlatformSettings = lazy(() => import("./settings/PlatformAssistantSettings
 const usage = (me: MeResponse) => assistantAccess(me, "usage");
 const OrganizationUsage = lazy(() => import("./usage/OrganizationAssistantUsagePage").then((module) => ({ default: module.OrganizationAssistantUsagePage })));
 const PlatformUsage = lazy(() => import("./usage/PlatformAssistantUsagePage").then((module) => ({ default: module.PlatformAssistantUsagePage })));
+/** «Conversaciones del Inicio» en «Privacidad y retención» de Plataforma › Configuración (Config-Plat-Base2, 272). */
+const RetentionPart = lazy(() => import("./settings/PlatformAssistantRetentionPart").then((module) => ({ default: module.PlatformAssistantRetentionPart })));
+const retentionGuard = (me: MeResponse): ModuleAccess => me.access === "platform" ? configure(me) : "forbidden";
 const settingsNavigation = { labelKey: "assistant:settings.title", icon: Sparkles, placement: "administration" as const, section: { labelKey: "assistant:title", icon: Sparkles } };
 
 // El arnés pide los fixtures; el optimizador de la app no necesita recorrer sus dependencias.
@@ -56,6 +59,7 @@ export const assistantRegistration: ModuleRegistration = {
   },
   organizationUi: { nameKey: "assistant:title", guard: assistantPolicyAccess, Content: OrganizationPolicy },
   home: { guard: chat, Content: Home },
+  platformSettings: [{ placement: "privacy", guard: retentionGuard, Part: RetentionPart }],
   routes: [
     { access: "business", path: "/org/asistente/configuracion", guard: configure, Page: OrganizationSettings, navigation: settingsNavigation },
     { access: "platform", path: "/plataforma/asistente/configuracion", guard: configure, Page: PlatformSettings, navigation: settingsNavigation },
