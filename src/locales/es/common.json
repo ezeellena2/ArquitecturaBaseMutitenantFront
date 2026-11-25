@@ -215,6 +215,18 @@
     "clearAll": "Limpiar todo",
     "remove": "Quitar {{filter}}"
   },
+  "sort": {
+    "by": "Ordenar por",
+    "byValue": "Ordenar por: {{column}}, {{direction}}",
+    "column": "Columna",
+    "order": "Orden",
+    "text": { "ascending": "de la A a la Z", "descending": "de la Z a la A" },
+    "code": { "ascending": "de menor a mayor", "descending": "de mayor a menor" },
+    "number": { "ascending": "de menor a mayor", "descending": "de mayor a menor" },
+    "date": { "ascending": "más vieja primero", "descending": "más reciente primero" },
+    "boolean": { "ascending": "«No» primero", "descending": "«Sí» primero" },
+    "status": { "ascending": "por su circuito", "descending": "por su circuito, al revés" }
+  },
   "permissionPicker": {
     "permission": "Permiso",
     "toggleArea": "Abrir o cerrar {{name}}",

@@ -23,6 +23,7 @@ import { PhoneText } from "./format/PhoneText";
 import { StatusBadge } from "./format/StatusBadge";
 import { TaxIdText } from "./format/TaxIdText";
 import { TimeZoneText } from "./format/TimeZoneText";
+import { nextSort, parseSort, type SortKind } from "./tableSort";
 import { useRetryAfterOf } from "@/shared/api/useRetryAfterCountdown";
 
 type OptionalValue<T> = T | null | undefined;
@@ -32,7 +33,10 @@ interface ColumnBase {
   /** Campo del backend usado también para el orden. */
   id: string;
   header: string;
+  /** Toda columna con un dato ordena (264), salvo las acciones, un ícono o varios valores. */
   sortable?: boolean;
+  /** Cómo ordena una columna `custom` (por defecto, como texto) o una que no ordena como su tipo. */
+  sortAs?: SortKind;
   /** Solo `low` desaparece también en tablet. */
   priority?: "low";
   mobile?: MobileRole;
@@ -60,7 +64,8 @@ export type Column<TRow> =
   | (ValueColumn<TRow, "enum", string> & { enum: string })
   // Un estado: el punto del tono que registró la feature (`defineStatusTones`) y la palabra de su enum.
   | (ValueColumn<TRow, "status", string> & { tones: StatusTones })
-  | (ColumnBase & { type: "custom"; cell: (row: TRow) => ReactNode })
+  // `sortValue`: lo que compara el navegador en una tabla que llega entera (264).
+  | (ColumnBase & { type: "custom"; cell: (row: TRow) => ReactNode; sortValue?: (row: TRow) => string | number | boolean | null | undefined })
   | (ColumnBase & { type: "actions"; cell: (row: TRow) => ReactNode });
 
 interface DataTableProps<TRow> {
@@ -78,8 +83,10 @@ interface DataTableProps<TRow> {
   emptyTitle?: string;
   emptyDescription?: string;
   emptyAction?: ReactNode;
+  /** El orden de la dirección: `campo` o `-campo` (264). */
   sort?: string;
-  onSortChange?: (field: string) => void;
+  /** Recibe el orden nuevo ya armado: el sentido útil al primer toque y el inverso al segundo. */
+  onSortChange?: (sort: string) => void;
   /** En el teléfono, cada fila es una fila de borde a borde (`ListRow`) en lugar de una fila de tabla (tableros M-*). */
   mobileRow?: (row: TRow) => ReactNode;
   /** Vistas previas: un encabezado de columnas y grupos con su total y salida al listado completo. */
@@ -104,9 +111,9 @@ function columnVisibility<TRow>(column: Column<TRow>): string | undefined {
 }
 
 function ariaSort<TRow>(column: Column<TRow>, sort: string | undefined): "ascending" | "descending" | "none" | undefined {
-  if (!column.sortable) return undefined;
-  if (sort === column.id) return "ascending";
-  return sort === `-${column.id}` ? "descending" : "none";
+  if (!column.sortable || column.type === "actions") return undefined;
+  const current = parseSort(sort);
+  return current?.field === column.id ? current.direction : "none";
 }
 
 function columnCell<TRow>(column: Column<TRow>, row: TRow): ReactNode {
@@ -238,8 +245,6 @@ export function DataTable<TRow>({
       </TableCell>)}
     </TableRow>;
   };
-  const sorted = (column: Column<TRow>) => ariaSort(column, sort);
-
   return (
     <Table refreshing={refreshing} className="table-fixed text-[0.8125rem]">
       <TableHeader refreshing={refreshing}>
@@ -258,13 +263,8 @@ export function DataTable<TRow>({
                 alignClass(column),
               )}
             >
-              {column.sortable && onSortChange ? (
-                <button type="button" onClick={() => onSortChange(column.id)} className="-mx-1 inline-flex items-center gap-1 rounded-[0.375rem] px-1 text-[0.8125rem] font-semibold normal-case hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)]">
-                  {column.header}
-                  {/* La columna ordenada muestra ▲ o ▼; tocarla invierte el orden (`aria-sort` lo anuncia). */}
-                  {sorted(column) === "ascending" ? <span data-slot="sort-arrow" aria-hidden="true">{"▲"}</span>
-                    : sorted(column) === "descending" ? <span data-slot="sort-arrow" aria-hidden="true">{"▼"}</span> : null}
-                </button>
+              {column.sortable && column.type !== "actions" && onSortChange ? (
+                <SortButton column={column} direction={ariaSort(column, sort)} onClick={() => onSortChange(nextSort(column, sort))} />
               ) : column.type === "actions" ? <span className="sr-only">{column.header}</span> : column.header}
             </TableHead>
           ))}
@@ -285,4 +285,24 @@ export function DataTable<TRow>({
       </TableBody>
     </Table>
   );
+}
+
+/**
+ * El encabezado de una columna que ordena (264, «Criterio · Tablas · base 2»): un botón con su texto. La que ordena muestra
+ * ↑ o ↓ en el color de la marca, después del título y antes en una de números; las demás, ↕ al pasar el mouse o con el
+ * foco. La zona para tocar mide 44 px de alto aunque el encabezado sea más bajo. `aria-sort` del encabezado lo anuncia.
+ */
+function SortButton<TRow>({ column, direction, onClick }: { column: Column<TRow>; direction: ReturnType<typeof ariaSort>; onClick: () => void }) {
+  const numeric = isNumericColumn(column);
+  const sorted = direction === "ascending" || direction === "descending";
+  // La ↕ de las demás se dibuja con CSS: no es texto del encabezado, solo una pista al pasar el mouse o con el foco.
+  const arrow = sorted
+    ? <span data-slot="sort-arrow" aria-hidden="true" className={cn(numeric ? "mr-1" : "ml-1", "font-bold text-[var(--marca-tx)]")}>{direction === "ascending" ? "↑" : "↓"}</span>
+    : <span data-slot="sort-hint" aria-hidden="true" className={cn(numeric ? "mr-1" : "ml-1", "font-normal text-[var(--t3)] opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 before:content-['↕']")} />;
+  return <button type="button" onClick={onClick}
+    className="group relative -mx-1 inline-flex items-center rounded-[0.375rem] px-1 text-[0.8125rem] font-semibold normal-case hover:text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--foco)] after:absolute after:inset-x-0 after:top-1/2 after:h-11 after:-translate-y-1/2">
+    {numeric ? arrow : null}
+    {column.header}
+    {numeric ? null : arrow}
+  </button>;
 }

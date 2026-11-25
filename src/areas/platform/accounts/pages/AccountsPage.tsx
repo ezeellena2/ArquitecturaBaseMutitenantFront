@@ -114,7 +114,7 @@ export function AccountsPage() {
           ]} />
         <Surface className="overflow-hidden" phoneFlush><DataTable columns={columns} rows={accounts.data?.items ?? []} rowKey={(account) => account.id} mobileRow={(account) => accountPhoneRow(account, t, rowActions(account))}
           isLoading={accounts.isPending} isFetching={accounts.isFetching} error={accounts.error ? apiErrorMessage(accounts.error, t) : undefined} onRetry={() => { void accounts.refetch(); void globalCounts.refetch(); }}
-          emptyTitle={t("platformAccounts:empty.filtered")} emptyAction={filtered ? <Button variant="outline" onClick={filters.clear}>{t("platformAccounts:empty.clear")}</Button> : undefined} sort={pagination.sort} onSortChange={pagination.toggleSort} />
+          emptyTitle={t("platformAccounts:empty.filtered")} emptyAction={filtered ? <Button variant="outline" onClick={filters.clear}>{t("platformAccounts:empty.clear")}</Button> : undefined} sort={pagination.sort} onSortChange={pagination.setSort} />
           {paginationProps ? <Pagination {...paginationProps} /> : null}</Surface>
       </div>
     </Page>

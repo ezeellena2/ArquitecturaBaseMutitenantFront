@@ -125,7 +125,7 @@ export function OrganizationsPage() {
           <DataTable columns={columns} rows={(organizations.data?.items ?? []).map(effective)} mobileRow={(organization) => organizationPhoneRow(organization, t, rowActions(organization))} rowKey={(organization) => organization.id}
             isLoading={organizations.isPending} isFetching={organizations.isFetching} error={organizations.error ? apiErrorMessage(organizations.error, t) : undefined}
             onRetry={() => { void organizations.refetch(); void globalCounts.refetch(); }} emptyTitle={t(filtered ? "platformTenants:empty.filtered" : "platformTenants:empty.all")}
-            emptyAction={filtered ? <Button variant="outline" onClick={filters.clear}>{t("platformTenants:empty.clear")}</Button> : undefined} sort={pagination.sort} onSortChange={pagination.toggleSort} />
+            emptyAction={filtered ? <Button variant="outline" onClick={filters.clear}>{t("platformTenants:empty.clear")}</Button> : undefined} sort={pagination.sort} onSortChange={pagination.setSort} />
           {paginationProps ? <Pagination {...paginationProps} /> : null}
         </Surface>
       </div>

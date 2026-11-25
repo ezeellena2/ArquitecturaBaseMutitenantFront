@@ -20,6 +20,7 @@ vi.mock("@/shared/format/useFormat", () => ({
     formatPercent,
     formatEnum,
     formatEmpty: () => "—",
+    formatBoolean: () => "Sí",
   }),
 }));
 
@@ -83,17 +84,48 @@ describe("DataTable", () => {
     expect(screen.getAllByRole("cell")[4]).toHaveClass("text-right", "tabular-nums");
   });
 
-  it("expone aria-sort y avisa el campo ordenable sin ordenar filas en el cliente", async () => {
+  it("expone aria-sort y avisa el orden nuevo ya armado, sin ordenar filas en el cliente", async () => {
     const onSortChange = vi.fn();
     const { rerender } = render(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id} sort="name" onSortChange={onSortChange} />);
     expect(screen.getByRole("columnheader", { name: "Nombre" })).toHaveAttribute("aria-sort", "ascending");
     expect(screen.getByRole("columnheader", { name: "Fecha" })).toHaveAttribute("aria-sort", "none");
     expect(screen.getByRole("columnheader", { name: "Correo" })).not.toHaveAttribute("aria-sort");
 
+    // El segundo toque invierte.
     await userEvent.click(screen.getByRole("button", { name: "Nombre" }));
-    expect(onSortChange).toHaveBeenCalledWith("name");
+    expect(onSortChange).toHaveBeenLastCalledWith("-name");
     rerender(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id} sort="-name" onSortChange={onSortChange} />);
     expect(screen.getByRole("columnheader", { name: "Nombre" })).toHaveAttribute("aria-sort", "descending");
+    await userEvent.click(screen.getByRole("button", { name: "Nombre" }));
+    expect(onSortChange).toHaveBeenLastCalledWith("name");
+  });
+
+  // 264: el primer toque ordena en el sentido útil: el texto de la A a la Z, los números de mayor a menor, las fechas de la
+  // más reciente a la más vieja, el «Sí» primero y un estado por su circuito.
+  it("el primer toque de cada columna ordena en el sentido útil", async () => {
+    const onSortChange = vi.fn();
+    const all: Column<Row>[] = [
+      { id: "name", header: "Nombre", type: "text", value: (row) => row.name, mobile: "primary", sortable: true },
+      { id: "status", header: "Estado", type: "status", tones: { enum: "TestStatus", tones: { Active: "success" } }, value: (row) => row.status, mobile: "status", sortable: true },
+      { id: "createdAtUtc", header: "Fecha", type: "dateTime", value: (row) => row.createdAtUtc, sortable: true },
+      { id: "total", header: "Total", type: "money", value: (row) => row.total, sortable: true },
+      { id: "score", header: "Puntaje", type: "decimal", digits: 2, value: (row) => row.score, sortable: true },
+      { id: "active", header: "Activo", type: "boolean", value: () => true, sortable: true },
+      { id: "custom", header: "Propio", type: "custom", cell: (row) => row.name, sortable: true },
+      { id: "count", header: "Cuenta", type: "custom", cell: (row) => row.score, sortable: true, sortAs: "number" },
+    ];
+    render(<DataTable columns={all} rows={rows} rowKey={(row) => row.id} sort="-createdAtUtc" onSortChange={onSortChange} />);
+    const firstOf = async (name: string) => { await userEvent.click(screen.getByRole("button", { name })); return onSortChange.mock.lastCall?.[0]; };
+
+    expect(await firstOf("Nombre")).toBe("name");
+    expect(await firstOf("Estado")).toBe("status");
+    expect(await firstOf("Total")).toBe("-total");
+    expect(await firstOf("Puntaje")).toBe("-score");
+    expect(await firstOf("Activo")).toBe("-active");
+    expect(await firstOf("Propio")).toBe("custom");
+    expect(await firstOf("Cuenta")).toBe("-count");
+    // La que ya ordena se invierte.
+    expect(await firstOf("Fecha")).toBe("createdAtUtc");
   });
 
   it("muestra carga, vacío y error con reintento traducido", async () => {
@@ -202,20 +234,36 @@ describe("DataTable", () => {
     expect(screen.getAllByRole("row")[1]).not.toHaveClass("bg-[var(--marca-t)]");
   });
 
-  // «Criterio · Tablas»: la columna ordenada muestra ▲ o ▼ y lo anuncia con `aria-sort`; las demás, sin flecha.
-  it("la columna ordenada muestra ▲ o ▼", () => {
-    const { rerender } = render(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id} sort="name" onSortChange={vi.fn()} />);
+  // «Criterio · Tablas · base 2» (264): la columna que ordena muestra ↑ o ↓ en el color de la marca, después del título y
+  // antes en una de números; las demás, ↕ solo al pasar el mouse o con el foco, con 44 px para tocar.
+  it("la columna que ordena muestra ↑ o ↓ en la marca y las demás ↕ al pasar el mouse", () => {
+    const withNumber: Column<Row>[] = [...columns.slice(0, -1), { id: "points", header: "Puntos", type: "decimal", digits: 2, value: (row) => row.score, sortable: true }];
+    const { rerender } = render(<DataTable columns={withNumber} rows={rows} rowKey={(row) => row.id} sort="name" onSortChange={vi.fn()} />);
     const header = screen.getByRole("columnheader", { name: /Nombre/ });
     expect(header).toHaveAttribute("aria-sort", "ascending");
-    expect(within(header).getByText("▲")).toHaveAttribute("aria-hidden", "true");
+    const up = within(header).getByText("↑");
+    expect(up).toHaveAttribute("aria-hidden", "true");
+    expect(up).toHaveClass("text-[var(--marca-tx)]");
+    expect(up.previousSibling).toHaveTextContent("Nombre");
+    const button = within(header).getByRole("button", { name: "Nombre" });
+    expect(button).toHaveClass("after:h-11");
 
-    rerender(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id} sort="-name" onSortChange={vi.fn()} />);
-    expect(screen.getByRole("columnheader", { name: /Nombre/ })).toHaveAttribute("aria-sort", "descending");
-    expect(within(screen.getByRole("columnheader", { name: /Nombre/ })).getByText("▼")).toBeInTheDocument();
+    // La ↕ es una pista de CSS, no texto del encabezado.
+    const idle = screen.getByRole("columnheader", { name: /Fecha/ }).querySelector('[data-slot="sort-hint"]');
+    expect(idle).toHaveClass("opacity-0", "group-hover:opacity-100", "group-focus-visible:opacity-100", "before:content-['↕']");
+    expect(screen.getByRole("columnheader", { name: /Fecha/ })).toHaveTextContent(/^Fecha$/);
 
-    rerender(<DataTable columns={columns} rows={rows} rowKey={(row) => row.id} sort="email" onSortChange={vi.fn()} />);
-    expect(screen.queryByText("▲")).toBeNull();
-    expect(screen.queryByText("▼")).toBeNull();
+    rerender(<DataTable columns={withNumber} rows={rows} rowKey={(row) => row.id} sort="-points" onSortChange={vi.fn()} />);
+    const points = screen.getByRole("columnheader", { name: /Puntos/ });
+    expect(points).toHaveAttribute("aria-sort", "descending");
+    const down = within(points).getByText("↓");
+    expect(down.nextSibling).toHaveTextContent("Puntos");
+    expect(screen.getByRole("columnheader", { name: /Nombre/ }).querySelector('[data-slot="sort-hint"]')).toHaveClass("opacity-0");
+
+    // Un orden que no es una columna (el compuesto con que abre la lista): ninguna flecha a la vista.
+    rerender(<DataTable columns={withNumber} rows={rows} rowKey={(row) => row.id} sort="email" onSortChange={vi.fn()} />);
+    expect(screen.queryByText("↑")).toBeNull();
+    expect(screen.queryByText("↓")).toBeNull();
   });
 
   // La primera carga (160): el encabezado y el aro en el alto de ocho filas, sin filas esqueleto; al llegar las filas, la

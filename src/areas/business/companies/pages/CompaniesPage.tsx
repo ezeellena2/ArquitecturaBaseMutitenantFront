@@ -125,7 +125,7 @@ export function CompaniesPage() {
             emptyTitle={status || pagination.search ? t("companies:empty.filtered") : t("companies:empty.all")}
             emptyAction={status || pagination.search ? <Button type="button" variant="outline" onClick={filters.clear}>{t("companies:empty.clear")}</Button> : undefined}
             sort={pagination.sort}
-            onSortChange={pagination.toggleSort}
+            onSortChange={pagination.setSort}
           />
           {paginationProps ? <Pagination {...paginationProps} /> : null}
         </Surface>

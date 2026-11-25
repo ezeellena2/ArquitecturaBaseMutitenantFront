@@ -46,7 +46,7 @@ describe("CompaniesPage", () => {
     expect(screen.getByRole("columnheader", { name: "Miembros" })).toHaveClass("w-28", "text-right");
     expect(screen.getByRole("columnheader", { name: "Estado" })).toHaveClass("w-40.5");
     expect(screen.getAllByRole("columnheader").map((header) => header.textContent))
-      .toEqual(["Empresa▲", "CUIT", "Zona horaria", "Miembros", "Estado", "Acciones"]);
+      .toEqual(["Empresa↑", "CUIT", "Zona horaria", "Miembros", "Estado", "Acciones"]);
     expect(screen.getByText("30-71234567-1")).toHaveClass("whitespace-nowrap");
     expect(screen.getAllByRole("row")[1]).toHaveClass("h-10");
     // Tablero Empresas: «1 empresa · 1 activa» y el filtro «Estado: todas».

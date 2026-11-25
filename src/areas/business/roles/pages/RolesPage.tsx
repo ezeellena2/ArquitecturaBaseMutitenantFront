@@ -136,7 +136,7 @@ export function RolesPage() {
             emptyTitle={vale || pagination.search ? t("roles:emptyFiltered") : t("roles:empty")}
             emptyAction={vale || pagination.search ? <Button type="button" variant="outline" onClick={filters.clear}>{t("common:actions.clearFilters")}</Button> : undefined}
             sort={pagination.sort}
-            onSortChange={pagination.toggleSort}
+            onSortChange={pagination.setSort}
           />
           {paginationProps ? <Pagination {...paginationProps} /> : null}
         </Surface>

@@ -215,6 +215,18 @@
     "clearAll": "Clear all",
     "remove": "Remove {{filter}}"
   },
+  "sort": {
+    "by": "Sort by",
+    "byValue": "Sort by: {{column}}, {{direction}}",
+    "column": "Column",
+    "order": "Order",
+    "text": { "ascending": "A to Z", "descending": "Z to A" },
+    "code": { "ascending": "lowest first", "descending": "highest first" },
+    "number": { "ascending": "lowest first", "descending": "highest first" },
+    "date": { "ascending": "oldest first", "descending": "newest first" },
+    "boolean": { "ascending": "“No” first", "descending": "“Yes” first" },
+    "status": { "ascending": "in workflow order", "descending": "in reverse workflow order" }
+  },
   "permissionPicker": {
     "permission": "Permission",
     "toggleArea": "Open or close {{name}}",

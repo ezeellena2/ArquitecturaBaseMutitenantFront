@@ -69,7 +69,7 @@ export function RecoveriesPage() {
             onChange: (value) => filters.setFilter("status", value === "all" ? undefined : value), options: statuses.map((value) => ({ value: value ?? "all", label: t(`platformRecoveries:filters.statuses.${value ?? "all"}`) })) }]} />
         <Surface className="overflow-hidden" phoneFlush><DataTable columns={columns} rows={rows} rowKey={(recovery) => recovery.id} openRowKey={activeConfirmation?.recovery.id ?? null} mobileRow={(recovery) => recoveryPhoneRow(recovery, t, rowActions(recovery), () => open(recovery, null))}
           isLoading={recoveries.isPending} isFetching={recoveries.isFetching} error={recoveries.error ? apiErrorMessage(recoveries.error, t) : undefined} onRetry={() => { void recoveries.refetch(); void globalCounts.refetch(); }}
-          emptyTitle={t(filtered ? "platformRecoveries:empty.filtered" : "platformRecoveries:empty.all")} emptyAction={filtered ? <Button variant="outline" onClick={filters.clear}>{t("platformRecoveries:empty.clear")}</Button> : undefined} sort={pagination.sort} onSortChange={pagination.toggleSort} />
+          emptyTitle={t(filtered ? "platformRecoveries:empty.filtered" : "platformRecoveries:empty.all")} emptyAction={filtered ? <Button variant="outline" onClick={filters.clear}>{t("platformRecoveries:empty.clear")}</Button> : undefined} sort={pagination.sort} onSortChange={pagination.setSort} />
           {paginationProps && paginationProps.totalCount > 0 ? <Pagination {...paginationProps} /> : null}</Surface>
       </div>
     </Page>

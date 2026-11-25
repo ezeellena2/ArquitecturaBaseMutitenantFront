@@ -181,7 +181,7 @@ export function UsersPage() {
             emptyTitle={state || companyFilter || pagination.search ? t("users:empty.filtered") : t("users:empty.all")}
             emptyAction={state || companyFilter || pagination.search ? <Button type="button" variant="outline" onClick={filters.clear}>{t("users:empty.clear")}</Button> : undefined}
             sort={pagination.sort}
-            onSortChange={pagination.toggleSort}
+            onSortChange={pagination.setSort}
           />
           {paginationProps ? <Pagination {...paginationProps} /> : null}
         </Surface>

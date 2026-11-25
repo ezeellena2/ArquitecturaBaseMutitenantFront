@@ -158,7 +158,7 @@ export function CompanyMembersTab({ company, list, roles }: {
         onRetry={() => { void members.refetch(); }}
         emptyTitle={filtered ? t("companies:detail.empty.filtered") : t("companies:detail.empty.all")}
         emptyAction={filtered ? <Button type="button" variant="outline" onClick={filters.clear}>{t("common:actions.clearFilters")}</Button> : undefined}
-        sort={pagination.sort} onSortChange={pagination.toggleSort} />
+        sort={pagination.sort} onSortChange={pagination.setSort} />
       {paginationProps ? <Pagination {...paginationProps} /> : null}
     </Surface>
 

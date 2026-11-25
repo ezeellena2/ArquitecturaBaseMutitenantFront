@@ -242,7 +242,7 @@ describe("CompanyDetailPage", () => {
     const members = await screen.findByRole("tabpanel");
     await within(members).findByText("Lucía Fernández");
     expect(within(members).getAllByRole("columnheader").map((header) => header.textContent))
-      .toEqual(["Miembro▲", "Correo", "Roles en la empresa", "Estado", "Entrega", "Vence", "Acciones"]);
+      .toEqual(["Miembro↑", "Correo", "Roles en la empresa", "Estado", "Entrega", "Vence", "Acciones"]);
   });
 
   // F1: el 403 bloquea la vista solo si viene de la consulta principal; el de los roles (una consulta secundaria)

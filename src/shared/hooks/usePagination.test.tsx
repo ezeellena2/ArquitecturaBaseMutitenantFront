@@ -38,33 +38,35 @@ describe("usePagination", () => {
     expect(result.current.location.search).toBe("?sort=-email&search=beto");
   });
 
-  it("toggles ascending, descending and default sort", () => {
+  // El orden va en la dirección y vuelve a la página 1 (264); el de siempre de la lista no ensucia la URL.
+  it("el orden elegido va en la dirección, vuelve a la página 1 y el de siempre no se escribe", () => {
     const { result } = renderPagination("/usuarios?page=2", "name");
 
     expect(result.current.pagination.sort).toBe("name");
     expect(result.current.pagination.query.sort).toBe("name");
 
-    act(() => result.current.pagination.toggleSort("email"));
+    act(() => result.current.pagination.setSort("email"));
     expect(result.current.pagination.sort).toBe("email");
     expect(result.current.pagination.page).toBe(1);
+    expect(result.current.location.search).toBe("?sort=email");
 
-    act(() => result.current.pagination.toggleSort("email"));
+    act(() => result.current.pagination.setSort("-email"));
     expect(result.current.pagination.sort).toBe("-email");
 
-    act(() => result.current.pagination.toggleSort("email"));
+    act(() => result.current.pagination.setSort("name"));
     expect(result.current.pagination.sort).toBe("name");
     expect(result.current.location.search).toBe("");
   });
 
-  it("alterna un orden predeterminado descendente hacia ascendente y de regreso", () => {
+  it("un orden de siempre descendente se invierte hacia ascendente y de regreso", () => {
     const { result } = renderPagination("/usuarios?page=2", "-createdAtUtc");
 
     expect(result.current.pagination.sort).toBe("-createdAtUtc");
-    act(() => result.current.pagination.toggleSort("createdAtUtc"));
+    act(() => result.current.pagination.setSort("createdAtUtc"));
     expect(result.current.pagination.sort).toBe("createdAtUtc");
     expect(result.current.location.search).toBe("?sort=createdAtUtc");
 
-    act(() => result.current.pagination.toggleSort("createdAtUtc"));
+    act(() => result.current.pagination.setSort("-createdAtUtc"));
     expect(result.current.pagination.sort).toBe("-createdAtUtc");
     expect(result.current.location.search).toBe("");
   });

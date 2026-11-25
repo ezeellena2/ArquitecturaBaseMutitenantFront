@@ -59,20 +59,17 @@ export function usePagination({ defaultSort, prefix = "" }: PaginationOptions = 
   // Cambiar la búsqueda o el orden vuelve a la primera página: si no, se puede quedar en una página que ya no existe.
   const setSearch = useCallback((next: string) => update({ [searchKey]: next, [pageKey]: undefined }), [update, pageKey, searchKey]);
 
-  const toggleSort = useCallback(
-    (field: string) => {
-      const next = sort === field ? `-${field}`
-        : sort === `-${field}` ? (defaultSort === `-${field}` ? field : undefined)
-          : field;
-      update({ [sortKey]: next === defaultSort ? undefined : next, [pageKey]: undefined });
-    },
-    [sort, defaultSort, update, sortKey, pageKey],
+  // El orden lo arman el encabezado de `DataTable` y «Ordenar por» (264): el sentido útil al primer toque y el inverso al
+  // segundo. El de siempre de la lista no ensucia la URL.
+  const setSort = useCallback(
+    (next: string) => update({ [sortKey]: next === defaultSort ? undefined : next, [pageKey]: undefined }),
+    [defaultSort, update, sortKey, pageKey],
   );
 
   const query = useMemo<PageQuery>(() => ({ page, pageSize, sort, search }), [page, pageSize, sort, search]);
 
   return useMemo(
-    () => ({ page, pageSize, sort, search, query, setPage, setPageSize, setSearch, toggleSort }),
-    [page, pageSize, sort, search, query, setPage, setPageSize, setSearch, toggleSort],
+    () => ({ page, pageSize, sort, search, query, setPage, setPageSize, setSearch, setSort }),
+    [page, pageSize, sort, search, query, setPage, setPageSize, setSearch, setSort],
   );
 }

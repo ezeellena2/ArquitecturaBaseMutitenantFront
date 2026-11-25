@@ -2,7 +2,7 @@ import { useId, useState } from "react";
 import { ListFilter } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Popover as PopoverPrimitive } from "radix-ui";
-import { ChevronLeftIcon, SearchIcon } from "./icons";
+import { ChevronDownIcon, ChevronLeftIcon, SearchIcon } from "./icons";
 import { FilterChip } from "./FilterChip";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "./dialog"
 import type { RemoteOptions } from "@/shared/hooks/useResourceOptions";
 import { NumberText } from "./format/NumberText";
 import { Picker } from "./Picker";
+import { directionLabel, firstDirection, parseSort, sortByLabel, sortableColumns, sortValue, type SortDirection, type SortableColumn } from "./tableSort";
 
 /// Una opción de un filtro. Sin cantidad (143): lo que trae cada una se ve en la tabla y en el paginado.
 export interface FilterOption {
@@ -35,6 +36,13 @@ export interface FilterBarFilter {
   selectedLabel?: string;
 }
 
+/// «Ordenar por» (264): las columnas de la tabla, el orden de la dirección y quien lo cambia, el mismo que el encabezado.
+export interface FilterBarSort {
+  columns: readonly SortableColumn[];
+  value: string | undefined;
+  onChange: (sort: string) => void;
+}
+
 export interface FilterBarProps {
   label: string;
   searchLabel: string;
@@ -52,6 +60,8 @@ export interface FilterBarProps {
   screen?: string;
   /** El buscador y los filtros en una sola fila, el buscador con lo que queda: la columna de Chats (WA-Chats, .filtro). */
   singleRow?: boolean;
+  /** «Ordenar por», último en la barra y separado de los filtros, porque no saca filas (264). */
+  sort?: FilterBarSort;
 }
 
 /** Cuántos filtros van a la vista, al lado del buscador («Criterio · Menús», Filtros). */
@@ -111,6 +121,7 @@ export function FilterBar({
   phoneTools = "search-and-filter",
   screen,
   singleRow = false,
+  sort,
 }: FilterBarProps) {
   const { t } = useTranslation();
   const hasFilters = searchValue.trim().length > 0 || filters.some((filter) => filter.active);
@@ -140,6 +151,7 @@ export function FilterBar({
           className="min-w-0 flex-1 bg-transparent text-[0.96875rem] text-[var(--t1)] outline-none placeholder:text-[var(--t3)]" />
       </label>
     </div> : null}
+    {sort && sortableColumns(sort.columns).length > 0 ? <SortBy sort={sort} phone /> : null}
     <Dialog open={sheetOpen} onOpenChange={setSheetOpen}>
       <DialogContent showCloseButton={false} {...(screen ? {} : { "aria-describedby": undefined })} data-slot="filters-screen"
         className="max-md:inset-0 max-md:h-dvh max-md:max-h-none max-md:grid-rows-[auto_minmax(0,1fr)_auto] max-md:rounded-none [&>[data-slot=dialog-handle]]:hidden">
@@ -188,10 +200,14 @@ export function FilterBar({
             className="h-9 rounded-[0.5rem] border-[var(--borde)] bg-[var(--s2)] pl-9 text-[0.8125rem]"
           />
         </div>
-        <div data-slot="filter-pills" className={cn("flex items-center gap-2", singleRow ? "shrink-0 flex-nowrap" : "flex-wrap")}>
+        <div data-slot="filter-pills" className={cn("flex items-center gap-2", singleRow ? "shrink-0 flex-nowrap" : "flex-wrap", sort && !singleRow && "md:flex-1")}>
           {shown.map((filter) => <FilterMenu key={filter.key} filter={filter} />)}
           {more.length > 0 ? <MoreFilters filters={more} applied={applied.length} /> : null}
           {hasFilters && more.length === 0 ? <ClearButton onClick={onClear}>{clearLabel}</ClearButton> : null}
+          {sort && sortableColumns(sort.columns).length > 0 ? <>
+            {filters.length > 0 ? <span data-slot="sort-separator" aria-hidden="true" className="hidden w-px self-stretch bg-[var(--borde)] md:block" /> : null}
+            <SortBy sort={sort} phone={false} />
+          </> : null}
         </div>
       </div>
       {more.length > 0 && hasFilters ? <div data-slot="filter-chips" className="flex flex-wrap items-center gap-2">
@@ -265,6 +281,91 @@ function MoreFilters({ filters, applied }: { filters: readonly FilterBarFilter[]
           <div role="tabpanel" aria-label={filterName(filter)} className="flex min-w-0 flex-1 flex-col overflow-y-auto p-3">
             <FilterField key={filter.key} filter={filter} phone={false} />
           </div>
+        </PopoverPrimitive.Content>
+      </PopoverPrimitive.Portal>
+    </PopoverPrimitive.Root>
+  );
+}
+
+const capitalized = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
+
+/// Las dos piezas de «Ordenar por» (264): «Columna» elige por cuál, en el sentido útil, y «Orden» elige el sentido, el
+/// útil primero. Elegir lo ya elegido no vuelve a ordenar ni lleva a la primera página.
+function SortFields({ sort, phone }: { sort: FilterBarSort; phone: boolean }) {
+  const { t } = useTranslation();
+  const columnId = useId(), orderId = useId();
+  const columns = sortableColumns(sort.columns);
+  const current = parseSort(sort.value);
+  const column = current ? columns.find((item) => item.id === current.field) : undefined;
+  const first = column ? firstDirection(column) : "ascending";
+  const directions: SortDirection[] = first === "ascending" ? ["ascending", "descending"] : ["descending", "ascending"];
+  const fieldClass = cn("flex flex-col", phone ? "gap-2 px-4 pt-5" : "gap-1.5");
+  const labelClass = cn("text-[0.8125rem] font-semibold", phone ? "text-[var(--t3)]" : "text-[var(--t2)]");
+  return <>
+    <div className={fieldClass}>
+      <span id={`${columnId}-label`} className={labelClass}>{t("sort.column")}</span>
+      <Picker id={columnId} value={column?.id ?? null}
+        options={columns.map((item) => ({ value: item.id, label: item.header }))}
+        onChange={(id) => {
+          const chosen = columns.find((item) => item.id === id);
+          if (chosen && chosen.id !== column?.id) sort.onChange(sortValue(chosen.id, firstDirection(chosen)));
+        }} />
+    </div>
+    <div className={fieldClass}>
+      <span id={`${orderId}-label`} className={labelClass}>{t("sort.order")}</span>
+      <Picker id={orderId} value={column && current ? current.direction : null} disabled={!column}
+        options={column ? directions.map((direction) => ({ value: direction, label: capitalized(directionLabel(t, column, direction)) })) : []}
+        onChange={(direction) => {
+          if (column && current && direction !== current.direction) sort.onChange(sortValue(column.id, direction as SortDirection));
+        }} />
+    </div>
+  </>;
+}
+
+/// «Ordenar por» (264, «Criterio · Tablas · base 2»): dice el orden con palabras («Ordenar por: Recibida, más reciente
+/// primero») y abre la pieza con «Columna» y «Orden». En la compu va último en la barra, a la derecha; en el teléfono ocupa
+/// el ancho, arriba de la lista, y abre la pieza a pantalla completa.
+function SortBy({ sort, phone }: { sort: FilterBarSort; phone: boolean }) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const label = sortByLabel(t, sort.columns, sort.value);
+  if (phone) return <>
+    <div className="px-4 pt-1 pb-2">
+      <button type="button" data-slot="sort-by" aria-haspopup="dialog" onClick={() => setOpen(true)}
+        className="flex h-11 w-full items-center justify-between gap-2 rounded-[0.625rem] border border-[var(--borde2)] px-3.5 text-left text-[0.875rem] text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
+        <span className="min-w-0 flex-1">{label}</span>
+        <ChevronDownIcon aria-hidden="true" className="size-3.5 shrink-0 text-[var(--t2)]" />
+      </button>
+    </div>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContent showCloseButton={false} aria-describedby={undefined} data-slot="sort-screen"
+        className="max-md:inset-0 max-md:h-dvh max-md:max-h-none max-md:grid-rows-[auto_minmax(0,1fr)_auto] max-md:rounded-none [&>[data-slot=dialog-handle]]:hidden">
+        <header className="flex h-15 shrink-0 items-center gap-1 pt-[env(safe-area-inset-top)] pr-1.5 pl-1">
+          <button type="button" onClick={() => setOpen(false)} aria-label={t("actions.back")} title={t("actions.back")}
+            className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
+            <ChevronLeftIcon className="size-6.5" strokeWidth={1.9} />
+          </button>
+          <DialogTitle className="min-w-0 flex-1 text-[1.25rem] leading-[1.15] font-bold tracking-[-0.02em] text-[var(--t1)]">{t("sort.by")}</DialogTitle>
+        </header>
+        <div className="min-h-0 overflow-y-auto pb-4"><SortFields sort={sort} phone /></div>
+        <div className="flex border-t border-[var(--borde)] px-4 pt-3 pb-[max(1.75rem,env(safe-area-inset-bottom))]">
+          <Button type="button" className="h-12 flex-1" onClick={() => setOpen(false)}>{t("actions.done")}</Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  </>;
+  return (
+    <PopoverPrimitive.Root open={open} onOpenChange={setOpen}>
+      <PopoverPrimitive.Trigger asChild>
+        <Button type="button" variant="outline" data-slot="sort-by" className={cn(filterButtonClass(false), "ml-auto whitespace-nowrap", open && "border-[var(--marca)]")}>
+          {label}
+          <ChevronDownIcon aria-hidden="true" className="size-3.5" />
+        </Button>
+      </PopoverPrimitive.Trigger>
+      <PopoverPrimitive.Portal>
+        <PopoverPrimitive.Content align="end" sideOffset={4} aria-label={t("sort.by")} role="dialog"
+          className="z-50 grid w-105 max-w-[calc(100vw-2rem)] grid-cols-2 gap-3 rounded-[0.625rem] border border-[var(--borde2)] bg-[var(--superficie)] p-3 text-[0.8125rem] shadow-[var(--sombra-menu)]">
+          <SortFields sort={sort} phone={false} />
         </PopoverPrimitive.Content>
       </PopoverPrimitive.Portal>
     </PopoverPrimitive.Root>
