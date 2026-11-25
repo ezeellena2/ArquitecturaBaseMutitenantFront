@@ -36,17 +36,17 @@ export function createBroadcastColumns(t: TFunction): Column<WhatsAppBroadcastRe
   return [
     // Tablero WA-Difusiones (base de la 12): un dato por celda; la plantilla y cuántos contactos, en sus columnas.
     {
-      id: "name", header: t("whatsapp:broadcasts.columns.broadcast"), type: "custom", mobile: "primary", className: "w-[20%]",
+      id: "name", sortable: true, header: t("whatsapp:broadcasts.columns.broadcast"), type: "custom", mobile: "primary", className: "w-[20%]",
       cell: (broadcast) => <Link className="font-medium text-[var(--t1)] hover:underline" to={broadcastPath(broadcast.id)}>{broadcast.name}</Link>,
     },
-    { id: "template", header: t("whatsapp:broadcasts.columns.template"), type: "text", value: (broadcast) => broadcast.template.name },
+    { id: "template", sortable: true, header: t("whatsapp:broadcasts.columns.template"), type: "text", value: (broadcast) => broadcast.template.name },
     { id: "audience", header: t("whatsapp:broadcasts.columns.recipients"), type: "custom", cell: (broadcast) => <span>{audienceLabel(broadcast.audience, t)}</span> },
-    { id: "recipients", header: t("whatsapp:broadcasts.columns.contacts"), type: "integer", className: "w-24", value: (broadcast) => broadcast.recipients },
-    { id: "status", header: t("whatsapp:broadcasts.columns.status"), type: "status", tones: broadcastStatusTones, mobile: "status", value: (broadcast) => broadcast.status },
+    { id: "recipients", sortable: true, header: t("whatsapp:broadcasts.columns.contacts"), type: "integer", className: "w-24", value: (broadcast) => broadcast.recipients },
+    { id: "status", sortable: true, header: t("whatsapp:broadcasts.columns.status"), type: "status", tones: broadcastStatusTones, mobile: "status", value: (broadcast) => broadcast.status },
     // WA-Difusiones-Base2 (263): entregados y leídos, cada uno en su columna de números; antes de salir, una raya.
-    { id: "delivered", header: t("whatsapp:broadcasts.columns.delivered"), type: "integer", className: "w-28", value: (broadcast) => broadcastResults(broadcast)?.delivered },
-    { id: "read", header: t("whatsapp:broadcasts.columns.read"), type: "integer", className: "w-24", value: (broadcast) => broadcastResults(broadcast)?.read },
-    { id: "date", header: t("whatsapp:broadcasts.columns.date"), type: "custom", className: "w-37.5", cell: (broadcast) => dateCell(broadcast) },
+    { id: "delivered", sortable: true, header: t("whatsapp:broadcasts.columns.delivered"), type: "integer", className: "w-28", value: (broadcast) => broadcastResults(broadcast)?.delivered },
+    { id: "read", sortable: true, header: t("whatsapp:broadcasts.columns.read"), type: "integer", className: "w-24", value: (broadcast) => broadcastResults(broadcast)?.read },
+    { id: "date", sortable: true, sortAs: "date", header: t("whatsapp:broadcasts.columns.date"), type: "custom", className: "w-37.5", cell: (broadcast) => dateCell(broadcast) },
   ];
 }
 
@@ -66,11 +66,11 @@ export function broadcastPhoneRow(broadcast: WhatsAppBroadcastResponse, t: TFunc
 export function createRecipientColumns(t: TFunction, status: (recipient: WhatsAppRecipientResponse) => ReactNode): Column<WhatsAppRecipientResponse>[] {
   return [
     {
-      id: "contact", header: t("whatsapp:broadcasts.recipients.columns.contact"), type: "custom", mobile: "primary", className: "w-[30%]",
+      id: "contact", sortable: true, header: t("whatsapp:broadcasts.recipients.columns.contact"), type: "custom", mobile: "primary", className: "w-[30%]",
       cell: (recipient) => <span className="font-medium text-[var(--t1)]">{recipient.contactName ?? <PhoneText value={recipient.displayNumber} />}</span>,
     },
-    { id: "number", header: t("whatsapp:broadcasts.recipients.columns.number"), type: "custom", className: "w-[22%]", cell: (recipient) => <PhoneText value={recipient.displayNumber} /> },
-    { id: "status", header: t("whatsapp:broadcasts.recipients.columns.status"), type: "custom", mobile: "status", cell: status },
-    { id: "changedAtUtc", header: t("whatsapp:broadcasts.recipients.columns.changed"), type: "custom", className: "w-40", cell: (recipient) => <DateText value={recipient.changedAtUtc} kind="dateTime" /> },
+    { id: "number", sortable: true, sortAs: "code", header: t("whatsapp:broadcasts.recipients.columns.number"), type: "custom", className: "w-[22%]", cell: (recipient) => <PhoneText value={recipient.displayNumber} /> },
+    { id: "status", sortable: true, sortAs: "status", header: t("whatsapp:broadcasts.recipients.columns.status"), type: "custom", mobile: "status", cell: status },
+    { id: "changedAtUtc", sortable: true, sortAs: "date", header: t("whatsapp:broadcasts.recipients.columns.changed"), type: "custom", className: "w-40", cell: (recipient) => <DateText value={recipient.changedAtUtc} kind="dateTime" /> },
   ];
 }

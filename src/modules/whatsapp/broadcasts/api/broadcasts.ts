@@ -39,17 +39,17 @@ export const broadcastsQueryKey = (query: BroadcastsQuery) => [...broadcastsQuer
 export const broadcastQueryKey = (id: string, query: RecipientsQuery) => [...broadcastsQueryRoot, "detail", id, query] as const;
 export const estimateQueryKey = (query: EstimateQuery) => [...broadcastsQueryRoot, "estimate", query] as const;
 
-// El back no ordena las difusiones: el `sort` de la URL no viaja.
+// Las opciones para elegir no llevan orden; las difusiones y sus destinatarios, sí (264): el `sort` de la URL viaja.
 const paged = ({ page, pageSize, search }: PagedRequest) => ({ page, pageSize, search });
 
 export async function fetchBroadcasts(query: BroadcastsQuery): Promise<BroadcastsPage> {
-  const list = await api.get<WhatsAppBroadcastListResponse>(`${base}?${toSearch({ ...paged(query), status: query.status })}`);
+  const list = await api.get<WhatsAppBroadcastListResponse>(`${base}?${toSearch({ ...paged(query), sort: query.sort, status: query.status })}`);
   return { ...list.broadcasts, scheduled: list.scheduled };
 }
 
 // CC16: la búsqueda y el estado filtran los destinatarios.
 export async function fetchBroadcast(id: string, query: RecipientsQuery): Promise<BroadcastDetailPage> {
-  const detail = await api.get<WhatsAppBroadcastDetailResponse>(`${base}/${encodeURIComponent(id)}?${toSearch({ ...paged(query), status: query.status })}`);
+  const detail = await api.get<WhatsAppBroadcastDetailResponse>(`${base}/${encodeURIComponent(id)}?${toSearch({ ...paged(query), sort: query.sort, status: query.status })}`);
   return { ...detail.recipients, broadcast: detail.broadcast };
 }
 

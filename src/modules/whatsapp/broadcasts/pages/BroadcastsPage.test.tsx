@@ -44,7 +44,12 @@ describe("Difusiones", () => {
     await user.click(await screen.findByRole("option", { name: "Programada" }));
     await waitFor(() => expect(router.state.location.search).toContain("status=Scheduled"));
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("status")).toBe("Scheduled"));
-    expect(requests.at(-1)?.searchParams.has("sort")).toBe(false);
+    // 264: el orden de siempre viaja; «Entregados» ordena de mayor a menor al primer toque y conserva el filtro.
+    expect(requests.at(-1)?.searchParams.get("sort")).toBe("-date");
+    await user.click(screen.getByRole("button", { name: "Entregados" }));
+    await waitFor(() => expect(requests.at(-1)?.searchParams.get("sort")).toBe("-delivered"));
+    expect(requests.at(-1)?.searchParams.get("status")).toBe("Scheduled");
+    expect(screen.getByRole("button", { name: "Ordenar por: Entregados, de mayor a menor" })).toBeInTheDocument();
   });
 
   it("sin «Mandar difusiones» no se ve", async () => {

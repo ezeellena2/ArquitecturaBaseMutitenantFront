@@ -29,9 +29,9 @@ function TeamsPage({ scope }: { scope: TeamScope }) {
   const queryClient = useQueryClient();
   const [editing, setEditing] = useState<Editing | null>(null);
   const [deleting, setDeleting] = useState<{ team: WhatsAppTeamResponse; returnFocusTo: HTMLElement | null } | null>(null);
-  const { result: teams, paginationProps } = usePagedQuery({
+  const { pagination, result: teams, paginationProps } = usePagedQuery({ defaultSort: "name",
     filterKeys: noFilters,
-    toQuery: ({ page, pageSize, search }): TeamsQuery => ({ page, pageSize, search }),
+    toQuery: ({ page, pageSize, sort, search }): TeamsQuery => ({ page, pageSize, sort, search }),
     queryKey: (query) => teamsQueryKey(scope, query), queryFn: (query) => fetchTeams(scope, query), meta: { silent: true, blocksView: true },
   });
   const remove = useMutation({
@@ -61,7 +61,7 @@ function TeamsPage({ scope }: { scope: TeamScope }) {
       fab={{ label: t("whatsapp:teams.create"), onClick: create }}
       actions={<Button type="button" onClick={create}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("whatsapp:teams.create")}</Button>}>
       <Surface className="overflow-hidden" phoneFlush>
-        <DataTable columns={columns} rows={teams.data?.items ?? []} rowKey={(team) => team.id}
+        <DataTable columns={columns} rows={teams.data?.items ?? []} rowKey={(team) => team.id} sort={pagination.sort} onSortChange={pagination.setSort}
           mobileRow={(team) => teamPhoneRow(team, scope, t, rowActions(team))}
           isLoading={teams.isPending} isFetching={teams.isFetching}
           error={teams.error ? apiErrorMessage(teams.error, t) : undefined} onRetry={() => { void teams.refetch(); }}

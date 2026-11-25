@@ -21,17 +21,17 @@ export function teamNoticeText(team: WhatsAppTeamResponse, t: TFunction): string
 /// cantidad y el aviso por correo, un dato por celda.
 export function createTeamColumns(t: TFunction, scope: TeamScope = "organization"): Column<WhatsAppTeamResponse>[] {
   return [
-    { id: "name", header: t("whatsapp:teams.columns.name"), type: "text", mobile: "primary", className: "w-[22%]", value: (team) => team.name },
+    { id: "name", sortable: true, header: t("whatsapp:teams.columns.name"), type: "text", mobile: "primary", className: "w-[22%]", value: (team) => team.name },
     ...(scope === "organization" ? [{
-      id: "inbox", header: t("whatsapp:teams.columns.inbox"), type: "custom", className: "w-[16%]",
+      id: "inbox", sortable: true, header: t("whatsapp:teams.columns.inbox"), type: "custom", className: "w-[16%]",
       cell: (team) => team.inbox ? t(`whatsapp:teams.inbox.${team.inbox}`) : <EmptyValue />,
     } satisfies Column<WhatsAppTeamResponse>] : []),
     {
       id: "members", header: t(scope === "organization" ? "whatsapp:teams.columns.members" : "whatsapp:teams.columns.operators"), type: "custom",
       cell: (team) => teamPreviewText(team) ?? <EmptyValue />,
     },
-    { id: "memberCount", header: t("whatsapp:teams.columns.count"), type: "integer", className: "w-24", value: (team) => team.memberCount },
-    { id: "notice", header: t("whatsapp:teams.columns.notice"), type: "custom", cell: (team) => <span>{teamNoticeText(team, t)}</span> },
+    { id: "memberCount", sortable: true, header: t("whatsapp:teams.columns.count"), type: "integer", className: "w-24", value: (team) => team.memberCount },
+    { id: "notice", sortable: true, header: t("whatsapp:teams.columns.notice"), type: "custom", cell: (team) => <span>{teamNoticeText(team, t)}</span> },
   ];
 }
 

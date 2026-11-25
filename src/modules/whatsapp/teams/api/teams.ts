@@ -16,7 +16,7 @@ import type {
 export type TeamScope = "organization" | "platform";
 
 /** Página, tamaño y búsqueda: la API de equipos no ordena por columna. */
-export type TeamsQuery = Pick<PagedRequest, "page" | "pageSize" | "search">;
+export type TeamsQuery = Pick<PagedRequest, "page" | "pageSize" | "sort" | "search">;
 
 const base = (scope: TeamScope) => `/api/${scope}/whatsapp/teams`;
 const one = (scope: TeamScope, id: string) => `${base(scope)}/${encodeURIComponent(id)}`;

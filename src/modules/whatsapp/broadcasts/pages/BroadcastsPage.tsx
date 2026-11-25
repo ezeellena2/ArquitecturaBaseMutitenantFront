@@ -31,7 +31,7 @@ const allValue = "all";
 export function BroadcastsPage(_props: ModuleContentProps) {
   const { t } = useTranslation(["whatsapp", "common"]);
   const format = useFormat();
-  const { filters, pagination, query, result: broadcasts, paginationProps } = usePagedQuery({
+  const { filters, pagination, query, result: broadcasts, paginationProps } = usePagedQuery({ defaultSort: "-date",
     filterKeys: broadcastFilterKeys,
     toQuery: (page, values): BroadcastsQuery => ({ ...page, status: statuses.find((status) => status !== undefined && status === values.status) }),
     queryKey: broadcastsQueryKey, queryFn: fetchBroadcasts, meta: { silent: true, blocksView: true },
@@ -60,14 +60,14 @@ export function BroadcastsPage(_props: ModuleContentProps) {
       fab={{ label: t("whatsapp:broadcasts.new"), to: newBroadcastPath }}
       actions={<Button asChild><Link to={newBroadcastPath}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("whatsapp:broadcasts.new")}</Link></Button>}>
       <div className="flex flex-col gap-3 md:gap-3.5">
-        <FilterBar screen={t("whatsapp:broadcasts.title")} label={t("whatsapp:broadcasts.filters.label")} searchLabel={t("whatsapp:broadcasts.filters.search")}
+        <FilterBar sort={{ columns, value: pagination.sort, onChange: pagination.setSort }} screen={t("whatsapp:broadcasts.title")} label={t("whatsapp:broadcasts.filters.label")} searchLabel={t("whatsapp:broadcasts.filters.search")}
           searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch}
           filters={[{ key: "status", label: t("whatsapp:broadcasts.filters.status"), menuLabel: t("whatsapp:broadcasts.filters.statusMenu"),
             value: query.status ?? "", active: query.status !== undefined, onChange: (value) => filters.setFilter("status", value === allValue ? undefined : value),
             options: statuses.map((status) => ({ value: status ?? allValue, label: status ? format.formatEnum("WhatsAppBroadcastStatus", status) : t("whatsapp:broadcasts.filters.allStatuses") })) }]}
           clearLabel={t("common:actions.clearFilters")} onClear={filters.clear} />
         <Surface className="overflow-hidden" phoneFlush>
-          <DataTable columns={columns} rows={data?.items ?? []} rowKey={(broadcast) => broadcast.id}
+          <DataTable columns={columns} rows={data?.items ?? []} rowKey={(broadcast) => broadcast.id} sort={pagination.sort} onSortChange={pagination.setSort}
             mobileRow={(broadcast) => broadcastPhoneRow(broadcast, t, rowActions(broadcast))}
             isLoading={broadcasts.isPending} isFetching={broadcasts.isFetching}
             error={broadcasts.error ? apiErrorMessage(broadcasts.error, t) : undefined} onRetry={() => { void broadcasts.refetch(); }}

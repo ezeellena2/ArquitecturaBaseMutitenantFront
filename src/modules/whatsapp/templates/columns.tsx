@@ -16,11 +16,11 @@ export const templateTitle = (template: WhatsAppTemplateResponse) => template.ti
 /// español).
 export function createTemplateColumns(t: TFunction, onWhyRejected: (template: WhatsAppTemplateResponse) => void = () => undefined): Column<WhatsAppTemplateResponse>[] {
   return [
-    { id: "name", header: t("whatsapp:templates.columns.name"), type: "text", mobile: "primary", className: "w-[24%]", value: templateTitle },
+    { id: "name", sortable: true, header: t("whatsapp:templates.columns.name"), type: "text", mobile: "primary", className: "w-[24%]", value: templateTitle },
     { id: "languages", header: t("whatsapp:templates.columns.languages"), type: "custom", cell: (template) => <TemplateLanguages languages={template.languages} /> },
-    { id: "category", header: t("whatsapp:templates.columns.category"), type: "enum", enum: "WhatsAppTemplateCategory", value: (template) => template.category },
-    { id: "status", header: t("whatsapp:templates.columns.status"), type: "custom", cell: (template) => <TemplateStatus template={template} t={t} onWhyRejected={onWhyRejected} /> },
-    { id: "updatedAtUtc", header: t("whatsapp:templates.columns.updated"), type: "date", value: (template) => template.updatedAtUtc },
+    { id: "category", sortable: true, header: t("whatsapp:templates.columns.category"), type: "enum", enum: "WhatsAppTemplateCategory", value: (template) => template.category },
+    { id: "status", sortable: true, sortAs: "status", header: t("whatsapp:templates.columns.status"), type: "custom", cell: (template) => <TemplateStatus template={template} t={t} onWhyRejected={onWhyRejected} /> },
+    { id: "updatedAtUtc", sortable: true, header: t("whatsapp:templates.columns.updated"), type: "date", value: (template) => template.updatedAtUtc },
   ];
 }
 

@@ -13,7 +13,7 @@ import type {
 export type TemplateScope = "organization" | "platform";
 
 /** Página, tamaño, búsqueda y estado; en Plataforma, también el grupo. La API no ordena por columna. */
-export type TemplatesQuery = Pick<PagedRequest, "page" | "pageSize" | "search"> & {
+export type TemplatesQuery = Pick<PagedRequest, "page" | "pageSize" | "sort" | "search"> & {
   status?: WhatsAppTemplateStatus;
   group?: NonNullable<WhatsAppTemplateGroup>;
 };

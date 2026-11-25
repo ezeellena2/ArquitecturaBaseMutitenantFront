@@ -49,7 +49,7 @@ export function BroadcastPage({ me }: ModuleContentProps) {
   const format = useFormat();
   const { phone } = useAppChrome();
   const navigate = useNavigate();
-  const { filters, pagination, query, result: detail, paginationProps } = usePagedQuery({
+  const { filters, pagination, query, result: detail, paginationProps } = usePagedQuery({ defaultSort: "-changedAtUtc",
     filterKeys: recipientFilterKeys,
     toQuery: (page, values): RecipientsQuery => ({ ...page, status: recipientStatuses.find((status) => status !== undefined && status === values.status) }),
     queryKey: (recipientsQuery) => broadcastQueryKey(id, recipientsQuery), queryFn: (recipientsQuery) => fetchBroadcast(id, recipientsQuery),
@@ -97,14 +97,14 @@ export function BroadcastPage({ me }: ModuleContentProps) {
       ] }}>
       <div className="flex flex-col gap-3 md:gap-3.5">
         <BroadcastCounters broadcast={broadcast} />
-        <FilterBar label={t("whatsapp:broadcasts.filters.label")} searchLabel={t("whatsapp:broadcasts.recipients.search")}
+        <FilterBar sort={{ columns, value: pagination.sort, onChange: pagination.setSort }} label={t("whatsapp:broadcasts.filters.label")} searchLabel={t("whatsapp:broadcasts.recipients.search")}
           searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch}
           filters={[{ key: "status", label: t("whatsapp:broadcasts.recipients.filter"), menuLabel: t("whatsapp:broadcasts.recipients.filterMenu"),
             value: query.status ?? "", active: query.status !== undefined, onChange: (value) => filters.setFilter("status", value === allValue ? undefined : value),
             options: recipientStatuses.map((value) => ({ value: value ?? allValue, label: value ? format.formatEnum("WhatsAppRecipientStatus", value) : t("whatsapp:broadcasts.recipients.allStatuses") })) }]}
           clearLabel={t("common:actions.clearFilters")} onClear={filters.clear} />
         <Surface className="overflow-hidden" phoneFlush>
-          <DataTable columns={columns} rows={detail.data?.items ?? []} rowKey={(recipient) => recipient.contactId}
+          <DataTable columns={columns} rows={detail.data?.items ?? []} rowKey={(recipient) => recipient.contactId} sort={pagination.sort} onSortChange={pagination.setSort}
             // M-WA-Difusion-Resultados-Base2 (263): cada destinatario es una tarjeta con el número, el estado y el último cambio,
             // cada dato con el nombre de su columna. Sin nombre, el número es el título y no se repite.
             mobileRow={(recipient) => <ListCard key={recipient.contactId} title={name(recipient)} fields={[

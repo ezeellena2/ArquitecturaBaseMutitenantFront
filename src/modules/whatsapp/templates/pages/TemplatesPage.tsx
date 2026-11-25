@@ -40,9 +40,9 @@ function TemplatesPage({ scope }: { scope: TemplateScope }) {
   const [creating, setCreating] = useState<{ original?: WhatsAppTemplateResponse; returnFocusTo?: HTMLElement | null } | null>(null);
   const [rejected, setRejected] = useState<WhatsAppTemplateResponse | null>(null);
   const [deleting, setDeleting] = useState<{ template: WhatsAppTemplateResponse; returnFocusTo: HTMLElement | null } | null>(null);
-  const { filters, result: list, paginationProps: listPagination } = usePagedQuery({
+  const { filters, pagination, result: list, paginationProps: listPagination } = usePagedQuery({ defaultSort: "name",
     filterKeys: groupKeys,
-    toQuery: ({ page, pageSize, search }, values): TemplatesQuery => ({ page, pageSize, search, group: platform ? groupFrom(values.grupo) : undefined }),
+    toQuery: ({ page, pageSize, sort, search }, values): TemplatesQuery => ({ page, pageSize, sort, search, group: platform ? groupFrom(values.grupo) : undefined }),
     queryKey: (query) => templatesQueryKey(scope, query), queryFn: (query) => fetchTemplatePage(scope, query),
     meta: { silent: true, blocksView: true },
   });
@@ -90,7 +90,7 @@ function TemplatesPage({ scope }: { scope: TemplateScope }) {
             onChange={(value) => { if (value !== group) filters.setFilter("grupo", value === "System" ? systemValue : undefined); }} />
         </div> : null}
         <Surface className="overflow-hidden" phoneFlush>
-          <DataTable columns={columns} rows={list.data?.items ?? []} rowKey={(template) => template.id}
+          <DataTable columns={columns} rows={list.data?.items ?? []} rowKey={(template) => template.id} sort={pagination.sort} onSortChange={pagination.setSort}
             mobileRow={(template) => templatePhoneRow(template, t, setRejected, rowActions(template))}
             isLoading={list.isPending} isFetching={list.isFetching}
             error={list.error ? apiErrorMessage(list.error, t) : undefined} onRetry={() => { void list.refetch(); }}
