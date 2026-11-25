@@ -34,8 +34,8 @@ export const contactQueryKey = (id: string) => [...contactsQueryRoot, "detail", 
 export const contactConversationsQueryKey = (id: string, query: PagedRequest) => [...contactsQueryRoot, "detail", id, "conversations", query] as const;
 export const contactBroadcastsQueryKey = (id: string, query: PagedRequest) => [...contactsQueryRoot, "detail", id, "broadcasts", query] as const;
 
-// El back no ordena los contactos: el `sort` de la URL no viaja.
-const paged = ({ page, pageSize, search }: PagedRequest) => ({ page, pageSize, search });
+// El orden de la URL viaja (264): los contactos y las dos listas de su ficha ordenan por sus columnas.
+const paged = ({ page, pageSize, sort, search }: PagedRequest) => ({ page, pageSize, sort, search });
 
 export async function fetchContacts(query: ContactsQuery, signal?: AbortSignal): Promise<ContactsPage> {
   const list = await api.get<WhatsAppContactListResponse>(`${base}?${toSearch({ ...paged(query), tag: query.tag, consent: query.consent })}`, { signal });

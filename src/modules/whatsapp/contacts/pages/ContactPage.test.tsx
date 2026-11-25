@@ -48,6 +48,25 @@ describe("Ficha del contacto", () => {
     expect(await screen.findByRole("link", { name: "20 % en empanadas" })).toHaveAttribute("href", "/org/whatsapp/difusiones/broadcast-1");
   });
 
+  // 264 (B17): las conversaciones abren por la más nueva y ordenan por sus columnas; el último mensaje y quien la atendió no.
+  it("las conversaciones ordenan por sus columnas y el orden viaja con su prefijo", async () => {
+    const sorts: (string | null)[] = [];
+    contactApi(() => martina);
+    server.use(http.get("/api/organization/whatsapp/contacts/contact-martina/conversations", ({ request }) => {
+      sorts.push(new URL(request.url).searchParams.get("sort"));
+      return HttpResponse.json(conversations);
+    }));
+    const { user, router } = mountWhatsApp(whatsappOwner, "/org/whatsapp/contactos/contact-martina");
+    expect(await screen.findByText("Ventas")).toBeVisible();
+    expect(sorts[0]).toBe("-startedAtUtc");
+    expect(screen.getByRole("columnheader", { name: /Conversación/ })).toHaveAttribute("aria-sort", "descending");
+    expect(within(screen.getByRole("columnheader", { name: "Último mensaje" })).queryByRole("button")).toBeNull();
+    expect(within(screen.getByRole("columnheader", { name: "La atendió" })).queryByRole("button")).toBeNull();
+    await user.click(screen.getByRole("button", { name: "Mensajes" }));
+    await waitFor(() => expect(sorts.at(-1)).toBe("-messageCount"));
+    expect(router.state.location.search).toContain("conversaciones.sort=-messageCount");
+  });
+
   it("al editar manda la versión y un 409 queda en el diálogo; al cerrarlo se relee la ficha", async () => {
     const sent: UpdateWhatsAppContactRequest[] = [];
     let reads = 0;

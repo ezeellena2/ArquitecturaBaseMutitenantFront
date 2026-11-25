@@ -42,7 +42,12 @@ describe("Contactos", () => {
     await waitFor(() => expect(router.state.location.search).toContain("tag=Mayorista"));
     await waitFor(() => expect(requests.at(-1)?.searchParams.get("tag")).toBe("Mayorista"));
     expect(requests.at(-1)?.searchParams.get("consent")).toBe("Accepted");
-    expect(requests.at(-1)?.searchParams.has("sort")).toBe(false);
+    // 264: el orden de siempre de la lista viaja, y el encabezado lo invierte y vuelve a la página 1.
+    expect(requests.at(-1)?.searchParams.get("sort")).toBe("name");
+    await user.click(screen.getByRole("button", { name: "Última conversación" }));
+    await waitFor(() => expect(requests.at(-1)?.searchParams.get("sort")).toBe("-lastConversationAtUtc"));
+    expect(router.state.location.search).toContain("sort=-lastConversationAtUtc");
+    expect(screen.getByRole("button", { name: "Ordenar por: Última conversación, más reciente primero" })).toBeInTheDocument();
   });
 
   it("sin «Atender clientes» no se ve, y con el módulo apagado no existe", async () => {

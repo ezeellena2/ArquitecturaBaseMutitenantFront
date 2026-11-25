@@ -141,7 +141,7 @@ export function CompanyMembersTab({ company, list, roles }: {
   const filtered = Boolean(state || roleId || withoutRoles || pagination.search);
 
   return <>
-    <FilterBar phoneTools="none" label={t("companies:detail.filters.label")} searchLabel={t("companies:detail.filters.search")} searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch}
+    <FilterBar sort={{ columns: columns, value: pagination.sort, onChange: pagination.setSort }} phoneTools="none" label={t("companies:detail.filters.label")} searchLabel={t("companies:detail.filters.search")} searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch}
       filters={[
         { key: "roleId", label: t("companies:detail.filters.role"), menuLabel: t("companies:detail.filters.roleMenu"), remote: roleOptions.remote, selectedLabel: roleOptions.knownItems.find((role) => role.id === roleId)?.name, value: filters.values.roleId ?? "", active: filters.values.roleId !== undefined,
           onChange: (value) => filters.setFilter("roleId", value === "all" ? undefined : value),

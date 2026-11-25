@@ -40,7 +40,7 @@ export function ContactsPage(_props: ModuleContentProps) {
   const { phone } = useAppChrome();
   const navigate = useNavigate();
   const { filters, pagination, query, result: contacts, paginationProps } = usePagedQuery({
-    filterKeys: contactFilterKeys,
+    filterKeys: contactFilterKeys, defaultSort: "name",
     // Una etiqueta más larga que el límite (una URL escrita a mano) no existe: no filtra.
     toQuery: (page, values): ContactsQuery => ({ ...page, tag: values.tag && values.tag.length <= tagMaxLength ? values.tag : undefined, consent: consents.find((consent) => consent !== undefined && consent === values.consent) }),
     queryKey: contactsQueryKey, queryFn: (contactsQuery) => fetchContacts(contactsQuery), meta: { silent: true, blocksView: true },
@@ -70,7 +70,7 @@ export function ContactsPage(_props: ModuleContentProps) {
       barAction={phone ? { label: t("whatsapp:contacts.import.short"), onClick: openImport } : undefined}
       actions={phone ? undefined : <Button type="button" onClick={openImport}>{t("whatsapp:contacts.import.open")}</Button>}>
       <div className="flex flex-col gap-3 md:gap-3.5">
-        <FilterBar screen={t("whatsapp:contacts.title")} label={t("whatsapp:contacts.filters.label")} searchLabel={t("whatsapp:contacts.filters.search")}
+        <FilterBar sort={{ columns, value: pagination.sort, onChange: pagination.setSort }} screen={t("whatsapp:contacts.title")} label={t("whatsapp:contacts.filters.label")} searchLabel={t("whatsapp:contacts.filters.search")}
           searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch}
           filters={[
             { key: "tag", label: t("whatsapp:contacts.filters.tag"), menuLabel: t("whatsapp:contacts.filters.tagMenu"), remote: tags.remote,
@@ -84,7 +84,7 @@ export function ContactsPage(_props: ModuleContentProps) {
           ]}
           clearLabel={t("common:actions.clearFilters")} onClear={filters.clear} />
         <Surface className="overflow-hidden" phoneFlush>
-          <DataTable columns={columns} rows={contacts.data?.items ?? []} rowKey={(contact) => contact.id}
+          <DataTable columns={columns} rows={contacts.data?.items ?? []} rowKey={(contact) => contact.id} sort={pagination.sort} onSortChange={pagination.setSort}
             mobileRow={(contact) => contactPhoneRow(contact, t)}
             isLoading={contacts.isPending} isFetching={contacts.isFetching}
             error={contacts.error ? apiErrorMessage(contacts.error, t) : undefined} onRetry={() => { void contacts.refetch(); }}

@@ -10,9 +10,9 @@ type TranslateRole = (key: string) => string;
 
 const roleColumnDefinitions = {
   name: { id: "name", header: "roles:columns.name", type: "text", mobile: "primary", sortable: true, value: (role: RoleResponse) => role.name },
-  scope: { id: "scope", header: "roles:columns.scope", type: "text", mobile: "status", value: (role: RoleResponse) => role.scope },
-  userCount: { id: "userCount", header: "roles:columns.users", type: "integer", value: (role: RoleResponse) => role.userCount },
-  permissions: { id: "permissions", header: "roles:columns.permissions", type: "integer", value: (role: RoleResponse) => role.permissions.length },
+  scope: { id: "scope", sortable: true, sortAs: "status", header: "roles:columns.scope", type: "text", mobile: "status", value: (role: RoleResponse) => role.scope },
+  userCount: { id: "userCount", sortable: true, header: "roles:columns.users", type: "integer", value: (role: RoleResponse) => role.userCount },
+  permissions: { id: "permissions", sortable: true, header: "roles:columns.permissions", type: "integer", value: (role: RoleResponse) => role.permissions.length },
 } satisfies Record<string, Column<RoleResponse>>;
 
 export const roleColumns: Column<RoleResponse>[] = Object.values(roleColumnDefinitions);
@@ -38,7 +38,7 @@ export function createRoleColumns(t: TranslateRole): Column<RoleResponse>[] {
       className: "w-[30%]",
       cell: (role) => <Link className="font-medium text-[var(--t1)] hover:underline" to={`/org/roles/${encodeURIComponent(role.id)}`}>{role.name}</Link>,
     },
-    { id: "type", header: t("roles:columns.type"), type: "custom", className: "w-36", cell: (role) => <span>{t(role.isSystemRole ? "roles:system" : "roles:custom")}</span> },
+    { id: "type", sortable: true, sortAs: "status", header: t("roles:columns.type"), type: "custom", className: "w-36", cell: (role) => <span>{t(role.isSystemRole ? "roles:system" : "roles:custom")}</span> },
     { ...roleColumnDefinitions.scope, header: t("roles:columns.scope"), type: "custom", cell: (role) => <span>{roleScopeLabel(role.scope, t, role.companyName ?? undefined)}</span> },
     { ...roleColumnDefinitions.userCount, header: t("roles:columns.users"), className: "w-28" },
     { ...roleColumnDefinitions.permissions, header: t("roles:columns.permissions"), className: "w-28", value: visiblePermissionCount },

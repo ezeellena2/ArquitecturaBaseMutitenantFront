@@ -152,7 +152,7 @@ export function UsersPage() {
       moreActions={phone && pageActions.length ? { label: t("users:detail.moreActions"), items: pageActions.map((action) => ({ label: t(action.labelKey), onSelect: () => { void navigate(action.to); } })) } : undefined}
       actions={moduleActions.length || invite ? <>{phone ? null : moduleActions}{invite}</> : undefined}>
       <div className="flex flex-col gap-3 md:gap-3.5">
-        <FilterBar screen={t("users:title")}
+        <FilterBar sort={{ columns: tableColumns, value: pagination.sort, onChange: pagination.setSort }} screen={t("users:title")}
           label={t("users:filters.label")}
           searchLabel={t("users:filters.search")}
           searchValue={pagination.search ?? ""}

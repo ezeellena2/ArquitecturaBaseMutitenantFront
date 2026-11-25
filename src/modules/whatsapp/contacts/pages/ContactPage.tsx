@@ -29,7 +29,7 @@ import { EditContactDialog } from "../components/EditContactDialog";
 
 type ContactTab = "conversations" | "broadcasts";
 const noFilters = [] as const;
-const paged = ({ page, pageSize }: PagedRequest): PagedRequest => ({ page, pageSize });
+const paged = ({ page, pageSize, sort }: PagedRequest): PagedRequest => ({ page, pageSize, sort });
 
 /**
  * Ficha del contacto (tableros WA-Contacto y M-WA-Contacto): la banda con el número, si está vinculado a su cuenta, sus
@@ -59,9 +59,9 @@ function ContactDetail({ contact, back }: { contact: WhatsAppContactResponse; ba
   const format = useFormat();
   const [tab, setTab] = useState<ContactTab>("conversations");
   const [editing, setEditing] = useState<{ returnFocusTo?: HTMLElement | null } | null>(null);
-  const conversations = usePagedQuery({ filterKeys: noFilters, prefix: "conversaciones.", toQuery: paged,
+  const conversations = usePagedQuery({ filterKeys: noFilters, prefix: "conversaciones.", defaultSort: "-startedAtUtc", toQuery: paged,
     queryKey: (query) => contactConversationsQueryKey(contact.id, query), queryFn: (query) => fetchContactConversations(contact.id, query), meta: { silent: true } });
-  const broadcasts = usePagedQuery({ filterKeys: noFilters, prefix: "difusiones.", toQuery: paged,
+  const broadcasts = usePagedQuery({ filterKeys: noFilters, prefix: "difusiones.", defaultSort: "-sentAtUtc", toQuery: paged,
     queryKey: (query) => contactBroadcastsQueryKey(contact.id, query), queryFn: (query) => fetchContactBroadcasts(contact.id, query), meta: { silent: true } });
   const title = contact.name ?? (format.isLoading ? "" : format.formatPhone(contact.displayNumber));
   // Tablero WA-Contacto: «+54 9 11 5555-6203 · Vinculada a su cuenta · Mayorista · Acepta promociones».
@@ -96,6 +96,7 @@ function ContactDetail({ contact, back }: { contact: WhatsAppContactResponse; ba
       tabs={{ label: t("whatsapp:contacts.detail.tabs"), value: tab, onValueChange: (value) => setTab(value === "broadcasts" ? "broadcasts" : "conversations"), items: [
         { value: "conversations", label: t("whatsapp:contacts.conversations.title"), count: conversations.result.data?.totalCount, content: <Surface className="overflow-hidden" phoneFlush>
           <DataTable columns={conversationColumns} rows={conversations.result.data?.items ?? []} rowKey={(row) => row.conversationId}
+            sort={conversations.pagination.sort} onSortChange={conversations.pagination.setSort}
             mobileRow={(row) => contactConversationPhoneRow(row, t)}
             isLoading={conversations.result.isPending} isFetching={conversations.result.isFetching}
             error={conversations.result.error ? apiErrorMessage(conversations.result.error, t) : undefined} onRetry={() => { void conversations.result.refetch(); }}
@@ -104,6 +105,7 @@ function ContactDetail({ contact, back }: { contact: WhatsAppContactResponse; ba
         </Surface> },
         { value: "broadcasts", label: t("whatsapp:contacts.broadcasts.title"), count: broadcasts.result.data?.totalCount, content: <Surface className="overflow-hidden" phoneFlush>
           <DataTable columns={createContactBroadcastColumns(t)} rows={broadcasts.result.data?.items ?? []} rowKey={(row) => row.broadcastId}
+            sort={broadcasts.pagination.sort} onSortChange={broadcasts.pagination.setSort}
             mobileRow={contactBroadcastPhoneRow}
             isLoading={broadcasts.result.isPending} isFetching={broadcasts.result.isFetching}
             error={broadcasts.result.error ? apiErrorMessage(broadcasts.result.error, t) : undefined} onRetry={() => { void broadcasts.result.refetch(); }}

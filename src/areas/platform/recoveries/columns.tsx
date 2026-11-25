@@ -24,11 +24,11 @@ export function recoveryPhoneRow(recovery: PlatformRecoveryResponse, t: TFunctio
 export function createRecoveryColumns(t: TFunction): Column<PlatformRecoveryResponse>[] {
   return [
     // Tablero Recuperaciones (base de la 12): un dato por celda; la fecha y hora del pedido, en su columna.
-    { id: "accountName", header: t("platformRecoveries:columns.account"), type: "custom", mobile: "primary",
+    { id: "accountName", sortable: true, header: t("platformRecoveries:columns.account"), type: "custom", mobile: "primary",
       cell: (recovery) => recovery.accountId ? <Link className="font-medium text-[var(--t1)] hover:underline" to={`/plataforma/cuentas/${encodeURIComponent(recovery.accountId)}`}>{recovery.accountName || <EmptyValue />}</Link> : <span className="text-[var(--t3)]">{t("platformRecoveries:noAccount")}</span> },
-    { id: "createdAtUtc", header: t("platformRecoveries:columns.createdAt"), type: "dateTime", className: "w-40", value: (recovery) => recovery.createdAtUtc },
+    { id: "createdAtUtc", sortable: true, header: t("platformRecoveries:columns.createdAt"), type: "dateTime", className: "w-40", value: (recovery) => recovery.createdAtUtc },
     { id: "previousMethod", header: t("platformRecoveries:columns.previous"), type: "custom", cell: (recovery) => <RecoveryMethodText type={recovery.previousMethodType} value={recovery.previousMethod} /> },
     { id: "newMethod", header: t("platformRecoveries:columns.new"), type: "custom", cell: (recovery) => <RecoveryMethodText type={recovery.newMethodType} value={recovery.newMethod} /> },
-    { id: "status", header: t("platformRecoveries:columns.status"), type: "status", tones: recoveryStatusTones, value: (recovery) => recovery.status, mobile: "status" },
+    { id: "status", sortable: true, header: t("platformRecoveries:columns.status"), type: "status", tones: recoveryStatusTones, value: (recovery) => recovery.status, mobile: "status" },
   ];
 }

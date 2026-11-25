@@ -74,10 +74,10 @@ export function createOrganizationColumns(t: TFunction): Column<PlatformTenantRe
     // Tablero Organizaciones (base de la 12): un dato por celda; el alta en su columna y el Dueño por su nombre o su correo.
     { id: "name", header: t("platformTenants:columns.organization"), type: "custom", mobile: "primary", sortable: true, className: "w-[26%]",
       cell: (organization) => <Link className="font-medium text-[var(--t1)] hover:underline" to={organizationPath(organization.id)}>{organization.name}</Link> },
-    { id: "createdAtUtc", header: t("platformTenants:columns.created"), type: "date", className: "w-30", value: (organization) => organization.createdAtUtc },
-    { id: "ownerName", header: t("platformTenants:columns.owner"), type: "custom", cell: ownerOf },
-    { id: "companyCount", header: t("platformTenants:columns.companies"), type: "integer", value: (organization) => organization.companyCount },
-    { id: "memberCount", header: t("platformTenants:columns.members"), type: "integer", value: (organization) => organization.memberCount },
-    { id: "status", header: t("platformTenants:columns.status"), type: "status", mobile: "status", tones: tenantStatusTones, value: (organization) => organization.status },
+    { id: "createdAtUtc", sortable: true, header: t("platformTenants:columns.created"), type: "date", className: "w-30", value: (organization) => organization.createdAtUtc },
+    { id: "ownerName", sortable: true, header: t("platformTenants:columns.owner"), type: "custom", cell: ownerOf },
+    { id: "companyCount", sortable: true, header: t("platformTenants:columns.companies"), type: "integer", value: (organization) => organization.companyCount },
+    { id: "memberCount", sortable: true, header: t("platformTenants:columns.members"), type: "integer", value: (organization) => organization.memberCount },
+    { id: "status", sortable: true, header: t("platformTenants:columns.status"), type: "status", mobile: "status", tones: tenantStatusTones, value: (organization) => organization.status },
   ];
 }

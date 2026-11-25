@@ -91,7 +91,7 @@ describe("Cuentas de Plataforma", () => {
     expect(await screen.findByText("Suspendimos la cuenta de Sin dato.")).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
   });
-  it("carga y ordena por Cuenta con el campo name admitido por el contrato", async () => {
+  it("carga y ordena por Cuenta con el campo name admitido por el contrato, y el segundo toque lo invierte", async () => {
     const user = userEvent.setup(); const sorts: string[] = [];
     server.use(http.get("/api/platform/accounts/paged", ({ request }) => {
       const sort = new URL(request.url).searchParams.get("sort") ?? ""; sorts.push(sort);
@@ -102,7 +102,9 @@ describe("Cuentas de Plataforma", () => {
     expect(sorts[0]).toBe("name");
     await user.click(screen.getByRole("button", { name: /^Cuenta/ }));
     await waitFor(() => expect(sorts.at(-1)).toBe("-name"));
-    expect(within(screen.getByRole("columnheader", { name: "Último ingreso" })).queryByRole("button")).not.toBeInTheDocument();
+    // 264: toda columna con un dato ordena; los perfiles son varios valores y no.
+    expect(within(screen.getByRole("columnheader", { name: "Último ingreso" })).getByRole("button")).toBeInTheDocument();
+    expect(within(screen.getByRole("columnheader", { name: "Perfiles" })).queryByRole("button")).not.toBeInTheDocument();
   });
   it("banda global, perfiles reales, invitación Nunca/Vence y sin errores axe", async () => {
     const { container } = renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" });

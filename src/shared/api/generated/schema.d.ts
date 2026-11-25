@@ -14,6 +14,7 @@ export interface paths {
                     PageSize?: 10 | 20 | 50 | 100;
                     Search?: string;
                     Status?: components["schemas"]["WhatsAppBroadcastStatus"];
+                    Sort?: string;
                 };
                 header?: never;
                 path?: never;
@@ -414,6 +415,7 @@ export interface paths {
                     PageSize?: 10 | 20 | 50 | 100;
                     Search?: string;
                     Status?: components["schemas"]["WhatsAppRecipientStatus"];
+                    Sort?: string;
                 };
                 header?: never;
                 path: {
@@ -734,6 +736,7 @@ export interface paths {
                     Search?: string;
                     Tag?: string;
                     Consent?: components["schemas"]["WhatsAppConsent"];
+                    Sort?: string;
                 };
                 header?: never;
                 path?: never;
@@ -1014,6 +1017,7 @@ export interface paths {
                     Page?: number;
                     PageSize?: 10 | 20 | 50 | 100;
                     Search?: string;
+                    Sort?: string;
                 };
                 header?: never;
                 path: {
@@ -1114,6 +1118,7 @@ export interface paths {
                     Page?: number;
                     PageSize?: 10 | 20 | 50 | 100;
                     Search?: string;
+                    Sort?: string;
                 };
                 header?: never;
                 path: {
@@ -2807,7 +2812,7 @@ export interface paths {
         /**
          * Marca como revisado un mensaje «Sin confirmar» (ADR 0066), sin cuerpo y sin idempotencia: no crea ni envía, y revisar dos
          *     veces devuelve la primera revisión.
-         * @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Marca como revisado un mensaje «Sin confirmar» (ADR 0066), sin cuerpo y sin Idempotency-Key: no crea ni envía. 200 con el mensaje, que suma reviewedByName y reviewedAtUtc; revisar dos veces devuelve la primera revisión. Otro chat, otra organización o un mensaje que no es de ese chat: 404. Si no está «Sin confirmar»: 409 WhatsApp.Message.NotUncertain. 501 hasta la B7.
+         * @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Marca como revisado un mensaje «Sin confirmar» (ADR 0066), sin cuerpo y sin Idempotency-Key: no crea ni envía. 200 con el mensaje, que suma reviewedByName y reviewedAtUtc; revisar dos veces devuelve la primera revisión. Otro chat, otra organización o un mensaje que no es de ese chat: 404. Si no está «Sin confirmar»: 409 WhatsApp.Message.NotUncertain.
          */
         post: {
             parameters: {
@@ -2881,15 +2886,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -4090,7 +4086,7 @@ export interface paths {
         /**
          * Marca como revisado un mensaje «Sin confirmar» (ADR 0066), sin cuerpo y sin idempotencia: no crea ni envía, y revisar dos
          *     veces devuelve la primera revisión.
-         * @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Marca como revisado un mensaje «Sin confirmar» (ADR 0066), sin cuerpo y sin Idempotency-Key: no crea ni envía. 200 con el mensaje, que suma reviewedByName y reviewedAtUtc; revisar dos veces devuelve la primera revisión. Otro chat, otra organización o un mensaje que no es de ese chat: 404. Si no está «Sin confirmar»: 409 WhatsApp.Message.NotUncertain. 501 hasta la B7.
+         * @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Marca como revisado un mensaje «Sin confirmar» (ADR 0066), sin cuerpo y sin Idempotency-Key: no crea ni envía. 200 con el mensaje, que suma reviewedByName y reviewedAtUtc; revisar dos veces devuelve la primera revisión. Otro chat, otra organización o un mensaje que no es de ese chat: 404. Si no está «Sin confirmar»: 409 WhatsApp.Message.NotUncertain.
          */
         post: {
             parameters: {
@@ -4164,15 +4160,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -5373,7 +5360,7 @@ export interface paths {
         /**
          * Marca como revisado un mensaje «Sin confirmar» (ADR 0066), sin cuerpo y sin idempotencia: no crea ni envía, y revisar dos
          *     veces devuelve la primera revisión.
-         * @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Marca como revisado un mensaje «Sin confirmar» (ADR 0066), sin cuerpo y sin Idempotency-Key: no crea ni envía. 200 con el mensaje, que suma reviewedByName y reviewedAtUtc; revisar dos veces devuelve la primera revisión. Otro chat, otra organización o un mensaje que no es de ese chat: 404. Si no está «Sin confirmar»: 409 WhatsApp.Message.NotUncertain. 501 hasta la B7.
+         * @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Marca como revisado un mensaje «Sin confirmar» (ADR 0066), sin cuerpo y sin Idempotency-Key: no crea ni envía. 200 con el mensaje, que suma reviewedByName y reviewedAtUtc; revisar dos veces devuelve la primera revisión. Otro chat, otra organización o un mensaje que no es de ese chat: 404. Si no está «Sin confirmar»: 409 WhatsApp.Message.NotUncertain.
          */
         post: {
             parameters: {
@@ -5447,15 +5434,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -6597,6 +6575,7 @@ export interface paths {
                     PageSize?: 10 | 20 | 50 | 100;
                     Search?: string;
                     Status?: components["schemas"]["WhatsAppTemplateStatus"];
+                    Sort?: string;
                 };
                 header?: never;
                 path?: never;
@@ -6985,6 +6964,7 @@ export interface paths {
                     Search?: string;
                     Status?: components["schemas"]["WhatsAppTemplateStatus"];
                     Group?: components["schemas"]["WhatsAppTemplateGroup"];
+                    Sort?: string;
                 };
                 header?: never;
                 path?: never;
@@ -8680,6 +8660,7 @@ export interface paths {
                     Page?: number;
                     PageSize?: 10 | 20 | 50 | 100;
                     Search?: string;
+                    Sort?: string;
                 };
                 header?: never;
                 path?: never;
@@ -9250,6 +9231,7 @@ export interface paths {
                     Page?: number;
                     PageSize?: 10 | 20 | 50 | 100;
                     Search?: string;
+                    Sort?: string;
                 };
                 header?: never;
                 path?: never;
@@ -10180,7 +10162,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Cursor opaco ligado a lado/organización/dueño/filtro; orden LastActivityAtUtc/Id descendente, limit=20 máximo100. Una conversación que esta versión no puede leer (ADR 0064 §6) sale en el listado con available=false, sin título ni mensajes; su GET es 409 Assistant.Conversation.Unavailable y el DELETE la borra igual. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Cursor opaco ligado a lado/organización/dueño/filtro; orden LastActivityAtUtc/Id descendente, limit=20 máximo100. Una conversación que esta versión no puede leer (ADR 0064 §6) sale en el listado con available=false, sin título ni mensajes; su GET y su exportación son 409 Assistant.Conversation.Unavailable, un mensaje nuevo también (antes de reservar el cupo) y el DELETE la borra igual. */
         get: {
             parameters: {
                 query?: {
@@ -10381,7 +10363,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Conversación propia, mensajes cronológicos por cursor; limit=50 máximo100. Ajeno devuelve404. Una conversación que esta versión no puede leer (ADR 0064 §6) sale en el listado con available=false, sin título ni mensajes; su GET es 409 Assistant.Conversation.Unavailable y el DELETE la borra igual. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Conversación propia, mensajes cronológicos por cursor; limit=50 máximo100. Ajeno devuelve404. Una conversación que esta versión no puede leer (ADR 0064 §6) sale en el listado con available=false, sin título ni mensajes; su GET y su exportación son 409 Assistant.Conversation.Unavailable, un mensaje nuevo también (antes de reservar el cupo) y el DELETE la borra igual. */
         get: {
             parameters: {
                 query?: {
@@ -10441,7 +10423,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Assistant.Conversation.Unavailable */
+                /** @description Conflict; Assistant.Conversation.Unavailable */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -10737,7 +10719,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Conflict; Request.InProgress; General.ConcurrencyConflict; Assistant.Turn.InProgress; Assistant.Attachment.AlreadyUsed */
+                /** @description Conflict; Request.InProgress; General.ConcurrencyConflict; Assistant.Turn.InProgress; Assistant.Attachment.AlreadyUsed; Assistant.Conversation.Unavailable */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -11578,6 +11560,15 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Conflict; Assistant.Conversation.Unavailable */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Security.RateLimit.Exceeded */
                 429: {
                     headers: {
@@ -11824,7 +11815,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Cursor opaco ligado a lado/organización/dueño/filtro; orden LastActivityAtUtc/Id descendente, limit=20 máximo100. Una conversación que esta versión no puede leer (ADR 0064 §6) sale en el listado con available=false, sin título ni mensajes; su GET es 409 Assistant.Conversation.Unavailable y el DELETE la borra igual. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Cursor opaco ligado a lado/organización/dueño/filtro; orden LastActivityAtUtc/Id descendente, limit=20 máximo100. Una conversación que esta versión no puede leer (ADR 0064 §6) sale en el listado con available=false, sin título ni mensajes; su GET y su exportación son 409 Assistant.Conversation.Unavailable, un mensaje nuevo también (antes de reservar el cupo) y el DELETE la borra igual. */
         get: {
             parameters: {
                 query?: {
@@ -12025,7 +12016,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Conversación propia, mensajes cronológicos por cursor; limit=50 máximo100. Ajeno devuelve404. Una conversación que esta versión no puede leer (ADR 0064 §6) sale en el listado con available=false, sin título ni mensajes; su GET es 409 Assistant.Conversation.Unavailable y el DELETE la borra igual. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Conversación propia, mensajes cronológicos por cursor; limit=50 máximo100. Ajeno devuelve404. Una conversación que esta versión no puede leer (ADR 0064 §6) sale en el listado con available=false, sin título ni mensajes; su GET y su exportación son 409 Assistant.Conversation.Unavailable, un mensaje nuevo también (antes de reservar el cupo) y el DELETE la borra igual. */
         get: {
             parameters: {
                 query?: {
@@ -12085,7 +12076,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Assistant.Conversation.Unavailable */
+                /** @description Conflict; Assistant.Conversation.Unavailable */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -12381,7 +12372,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Conflict; Request.InProgress; General.ConcurrencyConflict; Assistant.Turn.InProgress; Assistant.Attachment.AlreadyUsed */
+                /** @description Conflict; Request.InProgress; General.ConcurrencyConflict; Assistant.Turn.InProgress; Assistant.Attachment.AlreadyUsed; Assistant.Conversation.Unavailable */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -13222,6 +13213,15 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
+                /** @description Conflict; Assistant.Conversation.Unavailable */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
                 /** @description Security.RateLimit.Exceeded */
                 429: {
                     headers: {
@@ -13749,7 +13749,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Cursor opaco ligado a lado/organización/dueño/filtro; orden LastActivityAtUtc/Id descendente, limit=20 máximo100. Una conversación que esta versión no puede leer (ADR 0064 §6) sale en el listado con available=false, sin título ni mensajes; su GET es 409 Assistant.Conversation.Unavailable y el DELETE la borra igual. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Cursor opaco ligado a lado/organización/dueño/filtro; orden LastActivityAtUtc/Id descendente, limit=20 máximo100. Una conversación que esta versión no puede leer (ADR 0064 §6) sale en el listado con available=false, sin título ni mensajes; su GET y su exportación son 409 Assistant.Conversation.Unavailable, un mensaje nuevo también (antes de reservar el cupo) y el DELETE la borra igual. */
         get: {
             parameters: {
                 query?: {
@@ -13950,7 +13950,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Conversación propia, mensajes cronológicos por cursor; limit=50 máximo100. Ajeno devuelve404. Una conversación que esta versión no puede leer (ADR 0064 §6) sale en el listado con available=false, sin título ni mensajes; su GET es 409 Assistant.Conversation.Unavailable y el DELETE la borra igual. */
+        /** @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Conversación propia, mensajes cronológicos por cursor; limit=50 máximo100. Ajeno devuelve404. Una conversación que esta versión no puede leer (ADR 0064 §6) sale en el listado con available=false, sin título ni mensajes; su GET y su exportación son 409 Assistant.Conversation.Unavailable, un mensaje nuevo también (antes de reservar el cupo) y el DELETE la borra igual. */
         get: {
             parameters: {
                 query?: {
@@ -14010,7 +14010,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Assistant.Conversation.Unavailable */
+                /** @description Conflict; Assistant.Conversation.Unavailable */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -14306,7 +14306,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Conflict; Request.InProgress; General.ConcurrencyConflict; Assistant.Turn.InProgress; Assistant.Attachment.AlreadyUsed */
+                /** @description Conflict; Request.InProgress; General.ConcurrencyConflict; Assistant.Turn.InProgress; Assistant.Attachment.AlreadyUsed; Assistant.Conversation.Unavailable */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -15140,6 +15140,15 @@ export interface paths {
                 };
                 /** @description Not Found; Http.NotFound; Assistant.Conversation.NotFound */
                 404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Assistant.Conversation.Unavailable */
+                409: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -20321,6 +20330,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
+        /** @description Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. */
         post: {
             parameters: {
                 query?: never;
@@ -20383,7 +20393,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Security.RateLimit.Exceeded */
+                /** @description Messaging.Email.DailyLimit; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */

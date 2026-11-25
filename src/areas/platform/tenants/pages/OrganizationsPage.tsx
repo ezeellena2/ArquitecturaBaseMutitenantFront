@@ -116,7 +116,7 @@ export function OrganizationsPage() {
       fab={canManage ? { label: t("platformTenants:create.title"), onClick: () => setCreateOpen(true) } : undefined}
       actions={canManage ? <Button onClick={() => setCreateOpen(true)}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("platformTenants:create.title")}</Button> : undefined}>
       <div className="flex flex-col gap-3 md:gap-3.5">
-        <FilterBar screen={t("platformTenants:title")} label={t("platformTenants:filters.label")} searchLabel={t("platformTenants:filters.search")} searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch}
+        <FilterBar sort={{ columns: columns, value: pagination.sort, onChange: pagination.setSort }} screen={t("platformTenants:title")} label={t("platformTenants:filters.label")} searchLabel={t("platformTenants:filters.search")} searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch}
           filters={[
             { key: "status", label: t("platformTenants:filters.status"), menuLabel: t("platformTenants:filters.statusMenu"), value: query.status ?? "", active: query.status !== undefined, onChange: (value) => filters.setFilter("status", value === "all" ? undefined : value), options: statuses.map((value) => ({ value: value ?? "all", label: t(`platformTenants:filters.statuses.${value ?? "all"}`) })) },
             { key: "source", label: t("platformTenants:filters.source"), menuLabel: t("platformTenants:filters.sourceMenu"), value: query.source ?? "", active: query.source !== undefined, onChange: (value) => filters.setFilter("source", value === "all" ? undefined : value), options: sources.map((value) => ({ value: value ?? "all", label: t(`platformTenants:filters.sources.${value ?? "all"}`) })) },

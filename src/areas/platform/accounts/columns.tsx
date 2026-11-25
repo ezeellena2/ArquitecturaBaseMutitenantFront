@@ -46,15 +46,15 @@ export function createAccountColumns(t: TFunction): Column<PlatformAccountRespon
     // Tablero Cuentas (base de la 12): un dato por celda; el correo o el teléfono principal, en su columna.
     { id: "name", header: t("platformAccounts:columns.account"), type: "custom", mobile: "primary", sortable: true, className: "w-[24%]",
       cell: (account) => <Link className={`hover:underline ${account.displayName ? "font-medium text-[var(--t1)]" : "text-[var(--t3)]"}`} to={accountPath(account.id)}>{accountName(account) || <EmptyValue />}</Link> },
-    { id: "contact", header: t("platformAccounts:columns.contact"), type: "custom", className: "w-[24%]",
+    { id: "contact", sortable: true, header: t("platformAccounts:columns.contact"), type: "custom", className: "w-[24%]",
       cell: (account) => account.maskedPrimaryPhone || account.primaryEmail
         ? <span className="text-[var(--t2)]">{account.maskedPrimaryPhone || <EmailText value={account.primaryEmail ?? ""} />}</span> : <EmptyValue /> },
     { id: "profiles", header: t("platformAccounts:columns.profiles"), type: "custom", cell: (account) => profiles(account, t) },
-    { id: "lastSignInAtUtc", header: t("platformAccounts:columns.lastSignIn"), type: "custom", className: "w-40",
+    { id: "lastSignInAtUtc", sortable: true, sortAs: "date", header: t("platformAccounts:columns.lastSignIn"), type: "custom", className: "w-40",
       cell: (account) => isOperatorInvitation(account) ? t("platformAccounts:columns.never") : <DateText value={account.lastSignInAtUtc} kind="dateTime" /> },
-    { id: "state", header: t("platformAccounts:columns.state"), type: "status", tones: accountStateTones, value: (account) => account.state, mobile: "status" },
+    { id: "state", sortable: true, header: t("platformAccounts:columns.state"), type: "status", tones: accountStateTones, value: (account) => account.state, mobile: "status" },
     // Tablero Cuentas-Base2 (0066 §4): cómo salió la invitación de un operador, que va siempre por correo, con su porqué en la (i).
-    { id: "invitationDelivery", header: t("common:invitationDelivery.column"), type: "custom", className: "w-40",
+    { id: "invitationDelivery", sortable: true, sortAs: "status", header: t("common:invitationDelivery.column"), type: "custom", className: "w-40",
       cell: (account) => <InvitationDeliveryBadge value={isOperatorInvitation(account) ? account.invitationDelivery : null} channel="email" /> },
   ];
 }

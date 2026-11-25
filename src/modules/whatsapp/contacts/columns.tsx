@@ -28,13 +28,13 @@ export function createContactColumns(t: TFunction): Column<WhatsAppContactRespon
   return [
     // Tablero WA-Contactos (base de la 12): un dato por celda; el número en su columna.
     {
-      id: "name", header: t("whatsapp:contacts.columns.contact"), type: "custom", mobile: "primary", className: "w-[24%]",
+      id: "name", sortable: true, header: t("whatsapp:contacts.columns.contact"), type: "custom", mobile: "primary", className: "w-[24%]",
       cell: (contact) => <Link className="font-medium text-[var(--t1)] hover:underline" to={contactPath(contact.id)}><ContactTitle contact={contact} /></Link>,
     },
-    { id: "number", header: t("whatsapp:contacts.columns.number"), type: "custom", className: "w-[18%]", cell: (contact) => <PhoneText value={contact.displayNumber} /> },
+    { id: "number", sortable: true, sortAs: "code", header: t("whatsapp:contacts.columns.number"), type: "custom", className: "w-[18%]", cell: (contact) => <PhoneText value={contact.displayNumber} /> },
     { id: "tags", header: t("whatsapp:contacts.columns.tags"), type: "text", value: (contact) => contact.tags.join(", ") || null },
-    { id: "consent", header: t("whatsapp:contacts.columns.consent"), type: "status", tones: consentTones, mobile: "status", value: (contact) => contact.consent },
-    { id: "lastConversationAtUtc", header: t("whatsapp:contacts.columns.lastConversation"), type: "dateTime", className: "w-42.5", value: (contact) => contact.lastConversationAtUtc },
+    { id: "consent", sortable: true, header: t("whatsapp:contacts.columns.consent"), type: "status", tones: consentTones, mobile: "status", value: (contact) => contact.consent },
+    { id: "lastConversationAtUtc", sortable: true, header: t("whatsapp:contacts.columns.lastConversation"), type: "dateTime", className: "w-42.5", value: (contact) => contact.lastConversationAtUtc },
   ];
 }
 
@@ -53,12 +53,12 @@ export function contactPhoneRow(contact: WhatsAppContactResponse, t: TFunction, 
 export function createContactConversationColumns(t: TFunction): Column<WhatsAppContactConversationResponse>[] {
   return [
     // Tablero WA-Contacto (base de la 12): la fecha y el último mensaje, cada uno en su columna (CC18).
-    { id: "startedAtUtc", header: t("whatsapp:contacts.conversations.columns.conversation"), type: "dateTime", mobile: "primary", className: "w-40",
+    { id: "startedAtUtc", sortable: true, header: t("whatsapp:contacts.conversations.columns.conversation"), type: "dateTime", mobile: "primary", className: "w-40",
       value: (row) => row.startedAtUtc },
     { id: "lastMessagePreview", header: t("whatsapp:contacts.conversations.columns.lastMessage"), type: "text", value: (row) => row.lastMessagePreview },
-    { id: "team", header: t("whatsapp:contacts.conversations.columns.team"), type: "text", value: (row) => row.team?.name },
+    { id: "team", sortable: true, header: t("whatsapp:contacts.conversations.columns.team"), type: "text", value: (row) => row.team?.name },
     { id: "assignee", header: t("whatsapp:contacts.conversations.columns.assignee"), type: "text", value: (row) => row.assignee?.name },
-    { id: "messageCount", header: t("whatsapp:contacts.conversations.columns.messages"), type: "integer", className: "w-30", value: (row) => row.messageCount },
+    { id: "messageCount", sortable: true, header: t("whatsapp:contacts.conversations.columns.messages"), type: "integer", className: "w-30", value: (row) => row.messageCount },
   ];
 }
 
@@ -76,11 +76,11 @@ export function contactConversationPhoneRow(row: WhatsAppContactConversationResp
 export function createContactBroadcastColumns(t: TFunction): Column<WhatsAppContactBroadcastResponse>[] {
   return [
     {
-      id: "name", header: t("whatsapp:contacts.broadcasts.columns.broadcast"), type: "custom", mobile: "primary",
+      id: "name", sortable: true, header: t("whatsapp:contacts.broadcasts.columns.broadcast"), type: "custom", mobile: "primary",
       cell: (row) => <Link className="font-medium text-[var(--t1)] hover:underline" to={broadcastPath(row.broadcastId)}>{row.name}</Link>,
     },
-    { id: "sentAtUtc", header: t("whatsapp:contacts.broadcasts.columns.sent"), type: "date", className: "w-40", value: (row) => row.sentAtUtc },
-    { id: "status", header: t("whatsapp:contacts.broadcasts.columns.status"), type: "status", tones: recipientStatusTones, mobile: "status", value: (row) => row.status },
+    { id: "sentAtUtc", sortable: true, header: t("whatsapp:contacts.broadcasts.columns.sent"), type: "date", className: "w-40", value: (row) => row.sentAtUtc },
+    { id: "status", sortable: true, header: t("whatsapp:contacts.broadcasts.columns.status"), type: "status", tones: recipientStatusTones, mobile: "status", value: (row) => row.status },
   ];
 }
 

@@ -96,7 +96,7 @@ export function CompaniesPage() {
       fab={canManage ? { label: t("companies:create"), onClick: openCreate } : undefined}
       actions={canManage ? <Button type="button" onClick={openCreate}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("companies:create")}</Button> : undefined}>
       <div className="flex flex-col gap-3 md:gap-3.5">
-        <FilterBar phoneTools="filter" screen={t("companies:title")}
+        <FilterBar sort={{ columns: columns, value: pagination.sort, onChange: pagination.setSort }} phoneTools="filter" screen={t("companies:title")}
           label={t("companies:filters.label")}
           searchLabel={t("companies:filters.search")}
           searchValue={pagination.search ?? ""}

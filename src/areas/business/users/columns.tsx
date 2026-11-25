@@ -70,7 +70,7 @@ export function createUserColumns(t: TFunction): Column<OrganizationUserResponse
       cell: (user) => <Link className="font-medium text-[var(--t1)] hover:underline" to={`/org/usuarios/${encodeURIComponent(user.memberId)}`}>{user.displayName || userContact(user) || <EmptyValue />}</Link>,
     },
     // Tablero Usuarios: el correo, en gris; una invitación por teléfono no tiene correo y va con «—».
-    { id: "email", header: t("users:columns.email"), type: "custom", className: "w-[22%]",
+    { id: "email", sortable: true, header: t("users:columns.email"), type: "custom", className: "w-[22%]",
       cell: (user) => user.email ? <span className="text-[var(--t2)]"><EmailText value={user.email} /></span> : <EmptyValue /> },
     {
       id: "roles", header: t("users:columns.organizationRoles"), type: "text", className: "w-[15%]",
@@ -84,12 +84,12 @@ export function createUserColumns(t: TFunction): Column<OrganizationUserResponse
         return companies ? <span className="text-[var(--t1)]">{companies}</span> : <EmptyValue />;
       },
     },
-    { id: "state", header: t("users:columns.state"), type: "status", tones: userStateTones, value: (user) => user.state, mobile: "status", className: "w-40.5 max-md:w-[38%]" },
+    { id: "state", sortable: true, header: t("users:columns.state"), type: "status", tones: userStateTones, value: (user) => user.state, mobile: "status", className: "w-40.5 max-md:w-[38%]" },
     // Tablero Usuarios-Base2 (0066 §4): cómo salió la invitación, después del estado, con su porqué en la (i).
-    { id: "invitationDelivery", header: t("common:invitationDelivery.column"), type: "custom", className: "w-40",
+    { id: "invitationDelivery", sortable: true, sortAs: "status", header: t("common:invitationDelivery.column"), type: "custom", className: "w-40",
       cell: (user) => <InvitationDeliveryBadge value={isUserInvitation(user) ? user.invitationDelivery : null} channel={userInvitationChannel(user)} /> },
     {
-      id: "invitationExpiresAtUtc", header: t("users:columns.expires"), type: "date", className: "w-30",
+      id: "invitationExpiresAtUtc", sortable: true, header: t("users:columns.expires"), type: "date", className: "w-30",
       value: (user) => isUserInvitation(user) ? user.invitationExpiresAtUtc ?? null : null,
     },
   ];

@@ -91,10 +91,10 @@ export function createCompanyColumns(t: TFunction): Column<CompanyResponse>[] {
       id: "name", header: t("companies:columns.name"), type: "custom", mobile: "primary", sortable: true, className: "w-[28%]",
       cell: (company) => <Link className="font-medium text-[var(--t1)] hover:underline" to={`/org/empresas/${encodeURIComponent(company.id)}`}>{company.name}</Link>,
     },
-    { id: "taxId", header: t("companies:columns.taxId"), type: "taxId", className: "w-38", value: (company) => company.taxId },
-    { id: "timeZoneId", header: t("companies:columns.timeZone"), type: "timeZone", value: (company) => company.timeZoneId },
-    { id: "memberCount", header: t("companies:columns.members"), type: "integer", className: "w-28", value: (company) => company.memberCount },
-    { id: "status", header: t("companies:columns.status"), type: "status", tones: companyStatusTones, value: (company) => company.status, mobile: "status", className: "w-40.5 max-md:w-[38%]" },
+    { id: "taxId", sortable: true, header: t("companies:columns.taxId"), type: "taxId", className: "w-38", value: (company) => company.taxId },
+    { id: "timeZoneId", sortable: true, header: t("companies:columns.timeZone"), type: "timeZone", value: (company) => company.timeZoneId },
+    { id: "memberCount", sortable: true, header: t("companies:columns.members"), type: "integer", className: "w-28", value: (company) => company.memberCount },
+    { id: "status", sortable: true, header: t("companies:columns.status"), type: "status", tones: companyStatusTones, value: (company) => company.status, mobile: "status", className: "w-40.5 max-md:w-[38%]" },
   ];
 }
 
@@ -103,11 +103,11 @@ export function createCompanyMemberColumns(t: TFunction): Column<CompanyMember>[
     // Tablero Empresa (base de la 12): un dato por celda; el correo y hasta cuándo vale una invitación, en sus columnas.
     { id: "displayName", header: t("companies:memberColumns.name"), type: "custom", mobile: "primary", sortable: true, className: "w-[24%]",
       cell: (member) => <span className="font-medium text-[var(--t1)]">{member.displayName}</span> },
-    { id: "email", header: t("companies:memberColumns.email"), type: "text", value: (member) => member.email },
+    { id: "email", sortable: true, header: t("companies:memberColumns.email"), type: "text", value: (member) => member.email },
     { id: "roles", header: t("companies:memberColumns.roles"), type: "text", value: (member) => member.roles.map((role) => role.name).join(", ") || null },
-    { id: "state", header: t("companies:memberColumns.state"), type: "status", tones: companyMemberStateTones, value: memberState, mobile: "status", className: "w-40.5 max-md:w-[38%]" },
+    { id: "state", sortable: true, header: t("companies:memberColumns.state"), type: "status", tones: companyMemberStateTones, value: memberState, mobile: "status", className: "w-40.5 max-md:w-[38%]" },
     // Tablero Empresa-Base2 (0066 §4): cómo salió la invitación, después del estado.
-    { id: "invitationDelivery", header: t("common:invitationDelivery.column"), type: "custom", className: "w-40", cell: invitationDelivery },
-    { id: "invitationExpiresAtUtc", header: t("companies:memberColumns.expires"), type: "date", className: "w-30", value: invitationExpiresAt },
+    { id: "invitationDelivery", sortable: true, sortAs: "status", header: t("common:invitationDelivery.column"), type: "custom", className: "w-40", cell: invitationDelivery },
+    { id: "invitationExpiresAtUtc", sortable: true, header: t("companies:memberColumns.expires"), type: "date", className: "w-30", value: invitationExpiresAt },
   ];
 }

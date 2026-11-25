@@ -31,7 +31,7 @@ type OwnWrite = Pick<PlatformRecoveryResponse, "version" | "status" | "reason">;
 export function RecoveriesPage() {
   const { t } = useTranslation(["platformRecoveries", "common"]); const format = useFormat(); const { phone } = useAppChrome(); const client = useQueryClient(); const location = useLocation();
   const { canPlatform } = usePermissions(); const canManage = canPlatform("platform.recoveries.manage");
-  const { filters, pagination, query, result: recoveries, paginationProps } = usePagedQuery({ filterKeys, defaultSort: "-createdAt",
+  const { filters, pagination, query, result: recoveries, paginationProps } = usePagedQuery({ filterKeys, defaultSort: "-createdAtUtc",
     toQuery: (page, values): RecoveriesQuery => ({ ...page, status: statuses.find((value) => value === values.status) }),
     queryKey: recoveriesQueryKey, queryFn: fetchRecoveries, meta: { silent: true, blocksView: true } });
   // El resumen cuenta todo lo de la lista: los conteos se piden una vez, sin la búsqueda ni los filtros, porque los filtros
@@ -64,7 +64,7 @@ export function RecoveriesPage() {
   return <>
     <Page title={t("platformRecoveries:title")} summary={summary} phoneSubtitle={t("platformRecoveries:platform")} phoneBody="flush">
       <div className="flex flex-col gap-3 md:gap-3.5">
-        <FilterBar phoneTools="filter" screen={t("platformRecoveries:title")} label={t(phone ? "platformRecoveries:filters.phone" : "platformRecoveries:filters.label")} searchLabel={t("platformRecoveries:filters.search")} searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch} clearLabel={t("common:actions.clear")} onClear={filters.clear}
+        <FilterBar sort={{ columns: columns, value: pagination.sort, onChange: pagination.setSort }} phoneTools="filter" screen={t("platformRecoveries:title")} label={t(phone ? "platformRecoveries:filters.phone" : "platformRecoveries:filters.label")} searchLabel={t("platformRecoveries:filters.search")} searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch} clearLabel={t("common:actions.clear")} onClear={filters.clear}
           filters={[{ key: "status", label: t("platformRecoveries:filters.status"), menuLabel: t("platformRecoveries:filters.statusMenu"), value: query.status ?? "", active: query.status !== undefined,
             onChange: (value) => filters.setFilter("status", value === "all" ? undefined : value), options: statuses.map((value) => ({ value: value ?? "all", label: t(`platformRecoveries:filters.statuses.${value ?? "all"}`) })) }]} />
         <Surface className="overflow-hidden" phoneFlush><DataTable columns={columns} rows={rows} rowKey={(recovery) => recovery.id} openRowKey={activeConfirmation?.recovery.id ?? null} mobileRow={(recovery) => recoveryPhoneRow(recovery, t, rowActions(recovery), () => open(recovery, null))}
