@@ -27,8 +27,9 @@ interface VerifyOperation { id: string; domain: string; version: number; reason:
 const conflicts = ["Settings.TenantDomain.AlreadyVerified", "Settings.TenantDomain.NotFound"] as const;
 function conflicted(error: unknown) { return error instanceof ApiError && (error.code === "General.ConcurrencyConflict" || error.status === 409 && conflicts.some((code) => error.code === code)); }
 
-export function OrganizationDomainTab({ organization, query, paginationProps, writes, onWrite, onConflict }: {
+export function OrganizationDomainTab({ organization, query, paginationProps, sort, onSortChange, writes, onWrite, onConflict }: {
   organization: PlatformTenantDetailResponse; query: UseQueryResult<OrganizationDomainPageResponse>; paginationProps?: PaginationProps; writes: ReadonlyMap<string, OwnDomainWrite>;
+  sort?: string; onSortChange?: (sort: string) => void;
   onWrite: (domain: string, write: OwnDomainWrite) => void; onConflict: (domain: string) => void;
 }) {
   const { t } = useTranslation(["platformTenants", "common"]); const { canPlatform } = usePermissions(); const client = useQueryClient();
@@ -38,13 +39,14 @@ export function OrganizationDomainTab({ organization, query, paginationProps, wr
   const rowActions = (domain: OrganizationDomainResponse) => <DomainActions key={domain.domain} organizationId={organization.id} domain={domain} editable={editable}
     onWrite={onWrite} onConflict={onConflict} onRemove={setConfirmation} />;
   const columns: Column<OrganizationDomainResponse>[] = [
-    { id: "domain", header: t("platformTenants:domains.domain"), type: "text", mobile: "primary", value: (row) => row.domain },
+    // El servidor pagina y ordena por el dominio, el único orden de su listado (264).
+    { id: "domain", sortable: true, header: t("platformTenants:domains.domain"), type: "text", mobile: "primary", value: (row) => row.domain },
     { id: "status", header: t("platformTenants:columns.status"), type: "status", mobile: "status", tones: tenantDomainStatusTones, value: (row) => row.status },
     { id: "txtRecordValue", header: t("platformTenants:domains.txt"), type: "text", value: (row) => row.status === "Pending" ? row.txtRecordValue : null },
     { id: "actions", header: t("platformTenants:columns.actions"), type: "actions", cell: rowActions },
   ];
   return <>
-    <Surface phoneFlush><DataTable columns={columns} rows={rows} rowKey={(row) => row.id} isLoading={query.isPending} isFetching={query.isFetching}
+    <Surface phoneFlush><DataTable columns={columns} rows={rows} rowKey={(row) => row.id} isLoading={query.isPending} isFetching={query.isFetching} sort={sort} onSortChange={onSortChange}
       mobileRow={(row) => <ListRow key={row.id} title={row.domain} meta={<StatusBadge tones={tenantDomainStatusTones} value={row.status} />} lines={[row.status === "Pending" ? row.txtRecordValue || <EmptyValue key="txt" /> : <EmptyValue key="txt" />]} trailing={rowActions(row)} />}
       error={query.error ? apiErrorMessage(query.error, t) : undefined} onRetry={() => { void query.refetch(); }} emptyTitle={t("platformTenants:domains.empty")} />{paginationProps ? <Pagination {...paginationProps} /> : null}</Surface>
     {confirmation ? <DomainReasonDialog organization={organization} confirmation={confirmation} onClose={(stale) => {

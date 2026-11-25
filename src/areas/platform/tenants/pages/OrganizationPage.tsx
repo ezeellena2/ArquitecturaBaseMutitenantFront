@@ -76,7 +76,7 @@ function OrganizationDetail({ id }: { id: string }) {
   const [tab, setTab] = useState("history");
   const features = useQuery({ queryKey: tenantFeaturesQueryKey(id), queryFn: () => fetchTenantFeatures(id), enabled: Boolean(organization.data), meta: { silent: true } });
   // Estas lecturas registran la entrada al alcance privado: jamás se anticipan para contar pestañas.
-  const { result: domains, paginationProps: domainPagination } = usePagedQuery({ filterKeys: [] as const, defaultSort: "domain",
+  const { result: domains, pagination: domainOrder, paginationProps: domainPagination } = usePagedQuery({ filterKeys: [] as const, defaultSort: "domain",
     toQuery: (page) => page, queryKey: (query) => tenantDomainsPageKey(id, query), queryFn: (query) => fetchTenantDomainsPage(id, query),
     enabled: canManage && Boolean(organization.data) && tab === "domains", meta: { silent: true } });
   const publicPage = useQuery({ queryKey: tenantPublicPageQueryKey(id), queryFn: () => fetchTenantPublicPage(id), enabled: canManage && Boolean(organization.data) && tab === "publicPage", meta: { silent: true } });
@@ -132,7 +132,7 @@ function OrganizationDetail({ id }: { id: string }) {
             onModuleConflict={(key) => setModuleWrites((previous) => { const next = new Map(previous); next.delete(key); return next; })}
             onConflict={(key) => setFeatureWrites((previous) => { const next = new Map(previous); next.delete(key); return next; })} /> },
         { value: "domains", label: t("platformTenants:domains.title"), hidden: !canManage,
-          content: <OrganizationDomainTab organization={data} query={domains} paginationProps={domainPagination} writes={domainWrites} onWrite={(domain, write) => setDomainWrites((previous) => new Map(previous).set(domain, write))}
+          content: <OrganizationDomainTab organization={data} query={domains} paginationProps={domainPagination} sort={domainOrder.sort} onSortChange={domainOrder.setSort} writes={domainWrites} onWrite={(domain, write) => setDomainWrites((previous) => new Map(previous).set(domain, write))}
             onConflict={(domain) => setDomainWrites((previous) => { const next = new Map(previous); next.delete(domain); return next; })} /> },
         { value: "publicPage", label: t("platformTenants:publicPage.title"), hidden: !canManage,
           content: <OrganizationPublicPageTab organization={data} query={publicPage} write={publicPageWrite} onWrite={setPublicPageWrite} onConflict={() => setPublicPageWrite(undefined)} /> },

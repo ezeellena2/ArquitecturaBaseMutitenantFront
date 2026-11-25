@@ -30,10 +30,11 @@ export function organizationOwners(organization: PlatformTenantDetailResponse): 
 export function createOrganizationOwnerColumns(t: TFunction): Column<OwnerRow>[] {
   return [
     // Tablero Organizacion (Dueños, base de la 12): el correo en su columna.
-    { id: "name", header: t("platformTenants:columns.owner"), type: "text", mobile: "primary", value: (row) => row.name },
-    { id: "email", header: t("platformTenants:detail.email"), type: "text", value: (row) => row.email },
-    { id: "lastSignInAtUtc", header: t("platformTenants:detail.lastSignIn"), type: "custom", cell: (row) => row.lastSignInAtUtc ? <DateText value={row.lastSignInAtUtc} kind="dateTime" /> : t("platformTenants:detail.never") },
-    { id: "state", header: t("platformTenants:columns.status"), type: "status", mobile: "status", tones: ownerStatusTones, value: (row) => row.state },
+    // Llegan enteros con la ficha: ordenan en el navegador (264).
+    { id: "name", sortable: true, header: t("platformTenants:columns.owner"), type: "text", mobile: "primary", value: (row) => row.name },
+    { id: "email", sortable: true, header: t("platformTenants:detail.email"), type: "text", value: (row) => row.email },
+    { id: "lastSignInAtUtc", sortable: true, sortAs: "date", sortValue: (row) => row.lastSignInAtUtc, header: t("platformTenants:detail.lastSignIn"), type: "custom", cell: (row) => row.lastSignInAtUtc ? <DateText value={row.lastSignInAtUtc} kind="dateTime" /> : t("platformTenants:detail.never") },
+    { id: "state", sortable: true, header: t("platformTenants:columns.status"), type: "status", mobile: "status", tones: ownerStatusTones, value: (row) => row.state },
   ];
 }
 /// 263: en el teléfono cada Dueño es una tarjeta con el estado, el último ingreso y el correo, cada dato con el nombre de su

@@ -19,24 +19,25 @@ import type { CompanyRoles } from "./useCompanyRoles";
 export function CompanyRolesTab({ roles }: { roles: CompanyRoles }) {
   const { t } = useTranslation(["companies", "roles", "common"]);
   const navigate = useNavigate();
-  const { result: query, paginationProps } = usePagedQuery({ filterKeys: [] as const, prefix: "roles.", defaultSort: "name",
-    toQuery: ({ page, pageSize }) => ({ page, pageSize, sort: "name" }),
+  const { result: query, pagination, paginationProps } = usePagedQuery({ filterKeys: [] as const, prefix: "roles.", defaultSort: "name",
+    toQuery: ({ page, pageSize, sort }) => ({ page, pageSize, sort }),
     queryKey: (page) => [...roles.own.queryKeyRoot, page], queryFn: (page) => roles.own.queryFn(page),
     enabled: roles.canReadRoles, staleTime: 30_000, meta: { silent: true } });
   const roleActions = (role: RoleResponse) => <RowActions label={t("companies:roleActions", { name: role.name })} title={role.name} actions={[
     { label: t("companies:actions.edit"), accessibleName: t("companies:actions.edit"), icon: Pencil, onSelect: () => { void navigate(`/org/roles/${encodeURIComponent(role.id)}`); } },
   ]} />;
   const columns: Column<RoleResponse>[] = [
-    { id: "name", header: t("companies:roleColumns.name"), type: "custom", mobile: "primary",
+    // El servidor ordena por cada columna con un dato (264), como en Roles.
+    { id: "name", sortable: true, header: t("companies:roleColumns.name"), type: "custom", mobile: "primary",
       cell: (role) => <Link to={`/org/roles/${encodeURIComponent(role.id)}`} className="font-medium text-[var(--t1)] hover:underline">{role.name}</Link> },
     // Anchos del tablero Empresa (Roles): el rol se lleva el resto; Usuarios y Permisos, 120 px.
-    { id: "userCount", header: t("companies:roleColumns.users"), type: "integer", className: "w-33", value: (role) => role.userCount },
-    { id: "permissions", header: t("companies:roleColumns.permissions"), type: "integer", className: "w-33", value: (role) => role.permissions.length, mobile: "status" },
+    { id: "userCount", sortable: true, header: t("companies:roleColumns.users"), type: "integer", className: "w-33", value: (role) => role.userCount },
+    { id: "permissions", sortable: true, header: t("companies:roleColumns.permissions"), type: "integer", className: "w-33", value: (role) => role.permissions.length, mobile: "status" },
     { id: "actions", header: t("companies:columns.actions"), type: "actions", cell: (role) => roleActions(role) },
   ];
 
   return <Surface className="overflow-hidden" phoneFlush>
-    <DataTable columns={columns} rows={query.data?.items ?? []} rowKey={(role) => role.id}
+    <DataTable columns={columns} rows={query.data?.items ?? []} rowKey={(role) => role.id} sort={pagination.sort} onSortChange={pagination.setSort}
       mobileRow={(role) => <ListCard key={role.id} to={`/org/roles/${encodeURIComponent(role.id)}`} title={role.name} fields={[
         { label: t("companies:roleColumns.users"), value: <NumberText value={role.userCount} /> },
         { label: t("companies:roleColumns.permissions"), value: <NumberText value={role.permissions.length} /> },

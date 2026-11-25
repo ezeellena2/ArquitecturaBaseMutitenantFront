@@ -9,6 +9,7 @@ import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
 import type { PlatformFeatureResponse, PlatformTenantDetailResponse } from "@/shared/api/types";
 import { useFormat } from "@/shared/format/useFormat";
+import { usePagination } from "@/shared/hooks/usePagination";
 import { ReasonDialog } from "@/shared/platform/ReasonDialog";
 import { ModuleOrganizationUi } from "@/shared/modules/ModuleRegistry";
 import type { ModuleOrganizationUi as OrganizationUi } from "@/shared/modules/types";
@@ -20,6 +21,7 @@ import { BanIcon, CalendarIcon, PowerIcon } from "@/shared/ui/icons";
 import { RowActions } from "@/shared/ui/RowActions";
 import { StatusDot } from "@/shared/ui/StatusDot";
 import { Surface } from "@/shared/ui/Surface";
+import { sortRows } from "@/shared/ui/tableSort";
 import { ListCard } from "@/shared/ui/app/ListRow";
 import { tenantFeaturesQueryKey, tenantQueryKey, tenantsQueryRoot, updateTenantFeature } from "../api/tenants";
 import { tenantReasonFormError } from "../errors";
@@ -28,6 +30,9 @@ export type OwnFeatureWrite = Pick<PlatformFeatureResponse, "version" | "enabled
 type ModuleAction = "enable" | "extend" | "disable";
 interface Confirmation { feature: PlatformFeatureResponse; action: ModuleAction; trigger: HTMLElement | null }
 
+/// El circuito del estado de un módulo (264), en el orden de su enum.
+const moduleStates = ["On", "Trial", "Off"] as const;
+
 export function OrganizationModulesTab({ organization, query, writes, onWrite, onConflict, moduleWrites, onModuleWrite, onModuleConflict }: {
   organization: PlatformTenantDetailResponse; query: UseQueryResult<PlatformFeatureResponse[]>; writes: ReadonlyMap<string, OwnFeatureWrite>;
   onWrite: (key: string, write: OwnFeatureWrite) => void; onConflict: (key: string) => void;
@@ -35,6 +40,8 @@ export function OrganizationModulesTab({ organization, query, writes, onWrite, o
 }) {
   const { t } = useTranslation(["platformTenants", "common"]);
   const { canPlatform } = usePermissions(); const client = useQueryClient(); const format = useFormat();
+  // Los módulos llegan enteros: ordenan en el navegador, con el orden en la dirección (264).
+  const { sort, setSort } = usePagination({ prefix: "modulos." });
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
   const [dialogOwner, setDialogOwner] = useState<string | null>(null);
   const [contributions, setContributions] = useState<ReadonlyMap<string, OrganizationUi>>(() => new Map());
@@ -77,14 +84,15 @@ export function OrganizationModulesTab({ organization, query, writes, onWrite, o
   ]} />;
   const columns: Column<PlatformFeatureResponse>[] = [
     // Tablero Organizacion (Módulos, base de la 12): lo que aporta cada módulo va en su columna, «Detalle».
-    { id: "key", header: t("platformTenants:modules.module"), type: "text", mobile: "primary", value: (row) => moduleName(row.key) },
+    { id: "key", sortable: true, header: t("platformTenants:modules.module"), type: "text", mobile: "primary", value: (row) => moduleName(row.key) },
     { id: "detail", header: t("platformTenants:modules.detail"), type: "custom", cell: (row) => contributions.get(row.key)?.description ?? <EmptyValue /> },
-    { id: "state", header: t("platformTenants:columns.status"), type: "custom", mobile: "status", cell: status },
-    { id: "source", header: t("platformTenants:modules.source"), type: "enum", enum: "TenantFeatureSource", value: (row) => row.source },
+    { id: "state", sortable: true, sortAs: "status", sortValue: (row) => moduleStates.indexOf(state(row)), header: t("platformTenants:columns.status"), type: "custom", mobile: "status", cell: status },
+    { id: "source", sortable: true, header: t("platformTenants:modules.source"), type: "enum", enum: "TenantFeatureSource", value: (row) => row.source },
     { id: "actions", header: t("platformTenants:columns.actions"), type: "actions", cell: rowActions },
   ];
   return <>
-    <Surface phoneFlush><DataTable columns={columns} rows={rows} rowKey={(row) => row.key} isLoading={query.isPending} isFetching={query.isFetching}
+    <Surface phoneFlush><DataTable columns={columns} rows={sortRows(rows, columns, sort)} rowKey={(row) => row.key} isLoading={query.isPending} isFetching={query.isFetching}
+      sort={sort} onSortChange={setSort}
       // 263: en el teléfono cada módulo es una tarjeta con el estado, el origen y, si el módulo lo aporta, su detalle, cada dato
       // con el nombre de su columna.
       mobileRow={(row) => <ListCard key={row.key} title={moduleName(row.key)} fields={[

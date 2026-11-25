@@ -44,6 +44,8 @@ describe("Documentos legales", () => {
     const trigger = await screen.findByRole("button", { name: "Acciones de Política de privacidad" }); trigger.focus(); await user.keyboard("{ArrowDown}");
     await user.click(await screen.findByRole("menuitem", { name: "Publicar versión nueva" }));
     await waitFor(() => expect(router.state.location.pathname + router.state.location.search).toBe("/plataforma/legales/nueva?documento=Privacy"));
+    // La columna «Documento» de la lista también es un botón (264): se espera a que la lista se vaya.
+    await waitFor(() => expect(screen.queryByRole("table")).not.toBeInTheDocument());
     expect(await screen.findByRole("button", { name: /^Documento( |$)/ })).toHaveTextContent("Política de privacidad");
   });
   // M-Filas-Base2 (M-Legales, 263): cada documento es una tarjeta con cada dato nombrado, sin datos unidos con «·».

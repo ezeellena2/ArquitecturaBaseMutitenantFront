@@ -135,6 +135,19 @@ describe("Ficha de Organización", () => {
     expect(await screen.findByText("Invitación pendiente")).toBeVisible(); expect(screen.getByText("lucia@example.com")).toBeVisible(); expect(screen.queryByText("Registrante antiguo")).not.toBeInTheDocument(); expect(screen.getByRole("img", { name: "Sin dato" })).toBeVisible();
     detail({ ...organization, owners: [], ownerEmail: null }); await act(async () => { await queryClient.invalidateQueries({ queryKey: tenantsQueryRoot }); }); expect(await screen.findByText("Todavía no hay Dueños")).toBeVisible(); expect(screen.getByRole("tab", { name: "Dueños 0" })).toBeVisible();
   });
+  it("Dueños llega entera y ordena en el navegador por sus columnas, con lo vacío al final (264)", async () => {
+    const ana = { ...owner, id: "ana", displayName: "Ana Paz", email: "ana@example.com", lastSignInAtUtc: "2026-01-10T11:40:00Z" };
+    const bruno = { ...owner, id: "bruno", displayName: "Bruno Gil", email: "bruno@example.com", lastSignInAtUtc: "2026-01-12T11:40:00Z" };
+    detail({ ...organization, owners: [owner, ana, bruno] }); const user = userEvent.setup(); render(); await user.click(await screen.findByRole("tab", { name: "Dueños 3" }));
+    const names = () => within(screen.getByRole("tabpanel")).getAllByRole("row").slice(1).map((row) => within(row).getAllByRole("cell")[0]?.textContent);
+    expect(await within(screen.getByRole("tabpanel")).findByText("Ana Paz")).toBeVisible(); expect(names()).toEqual(["Lucía Fernández", "Ana Paz", "Bruno Gil"]);
+    await user.click(screen.getByRole("button", { name: "Dueño" }));
+    expect(names()).toEqual(["Ana Paz", "Bruno Gil", "Lucía Fernández"]); expect(screen.getByRole("columnheader", { name: /Dueño/ })).toHaveAttribute("aria-sort", "ascending");
+    await user.click(screen.getByRole("button", { name: "Dueño" })); expect(names()).toEqual(["Lucía Fernández", "Bruno Gil", "Ana Paz"]);
+    // El último ingreso, de la más reciente a la más vieja al primer toque, y «Nunca» al final en los dos sentidos.
+    await user.click(screen.getByRole("button", { name: "Último ingreso" })); expect(names()).toEqual(["Bruno Gil", "Ana Paz", "Lucía Fernández"]);
+    await user.click(screen.getByRole("button", { name: "Último ingreso" })); expect(names()).toEqual(["Ana Paz", "Bruno Gil", "Lucía Fernández"]);
+  });
   it("Dueño sin nombre/correo conserva null; último ingreso con fecha y hora", async () => {
     const user = userEvent.setup(); detail({ ...organization, owners: [{ ...owner, displayName: null, email: null, lastSignInAtUtc: "2026-01-12T11:40:00Z" }] }); render(); await user.click(await screen.findByRole("tab", { name: "Dueños 1" }));
     // El Dueño y su correo van cada uno en su columna (base de la 12): sin dato, los dos dicen la raya.
