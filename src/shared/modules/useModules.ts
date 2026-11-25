@@ -19,6 +19,14 @@ export function useModulePageActions(page: "users") {
   return me ? registry.flatMap((module) => module.pageActions?.[page] ?? []).filter((action) => action.guard(me) === "allowed") : [];
 }
 
+/** Las partes que los módulos suman a Plataforma › Configuración, ya filtradas por su guarda, cada una con su clave. */
+export function useModulePlatformSettings() {
+  const registry = useModuleRegistry();
+  const { data: me } = useCurrentUser();
+  return me ? registry.flatMap((module) => (module.platformSettings ?? []).map((part, index) => ({ ...part, key: `${module.id}:${index}` })))
+    .filter((part) => part.guard(me) === "allowed") : [];
+}
+
 /** Lo que los módulos suman al Inicio de la organización: sus tarjetas y sus tipos de «Para resolver». */
 export function useModuleBusinessHome() {
   const registry = useModuleRegistry();

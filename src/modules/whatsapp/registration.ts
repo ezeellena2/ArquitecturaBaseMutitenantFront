@@ -38,8 +38,9 @@ import esPersonalEnums from "./locales/es/enums/personal.json";
 import enPersonalEnums from "./locales/en/enums/personal.json";
 import esPhonesEnums from "./locales/es/enums/phones.json";
 import enPhonesEnums from "./locales/en/enums/phones.json";
+import { lazy } from "react";
 import { WhatsAppIcon } from "@/shared/ui/icons";
-import type { ModuleRegistration } from "@/shared/modules/types";
+import type { ModuleGuard, ModuleRegistration } from "@/shared/modules/types";
 import { platformWhatsAppPermissions, whatsappPermissions } from "./access";
 import { botRoutes } from "./bot/routes";
 import { broadcastsRoutes } from "./broadcasts/routes";
@@ -54,6 +55,10 @@ import { templatesRoutes } from "./templates/routes";
 
 /** Las pantallas de Números: la tarjeta del Inicio y el pendiente «Números sin medio de pago» llevan ahí. */
 export const numbersPath = "/org/whatsapp/numeros";
+
+/** La sección «WhatsApp» de Plataforma › Configuración (Config-Plat-Base2): la ruta del back pide `platform.settings.manage`. */
+const platformSettingsGuard: ModuleGuard = (me) => me.access === "platform" && me.effectivePermissions.platform.includes("platform.settings.manage") ? "allowed" : "forbidden";
+const PlatformSettingsPart = lazy(() => import("./settings/components/PlatformWhatsAppSettingsPart").then((module) => ({ default: module.PlatformWhatsAppSettingsPart })));
 
 // Cada área aporta su parte del namespace `whatsapp` y sus enums: así nadie pisa el archivo de otra.
 const texts = (common: object, parts: Record<string, object>) => ({ ...common, ...parts });
@@ -77,6 +82,7 @@ export const whatsappRegistration: ModuleRegistration = {
   routes: [...chatsRoutes, ...contactsRoutes, ...broadcastsRoutes, ...numbersRoutes, ...botRoutes, ...teamsRoutes, ...templatesRoutes,
     ...settingsRoutes, ...personalRoutes, ...phonesRoutes],
   pageActions: { users: phonesUsersActions },
+  platformSettings: [{ placement: "section", guard: platformSettingsGuard, Part: PlatformSettingsPart }],
   businessHome: {
     cards: [{ key: "whatsapp", titleKey: "whatsapp:home.card.title", shortKey: "whatsapp:home.card.short", detailKey: "whatsapp:home.card.numbers", icon: WhatsAppIcon, to: numbersPath }],
     pending: [{

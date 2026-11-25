@@ -24,5 +24,27 @@
   "discard": "Descartar cambios",
   "save": "Guardar cambios",
   "saving": "Guardando…",
-  "saved": "Se guardó la configuración de WhatsApp."
+  "saved": "Se guardó la configuración de WhatsApp.",
+  "platform": {
+    "title": "WhatsApp",
+    "help": "La política de privacidad tiene que prometer estos mismos plazos.",
+    "fields": {
+      "allowedCountries": "Países que reciben códigos",
+      "chatRetentionDays": "Guardar los mensajes de los chats",
+      "maxOrganizationChatRetentionDays": "Máximo para las organizaciones"
+    },
+    "fieldHelp": {
+      "allowedCountries": "Solo a números de estos países se mandan códigos de ingreso por WhatsApp, y solo de ellos se aceptan números para ingresar o vincular. Cada código se paga, con la tarifa de Meta del país del número.",
+      "chatRetentionDays": "De {{min}} a {{max}} días. Los chats del número de Plataforma.",
+      "maxOrganizationChatRetentionDays": "De {{min}} a {{max}} días. Ninguna organización guarda los mensajes de sus chats más que esto."
+    },
+    "noCountries": "Sin países",
+    "callingCode": "Código de país +{{code}}",
+    "countries_one": "{{count}} país habilitado",
+    "countries_other": "{{count}} países habilitados",
+    "cost": "Los códigos a números de {{country}} se pagan con la tarifa de Meta para ese país.",
+    "validation": {
+      "countries": "Elegí al menos un país."
+    }
+  }
 }

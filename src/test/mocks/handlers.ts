@@ -2,6 +2,7 @@ import { http, HttpResponse, type RequestHandler } from "msw";
 import type { ReferenceData } from "@/shared/referenceData/referenceData";
 import type { MeResponse } from "@/shared/api/types";
 import { platformPermissionsFixture } from "./platformPermissions";
+import { platformWhatsAppSettingsFixture } from "./platformSettings";
 
 export function meHandlerFor(user: MeResponse): RequestHandler {
   return http.get("/api/me", () => HttpResponse.json(user));
@@ -64,6 +65,8 @@ export const handlers: RequestHandler[] = [
   http.get("/api/notifications", () => HttpResponse.json({ items: [], unread: 0 })),
   // Los permisos de un operador con lo que incluye cada uno (260); quien pide los tiene todos.
   http.get("/api/platform/permissions", () => HttpResponse.json(platformPermissionsFixture())),
+  // La sección «WhatsApp» de Plataforma › Configuración, que el módulo suma a la pantalla del núcleo.
+  http.get("/api/platform/whatsapp/settings", () => HttpResponse.json(platformWhatsAppSettingsFixture)),
   // Como el back de hoy, sin el módulo de WhatsApp: se entra con correo y con Google.
   http.get("/api/auth/methods", () => HttpResponse.json({ channels: [{ key: "email", countries: [] }, { key: "google", countries: [] }] })),
   http.get("/api/me/login-methods", () => HttpResponse.json({ methods: [

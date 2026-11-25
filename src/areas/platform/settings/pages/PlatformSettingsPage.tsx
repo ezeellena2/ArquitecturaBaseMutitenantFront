@@ -2,7 +2,7 @@ import { validationConstraints } from "@/shared/api/generated/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { Suspense, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useController, useWatch, type Control } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -37,6 +37,8 @@ import { RateLimitsSection } from "../components/RateLimitsSection";
 import { draftsOf, rateLimitBounds, rateLimitProfiles, rateLimitsInput, sameRateLimits, validPermitLimit, validWindow } from "../lib/rateLimits";
 import { useFormat, type FormatState } from "@/shared/format/useFormat";
 import { useRecentAuthenticationPurpose, useVisiblePending } from "@/shared/api/recentAuthentication";
+import type { PlatformSettingsPartHandle } from "@/shared/modules/types";
+import { useModulePlatformSettings } from "@/shared/modules/useModules";
 
 function settingsFormSchema(t: TFunction, format: FormatState) {
   // Validación exacta del tablero Config-Plat; NumberField y EmailField normalizan la entrada.
@@ -98,6 +100,15 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
   const visiblyBusy = useVisiblePending(busy);
   const active = useMountedRef(); const draft = useRef(0); const choice = useRef<SettingsConfirmation | null>(null);
   const ownRead = useRef<{ previous: PlatformSettingsResponse; saved: PlatformSettingsResponse } | null>(null);
+  // Las partes de los módulos (Config-Plat-Base2: WhatsApp y las conversaciones del Inicio), cada una con su formulario y su versión.
+  const moduleParts = useModulePlatformSettings();
+  const [handles, setHandles] = useState<Readonly<Record<string, PlatformSettingsPartHandle>>>({});
+  const parts = useRef(handles); useLayoutEffect(() => { parts.current = handles; });
+  // Un `register` estable por parte: la parte se vuelve a anotar solo cuando cambia si tiene cambios.
+  const partKeys = moduleParts.map((part) => part.key).join(" ");
+  const registers = useMemo(() => new Map(partKeys.split(" ").map((key) => [key, (handle: PlatformSettingsPartHandle | null) =>
+    setHandles((all) => { const next = { ...all }; delete next[key]; if (handle) next[key] = handle; return next; })] as const)), [partKeys]);
+  const dirtyParts = () => Object.values(parts.current).filter((part) => part.isDirty);
   function eligible(): boolean { return active.current && edit.canAct()
     && (client.getQueryData<MeResponse>(currentUserQueryKey)?.effectivePermissions.platform.includes("platform.settings.manage") ?? false); }
   const abandon = useCallback(() => { draft.current++; choice.current = null; setConfirmation(null); setBusy(false); }, []);
@@ -108,8 +119,10 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
     const fresh = await reload();
     if (!eligible() || readingDraft !== draft.current || !fresh) return;
     ownRead.current = null; resetTo(fresh); setFailure(undefined);
+    await Promise.all(Object.values(parts.current).map((part) => part.reload()));
   };
-  const isDirty = canManage && form.formState.isDirty;
+  const coreDirty = canManage && form.formState.isDirty;
+  const isDirty = coreDirty || (canManage && Object.values(handles).some((part) => part.isDirty));
   const edit = useEditPage({ isDirty, error: failure, onNavigationAttempt: abandon, onSeeNew: () => { void seeNew(); }, onContinueEditing: () => { abandon(); setFailure(undefined); } });
 
   function changed(field: keyof SettingsForm) { abandon(); form.clearErrors(field); setFailure(undefined); }
@@ -118,15 +131,29 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
     // La versión es un token opaco: sólo la misma instantánea previa requiere la respuesta propia.
     if (own && sameRead(settings, own.previous)) resetTo(own.saved);
     else { ownRead.current = null; resetTo(settings); }
+    Object.values(parts.current).forEach((part) => part.discard());
     setFailure(undefined);
   }
+  /** Guarda las partes con cambios, una por una; la primera que falla frena y su falla la muestra la página (un 409, el cartel). */
+  async function saveParts() {
+    setBusy(true);
+    try {
+      for (const part of dirtyParts()) if (!(await part.save())) return;
+      if (active.current) toast.success(t("platformSettings:saved"));
+    } catch (error) { if (active.current) setFailure(error); }
+    finally { if (active.current) setBusy(false); }
+  }
   function submit(event: React.FormEvent<HTMLFormElement>) {
-    const submittedDraft = draft.current;
-    return form.handleSubmit((values) => {
-      if (!eligible() || draft.current !== submittedDraft || busy) return;
+    const submittedDraft = draft.current; const coreChanged = coreDirty;
+    // Se validan todas: el núcleo y cada parte con cambios marcan sus campos a la vez.
+    const partsValid = Promise.all(dirtyParts().map((part) => part.validate())).then((results) => results.every(Boolean));
+    return form.handleSubmit(async (values) => {
+      if (!(await partsValid) || !eligible() || draft.current !== submittedDraft || busy) return;
       abandon(); setFailure(undefined);
+      // Solo las partes: su guardado no lleva motivo.
+      if (!coreChanged) { void saveParts(); return; }
       const next = { values, version, draft: draft.current, read: { ...settings } }; choice.current = next; setConfirmation(next);
-    })(event);
+    }, () => { void partsValid; })(event);
   }
   async function execute(sent: SettingsConfirmation, reason: ReasonDialogValues, reasonCurrent: () => boolean): Promise<VersionResponse> {
     const valid = () => current(sent) && reasonCurrent();
@@ -144,8 +171,11 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
       ownRead.current = { previous: sent.read, saved: { ...sent.read, ...rest, maxOwnedOrganizations: sent.values.maxOwnedOrganizations, emailLogoUrl: rest.emailLogoUrl || null,
         loginAuditRetentionMonths: sent.values.loginAuditRetentionMonths!, loginCodeRetentionDays: sent.values.loginCodeRetentionDays!, closedInvitationRetentionDays: sent.values.closedInvitationRetentionDays!,
         rateLimits: rateLimitsInput(rateLimits), version: response.version } };
-      setFailure(undefined); toast.success(t("platformSettings:saved")); abandon();
+      const pendingParts = dirtyParts().length > 0;
+      setFailure(undefined); if (!pendingParts) toast.success(t("platformSettings:saved")); abandon();
       void client.invalidateQueries({ queryKey: platformSettingsKey });
+      // Después del núcleo, las partes con cambios, cada una con su versión.
+      if (pendingParts) void saveParts();
       return response;
     } catch (error) {
       if (!valid()) throw new DOMException("", "AbortError");
@@ -158,6 +188,9 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
   const errors = form.formState.errors;
   const [appName, senderName, logoUrl] = useWatch({ control: form.control, name: ["appName", "senderName", "emailLogoUrl"] });
   const text = (field: "appName" | "senderName" | "emailLogoUrl") => form.register(field, { onChange: () => changed(field) });
+  const partChanged = () => { abandon(); setFailure(undefined); };
+  const partsAt = (placement: "privacy" | "section") => moduleParts.filter((part) => part.placement === placement)
+    .map((part) => <Suspense key={part.key} fallback={null}><part.Part register={registers.get(part.key) ?? (() => {})} onChange={partChanged} /></Suspense>);
   return <>
     <Page title={t("platformSettings:title")} phoneSubtitle={t("platformSettings:administration")}
       backTo={phone ? { to: "/plataforma/mas", label: t("platformSettings:back") } : undefined} banner={edit.banner}
@@ -200,7 +233,9 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
         </SectionFields></Section>
         <Section title={t("platformSettings:privacyTitle")} help={t("platformSettings:privacyHelp")} phone="inset"><SectionFields className="grid gap-3.5 lg:grid-cols-2 lg:gap-x-5">
           {retentionFields.map((field) => <RetentionInput key={field} field={field} control={form.control} error={errors[field]?.message} onChange={() => changed(field)} />)}
+          {partsAt("privacy")}
         </SectionFields></Section>
+        {partsAt("section")}
         <RateLimitsSection control={form.control} errors={errors.rateLimits} onChange={(profile) => { abandon(); form.clearErrors(`rateLimits.${profile}`); setFailure(undefined); }} />
       </form>
     </Page>

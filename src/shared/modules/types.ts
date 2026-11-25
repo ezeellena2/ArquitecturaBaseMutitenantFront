@@ -134,6 +134,40 @@ export interface ModuleRegistration {
   businessHome?: { readonly cards?: readonly ModuleHomeCard[]; readonly pending?: readonly ModulePendingKind[] };
   /** Cómo se leen los avisos que el módulo suma a la campana, en los tres accesos (base de la 12). */
   notifications?: readonly ModuleNotificationKind[];
+  /** Lo que el módulo suma a Plataforma › Configuración (Config-Plat-Base2): sus plazos y sus reglas. */
+  platformSettings?: readonly ModulePlatformSettingsPart[];
+}
+
+/**
+ * Lo que una parte de Plataforma › Configuración le da a la página para guardarse con «Guardar cambios». Cada parte
+ * tiene su propio formulario y su propia versión; su guardado no lleva motivo.
+ */
+export interface PlatformSettingsPartHandle {
+  readonly isDirty: boolean;
+  /** Valida lo que muestra; los errores quedan en sus campos. */
+  validate(): Promise<boolean>;
+  /** Guarda lo suyo: `false` si el back marcó uno de sus campos (400). Un 409 u otra falla la tira: la muestra la página. */
+  save(): Promise<boolean>;
+  discard(): void;
+  /** «Ver lo nuevo»: relee y vuelve a lo guardado. */
+  reload(): Promise<void>;
+}
+
+export interface PlatformSettingsPartProps {
+  /** La parte se anota (y se borra con `null`) cada vez que cambia si tiene cambios sin guardar. */
+  register(handle: PlatformSettingsPartHandle | null): void;
+  /** Cambió un valor: la página saca su falla y lo que estaba por confirmar. */
+  onChange(): void;
+}
+
+/**
+ * Una parte de Plataforma › Configuración que aporta un módulo: un campo más de «Privacidad y retención» (`privacy`) o
+ * una sección propia antes de «Límites de uso» (`section`).
+ */
+export interface ModulePlatformSettingsPart {
+  placement: "privacy" | "section";
+  guard: ModuleGuard;
+  Part: ComponentType<PlatformSettingsPartProps>;
 }
 
 export interface ModuleOrganizationUi {

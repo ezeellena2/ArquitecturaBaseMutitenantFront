@@ -24,5 +24,27 @@
   "discard": "Discard changes",
   "save": "Save changes",
   "saving": "Saving…",
-  "saved": "The WhatsApp settings were saved."
+  "saved": "The WhatsApp settings were saved.",
+  "platform": {
+    "title": "WhatsApp",
+    "help": "The privacy policy has to promise these same periods.",
+    "fields": {
+      "allowedCountries": "Countries that receive codes",
+      "chatRetentionDays": "Keep chat messages",
+      "maxOrganizationChatRetentionDays": "Maximum for organizations"
+    },
+    "fieldHelp": {
+      "allowedCountries": "Sign-in codes are sent over WhatsApp only to numbers from these countries, and only their numbers are accepted to sign in or link. Each code is paid, at Meta's rate for the number's country.",
+      "chatRetentionDays": "From {{min}} to {{max}} days. The chats of the Platform number.",
+      "maxOrganizationChatRetentionDays": "From {{min}} to {{max}} days. No organization keeps its chat messages longer than this."
+    },
+    "noCountries": "No countries",
+    "callingCode": "Country code +{{code}}",
+    "countries_one": "{{count}} enabled country",
+    "countries_other": "{{count}} enabled countries",
+    "cost": "Codes to numbers from {{country}} are paid at Meta's rate for that country.",
+    "validation": {
+      "countries": "Choose at least one country."
+    }
+  }
 }

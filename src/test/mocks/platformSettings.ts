@@ -18,6 +18,11 @@ export const platformSettingsFixture: ApiSchemas["PlatformSettingsResponse"] = {
   },
 };
 
+// La sección «WhatsApp» que suma el módulo (Config-Plat-Base2, 270 y 272): los valores de arranque de la B18.
+export const platformWhatsAppSettingsFixture: ApiSchemas["PlatformWhatsAppSettingsResponse"] = {
+  allowedCountries: ["AR"], chatRetentionDays: 90, maxOrganizationChatRetentionDays: 3650, version: 1,
+};
+
 export function platformSettingsCaptureResponses({ conflict = false } = {}) {
   const saved: ApiSchemas["VersionResponse"] = { version: 2 };
   return [
