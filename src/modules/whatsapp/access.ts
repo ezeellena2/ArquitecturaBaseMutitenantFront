@@ -14,8 +14,9 @@ export const whatsappFeature = "whatsapp";
 
 const hasFeature = (me: MeResponse) => me.features.includes(whatsappFeature);
 
-/** Una pantalla de la organización: el módulo prendido y alguno de los permisos (las bandejas aceptan cualquiera de los dos). */
-export function businessGuard(...permissions: readonly (WhatsAppPermission | "users.invite")[]): ModuleGuard {
+/** Una pantalla de la organización: el módulo prendido y alguno de los permisos (las bandejas aceptan cualquiera de los dos).
+ *  Los del núcleo que usa: `users.invite` (Cargar teléfonos) y los de la configuración (su Configuración, 272). */
+export function businessGuard(...permissions: readonly (WhatsAppPermission | "users.invite" | "settings.read" | "settings.manage")[]): ModuleGuard {
   return (me) => me.access !== "business" ? "forbidden" : !hasFeature(me) ? "unavailable"
     : permissions.some((permission) => me.effectivePermissions.organization.includes(permission)) ? "allowed" : "forbidden";
 }

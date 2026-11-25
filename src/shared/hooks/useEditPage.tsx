@@ -5,7 +5,7 @@ import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { PhoneBand } from "@/shared/ui/app/PhoneBand";
 import { Banner } from "@/shared/ui/Banner";
-import { ConcurrencyBanner } from "@/shared/ui/ConcurrencyBanner";
+import { ConcurrencyBanner, type ConcurrencyTexts } from "@/shared/ui/ConcurrencyBanner";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { ErrorIcon } from "@/shared/ui/icons";
 import { useAbandonOnLeave } from "./useAbandonOnLeave";
@@ -25,6 +25,8 @@ export interface EditPageOptions {
   readonly onContinueEditing: () => void;
   /** El texto de la franja, si la feature traduce un código propio (su `errors.ts`); por defecto, `actionErrorMessage`. */
   readonly errorMessage?: (error: unknown) => string | null;
+  /** El aviso del 409 si el tablero de la pantalla dibuja uno propio, con una sola salida (WA-Config-Base2). */
+  readonly conflict?: ConcurrencyTexts;
 }
 
 export interface EditPage {
@@ -47,7 +49,7 @@ export interface EditPage {
 /// del 409 debajo de la banda, la franja del error de guardado y la pregunta antes de salir con cambios. Cada error va en
 /// un solo lugar. La banda nunca dice «Cambios sin guardar» (base de la 12): que «Guardar cambios» esté habilitado ya lo
 /// dice («Criterio · Botones»).
-export function useEditPage({ isDirty, error, onSeeNew, onContinueEditing, errorMessage, searchKeys, onNavigationAttempt }: EditPageOptions): EditPage {
+export function useEditPage({ isDirty, error, onSeeNew, onContinueEditing, errorMessage, searchKeys, onNavigationAttempt, conflict: conflictTexts }: EditPageOptions): EditPage {
   const { t } = useTranslation("errors");
   const { phone } = useAppChrome();
   const guard = useAbandonOnLeave(isDirty, searchKeys, onNavigationAttempt);
@@ -58,7 +60,7 @@ export function useEditPage({ isDirty, error, onSeeNew, onContinueEditing, error
     isBlocked: guard.isBlocked,
     canAct: guard.canAct,
     banner: <>
-      <ConcurrencyBanner error={error} isDirty={isDirty} onSeeNew={onSeeNew} onContinueEditing={onContinueEditing} />
+      <ConcurrencyBanner error={error} isDirty={isDirty} onSeeNew={onSeeNew} onContinueEditing={onContinueEditing} texts={conflictTexts} />
       {/* Tableros M-Usuario y M-Pagina-Org («Error al guardar»): en el teléfono, el error con el texto del back va en la
           banda de error debajo de la barra, donde va lo que sigue pasando («Criterio · Decisiones»). */}
       {phone && message ? <PhoneBand tone="danger" role="alert" icon={<ErrorIcon className="mt-0.5 size-4 shrink-0" strokeWidth={2} />}>

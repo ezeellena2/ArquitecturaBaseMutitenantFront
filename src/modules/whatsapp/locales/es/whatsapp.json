@@ -10,7 +10,8 @@
     "teams": "Equipos",
     "templates": "Plantillas",
     "consultations": "Consultas",
-    "messages": "Mensajes"
+    "messages": "Mensajes",
+    "settings": "Configuración"
   },
   "users": {
     "loadPhones": "Cargar teléfonos"

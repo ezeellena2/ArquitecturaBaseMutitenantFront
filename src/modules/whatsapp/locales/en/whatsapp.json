@@ -10,7 +10,8 @@
     "teams": "Teams",
     "templates": "Templates",
     "consultations": "Inquiries",
-    "messages": "Messages"
+    "messages": "Messages",
+    "settings": "Settings"
   },
   "users": {
     "loadPhones": "Load phones"

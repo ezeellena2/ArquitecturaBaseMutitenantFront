@@ -1,0 +1,28 @@
+{
+  "title": "Configuración",
+  "summary": "WhatsApp",
+  "chatsTitle": "Chats",
+  "fields": {
+    "chatRetentionDays": "Guardar los mensajes de los chats"
+  },
+  "help": {
+    "chatRetentionDays": "De {{min}} a {{max}} días, y hasta el máximo de la plataforma ({{max}}). Pasado el plazo se borra el texto de los mensajes, también lo que recibió el asistente. La política de privacidad tiene que prometer este mismo plazo."
+  },
+  "units": {
+    "days_one": "día",
+    "days_other": "días"
+  },
+  "validation": {
+    "between": "Tiene que ser de {{min}} a {{max}}.",
+    "platformMaximum": "Tiene que ser de {{min}} a {{max}}: es el máximo de la plataforma."
+  },
+  "readOnly": "No tenés permiso para cambiar la configuración.",
+  "conflict": {
+    "message": "Otra persona cambió la configuración de WhatsApp. Revisá los valores actuales.",
+    "seeNew": "Revisar valores actuales"
+  },
+  "discard": "Descartar cambios",
+  "save": "Guardar cambios",
+  "saving": "Guardando…",
+  "saved": "Se guardó la configuración de WhatsApp."
+}

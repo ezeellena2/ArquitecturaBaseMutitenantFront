@@ -104,3 +104,10 @@ export type WhatsAppTemplateVariableResponse = ApiSchemas["WhatsAppTemplateVaria
 export type WhatsAppTransferPersonResponse = ApiSchemas["WhatsAppTransferPersonResponse"];
 export type WhatsAppTransferTeamResponse = ApiSchemas["WhatsAppTransferTeamResponse"];
 export type WhatsAppUntakenResponse = ApiSchemas["WhatsAppUntakenResponse"];
+
+// La configuración de WhatsApp (B18): el plazo de los chats de la organización, y en Plataforma los países que reciben
+// códigos, su plazo y el máximo de las organizaciones.
+export type WhatsAppOrganizationSettingsResponse = ApiSchemas["WhatsAppOrganizationSettingsResponse"];
+export type UpdateWhatsAppOrganizationSettingsRequest = ApiSchemas["UpdateWhatsAppOrganizationSettingsHttpRequest"];
+export type PlatformWhatsAppSettingsResponse = ApiSchemas["PlatformWhatsAppSettingsResponse"];
+export type UpdatePlatformWhatsAppSettingsRequest = ApiSchemas["UpdatePlatformWhatsAppSettingsHttpRequest"];

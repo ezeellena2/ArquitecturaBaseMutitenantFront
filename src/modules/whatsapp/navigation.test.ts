@@ -21,7 +21,7 @@ describe("navegación de WhatsApp con su registro real", () => {
     const nav = compose(businessNavigation, withAssistant(whatsappOwner));
     expect(nav.panels?.map((panel) => [panel.labelKey, paths(panel.links)])).toEqual([["whatsapp:title", ["/org/whatsapp/chats", "/org/whatsapp/contactos", "/org/whatsapp/difusiones"]]]);
     expect(paths(nav.administration?.sections?.find((section) => section.labelKey === "whatsapp:title")?.links))
-      .toEqual(["/org/whatsapp/numeros", "/org/whatsapp/bot", "/org/whatsapp/equipos", "/org/whatsapp/plantillas"]);
+      .toEqual(["/org/whatsapp/numeros", "/org/whatsapp/bot", "/org/whatsapp/equipos", "/org/whatsapp/plantillas", "/org/whatsapp/configuracion"]);
     // M-WA-Menu: Inicio, Asistente, Chats, Contactos y Más; Difusiones va en Más › WhatsApp, antes de su Administración.
     expect(nav.bottomSections?.map((section) => section.link.path)).toEqual(["/org", "/org/asistente", "/org/whatsapp/chats", "/org/whatsapp/contactos"]);
     expect(nav.administration?.sections?.filter((section) => section.moreGroup).map((section) => section.labelKey)).toEqual(["whatsapp:title", "assistant:title"]);

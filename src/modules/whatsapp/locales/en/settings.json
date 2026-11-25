@@ -1,0 +1,28 @@
+{
+  "title": "Settings",
+  "summary": "WhatsApp",
+  "chatsTitle": "Chats",
+  "fields": {
+    "chatRetentionDays": "Keep chat messages for"
+  },
+  "help": {
+    "chatRetentionDays": "From {{min}} to {{max}} days, and up to the platform maximum ({{max}}). After that, the text of the messages is deleted, including what the assistant received. The privacy policy has to promise this same period."
+  },
+  "units": {
+    "days_one": "day",
+    "days_other": "days"
+  },
+  "validation": {
+    "between": "It has to be from {{min}} to {{max}}.",
+    "platformMaximum": "It has to be from {{min}} to {{max}}: that is the platform maximum."
+  },
+  "readOnly": "You don't have permission to change the settings.",
+  "conflict": {
+    "message": "Someone else changed the WhatsApp settings. Check the current values.",
+    "seeNew": "Check current values"
+  },
+  "discard": "Discard changes",
+  "save": "Save changes",
+  "saving": "Saving…",
+  "saved": "The WhatsApp settings were saved."
+}

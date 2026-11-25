@@ -18,6 +18,8 @@ import esPersonal from "./locales/es/personal.json";
 import enPersonal from "./locales/en/personal.json";
 import esPhones from "./locales/es/phones.json";
 import enPhones from "./locales/en/phones.json";
+import esSettings from "./locales/es/settings.json";
+import enSettings from "./locales/en/settings.json";
 import esNumbersEnums from "./locales/es/enums/numbers.json";
 import enNumbersEnums from "./locales/en/enums/numbers.json";
 import esChatsEnums from "./locales/es/enums/chats.json";
@@ -46,6 +48,7 @@ import { contactsRoutes } from "./contacts/routes";
 import { numbersRoutes } from "./numbers/routes";
 import { personalRoutes } from "./personal/routes";
 import { phonesRoutes, phonesUsersActions } from "./phones/routes";
+import { settingsRoutes } from "./settings/routes";
 import { teamsRoutes } from "./teams/routes";
 import { templatesRoutes } from "./templates/routes";
 
@@ -60,19 +63,19 @@ export const whatsappRegistration: ModuleRegistration = {
   nameKey: "whatsapp:title",
   resources: {
     es: {
-      whatsapp: texts(es, { numbers: esNumbers, chats: esChats, contacts: esContacts, broadcasts: esBroadcasts, bot: esBot, teams: esTeams, templates: esTemplates, personal: esPersonal, phones: esPhones }),
+      whatsapp: texts(es, { numbers: esNumbers, chats: esChats, contacts: esContacts, broadcasts: esBroadcasts, bot: esBot, teams: esTeams, templates: esTemplates, personal: esPersonal, phones: esPhones, settings: esSettings }),
       enums: { ...esNumbersEnums, ...esChatsEnums, ...esContactsEnums, ...esBroadcastsEnums, ...esBotEnums, ...esTeamsEnums, ...esTemplatesEnums, ...esPersonalEnums, ...esPhonesEnums },
     },
     en: {
-      whatsapp: texts(en, { numbers: enNumbers, chats: enChats, contacts: enContacts, broadcasts: enBroadcasts, bot: enBot, teams: enTeams, templates: enTemplates, personal: enPersonal, phones: enPhones }),
+      whatsapp: texts(en, { numbers: enNumbers, chats: enChats, contacts: enContacts, broadcasts: enBroadcasts, bot: enBot, teams: enTeams, templates: enTemplates, personal: enPersonal, phones: enPhones, settings: enSettings }),
       enums: { ...enNumbersEnums, ...enChatsEnums, ...enContactsEnums, ...enBroadcastsEnums, ...enBotEnums, ...enTeamsEnums, ...enTemplatesEnums, ...enPersonalEnums, ...enPhonesEnums },
     },
   },
   permissions: { organization: whatsappPermissions, platform: platformWhatsAppPermissions },
   // El orden es el del menú: el panel WhatsApp (Chats, Contactos y Difusiones) y Administración › WhatsApp (Números, Bot,
-  // Equipos y Plantillas); en Plataforma, Consultas y su Administración; en el perfil personal, Mensajes.
+  // Equipos, Plantillas y Configuración); en Plataforma, Consultas y su Administración; en el perfil personal, Mensajes.
   routes: [...chatsRoutes, ...contactsRoutes, ...broadcastsRoutes, ...numbersRoutes, ...botRoutes, ...teamsRoutes, ...templatesRoutes,
-    ...personalRoutes, ...phonesRoutes],
+    ...settingsRoutes, ...personalRoutes, ...phonesRoutes],
   pageActions: { users: phonesUsersActions },
   businessHome: {
     cards: [{ key: "whatsapp", titleKey: "whatsapp:home.card.title", shortKey: "whatsapp:home.card.short", detailKey: "whatsapp:home.card.numbers", icon: WhatsAppIcon, to: numbersPath }],
