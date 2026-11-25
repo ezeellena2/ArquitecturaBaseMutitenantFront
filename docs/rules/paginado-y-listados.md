@@ -52,10 +52,9 @@ El aspecto sigue «Criterio · Tablas y listas»: encabezado arena de 40 px, tex
 - `src/areas/platform/audit/pages/SecurityAuditPage.tsx` y `src/areas/platform/tenants/tabs/useOrganizationHistory.ts` (E5): filtros en la URL, tandas por cursor opaco y Cargar más sin total.
 
 ## Lo verifica
-- `pageSizes.test.ts` (E0)
+- `pageSizes.test.ts` (E0). `DataTable.test.tsx`, `FilterBar.test.tsx` y `tableSort.test.ts` (264): el encabezado con ↑ ↓ y ↕, el sentido útil de cada tipo, «Ordenar por» con «Columna» y «Orden» en la compu y en el teléfono, y una tabla entera con lo vacío al final, también en una página (los Dueños de `OrganizationPage.test.tsx`).
 - `option-pagination.test.ts` y `RemoteOptions.test.tsx` (E4), correctivo C2: prohíben el corte fijo en 100 y eligen recursos fuera de la primera página con búsqueda remota.
 - `src/test/filter-counts.test.tsx` (base de la 12, E12; Empresas con la N30): los conteos del resumen se piden una vez, sin la búsqueda ni los filtros, en las seis listas.
-- `DataTable.test.tsx`, `FilterBar.test.tsx` y `tableSort.test.ts` (264): el encabezado con ↑ ↓ y ↕, el sentido útil de cada tipo, «Ordenar por» con «Columna» y «Orden» en la compu y en el teléfono, y una tabla entera con lo vacío al final.
 
 ## Detalle
 [frontend.md §4, "Paginado, orden y búsqueda"](../architecture/frontend.md#paginado-orden-y-búsqueda) · back: `docs/rules/paginado-y-busqueda.md`
