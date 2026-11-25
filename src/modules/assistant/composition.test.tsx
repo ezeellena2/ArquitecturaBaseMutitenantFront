@@ -24,7 +24,7 @@ import { platformTenantRows, platformTenantsPage } from "@/test/mocks/platformTe
 import { platformRecoveries } from "@/test/mocks/platformRecoveries";
 
 const state: AssistantStateResponse = { configured: true, canConfigure: false, models: [], quickQueries: [], dailyLimit: 50, remainingMessages: 40,
-  dailyResetAtUtc: "2026-10-11T00:00:00Z", noticeVersion: "v1", noticeAccepted: true, retentionDays: 30, maxAttachmentBytes: 10485760, maxAttachments: 5, monthlyBudgetProgress: null };
+  dailyResetAtUtc: "2026-10-11T00:00:00Z", dailyResetTimeZoneId: "America/Argentina/Buenos_Aires", noticeVersion: "v1", noticeAccepted: true, retentionDays: 30, maxAttachmentBytes: 10485760, maxAttachments: 5, monthlyBudgetProgress: null };
 const personal = { ...consumerWithoutOrganizations, features: ["assistant"] };
 const business = { ...businessE6Admin, features: ["assistant"], effectivePermissions: { ...businessE6Admin.effectivePermissions, organization: [...businessE6Admin.effectivePermissions.organization, "assistant.use"] } };
 const platform = { ...platformOperator, effectivePermissions: { ...platformOperator.effectivePermissions, platform: [...platformOperator.effectivePermissions.platform, "platform.assistant.use"] }, moduleCapabilities: [{ key: "assistant", available: true, canConfigure: false, canReadUsage: false }] };

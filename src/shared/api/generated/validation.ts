@@ -1550,8 +1550,8 @@ export const validationConstraints = {
       "maximum": 2147483647
     },
     "retentionDays": {
-      "minimum": -2147483648,
-      "maximum": 2147483647
+      "minimum": 1,
+      "maximum": 30
     },
     "apiKey": {
       "maxLength": 4000
@@ -1879,6 +1879,10 @@ export const validationConstraints = {
   },
   "WhatsAppOrganizationSettingsResponse": {
     "chatRetentionDays": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "maxOrganizationChatRetentionDays": {
       "minimum": -2147483648,
       "maximum": 2147483647
     }

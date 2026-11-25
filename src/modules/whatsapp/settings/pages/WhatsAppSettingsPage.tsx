@@ -23,16 +23,16 @@ import { Section, SectionFields } from "@/shared/ui/Section";
 import type { WhatsAppOrganizationSettingsResponse } from "../../api/types";
 import { fetchOrganizationWhatsAppSettings, organizationWhatsAppSettingsKey, updateOrganizationWhatsAppSettings } from "../api/settings";
 
-/** El plazo de los chats, de 1 a 3650 días (B18). La respuesta no trae el máximo de la plataforma: el front usa el del
- *  contrato, que es el máximo que la plataforma puede fijar; si la plataforma bajó el suyo, el back lo dice en el campo. */
+/** El plazo de los chats (B18): desde el mínimo del contrato hasta el máximo que fija la plataforma, que trae la respuesta.
+ *  Si la plataforma lo baja mientras se edita, el back lo dice en el campo. */
 const bounds = validationConstraints.UpdateWhatsAppOrganizationSettingsHttpRequest.chatRetentionDays;
 
-function settingsSchema(t: TFunction, format: FormatState) {
-  const range = { min: format.formatInteger(bounds.minimum), max: format.formatInteger(bounds.maximum) };
+function settingsSchema(t: TFunction, format: FormatState, maximum: number) {
+  const range = { min: format.formatInteger(bounds.minimum), max: format.formatInteger(maximum) };
   return z.object({ chatRetentionDays: z.number().nullable() }).superRefine(({ chatRetentionDays: value }, context) => {
-    if (value !== null && Number.isInteger(value) && value >= bounds.minimum && value <= bounds.maximum) return;
+    if (value !== null && Number.isInteger(value) && value >= bounds.minimum && value <= maximum) return;
     // Tablero WA-Config-Base2: debajo de 1, «Fuera de rango»; arriba del máximo, «Más que el máximo de la plataforma».
-    const platformMaximum = value !== null && value > bounds.maximum;
+    const platformMaximum = value !== null && value > maximum;
     context.addIssue({ code: "custom", path: ["chatRetentionDays"], message: t(platformMaximum ? "whatsapp:settings.validation.platformMaximum" : "whatsapp:settings.validation.between", range) });
   });
 }
@@ -55,7 +55,8 @@ function SettingsEditor({ settings, reload }: { settings: WhatsAppOrganizationSe
   const format = useFormat();
   const { can } = usePermissions();
   const canManage = can("settings.manage");
-  const schema = useMemo(() => settingsSchema(t, format), [t, format]);
+  const maximum = settings.maxOrganizationChatRetentionDays;
+  const schema = useMemo(() => settingsSchema(t, format, maximum), [t, format, maximum]);
   const { form, version, resetTo, wrote } = useEditForm({ read: settings, toValues: valuesFromSettings, resolver: zodResolver(schema) });
   const days = useController({ control: form.control, name: "chatRetentionDays" });
   const [failure, setFailure] = useState<unknown>();
@@ -93,7 +94,7 @@ function SettingsEditor({ settings, reload }: { settings: WhatsAppOrganizationSe
       <form id="whatsapp-settings-editor" noValidate aria-label={t("settings.title")} onSubmit={(event) => { void submit(event); }}>
         <Section title={t("settings.chatsTitle")} phone="inset"><SectionFields className="grid gap-3.5 lg:grid-cols-2 lg:gap-x-5">
           <FormField label={t("settings.fields.chatRetentionDays")} error={form.formState.errors.chatRetentionDays?.message}
-            help={t("settings.help.chatRetentionDays", { min: format.formatInteger(bounds.minimum), max: format.formatInteger(bounds.maximum) })}>
+            help={t("settings.help.chatRetentionDays", { min: format.formatInteger(bounds.minimum), max: format.formatInteger(bounds.maximum), platformMax: format.formatInteger(maximum) })}>
             <NumberField name={days.field.name} value={value} unit={t("settings.units.days", { count: value ?? 2 })}
               disabled={!canManage} disabledReason={canManage ? undefined : t("settings.readOnly")}
               onChange={(next) => { form.clearErrors("chatRetentionDays"); setFailure(undefined); days.field.onChange(next); }} />

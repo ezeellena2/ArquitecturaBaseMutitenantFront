@@ -229,7 +229,7 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
           <FormField label={t("platformSettings:fields.emailLogoUrl")} help={t("platformSettings:help.emailLogoUrl")} error={errors.emailLogoUrl?.message}>
             <Input {...text("emailLogoUrl")} type="url" inputMode="url" placeholder="https://" autoComplete="off" />
           </FormField>
-          <EmailPreview appName={appName} senderName={senderName} logoUrl={logoUrl} />
+          <EmailPreview appName={appName} senderName={senderName} senderAddress={settings.senderAddress} logoUrl={logoUrl} />
         </SectionFields></Section>
         <Section title={t("platformSettings:privacyTitle")} help={t("platformSettings:privacyHelp")} phone="inset"><SectionFields className="grid gap-3.5 lg:grid-cols-2 lg:gap-x-5">
           {retentionFields.map((field) => <RetentionInput key={field} field={field} control={form.control} error={errors[field]?.message} onChange={() => changed(field)} />)}

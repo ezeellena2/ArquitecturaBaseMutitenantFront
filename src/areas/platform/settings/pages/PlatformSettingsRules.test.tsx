@@ -40,13 +40,14 @@ describe("Configuración de Plataforma: las reglas en pantalla", { timeout: 15_0
     expect(screen.getByRole("textbox", { name: "Nombre de la aplicación" })).toHaveAccessibleDescription("Hasta 60 caracteres. Va en los correos, los mensajes del bot de WhatsApp y la pestaña del navegador.");
     const mail = screen.getByRole("group", { name: "Así llega el correo de un código" });
     expect(mail).toHaveTextContent("483920 es tu código de acceso a ArquitecturaBase"); expect(mail).toHaveTextContent("Usá este código para ingresar a ArquitecturaBase:");
+    expect(mail).toHaveTextContent("ArquitecturaBase <no-responder@arquitecturabase.ejemplo.com>");
     expect(await axe(container)).toHaveNoViolations();
   });
   it("«Así llega» cambia mientras se escribe, sin guardar", async () => {
     renderRouteWithProviders("/plataforma/configuracion", { as: "platform-operator" }); await screen.findByRole("textbox", { name: "Nombre de la aplicación" });
     change("Nombre de la aplicación", "Delta Apps"); change("Nombre del remitente", "Equipo de Delta Apps");
     const mail = screen.getByRole("group", { name: "Así llega el correo de un código" });
-    expect(mail).toHaveTextContent("Equipo de Delta Apps"); expect(mail).toHaveTextContent("483920 es tu código de acceso a Delta Apps"); expect(mail).toHaveTextContent("Usá este código para ingresar a Delta Apps:");
+    expect(mail).toHaveTextContent("Equipo de Delta Apps <no-responder@arquitecturabase.ejemplo.com>"); expect(mail).toHaveTextContent("483920 es tu código de acceso a Delta Apps"); expect(mail).toHaveTextContent("Usá este código para ingresar a Delta Apps:");
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeEnabled();
   });
   it.each([["Datos de los ingresos", "121", "Tiene que ser de 1 a 120."], ["Códigos y enlaces", "0", "Tiene que ser de 1 a 3.650."], ["Invitaciones cerradas", "6", "Tiene que ser de 7 a 3.650."]])("%s fuera de rango (%s) no manda nada", async (label, value, message) => {

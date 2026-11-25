@@ -12,7 +12,9 @@ export function settingsSchema(t: TFunction, platform: boolean) {
   const positiveInteger = z.number().int(t("assistant:settings.validation.limit")).min(1, t("assistant:settings.validation.limit")).max(validationConstraints.UpdatePlatformAssistantSettingsHttpRequest.dailyMessageLimit.maximum, t("assistant:settings.validation.limit")).nullable();
   return z.object({ mode: z.enum(["PlatformKey", "OwnKey"]), modelId: z.string(), effort: z.enum(["low", "medium", "high"]),
     dailyMessageLimit: positiveInteger, monthlyBudget: moneySchema(t).nullable(),
-    allowedModelIds: z.array(z.string()), personalEnabled: z.boolean(), retentionDays: positiveInteger,
+    allowedModelIds: z.array(z.string()), personalEnabled: z.boolean(),
+    // Las conversaciones del Inicio, de 1 a 30 días (Config-Plat-Base2): el tope que publica el contrato.
+    retentionDays: positiveInteger.refine((value) => value === null || value <= validationConstraints.UpdatePlatformAssistantSettingsHttpRequest.retentionDays.maximum, t("assistant:settings.validation.limit")),
     keyAction: z.enum(["keep", "replace", "clear"]),
   }).superRefine((value, ctx) => {
     if (!value.modelId) ctx.addIssue({ code: "custom", path: ["modelId"], message: t("assistant:settings.validation.model") });

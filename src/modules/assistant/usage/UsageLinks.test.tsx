@@ -8,7 +8,7 @@ import { businessManager, mountSettings, settingsHandlers } from "../settings/se
 beforeAll(async () => { await import("../pages/RegisteredAssistant"); await import("./OrganizationAssistantUsagePage"); });
 beforeEach(() => settingsHandlers());
 const state: AssistantStateResponse = { configured: true, canConfigure: true, models: [], quickQueries: [], dailyLimit: 50, remainingMessages: 39,
-  dailyResetAtUtc: "2026-10-12T00:00:00Z", noticeVersion: "v1", noticeAccepted: true, retentionDays: 30, maxAttachmentBytes: 10485760, maxAttachments: 5,
+  dailyResetAtUtc: "2026-10-12T00:00:00Z", dailyResetTimeZoneId: "America/Argentina/Buenos_Aires", noticeVersion: "v1", noticeAccepted: true, retentionDays: 30, maxAttachmentBytes: 10485760, maxAttachments: 5,
   monthlyBudgetProgress: { fraction: 1.1, status: "LimitReached" } };
 function chat() {
   server.use(http.get("/api/organization/assistant", () => HttpResponse.json(state)),

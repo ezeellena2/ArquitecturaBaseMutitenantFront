@@ -16,7 +16,7 @@ import { changeCulture, configureI18n } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 
 const state: AssistantStateResponse = { configured: true, canConfigure: true, models: [], quickQueries: [{ key: "active_users", labelKey: "unknown" }], dailyLimit: 50,
-  dailyResetAtUtc: "2026-10-10T21:00:00Z", remainingMessages: 40, noticeVersion: "v1", noticeAccepted: true, retentionDays: 30, maxAttachmentBytes: 10 * 1024 * 1024, maxAttachments: 5, monthlyBudgetProgress: null };
+  dailyResetAtUtc: "2026-10-10T21:00:00Z", dailyResetTimeZoneId: "America/Argentina/Buenos_Aires", remainingMessages: 40, noticeVersion: "v1", noticeAccepted: true, retentionDays: 30, maxAttachmentBytes: 10 * 1024 * 1024, maxAttachments: 5, monthlyBudgetProgress: null };
 const message = (id: string, role: AssistantMessageResponse["role"], text: string, status: AssistantMessageResponse["status"] = "Complete"): AssistantMessageResponse => ({
   id, role, text, status, version: 1, createdAtUtc: "2026-10-10T12:00:00Z", attachments: [], links: [],
 });

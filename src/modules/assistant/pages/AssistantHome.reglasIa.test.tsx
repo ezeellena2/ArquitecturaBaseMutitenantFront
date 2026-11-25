@@ -18,7 +18,7 @@ import { AssistantPhonePage } from "./AssistantPhonePage";
 // Las reglas de toda la IA sobre el Inicio (0064 §2, §4, §5 y §6): la conversación que no se puede leer, borrar con sus
 // archivos y las subidas que el back frena antes de leer el archivo (tableros Asistente-Org, -Personal, -Plat y sus M-).
 const state: AssistantStateResponse = { configured: true, canConfigure: true, models: [], quickQueries: [], dailyLimit: 50,
-  dailyResetAtUtc: "2026-10-10T21:00:00Z", remainingMessages: 40, noticeVersion: "v1", noticeAccepted: true, retentionDays: 30, maxAttachmentBytes: 10 * 1024 * 1024, maxAttachments: 5, monthlyBudgetProgress: null };
+  dailyResetAtUtc: "2026-10-10T21:00:00Z", dailyResetTimeZoneId: "America/Argentina/Buenos_Aires", remainingMessages: 40, noticeVersion: "v1", noticeAccepted: true, retentionDays: 30, maxAttachmentBytes: 10 * 1024 * 1024, maxAttachments: 5, monthlyBudgetProgress: null };
 const unreadable: AssistantConversationSummaryResponse = { id: "nd", title: null, version: 7, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z", available: false };
 const chat = (): AssistantConversationResponse => ({ conversation: { id: "chat", title: "Mi consulta", version: 1, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z", available: true }, messages: { items: [], hasMore: false }, activeTurnId: null });
 const props: AssistantHomeProps = { scope: { access: "business", userId: "user", tenantId: "org" }, enabled: true, hasPermission: () => true, onPrivacy: () => {} };

@@ -102,7 +102,7 @@ export const galleryPlatformSettings: PlatformAssistantSettingsResponse = {
 export function galleryState(scope: Scope): AssistantStateResponse {
   const keys = scope === "business" ? ["active_users", "expired_invitations", "owners", "recent_changes"] : scope === "consumer" ? ["my_organizations", "my_signin", "my_messages"] : ["pending_organizations", "pending_recoveries", "today_security", "assistant_usage"];
   return { configured: true, canConfigure: scope !== "consumer", models: [], quickQueries: keys.map((key) => ({ key, labelKey: `quick.${key}` })),
-    dailyLimit: 50, dailyResetAtUtc: "2026-10-11T00:00:00Z", remainingMessages: 40, noticeVersion: "v1", noticeAccepted: true,
+    dailyLimit: 50, dailyResetAtUtc: "2026-10-11T00:00:00Z", dailyResetTimeZoneId: "America/Argentina/Buenos_Aires", remainingMessages: 40, noticeVersion: "v1", noticeAccepted: true,
     retentionDays: 30, maxAttachmentBytes: 10 * 1024 * 1024, maxAttachments: 5, monthlyBudgetProgress: null };
 }
 export const galleryConversation: AssistantConversationResponse = {

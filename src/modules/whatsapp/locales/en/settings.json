@@ -6,7 +6,7 @@
     "chatRetentionDays": "Keep chat messages for"
   },
   "help": {
-    "chatRetentionDays": "From {{min}} to {{max}} days, and up to the platform maximum ({{max}}). After that, the text of the messages is deleted, including what the assistant received. The privacy policy has to promise this same period."
+    "chatRetentionDays": "From {{min}} to {{max}} days, and up to the platform maximum ({{platformMax}}). After that, the text of the messages is deleted, including what the assistant received. The privacy policy has to promise this same period."
   },
   "units": {
     "days_one": "day",

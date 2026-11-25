@@ -6,7 +6,7 @@ export const platformSettingsFixture: ApiSchemas["PlatformSettingsResponse"] = {
   salesEmail: "ventas@ejemplo.com", supportEmail: "soporte@ejemplo.com", version: 1,
   // Contrato de la segunda parte de la base (272 y 273): los valores por defecto de «Privacidad y retención» y «Nombre y correos».
   loginAuditRetentionMonths: 12, loginCodeRetentionDays: 30, closedInvitationRetentionDays: 30,
-  appName: "ArquitecturaBase", senderName: "ArquitecturaBase", emailLogoUrl: null,
+  appName: "ArquitecturaBase", senderName: "ArquitecturaBase", emailLogoUrl: null, senderAddress: "no-responder@arquitecturabase.ejemplo.com",
   // Contrato E9: las cuotas de arranque (P3) hasta que F4 sume su editor.
   rateLimits: {
     ip: { permitLimit: 300, windowSeconds: 60 }, publicIp: { permitLimit: 60, windowSeconds: 60 },

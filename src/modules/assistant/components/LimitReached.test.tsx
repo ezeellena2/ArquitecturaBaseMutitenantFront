@@ -10,14 +10,17 @@ import { LimitReached } from "./LimitReached";
 
 // Tableros Asistente-Org-Base2, -Personal-Base2 y -Plat-Base2 (271): el cupo del día dice que fue el cupo y cuándo vuelve.
 const state = { configured: true, canConfigure: true, models: [], quickQueries: [], dailyLimit: 50, dailyResetAtUtc: "2026-11-24T03:00:00Z", remainingMessages: 0,
-  noticeVersion: "v1", noticeAccepted: true, retentionDays: 30, maxAttachmentBytes: 1, maxAttachments: 5, monthlyBudgetProgress: null } as AssistantStateResponse;
+  noticeVersion: "v1", noticeAccepted: true, retentionDays: 30, maxAttachmentBytes: 1, maxAttachments: 5, monthlyBudgetProgress: null,
+  dailyResetTimeZoneId: "America/Argentina/Buenos_Aires" } as AssistantStateResponse;
+// La organización corta en su zona (271): medianoche de Madrid, que en el perfil de Buenos Aires son las 20:00 del día anterior.
+const inMadrid = { ...state, dailyResetAtUtc: "2026-11-23T23:00:00Z", dailyResetTimeZoneId: "Europe/Madrid" } as AssistantStateResponse;
 beforeEach(async () => { await configureI18n(referenceDataFixture().cultures); await changeCulture("es-AR"); });
 
 describe("LimitReached", () => {
   it("en una organización nombra la organización, cuándo vuelven y la (i) del cupo de cada una; axe", async () => {
     const user = userEvent.setup();
-    const { container } = renderWithProviders(<LimitReached monthly={false} state={state} organizationName="Grupo Delta" inOrganization />);
-    expect(await screen.findByRole("status")).toHaveTextContent("Usaste tus 50 consultas de hoy en Grupo Delta. Vuelven el 24/11/2026, a las 00:00, hora de tu perfil.");
+    const { container } = renderWithProviders(<LimitReached monthly={false} state={inMadrid} organizationName="Grupo Delta" inOrganization />);
+    expect(await screen.findByRole("status")).toHaveTextContent("Usaste tus 50 consultas de hoy en Grupo Delta. Vuelven el 24/11/2026, a las 00:00, hora de Grupo Delta.");
     await user.click(screen.getByRole("button", { name: /Consultas de hoy/u }));
     expect(await screen.findByRole("tooltip")).toHaveTextContent("Cada organización tiene su cupo: en otra podés seguir consultando.");
     expect(await axe(container)).toHaveNoViolations();

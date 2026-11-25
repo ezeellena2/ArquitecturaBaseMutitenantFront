@@ -9,6 +9,7 @@ import { useCurrentUser } from "@/auth/useCurrentUser";
 import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
+import { validationConstraints } from "@/shared/api/generated/validation";
 import { useFormat, type FormatState } from "@/shared/format/useFormat";
 import { useEditForm } from "@/shared/hooks/useEditForm";
 import type { PlatformSettingsPartHandle, PlatformSettingsPartProps } from "@/shared/modules/types";
@@ -19,8 +20,9 @@ import type { PlatformAssistantSettingsResponse } from "../api/types";
 import type { AssistantScope } from "../api/assistant";
 import { assistantSettingsKey, fetchPlatformAssistantSettings, updateAssistantSettings } from "../api/settings";
 
-/** De 1 a 30 días (Config-Plat-Base2). El contrato no publica el tope: el back solo pide 1 o más. */
-const retention = { min: 1, max: 30 } as const;
+/** De 1 a 30 días (Config-Plat-Base2), como los publica el contrato y los valida el back. */
+const bounds = validationConstraints.UpdatePlatformAssistantSettingsHttpRequest.retentionDays;
+const retention = { min: bounds.minimum, max: bounds.maximum } as const;
 
 function partSchema(t: TFunction, format: FormatState) {
   return z.object({ retentionDays: z.number().nullable().refine((value) => value !== null && Number.isInteger(value) && value >= retention.min && value <= retention.max,

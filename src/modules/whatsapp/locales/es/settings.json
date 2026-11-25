@@ -6,7 +6,7 @@
     "chatRetentionDays": "Guardar los mensajes de los chats"
   },
   "help": {
-    "chatRetentionDays": "De {{min}} a {{max}} días, y hasta el máximo de la plataforma ({{max}}). Pasado el plazo se borra el texto de los mensajes, también lo que recibió el asistente. La política de privacidad tiene que prometer este mismo plazo."
+    "chatRetentionDays": "De {{min}} a {{max}} días, y hasta el máximo de la plataforma ({{platformMax}}). Pasado el plazo se borra el texto de los mensajes, también lo que recibió el asistente. La política de privacidad tiene que prometer este mismo plazo."
   },
   "units": {
     "days_one": "día",

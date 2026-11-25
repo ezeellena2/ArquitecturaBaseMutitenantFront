@@ -20114,7 +20114,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description rateLimits (E9): los doce perfiles cerrados de cuotas compartidas, con ventanas fijas UTC y sin cola. Plazos (272): loginAuditRetentionMonths, loginCodeRetentionDays y closedInvitationRetentionDays. Nombre y correos (273): appName y senderName (sin guardar, los de la configuración de arranque) y emailLogoUrl (null sin logo). */
+        /** @description rateLimits (E9): los doce perfiles cerrados de cuotas compartidas, con ventanas fijas UTC y sin cola. Plazos (272): loginAuditRetentionMonths, loginCodeRetentionDays y closedInvitationRetentionDays. Nombre y correos (273): appName y senderName (sin guardar, los de la configuración de arranque), emailLogoUrl (null sin logo) y senderAddress, la dirección del «De» que fija la instalación y no se edita (null sin configurar). */
         get: {
             parameters: {
                 query?: never;
@@ -29557,6 +29557,10 @@ export interface components {
             /** Format: uint32 */
             conversationVersion: number;
         };
+        /**
+         * @description El estado del asistente para quien pide. `DailyResetTimeZoneId` es la zona en que corta el cupo del día (271): la de la
+         *     organización en el acceso de empresa y la del perfil fuera de una; la pantalla dice la hora de `DailyResetAtUtc` en ella.
+         */
         AssistantStateResponse: {
             configured: boolean;
             canConfigure: boolean;
@@ -29580,6 +29584,7 @@ export interface components {
             maxAttachments: number;
             /** @description Siempre presente. Consumer/Platform null; Business con presupuesto positivo aplicable usa usedCost registrado confirmado o conservador dividido por monthlyBudget snapshot de la misma financiación efectiva y mes civil. Sin reservas, suma de financiaciones, repricing ni recorte; NearLimit desde 80% y LimitReached desde 1. Presupuesto cero/null/no aplicable: null, sin división por cero. Configured=false conserva precedencia; consultas fijas siguen disponibles y State no garantiza admisión. */
             monthlyBudgetProgress: null | components["schemas"]["AssistantBudgetProgressResponse"];
+            dailyResetTimeZoneId: string;
         };
         AssistantStreamHttpResponse: components["schemas"]["AssistantStreamHttpResponseAssistantStartStreamHttpResponse"] | components["schemas"]["AssistantStreamHttpResponseAssistantDeltaStreamHttpResponse"] | components["schemas"]["AssistantStreamHttpResponseAssistantToolStreamHttpResponse"] | components["schemas"]["AssistantStreamHttpResponseAssistantTitleStreamHttpResponse"] | components["schemas"]["AssistantStreamHttpResponseAssistantDoneStreamHttpResponse"] | components["schemas"]["AssistantStreamHttpResponseAssistantErrorStreamHttpResponse"];
         AssistantStreamHttpResponseAssistantDeltaStreamHttpResponse: {
@@ -31459,7 +31464,8 @@ export interface components {
         };
         /**
          * @description La configuración de Plataforma. Los plazos de retención del núcleo (decisión 272) y el nombre, el remitente y el logo de
-         *     los correos (decisión 273) valen para todas las organizaciones; sin logo, `EmailLogoUrl` es null.
+         *     los correos (decisión 273) valen para todas las organizaciones; sin logo, `EmailLogoUrl` es null. `SenderAddress`
+         *     es la dirección del «De», que fija la instalación y no se edita: la muestra «Así llega»; null si no está configurada.
          */
         PlatformSettingsResponse: {
             consumerSignup: components["schemas"]["ConsumerSignupMode"];
@@ -31480,6 +31486,7 @@ export interface components {
             appName: string;
             senderName: string;
             emailLogoUrl?: null | string;
+            senderAddress?: null | string;
         };
         /** @description Ficha global; su versión pertenece únicamente a Tenants. */
         PlatformTenantDetailResponse: {
@@ -32541,10 +32548,18 @@ export interface components {
         };
         /** @enum {string} */
         WhatsAppNumberStatus: "Connected" | "PaymentMissing" | "Disconnected";
-        /** @description La configuración de WhatsApp de la organización (B18): cuánto se guardan sus chats, hasta el máximo de la plataforma. */
+        /**
+         * @description La configuración de WhatsApp de la organización (B18): cuánto se guardan sus chats y el máximo que fija la plataforma, que
+         *     la pantalla nombra en la (i) y en el error.
+         */
         WhatsAppOrganizationSettingsResponse: {
             /** Format: int32 */
             chatRetentionDays: number;
+            /**
+             * Format: int32
+             * @description El máximo que fija la plataforma para el plazo de los chats de una organización; solo lectura.
+             */
+            maxOrganizationChatRetentionDays: number;
             /** Format: uint32 */
             version: number;
         };

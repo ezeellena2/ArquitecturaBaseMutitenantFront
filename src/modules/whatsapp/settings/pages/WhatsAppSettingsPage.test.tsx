@@ -13,7 +13,7 @@ import { mountWhatsApp, whatsappOwner } from "../../test/support";
 const path = "/org/whatsapp/configuracion";
 const reader: MeResponse = { ...whatsappOwner, permissions: ["settings.read"], effectivePermissions: { platform: [], organization: ["settings.read"], companies: {} } };
 
-function handlers(read: WhatsAppOrganizationSettingsResponse = { chatRetentionDays: 90, version: 4 }) {
+function handlers(read: WhatsAppOrganizationSettingsResponse = { chatRetentionDays: 90, maxOrganizationChatRetentionDays: 3650, version: 4 }) {
   const sent: UpdateWhatsAppOrganizationSettingsRequest[] = [];
   let current = read;
   server.use(
@@ -21,7 +21,7 @@ function handlers(read: WhatsAppOrganizationSettingsResponse = { chatRetentionDa
     http.get("/api/organization/whatsapp/settings", () => HttpResponse.json(current)),
     http.put("/api/organization/whatsapp/settings", async ({ request }) => {
       const body = await request.json() as UpdateWhatsAppOrganizationSettingsRequest; sent.push(body);
-      current = { chatRetentionDays: body.chatRetentionDays ?? 0, version: current.version + 1 };
+      current = { ...current, chatRetentionDays: body.chatRetentionDays ?? 0, version: current.version + 1 };
       return HttpResponse.json({ version: current.version });
     }),
   );
@@ -78,6 +78,17 @@ describe("Configuración de WhatsApp de la organización (WA-Config-Base2)", () 
     expect(await field()).toHaveAttribute("aria-invalid", "true");
   });
 
+  it("el máximo es el que fija la plataforma, en la (i) y en el error", async () => {
+    const { sent } = handlers({ chatRetentionDays: 90, maxOrganizationChatRetentionDays: 365, version: 4 });
+    const page = mountWhatsApp(whatsappOwner, path);
+    expect(await field()).toHaveAccessibleDescription(/De 1 a 3.650 días, y hasta el máximo de la plataforma \(365\)\./);
+    await page.user.clear(await field());
+    await page.user.type(await field(), "400");
+    await page.user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+    expect(await screen.findByText("Tiene que ser de 1 a 365: es el máximo de la plataforma.")).toBeVisible();
+    expect(sent).toEqual([]);
+  });
+
   it("el 409 dice que otra persona cambió la configuración y «Revisar valores actuales» trae lo guardado", async () => {
     const { replace } = handlers();
     server.use(http.put("/api/organization/whatsapp/settings", () => HttpResponse.json({ status: 409, code: "General.ConcurrencyConflict", traceId: "t" }, { status: 409 })));
@@ -87,7 +98,7 @@ describe("Configuración de WhatsApp de la organización (WA-Config-Base2)", () 
     await page.user.click(screen.getByRole("button", { name: "Guardar cambios" }));
     expect(await screen.findByText("Otra persona cambió la configuración de WhatsApp. Revisá los valores actuales.")).toBeVisible();
     expect(screen.queryByRole("button", { name: "Seguir editando" })).toBeNull();
-    replace({ chatRetentionDays: 60, version: 9 });
+    replace({ chatRetentionDays: 60, maxOrganizationChatRetentionDays: 3650, version: 9 });
     await page.user.click(screen.getByRole("button", { name: "Revisar valores actuales" }));
     await page.user.click(await screen.findByRole("button", { name: "Salir sin guardar" }));
     await waitFor(async () => expect(await field()).toHaveValue("60"));

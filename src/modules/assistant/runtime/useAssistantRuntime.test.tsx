@@ -12,7 +12,7 @@ import { useAssistantRuntime } from "./useAssistantRuntime";
 const scope: AssistantScope = { access: "business", tenantId: "org", userId: "user" };
 const state: AssistantStateResponse = {
   configured: true, canConfigure: false, models: [], quickQueries: [], dailyLimit: 100,
-  dailyResetAtUtc: "2026-10-10T03:00:00Z", remainingMessages: 80, noticeVersion: "v1", noticeAccepted: true,
+  dailyResetAtUtc: "2026-10-10T03:00:00Z", dailyResetTimeZoneId: "America/Argentina/Buenos_Aires", remainingMessages: 80, noticeVersion: "v1", noticeAccepted: true,
   retentionDays: 30, maxAttachmentBytes: 1024, maxAttachments: 2, monthlyBudgetProgress: null,
 };
 const message = (id: string, role: AssistantMessageResponse["role"], status: AssistantMessageResponse["status"] = "Complete", text = "Respuesta"): AssistantMessageResponse => ({
