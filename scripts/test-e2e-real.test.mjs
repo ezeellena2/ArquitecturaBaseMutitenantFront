@@ -233,18 +233,20 @@ async function inviteFromUsersPage(page, email, companyName, { organizationRole 
   await page.getByRole("button", { name: "Invitar usuario", exact: true }).click();
   const before = new Set(await pickupFiles());
   await page.getByRole("textbox", { name: "Correo", exact: true }).fill(email);
+  // Los roles se eligen en la pieza múltiple (262): su botón se llama con el rótulo y lo elegido, cada rol es una `option` que
+  // se marca sin cerrar la lista, y Escape la cierra.
+  const dialog = page.getByRole("dialog");
   if (organizationRole) {
-    await page.getByRole("button", { name: "Roles de la organización", exact: true }).click();
-    await page.getByRole("menuitemcheckbox", { name: organizationRole, exact: true }).click();
+    await pickerButton(dialog, "Roles de la organización").click();
+    await page.getByRole("option", { name: organizationRole, exact: true }).click();
     await page.keyboard.press("Escape");
   }
   if (companyName) {
     // Tablero Usuarios (Invitar): una sola Empresa con sus roles.
-    const dialog = page.getByRole("dialog");
     await pickerButton(dialog, "Empresa").click();
     await page.getByRole("option", { name: companyName, exact: true }).click();
-    await dialog.getByRole("button", { name: "Roles en la empresa", exact: true }).click();
-    await page.getByRole("menuitemcheckbox", { name: "Administrador", exact: true }).click();
+    await pickerButton(dialog, "Roles en la empresa").click();
+    await page.getByRole("option", { name: "Administrador", exact: true }).click();
     await page.keyboard.press("Escape");
   }
   const responsePromise = page.waitForResponse((response) => new URL(response.url()).pathname === "/api/users/invitations"
@@ -587,11 +589,15 @@ async function createPlatformOrganization(page, name, companyName, ownerEmail) {
   await page.getByText("Invitación pendiente", { exact: true }).waitFor();
 }
 
-async function confirmPlatformReason(page, action, confirm = action) {
-  const direct = page.getByRole("button", { name: action, exact: true });
+// 209 (base de la 12, segunda parte): suspender, reactivar y cerrar van en el ⋮ de la banda, que también se llama «Acciones
+// de …». La acción de una fila de una pestaña (la página pública, un dominio) se busca en su `tabpanel`, que espera a que la
+// fila llegue: si no, el ⋮ de la banda es el único a la vista y se abre ese menú.
+async function confirmPlatformReason(page, action, { confirm = action, row = false } = {}) {
+  const scope = row ? page.getByRole("tabpanel") : page;
+  const direct = scope.getByRole("button", { name: action, exact: true });
   if (await direct.count()) await direct.click();
   else {
-    try { await page.getByRole("button", { name: /^Acciones de/ }).click(); }
+    try { await scope.getByRole("button", { name: /^Acciones de/ }).click(); }
     catch {
       const published = await page.getByText("Publicada", { exact: true }).filter({ visible: true }).count();
       const draft = await page.getByText("Borrador", { exact: true }).filter({ visible: true }).count();
@@ -1426,7 +1432,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await expectOrganizationModules(platformPage, await catalog.json());
           setStage("despublica la página y bloquea la publicación desde Business");
           await platformPage.getByRole("tab", { name: "Página pública", exact: true }).click();
-          await confirmPlatformReason(platformPage, "Despublicar");
+          await confirmPlatformReason(platformPage, "Despublicar", { row: true });
           const businessContext = await newCaseContext(browser, { ignoreHTTPSErrors: true, locale: "es-AR" });
           try {
             const business = await businessContext.newPage();
@@ -1443,7 +1449,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             await business.getByRole("dialog").getByRole("button", { name: "Cerrar", exact: true }).click();
             assert.equal(await publish.isChecked(), false, "El control moderado no puede publicar la página.");
             setStage("permite publicar y Business vuelve a publicar por pantalla");
-            await confirmPlatformReason(platformPage, "Permitir publicar");
+            await confirmPlatformReason(platformPage, "Permitir publicar", { row: true });
             await business.reload();
             await business.getByRole("heading", { name: "Página pública", exact: true }).waitFor();
             await business.getByRole("switch").click();
@@ -1462,7 +1468,7 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
           await openPlatformOrganization(platformPage, "Empresa E2E");
           await platformPage.getByRole("tab", { name: "Dominio verificado", exact: true }).click();
           await platformPage.getByRole("row", { name: /corp.example.test/ }).waitFor();
-          await confirmPlatformReason(platformPage, "Quitar");
+          await confirmPlatformReason(platformPage, "Quitar", { row: true });
           await platformPage.getByText("Sin dominio de correo", { exact: true }).waitFor();
           await openPlatformAccount(platformPage, "Cuenta E2E");
           await platformPage.reload();
@@ -1589,10 +1595,12 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
             const details = await platformPage.request.get(new URL(`/api/platform/legal-documents/${publishedPrivacy.id}`, baseUrl).href, { headers: { Authorization: authorization } });
             assert.equal(details.status(), 200);
             assertPublishedLegalVersion(await afterReload.json(), await details.json(), publishedPrivacy, publication.request().postDataJSON().contents);
-            const privacyCard = platformPage.getByRole("list", { name: "Documentos legales", exact: true }).getByRole("listitem")
-              .filter({ has: platformPage.getByText("Política de privacidad", { exact: true }) });
-            assert.equal(await privacyCard.count(), 1);
-            await privacyCard.getByText(`Versión ${publishedPrivacy.version} · vigente desde ${civil}`, { exact: true }).waitFor();
+            // Tablero Legales-Base2 (263): una tabla con un dato por columna; la versión vigente y desde cuándo, en sus celdas.
+            const privacyRow = platformPage.getByRole("table").getByRole("row").filter({ hasText: "Política de privacidad" });
+            await privacyRow.waitFor();
+            assert.equal(await privacyRow.count(), 1);
+            assert.deepEqual((await privacyRow.getByRole("cell").allTextContents()).slice(0, 3),
+              ["Política de privacidad", `Versión ${publishedPrivacy.version}`, civil]);
           } finally {
             legalObservation.close();
             console.info(`E8 legales diagnóstico: ${JSON.stringify(await legalObservation.snapshot())}`);
