@@ -31,18 +31,12 @@ import { Page } from "@/shared/ui/Page";
 import { Section, SectionFields } from "@/shared/ui/Section";
 import { Picker } from "@/shared/ui/Picker";
 import { fetchPlatformSettings, platformSettingsKey, updatePlatformSettings } from "../api/platformSettings";
-import { EmailPreview, isEmailLogoUrl } from "../components/EmailPreview";
+import { EmailPreview } from "../components/EmailPreview";
+import { emailNameMaxLength, isEmailLogoUrl, retentionBounds, retentionFields, type RetentionField } from "../lib/rules";
 import { RateLimitsSection } from "../components/RateLimitsSection";
 import { draftsOf, rateLimitBounds, rateLimitProfiles, rateLimitsInput, sameRateLimits, validPermitLimit, validWindow } from "../lib/rateLimits";
 import { useFormat, type FormatState } from "@/shared/format/useFormat";
 import { useRecentAuthenticationPurpose, useVisiblePending } from "@/shared/api/recentAuthentication";
-
-// Los límites del contrato (272 y 273, spec «Base de la 12, segunda parte»): openapi.json todavía no los publica, y el
-// back los vuelve a validar con el 400 de siempre en su campo.
-export const retentionBounds = { loginAuditRetentionMonths: { min: 1, max: 120 }, loginCodeRetentionDays: { min: 1, max: 3650 }, closedInvitationRetentionDays: { min: 7, max: 3650 } } as const;
-export const emailNameMaxLength = 60;
-type RetentionField = keyof typeof retentionBounds;
-const retentionFields = Object.keys(retentionBounds) as RetentionField[];
 
 function settingsFormSchema(t: TFunction, format: FormatState) {
   // Validación exacta del tablero Config-Plat; NumberField y EmailField normalizan la entrada.

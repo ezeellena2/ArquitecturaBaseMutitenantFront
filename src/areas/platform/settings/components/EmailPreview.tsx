@@ -1,9 +1,5 @@
 import { useTranslation } from "react-i18next";
-
-/** Una dirección que se puede mostrar como logo: la misma regla que valida el campo (vacío o `https://`). */
-export function isEmailLogoUrl(value: string) {
-  return /^https:\/\/[^\s/]+\S*$/i.test(value.trim());
-}
+import { isEmailLogoUrl } from "../lib/rules";
 
 /**
  * «Así llega» (273, tablero Config-Plat-Base2, `.b2-correo`): el correo de un código con el nombre, el remitente y el

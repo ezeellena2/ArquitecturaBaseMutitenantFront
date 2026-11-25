@@ -288,7 +288,7 @@ function createChatScenario(board: string, state: string): GalleryApp | undefine
       app.responses.push(api("GET", `${prefix}/conversations/gallery-chat`, galleryConversation));
       app.actions = [...(board.startsWith("M-") ? [click("Conversaciones")] : []), click("Mi consulta")];
       app.readySelector = '[role="group"][aria-label="Asistente"] strong';
-      app.readyText = state === "Quedan 10 consultas" ? "consultas hoy." : "Se renuevan a las"; break;
+      app.readyText = state === "Quedan 10 consultas" ? "consultas hoy." : "Vuelven el"; break;
     case "Sin configurar": case "Sin configurar (Dueño)": case "Sin configurar (otro rol)": initial.configured = false; app.readyText = "El asistente todavía no está configurado"; break;
     case "Respuesta": {
       const empty: AssistantConversationResponse = { ...galleryConversation, conversation: { ...galleryConversation.conversation, version: 1 }, messages: { items: [], hasMore: false } };

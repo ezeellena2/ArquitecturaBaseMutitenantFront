@@ -72,7 +72,10 @@
   "limit": {
     "monthly": "{{organization}} reached its monthly assistant limit.",
     "organization": "The organization",
-    "daily": "You reached today’s limit of <count/> queries. It resets at <reset/>.",
+    "daily": "You used your <count/> queries for today. They come back on <date/>, at <time/>, your profile’s time.",
+    "dailyOrganization": "You used your <count/> queries for today in {{organization}}. They come back on <date/>, at <time/>, your profile’s time.",
+    "dailyOrganizationHelp": "Each organization has its own limit: you can keep asking in another one.",
+    "dailyTitle": "Today’s queries",
     "remaining_one": "You have <remaining/> query left today.",
     "remaining_other": "You have <remaining/> queries left today.",
     "usage": "View usage"
