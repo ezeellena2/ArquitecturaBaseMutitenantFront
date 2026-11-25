@@ -12,7 +12,7 @@ test("generates changed nested-input lengths, numeric ranges and audit options f
     const source = path.join(directory, "openapi.json");
     const target = path.join(directory, "schema.d.ts");
     const schema = { openapi: "3.1.0", info: { title: "Fixture", version: "1" }, paths: {},
-      components: { schemas: { LegalContent: { type: "object", properties: { text: { type: "string", maxLength: 4321 } } },
+      components: { schemas: { Source: { type: "string", enum: ["Plan", "Manual", "Trial"] }, LegalContent: { type: "object", properties: { text: { type: "string", maxLength: 4321 } } },
         Settings: { type: "object", properties: { kind: { type: "string", enum: ["Image", "Document"] }, count: { type: "integer", minimum: 2, maximum: 17 }, tariff: { type: "number", exclusiveMinimum: 0, exclusiveMaximum: 12345 }, signed: { type: "integer", format: "int32" }, narrowed: { type: "integer", format: "int32", minimum: 1, maximum: 20 }, preview: { type: "array", maxItems: 7, items: { type: "string" } }, tags: { type: "array", maxItems: 10, items: { type: "string", maxLength: 40 } } } } } },
       "x-organization-audit-categories": ["new-category"] };
     writeFileSync(source, JSON.stringify(schema));
@@ -20,6 +20,8 @@ test("generates changed nested-input lengths, numeric ranges and audit options f
     const runtime = readFileSync(validationTarget(target), "utf8");
     assert.match(runtime, /"maxLength": 4321/);
     assert.match(runtime, /export const schemaEnumValues = \{\s*"Settings": \{\s*"kind": \[\s*"Image",\s*"Document"/);
+    // Un enum con nombre propio va entero y en el orden del back, el de su circuito (264), no el del abecedario.
+    assert.match(runtime, /export const schemaEnums = \{\s*"Source": \[\s*"Plan",\s*"Manual",\s*"Trial"\s*\]\s*\}/);
     assert.match(runtime, /"minimum": 2/);
     assert.match(runtime, /"signed": \{\s*"minimum": -2147483648,\s*"maximum": 2147483647/);
     assert.match(runtime, /"narrowed": \{\s*"minimum": 1,\s*"maximum": 20/);

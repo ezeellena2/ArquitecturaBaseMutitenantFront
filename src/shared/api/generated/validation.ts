@@ -2102,4 +2102,362 @@ export const schemaEnumValues = {
   }
 } as const;
 
+export const schemaEnums = {
+  "Access": [
+    "consumer",
+    "business",
+    "platform"
+  ],
+  "AccountRecoveryStatus": [
+    "Pending",
+    "Approved",
+    "Rejected"
+  ],
+  "AssistantBudgetStatus": [
+    "WithinLimit",
+    "NearLimit",
+    "LimitReached"
+  ],
+  "AssistantEffort": [
+    "low",
+    "medium",
+    "high"
+  ],
+  "AssistantExportFormat": [
+    "markdown",
+    "pdf",
+    null
+  ],
+  "AssistantFailedStatus": [
+    "Failed"
+  ],
+  "AssistantKeyAction": [
+    "keep",
+    "replace",
+    "clear",
+    null
+  ],
+  "AssistantLinkStatus": [
+    "Active",
+    "Pending",
+    "Expired",
+    null
+  ],
+  "AssistantMessageRole": [
+    "user",
+    "assistant"
+  ],
+  "AssistantMessageStatus": [
+    "Complete",
+    "Stopped",
+    "Failed",
+    "Generating"
+  ],
+  "AssistantMode": [
+    "PlatformKey",
+    "OwnKey"
+  ],
+  "AssistantProvider": [
+    "Anthropic"
+  ],
+  "AssistantRating": [
+    "up",
+    "down",
+    null
+  ],
+  "AssistantRouteKey": [
+    "business.users",
+    "business.roles",
+    "business.companies",
+    "business.audit",
+    "business.home",
+    "platform.organizations",
+    "platform.accounts",
+    "platform.recoveries",
+    "platform.audit",
+    "platform.assistant.usage",
+    "personal.account",
+    "personal.organizations"
+  ],
+  "AssistantToolState": [
+    "running",
+    "complete",
+    "failed"
+  ],
+  "AssistantUsageGrouping": [
+    "day",
+    "person",
+    null
+  ],
+  "AssistantUsageRowKind": [
+    "organization",
+    "person",
+    "day",
+    "personal",
+    "operator"
+  ],
+  "BusinessSignupMode": [
+    "Open",
+    "RequiresApproval",
+    "Closed"
+  ],
+  "CompanyMembershipStatus": [
+    "Active",
+    "Inactive"
+  ],
+  "CompanyMemberState": [
+    "Active",
+    "PendingDeletion",
+    "Inactive",
+    "Invited",
+    "Expired"
+  ],
+  "CompanyStatus": [
+    "Active",
+    "Inactive"
+  ],
+  "ConsumerSignupMode": [
+    "Open",
+    "Closed"
+  ],
+  "DayOfWeek": [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+  ],
+  "HomePublicPageState": [
+    "Published",
+    "Draft",
+    "Blocked"
+  ],
+  "InvitationDeliveryStatus": [
+    "Pending",
+    "Sent",
+    "Uncertain",
+    "Failed",
+    null
+  ],
+  "InvitationPreviewState": [
+    "NoAccount",
+    "SignInRequired",
+    "Ready",
+    "WrongSession",
+    "Expired",
+    "Invalid",
+    "OrganizationSuspended",
+    "Accepted"
+  ],
+  "LegalDocumentKind": [
+    "Terms",
+    "Privacy"
+  ],
+  "LoginAuditMethod": [
+    "Code",
+    "Google",
+    "WhatsAppCode",
+    "WhatsAppLink",
+    "Authenticator",
+    "RecoveryCode",
+    null
+  ],
+  "LoginCodeNextStep": [
+    "authorize",
+    "platformFactor"
+  ],
+  "LoginMethodType": [
+    "Email",
+    "Phone",
+    "Google"
+  ],
+  "MemberStatus": [
+    "Invited",
+    "Active",
+    "Inactive",
+    "Removed"
+  ],
+  "OrganizationUserState": [
+    "Active",
+    "PendingDeletion",
+    "Invited",
+    "Expired",
+    "Inactive"
+  ],
+  "PlatformAccountKind": [
+    "Person",
+    "Operator"
+  ],
+  "PlatformAccountState": [
+    "Active",
+    "Suspended",
+    "NeedsRecovery",
+    "PendingDeletion",
+    "Deleted",
+    "Invited",
+    "InvitationExpired"
+  ],
+  "PlatformFactorNextStep": [
+    "authorize",
+    "recoveryCodes"
+  ],
+  "PlatformFactorState": [
+    "verify",
+    "setup",
+    "recoveryCodes"
+  ],
+  "RoleScope": [
+    "Organization",
+    "AnyCompany",
+    "SpecificCompany"
+  ],
+  "RoleScopeFilter": [
+    "Organization",
+    "Company",
+    null
+  ],
+  "TenantDomainStatus": [
+    "Pending",
+    "Verified",
+    "Removed"
+  ],
+  "TenantFeatureSource": [
+    "Plan",
+    "Manual",
+    "Trial"
+  ],
+  "TenantRegistrationSource": [
+    "SelfService",
+    "Platform"
+  ],
+  "TenantSlugAvailability": [
+    "Available",
+    "Reserved",
+    "Taken"
+  ],
+  "TenantStatus": [
+    "PendingApproval",
+    "Provisioning",
+    "Active",
+    "Suspended",
+    "Closed"
+  ],
+  "TwoFactorMethod": [
+    "authenticator",
+    "recoveryCode"
+  ],
+  "UserStatus": [
+    "Active",
+    "Suspended",
+    "PendingDeletion",
+    "Deleted"
+  ],
+  "WhatsAppAudienceKind": [
+    "AllAccepting",
+    "Tag"
+  ],
+  "WhatsAppBotAction": [
+    "Team",
+    "Reply"
+  ],
+  "WhatsAppBroadcastStatus": [
+    "Scheduled",
+    "Sending",
+    "Sent",
+    "Cancelled"
+  ],
+  "WhatsAppChatMessageKind": [
+    "Text",
+    "Template",
+    "Note",
+    "Event",
+    "Media"
+  ],
+  "WhatsAppChatMessageStatus": [
+    "Received",
+    "Pending",
+    "Sent",
+    "Delivered",
+    "Read",
+    "Failed",
+    "Uncertain"
+  ],
+  "WhatsAppConsent": [
+    "Accepted",
+    "Declined",
+    "NoAnswer",
+    "Unsubscribed"
+  ],
+  "WhatsAppConsentSource": [
+    "Bot",
+    "Import",
+    "Manual",
+    "Unsubscribe",
+    null
+  ],
+  "WhatsAppConversationFilter": [
+    "Untaken",
+    "Mine",
+    "All",
+    null
+  ],
+  "WhatsAppInbox": [
+    "Customers",
+    "Internal",
+    null
+  ],
+  "WhatsAppMediaKind": [
+    "Image",
+    "Audio",
+    "Video",
+    "Document",
+    "Sticker",
+    "Location",
+    "Other",
+    null
+  ],
+  "WhatsAppMessageDirection": [
+    "Inbound",
+    "Outbound"
+  ],
+  "WhatsAppNumberStatus": [
+    "Connected",
+    "PaymentMissing",
+    "Disconnected"
+  ],
+  "WhatsAppPhoneImportOutcome": [
+    "AlreadyMember",
+    "Invite",
+    "Invalid"
+  ],
+  "WhatsAppRecipientStatus": [
+    "Pending",
+    "Sent",
+    "Delivered",
+    "Read",
+    "Replied",
+    "Unsubscribed",
+    "Failed",
+    "Uncertain"
+  ],
+  "WhatsAppTemplateCategory": [
+    "Utility",
+    "Marketing",
+    "Authentication"
+  ],
+  "WhatsAppTemplateGroup": [
+    "Consultations",
+    "System",
+    null
+  ],
+  "WhatsAppTemplateStatus": [
+    "Pending",
+    "Approved",
+    "Rejected",
+    "Paused"
+  ]
+} as const;
+
 export const organizationAuditCategories = ["users","roles","companies","settings","organization"] as const;

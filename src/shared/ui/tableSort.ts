@@ -1,4 +1,5 @@
 import type { TFunction } from "i18next";
+import { schemaEnums } from "@/shared/api/generated/validation";
 import type { Column } from "./DataTable";
 
 /// El orden de una tabla (264): el encabezado y «Ordenar por» mueven el mismo, que va en la dirección como `sort=campo`
@@ -80,6 +81,15 @@ export function sortByLabel(t: TFunction, columns: readonly SortableColumn[], so
 
 type Comparable = string | number | boolean | null | undefined;
 
+const declaredEnums: Readonly<Record<string, readonly (string | null)[] | undefined>> = schemaEnums;
+
+/// El lugar de un valor en su circuito; uno que el circuito no nombra ordena por su texto, después de los que sí.
+function circuitPosition(circuit: readonly (string | null)[] | undefined, value: string | null | undefined): Comparable {
+  if (value == null) return undefined;
+  const index = circuit?.indexOf(value) ?? -1;
+  return index < 0 ? value : index;
+}
+
 function comparableOf<TRow>(column: Column<TRow>, row: TRow): Comparable {
   switch (column.type) {
     case "actions": return undefined;
@@ -87,12 +97,9 @@ function comparableOf<TRow>(column: Column<TRow>, row: TRow): Comparable {
     case "money": return column.value(row)?.amount;
     case "dateRange": return column.value(row)?.start;
     case "taxId": return column.value(row)?.number;
-    case "status": {
-      const value = column.value(row);
-      if (value == null) return undefined;
-      const index = Object.keys(column.tones.tones).indexOf(value);
-      return index < 0 ? value : index;
-    }
+    case "status": return circuitPosition(Object.keys(column.tones.tones), column.value(row));
+    // Un tipo del contrato ordena por el orden en que lo declaró el back, igual que ApplySort, y nunca por su nombre.
+    case "enum": return circuitPosition(declaredEnums[column.enum], column.value(row));
     default: return column.value(row);
   }
 }

@@ -47,6 +47,16 @@ describe("sortRows", () => {
     expect(ids(sortRows(rows, columns, "-status"))).toEqual(["2", "1", "4", "3"]);
   });
 
+  it("un tipo del contrato ordena por el orden en que lo declaró el back, como ApplySort, y no por su nombre", () => {
+    // TenantFeatureSource se declara Plan, Manual, Trial: por el nombre saldría Manual, Plan, Trial.
+    interface Feature { id: string; source: "Plan" | "Manual" | "Trial" | null }
+    const features: Feature[] = [{ id: "a", source: "Trial" }, { id: "b", source: null }, { id: "c", source: "Manual" }, { id: "d", source: "Plan" }];
+    const sourceColumns: Column<Feature>[] = [{ id: "source", header: "Origen", type: "enum", enum: "TenantFeatureSource", value: (row) => row.source, sortable: true }];
+    const sorted = (sort: string) => sortRows(features, sourceColumns, sort).map((row) => row.id);
+    expect(sorted("source")).toEqual(["d", "c", "a", "b"]);
+    expect(sorted("-source")).toEqual(["a", "c", "d", "b"]);
+  });
+
   it("sin orden, con uno que no es una columna o una columna que no ordena, deja las filas como llegaron", () => {
     expect(ids(sortRows(rows, columns, undefined))).toEqual(["1", "2", "3", "4"]);
     expect(ids(sortRows(rows, columns, "-unknown"))).toEqual(["1", "2", "3", "4"]);
