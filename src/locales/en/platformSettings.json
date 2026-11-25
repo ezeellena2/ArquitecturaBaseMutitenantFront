@@ -4,11 +4,36 @@
   "back": "Back",
   "signupTitle": "Signups and creation",
   "contactTitle": "Contact",
+  "namesTitle": "Name and emails",
+  "privacyTitle": "Privacy and retention",
+  "privacyHelp": "The privacy policy has to promise these same periods.",
   "discard": "Discard changes",
   "save": "Save changes",
   "saving": "Saving…",
   "saved": "Settings saved.",
-  "fields": { "consumerSignup": "Consumer signups", "businessSignup": "Organization creation", "maxOwnedOrganizations": "Organizations owned per person", "salesEmail": "Sales email", "supportEmail": "Support email" },
+  "fields": { "consumerSignup": "Consumer signups", "businessSignup": "Organization creation", "maxOwnedOrganizations": "Organizations owned per person", "salesEmail": "Sales email", "supportEmail": "Support email",
+    "appName": "App name", "senderName": "Sender name", "emailLogoUrl": "Email logo",
+    "loginAuditRetentionMonths": "Sign-in data", "loginCodeRetentionDays": "Codes and links", "closedInvitationRetentionDays": "Closed invitations" },
+  "help": {
+    "appName": "Up to {{max}} characters. Used in emails, WhatsApp bot messages and the browser tab.",
+    "senderName": "Up to {{max}} characters. The name emails arrive from.",
+    "emailLogoUrl": "Empty, or an address that starts with https://.",
+    "loginAuditRetentionMonths": "From {{min}} to {{max}} months. After that, the IP address and browser of each sign-in are deleted.",
+    "loginCodeRetentionDays": "From {{min}} to {{max}} days.",
+    "closedInvitationRetentionDays": "From {{min}} to {{max}} days. An accepted, revoked or expired invitation."
+  },
+  "units": { "months_one": "month", "months_other": "months", "days_one": "day", "days_other": "days" },
+  "preview": {
+    "title": "How it arrives",
+    "label": "How a code email arrives",
+    "from": "From",
+    "subject": "Subject",
+    "code": "483920",
+    "subjectText": "{{code}} is your access code for {{app}}",
+    "heading": "Your access code",
+    "body": "Use this code to sign in to {{app}}:",
+    "note": "It expires in 10 minutes. If you didn't request it, ignore this email: nobody can get into your account without the code."
+  },
   "consumer": {
     "Open": { "label": "Open", "description": "Anyone can create an account with their email or WhatsApp." },
     "Closed": { "label": "Closed", "description": "Only people invited to an organization can join." }
@@ -18,7 +43,7 @@
     "RequiresApproval": { "label": "Requires approval", "description": "It waits until an operator approves it." },
     "Closed": { "label": "Closed", "description": "Only the platform can create organizations." }
   },
-  "validation": { "range": "Use a number from 1 to 50.", "email": "Enter a valid email." },
+  "validation": { "range": "Use a number from 1 to 50.", "email": "Enter a valid email.", "between": "It has to be from {{min}} to {{max}}.", "name": "Enter a name of up to {{max}} characters.", "logo": "Use an address that starts with https://." },
   "confirmTitle": "Save the settings?",
   "confirmDescription": "It changes how new people and organizations get in, and the usage limits. What already exists doesn't change.",
   "confirm": "Save",

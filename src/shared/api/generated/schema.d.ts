@@ -8297,7 +8297,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Configuración de WhatsApp de la organización (272): chatRetentionDays, de 1 al máximo de la plataforma, con version en el PUT y el 409 de siempre. Un valor fuera de su mínimo o su máximo es el 400 de validación en su campo. 501 hasta la B18. */
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Configuración de WhatsApp de la organización (272): chatRetentionDays, de 1 al máximo de la plataforma, con version en el PUT y el 409 de siempre. Un valor fuera de su mínimo o su máximo es el 400 de validación en su campo. */
         get: {
             parameters: {
                 query?: never;
@@ -8356,18 +8356,9 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
-        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Configuración de WhatsApp de la organización (272): chatRetentionDays, de 1 al máximo de la plataforma, con version en el PUT y el 409 de siempre. Un valor fuera de su mínimo o su máximo es el 400 de validación en su campo. 501 hasta la B18. */
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Configuración de WhatsApp de la organización (272): chatRetentionDays, de 1 al máximo de la plataforma, con version en el PUT y el 409 de siempre. Un valor fuera de su mínimo o su máximo es el 400 de validación en su campo. */
         put: {
             parameters: {
                 query?: never;
@@ -8450,15 +8441,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         post?: never;
@@ -8475,7 +8457,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Configuración de WhatsApp de la plataforma (270 y 272): allowedCountries (al menos uno, de los países habilitados, sin repetir), chatRetentionDays y maxOrganizationChatRetentionDays, con version en el PUT y el 409 de siempre. Un valor fuera de su mínimo o su máximo es el 400 de validación en su campo. 501 hasta la B18. */
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Configuración de WhatsApp de la plataforma (270 y 272): allowedCountries (al menos uno, de los países habilitados, sin repetir), chatRetentionDays y maxOrganizationChatRetentionDays, con version en el PUT y el 409 de siempre. Un valor fuera de su mínimo o su máximo es el 400 de validación en su campo. */
         get: {
             parameters: {
                 query?: never;
@@ -8534,18 +8516,9 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
-        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Configuración de WhatsApp de la plataforma (270 y 272): allowedCountries (al menos uno, de los países habilitados, sin repetir), chatRetentionDays y maxOrganizationChatRetentionDays, con version en el PUT y el 409 de siempre. Un valor fuera de su mínimo o su máximo es el 400 de validación en su campo. 501 hasta la B18. */
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Configuración de WhatsApp de la plataforma (270 y 272): allowedCountries (al menos uno, de los países habilitados, sin repetir), chatRetentionDays y maxOrganizationChatRetentionDays, con version en el PUT y el 409 de siempre. Un valor fuera de su mínimo o su máximo es el 400 de validación en su campo. */
         put: {
             parameters: {
                 query?: never;
@@ -8621,15 +8594,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };

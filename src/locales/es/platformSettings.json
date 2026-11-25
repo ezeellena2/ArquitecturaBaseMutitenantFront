@@ -4,11 +4,36 @@
   "back": "Volver",
   "signupTitle": "Registro y altas",
   "contactTitle": "Contacto",
+  "namesTitle": "Nombre y correos",
+  "privacyTitle": "Privacidad y retención",
+  "privacyHelp": "La política de privacidad tiene que prometer estos mismos plazos.",
   "discard": "Descartar cambios",
   "save": "Guardar cambios",
   "saving": "Guardando…",
   "saved": "Guardamos la configuración.",
-  "fields": { "consumerSignup": "Registro de personas", "businessSignup": "Alta de organizaciones", "maxOwnedOrganizations": "Organizaciones propias por persona", "salesEmail": "Correo de ventas", "supportEmail": "Correo de soporte" },
+  "fields": { "consumerSignup": "Registro de personas", "businessSignup": "Alta de organizaciones", "maxOwnedOrganizations": "Organizaciones propias por persona", "salesEmail": "Correo de ventas", "supportEmail": "Correo de soporte",
+    "appName": "Nombre de la aplicación", "senderName": "Nombre del remitente", "emailLogoUrl": "Logo de los correos",
+    "loginAuditRetentionMonths": "Datos de los ingresos", "loginCodeRetentionDays": "Códigos y enlaces", "closedInvitationRetentionDays": "Invitaciones cerradas" },
+  "help": {
+    "appName": "Hasta {{max}} caracteres. Va en los correos, los mensajes del bot de WhatsApp y la pestaña del navegador.",
+    "senderName": "Hasta {{max}} caracteres. Es el nombre con el que llegan los correos.",
+    "emailLogoUrl": "Vacío, o una dirección que empieza con https://.",
+    "loginAuditRetentionMonths": "De {{min}} a {{max}} meses. Pasado el plazo se borra la dirección IP y el navegador de cada ingreso.",
+    "loginCodeRetentionDays": "De {{min}} a {{max}} días.",
+    "closedInvitationRetentionDays": "De {{min}} a {{max}} días. Una invitación aceptada, revocada o vencida."
+  },
+  "units": { "months_one": "mes", "months_other": "meses", "days_one": "día", "days_other": "días" },
+  "preview": {
+    "title": "Así llega",
+    "label": "Así llega el correo de un código",
+    "from": "De",
+    "subject": "Asunto",
+    "code": "483920",
+    "subjectText": "{{code}} es tu código de acceso a {{app}}",
+    "heading": "Tu código de acceso",
+    "body": "Usá este código para ingresar a {{app}}:",
+    "note": "Vence en 10 minutos. Si no lo pediste, ignorá este correo: nadie puede entrar a tu cuenta sin el código."
+  },
   "consumer": {
     "Open": { "label": "Abierto", "description": "Cualquiera crea su cuenta con su correo o su WhatsApp." },
     "Closed": { "label": "Cerrado", "description": "Solo entran las personas invitadas a una organización." }
@@ -18,7 +43,7 @@
     "RequiresApproval": { "label": "Requiere aprobación", "description": "Queda esperando hasta que un operador la aprueba." },
     "Closed": { "label": "Cerrada", "description": "Solo la plataforma crea organizaciones." }
   },
-  "validation": { "range": "Usá un número de 1 a 50.", "email": "Ingresá un correo válido." },
+  "validation": { "range": "Usá un número de 1 a 50.", "email": "Ingresá un correo válido.", "between": "Tiene que ser de {{min}} a {{max}}.", "name": "Escribí un nombre de hasta {{max}} caracteres.", "logo": "Usá una dirección que empiece con https://." },
   "confirmTitle": "¿Guardar la configuración?",
   "confirmDescription": "Cambia cómo entran las personas y las organizaciones nuevas, y los límites de uso. Lo que ya existe no cambia.",
   "confirm": "Guardar",

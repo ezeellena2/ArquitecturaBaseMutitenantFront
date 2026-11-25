@@ -4,7 +4,7 @@ import type { ApiSchemas } from "@/shared/api/types";
 export const platformSettingsFixture: ApiSchemas["PlatformSettingsResponse"] = {
   consumerSignup: "Open", businessSignup: "RequiresApproval", maxOwnedOrganizations: 3,
   salesEmail: "ventas@ejemplo.com", supportEmail: "soporte@ejemplo.com", version: 1,
-  // Contrato de la segunda parte de la base (272 y 273): los valores por defecto, hasta que F13 sume sus zonas.
+  // Contrato de la segunda parte de la base (272 y 273): los valores por defecto de «Privacidad y retención» y «Nombre y correos».
   loginAuditRetentionMonths: 12, loginCodeRetentionDays: 30, closedInvitationRetentionDays: 30,
   appName: "ArquitecturaBase", senderName: "ArquitecturaBase", emailLogoUrl: null,
   // Contrato E9: las cuotas de arranque (P3) hasta que F4 sume su editor.

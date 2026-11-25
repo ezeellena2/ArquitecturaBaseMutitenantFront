@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
 import { useCallback, useMemo, useRef, useState } from "react";
-import { useController } from "react-hook-form";
+import { useController, useWatch, type Control } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -20,6 +20,7 @@ import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { ReasonDialog, type ReasonDialogValues } from "@/shared/platform/ReasonDialog";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
 import { EmailField } from "@/shared/ui/fields/EmailField";
 import { NumberField } from "@/shared/ui/fields/NumberField";
 import { FormError } from "@/shared/ui/FormError";
@@ -30,10 +31,18 @@ import { Page } from "@/shared/ui/Page";
 import { Section, SectionFields } from "@/shared/ui/Section";
 import { Picker } from "@/shared/ui/Picker";
 import { fetchPlatformSettings, platformSettingsKey, updatePlatformSettings } from "../api/platformSettings";
+import { EmailPreview, isEmailLogoUrl } from "../components/EmailPreview";
 import { RateLimitsSection } from "../components/RateLimitsSection";
 import { draftsOf, rateLimitBounds, rateLimitProfiles, rateLimitsInput, sameRateLimits, validPermitLimit, validWindow } from "../lib/rateLimits";
 import { useFormat, type FormatState } from "@/shared/format/useFormat";
 import { useRecentAuthenticationPurpose, useVisiblePending } from "@/shared/api/recentAuthentication";
+
+// Los límites del contrato (272 y 273, spec «Base de la 12, segunda parte»): openapi.json todavía no los publica, y el
+// back los vuelve a validar con el 400 de siempre en su campo.
+export const retentionBounds = { loginAuditRetentionMonths: { min: 1, max: 120 }, loginCodeRetentionDays: { min: 1, max: 3650 }, closedInvitationRetentionDays: { min: 7, max: 3650 } } as const;
+export const emailNameMaxLength = 60;
+type RetentionField = keyof typeof retentionBounds;
+const retentionFields = Object.keys(retentionBounds) as RetentionField[];
 
 function settingsFormSchema(t: TFunction, format: FormatState) {
   // Validación exacta del tablero Config-Plat; NumberField y EmailField normalizan la entrada.
@@ -42,8 +51,13 @@ function settingsFormSchema(t: TFunction, format: FormatState) {
   const permits = t("platformSettings:rateLimits.validation.requests", { min: format.formatInteger(rateLimitBounds.permitLimit.minimum), max: format.formatInteger(rateLimitBounds.permitLimit.maximum) });
   const quota = z.object({ permitLimit: z.number().nullable().refine(validPermitLimit, permits), amount: z.number().nullable(), unit: z.enum(["s", "m", "h"]) })
     .superRefine((value, context) => { if (!validWindow(value)) context.addIssue({ code: "custom", path: ["amount"], message: t("platformSettings:rateLimits.validation.every") }); });
+  const within = (field: RetentionField) => { const { min, max } = retentionBounds[field];
+    return z.number().nullable().refine((value) => value !== null && Number.isInteger(value) && value >= min && value <= max, t("platformSettings:validation.between", { min: format.formatInteger(min), max: format.formatInteger(max) })); };
+  const name = z.string().refine((value) => value.trim().length > 0 && value.trim().length <= emailNameMaxLength, t("platformSettings:validation.name", { max: format.formatInteger(emailNameMaxLength) }));
   return z.object({ consumerSignup: z.enum(["Open", "Closed"]), businessSignup: z.enum(["Open", "RequiresApproval", "Closed"]),
     maxOwnedOrganizations: z.number().nullable().refine((value) => value !== null && Number.isInteger(value) && value >= validationConstraints.UpdatePlatformSettingsHttpRequest.maxOwnedOrganizations.minimum && value <= validationConstraints.UpdatePlatformSettingsHttpRequest.maxOwnedOrganizations.maximum, t("platformSettings:validation.range")), salesEmail: email, supportEmail: email,
+    appName: name, senderName: name, emailLogoUrl: z.string().refine((value) => value.trim() === "" || isEmailLogoUrl(value), t("platformSettings:validation.logo")),
+    loginAuditRetentionMonths: within("loginAuditRetentionMonths"), loginCodeRetentionDays: within("loginCodeRetentionDays"), closedInvitationRetentionDays: within("closedInvitationRetentionDays"),
     rateLimits: z.object({ ip: quota, publicIp: quota, identity: quota, tenant: quota, loginCode: quota, loginVerify: quota, invitationPreview: quota, invitationAccept: quota,
       assistantQuickQuery: quota, assistantConversation: quota, assistantNewKey: quota, whatsAppWebhook: quota }) });
 }
@@ -51,13 +65,16 @@ export type SettingsForm = z.infer<ReturnType<typeof settingsFormSchema>>;
 type SettingsConfirmation = { values: SettingsForm; version: number; draft: number; read: PlatformSettingsResponse };
 type SettingsField = keyof SettingsForm | `rateLimits.${(typeof rateLimitProfiles)[number]["key"]}.${"permitLimit" | "amount"}`;
 const serverFields: Record<string, SettingsField> = { consumerSignup: "consumerSignup", businessSignup: "businessSignup", maxOwnedOrganizations: "maxOwnedOrganizations", salesEmail: "salesEmail", supportEmail: "supportEmail",
+  appName: "appName", senderName: "senderName", emailLogoUrl: "emailLogoUrl", loginAuditRetentionMonths: "loginAuditRetentionMonths", loginCodeRetentionDays: "loginCodeRetentionDays", closedInvitationRetentionDays: "closedInvitationRetentionDays",
   ...Object.fromEntries(rateLimitProfiles.flatMap(({ key }) => [[`rateLimits.${key}.permitLimit`, `rateLimits.${key}.permitLimit`], [`rateLimits.${key}.windowSeconds`, `rateLimits.${key}.amount`]])) };
 function valuesFromSettings(settings: PlatformSettingsResponse): SettingsForm {
   return { consumerSignup: settings.consumerSignup, businessSignup: settings.businessSignup, maxOwnedOrganizations: settings.maxOwnedOrganizations,
-    salesEmail: settings.salesEmail ?? null, supportEmail: settings.supportEmail ?? null, rateLimits: draftsOf(settings.rateLimits) };
+    salesEmail: settings.salesEmail ?? null, supportEmail: settings.supportEmail ?? null, appName: settings.appName, senderName: settings.senderName, emailLogoUrl: settings.emailLogoUrl ?? "",
+    loginAuditRetentionMonths: settings.loginAuditRetentionMonths, loginCodeRetentionDays: settings.loginCodeRetentionDays, closedInvitationRetentionDays: settings.closedInvitationRetentionDays, rateLimits: draftsOf(settings.rateLimits) };
 }
 function sameValues(left: SettingsForm, right: SettingsForm) {
   return left.consumerSignup === right.consumerSignup && left.businessSignup === right.businessSignup && left.maxOwnedOrganizations === right.maxOwnedOrganizations && left.salesEmail === right.salesEmail && left.supportEmail === right.supportEmail
+    && left.appName === right.appName && left.senderName === right.senderName && left.emailLogoUrl === right.emailLogoUrl && retentionFields.every((field) => left[field] === right[field])
     && sameRateLimits(left.rateLimits, right.rateLimits);
 }
 function sameRead(left: PlatformSettingsResponse, right: PlatformSettingsResponse) {
@@ -119,16 +136,20 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
   }
   async function execute(sent: SettingsConfirmation, reason: ReasonDialogValues, reasonCurrent: () => boolean): Promise<VersionResponse> {
     const valid = () => current(sent) && reasonCurrent();
-    if (!valid() || sent.values.maxOwnedOrganizations === null) throw new DOMException("", "AbortError");
+    if (!valid() || sent.values.maxOwnedOrganizations === null || retentionFields.some((field) => sent.values[field] === null)) throw new DOMException("", "AbortError");
     setBusy(true);
     try {
-      const { rateLimits, ...rest } = sent.values;
+      const { rateLimits, ...fields } = sent.values;
+      // El nombre, el remitente y el logo van sin espacios a los lados; el logo vacío lo quita (273).
+      const rest = { ...fields, appName: fields.appName.trim(), senderName: fields.senderName.trim(), emailLogoUrl: fields.emailLogoUrl.trim() };
       // Van los doce límites completos: el contrato no admite unos sí y otros no.
       const response = await updatePlatformSettings({ ...rest, rateLimits: rateLimitsInput(rateLimits), version: sent.version, reason: reason.reason });
       if (!valid()) throw new DOMException("", "AbortError");
       // La escritura propia cambia la base antes de cualquier invalidación/GET; una lectura vieja nunca la reemplaza.
       wrote(sent.version, response.version, undefined); form.reset(sent.values);
-      ownRead.current = { previous: sent.read, saved: { ...sent.read, ...rest, maxOwnedOrganizations: sent.values.maxOwnedOrganizations, rateLimits: rateLimitsInput(rateLimits), version: response.version } };
+      ownRead.current = { previous: sent.read, saved: { ...sent.read, ...rest, maxOwnedOrganizations: sent.values.maxOwnedOrganizations, emailLogoUrl: rest.emailLogoUrl || null,
+        loginAuditRetentionMonths: sent.values.loginAuditRetentionMonths!, loginCodeRetentionDays: sent.values.loginCodeRetentionDays!, closedInvitationRetentionDays: sent.values.closedInvitationRetentionDays!,
+        rateLimits: rateLimitsInput(rateLimits), version: response.version } };
       setFailure(undefined); toast.success(t("platformSettings:saved")); abandon();
       void client.invalidateQueries({ queryKey: platformSettingsKey });
       return response;
@@ -141,6 +162,8 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
     }
   }
   const errors = form.formState.errors;
+  const [appName, senderName, logoUrl] = useWatch({ control: form.control, name: ["appName", "senderName", "emailLogoUrl"] });
+  const text = (field: "appName" | "senderName" | "emailLogoUrl") => form.register(field, { onChange: () => changed(field) });
   return <>
     <Page title={t("platformSettings:title")} phoneSubtitle={t("platformSettings:administration")}
       backTo={phone ? { to: "/plataforma/mas", label: t("platformSettings:back") } : undefined} banner={edit.banner}
@@ -168,6 +191,22 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
             <EmailField name={support.field.name} value={support.field.value} onChange={(value) => { changed("supportEmail"); support.field.onChange(value); }} />
           </FormField>
         </SectionFields></Section>
+        {/* Tablero Config-Plat-Base2: «Nombre y correos» (273) con «Así llega», y «Privacidad y retención» (272). */}
+        <Section title={t("platformSettings:namesTitle")} phone="inset"><SectionFields className="grid gap-3.5 lg:grid-cols-2 lg:gap-x-5">
+          <FormField label={t("platformSettings:fields.appName")} help={t("platformSettings:help.appName", { max: format.formatInteger(emailNameMaxLength) })} error={errors.appName?.message}>
+            <Input {...text("appName")} maxLength={emailNameMaxLength} autoComplete="off" />
+          </FormField>
+          <FormField label={t("platformSettings:fields.senderName")} help={t("platformSettings:help.senderName", { max: format.formatInteger(emailNameMaxLength) })} error={errors.senderName?.message}>
+            <Input {...text("senderName")} maxLength={emailNameMaxLength} autoComplete="off" />
+          </FormField>
+          <FormField label={t("platformSettings:fields.emailLogoUrl")} help={t("platformSettings:help.emailLogoUrl")} error={errors.emailLogoUrl?.message}>
+            <Input {...text("emailLogoUrl")} type="url" inputMode="url" placeholder="https://" autoComplete="off" />
+          </FormField>
+          <EmailPreview appName={appName} senderName={senderName} logoUrl={logoUrl} />
+        </SectionFields></Section>
+        <Section title={t("platformSettings:privacyTitle")} help={t("platformSettings:privacyHelp")} phone="inset"><SectionFields className="grid gap-3.5 lg:grid-cols-2 lg:gap-x-5">
+          {retentionFields.map((field) => <RetentionInput key={field} field={field} control={form.control} error={errors[field]?.message} onChange={() => changed(field)} />)}
+        </SectionFields></Section>
         <RateLimitsSection control={form.control} errors={errors.rateLimits} onChange={(profile) => { abandon(); form.clearErrors(`rateLimits.${profile}`); setFailure(undefined); }} />
       </form>
     </Page>
@@ -175,6 +214,17 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
       onClose={() => { if (choice.current === confirmation) abandon(); }} execute={(reason, reasonCurrent) => execute(confirmation, reason, reasonCurrent)} /> : null}
     {edit.leaveDialog}
   </>;
+}
+
+/** Un plazo de «Privacidad y retención» con su unidad y su (i) con el rango (272). */
+function RetentionInput({ field, control, error, onChange }: { field: RetentionField; control: Control<SettingsForm>; error?: string; onChange: () => void }) {
+  const { t } = useTranslation("platformSettings"); const format = useFormat();
+  const value = useController({ control, name: field }); const { min, max } = retentionBounds[field];
+  const unit = field === "loginAuditRetentionMonths" ? "units.months" : "units.days";
+  return <FormField label={t(`fields.${field}`)} help={t(`help.${field}`, { min: format.formatInteger(min), max: format.formatInteger(max) })} error={error}>
+    <NumberField name={value.field.name} value={value.field.value} unit={t(unit, { count: value.field.value ?? 2 })}
+      onChange={(next) => { onChange(); value.field.onChange(next); }} />
+  </FormField>;
 }
 
 function SettingsReasonConfirmation({ confirmation, current, onClose, execute }: { confirmation: SettingsConfirmation; current: () => boolean; onClose: () => void;

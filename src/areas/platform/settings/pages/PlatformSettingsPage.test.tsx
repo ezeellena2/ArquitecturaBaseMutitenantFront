@@ -81,7 +81,9 @@ describe("Configuración de Plataforma", { timeout: 15_000 }, () => {
     await user.click(within(dialog).getByRole("button", { name: "Guardar" })); expect(await screen.findByText("Escribí el motivo.")).toBeVisible(); expect(requests).toHaveLength(0);
     fireEvent.change(within(dialog).getByRole("textbox", { name: "Motivo" }), { target: { value: " Revisamos el registro. " } }); await user.click(within(dialog).getByRole("button", { name: "Guardar" }));
     expect(await screen.findByText("Guardamos la configuración.")).toBeVisible(); expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(requests[0]).toEqual({ consumerSignup: "Open", businessSignup: "RequiresApproval", maxOwnedOrganizations: Number(value), salesEmail: "nuevo@ejemplo.com", supportEmail: "soporte@ejemplo.com", rateLimits: platformSettingsFixture.rateLimits, version: 1, reason: "Revisamos el registro." });
+    expect(requests[0]).toEqual({ consumerSignup: "Open", businessSignup: "RequiresApproval", maxOwnedOrganizations: Number(value), salesEmail: "nuevo@ejemplo.com", supportEmail: "soporte@ejemplo.com",
+      appName: "ArquitecturaBase", senderName: "ArquitecturaBase", emailLogoUrl: "", loginAuditRetentionMonths: 12, loginCodeRetentionDays: 30, closedInvitationRetentionDays: 30,
+      rateLimits: platformSettingsFixture.rateLimits, version: 1, reason: "Revisamos el registro." });
     expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled(); await waitFor(() => expect(getRelease).toBeDefined());
     change("Correo de soporte", "ayuda@ejemplo.com"); await send(user); await waitFor(() => expect(requests).toHaveLength(2)); expect(requests[1].version).toBe(17);
     await act(async () => { getRelease?.(); }); await waitFor(() => expect(page.queryClient.isFetching({ queryKey: key })).toBe(0));

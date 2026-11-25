@@ -18,11 +18,13 @@ interface NumberFieldProps {
   "aria-describedby"?: string;
   /** Sin rótulo propio, como una celda de una tabla editable (los límites de uso de Configuración). */
   "aria-label"?: string;
+  /** La unidad a la derecha de un campo angosto («días», «meses»): los plazos de Configuración (272). */
+  unit?: string;
 }
 
 /** Cantidad cultural; digits fija la escala si el contrato lo requiere. */
 export function NumberField({ value, onChange, onValidityChange, digits, id, name, disabled, required, placeholder,
-  "aria-invalid": externalInvalid, "aria-describedby": externalDescription, "aria-label": label }: NumberFieldProps) {
+  "aria-invalid": externalInvalid, "aria-describedby": externalDescription, "aria-label": label, unit }: NumberFieldProps) {
   const format = useFormat();
   const { t } = useTranslation();
   const messageId = useId();
@@ -55,12 +57,14 @@ export function NumberField({ value, onChange, onValidityChange, digits, id, nam
 
   const showError = invalid && touched;
   const description = [externalDescription, showError ? messageId : undefined].filter(Boolean).join(" ") || undefined;
+  const input = <Input ref={inputRef} id={id} name={name} type="text" inputMode="decimal" value={inputValue} className={unit ? "w-27.5 flex-none" : undefined}
+    onBlur={() => { if (invalid) setTouched(true); else setDraft(null); }}
+    onChange={(event) => change(event.target.value)} disabled={disabled || format.isLoading}
+    required={required} placeholder={placeholder} aria-busy={format.isLoading}
+    aria-invalid={externalInvalid || showError} aria-describedby={description} aria-label={label} />;
   return <>
-    <Input ref={inputRef} id={id} name={name} type="text" inputMode="decimal" value={inputValue}
-      onBlur={() => { if (invalid) setTouched(true); else setDraft(null); }}
-      onChange={(event) => change(event.target.value)} disabled={disabled || format.isLoading}
-      required={required} placeholder={placeholder} aria-busy={format.isLoading}
-      aria-invalid={externalInvalid || showError} aria-describedby={description} aria-label={label} />
+    {/* Tableros Config-Plat-Base2 y WA-Config-Base2 (.b2-num): el campo de 110 y la unidad a 8, en gris. */}
+    {unit ? <span className="flex items-center gap-2">{input}<span className="text-[0.875rem] text-[var(--t2)]">{unit}</span></span> : input}
     {showError && <p id={messageId} role="alert" className="text-[0.8125rem] text-[var(--peligro)]">{t(`fields.${problem}`)}</p>}
   </>;
 }
