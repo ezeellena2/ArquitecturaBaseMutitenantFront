@@ -449,7 +449,8 @@ export async function runAssistantJourney({ page, platformPage, width, env, base
   await step("E8B-60-2", async () => {
     await control("quotas", { ...actor, remainingMessages: 0, monthlyFraction: 0 });
     await home(page, base, "business", width);
-    await page.getByText(/Llegaste a las .* consultas de hoy/).waitFor();
+    // LimitReached (F13, 283): «Usaste tus N consultas de hoy en <organización>. Vuelven el …, a las …, hora de …».
+    await page.getByText(/Usaste tus .* consultas de hoy.* Vuelven el .*, a las .*, hora de /).waitFor();
     const before = await control("providerCounters");
     await page.getByRole("button", { name: "Invitaciones vencidas", exact: true }).click();
     await page.getByRole("link", { name: "Ver en Usuarios", exact: true }).waitFor();
