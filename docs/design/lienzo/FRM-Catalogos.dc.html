@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>Catálogos · /org/formularios/catalogos · para aprobar</title>
+<title>Catálogos · /org/formularios/catalogos</title>
 <script src="./support.js"></script>
 <link rel="stylesheet" href="ds/ab/components/bundle.css">
 <script src="ds/ab/components/bundle.js"></script>
@@ -1173,7 +1173,7 @@ class Component extends DCLogic {
     const porOpciones = f === 'Ordenado por Opciones', ordMenu = f === 'Ordenar por abierto';
     return {
       si: true, no: false,
-      resumen: f === 'Vacío' ? 'Sin catálogos' : f === 'Cargando' || f === 'Error' ? '' : '7 catálogos · 6 activos',
+      resumen: f === 'Vacío' ? 'Sin catálogos' : f === 'Cargando' || f === 'Error' ? '' : '7 catálogos',
       conFiltros: f !== 'Vacío', busqueda: f === 'Sin coincidencias' ? 'herramientas' : 'Buscar por nombre', busClase: f === 'Sin coincidencias' ? 'lleno' : '',
       oriTexto: mano ? 'Origen: Escritas a mano' : miembros ? 'Origen: De los miembros' : contactos ? 'Origen: De los contactos de WhatsApp' : 'Origen',
       oriClase: elegido ? 'con' : '', oriMenu: f === 'Filtro abierto', oriExp: f === 'Filtro abierto' ? 'true' : 'false',
