@@ -14,6 +14,8 @@ import { AuthContext, type AuthContextProps } from "react-oidc-context";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { ModuleRegistryProvider } from "@/shared/modules/ModuleRegistry";
 import type { ModuleRegistration } from "@/shared/modules/types";
+import { AssistantActionRegistryProvider, type AssistantActionAdapter } from "@/shared/assistant-actions";
+import { assistantActionComposition } from "./assistantActionComposition";
 import { moduleComposition } from "./moduleComposition";
 
 function ReferenceDataStartup({ children }: { children: ReactNode }) {
@@ -38,12 +40,16 @@ function ReferenceDataStartup({ children }: { children: ReactNode }) {
   return children;
 }
 
-export function AppProviders({ children, client = queryClient, authContext, modules = moduleComposition }: { children: ReactNode; client?: QueryClient; authContext?: AuthContextProps; modules?: readonly ModuleRegistration[] }) {
+export function AppProviders({ children, client = queryClient, authContext, modules = moduleComposition, assistantActions = assistantActionComposition }: {
+  children: ReactNode; client?: QueryClient; authContext?: AuthContextProps; modules?: readonly ModuleRegistration[]; assistantActions?: readonly AssistantActionAdapter[];
+}) {
   const content = <QueryClientProvider client={client}>
     <ReferenceDataStartup>
       <FormatProvider>
         <Suspense fallback={null}>
-          <ModuleRegistryProvider value={modules}>{children}</ModuleRegistryProvider>
+          <ModuleRegistryProvider value={modules}>
+            <AssistantActionRegistryProvider value={assistantActions}>{children}</AssistantActionRegistryProvider>
+          </ModuleRegistryProvider>
         </Suspense>
       </FormatProvider>
     </ReferenceDataStartup>

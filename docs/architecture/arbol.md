@@ -196,6 +196,7 @@ El árbol ubica responsabilidades. Solo enumera archivos que sirven como modelo 
     │   ├── api/
     │   │   ├── generated/  NO SE EDITA A MANO
     │   │   └── httpClient.ts  cliente HTTP común
+    │   ├── assistant-actions/  registro de adaptadores y useAssistantProposal: el módulo del asistente y las áreas se hablan solo por acá (ADR 0068)
     │   ├── format/  ÚNICO lugar que formatea (formatos.md)
     │   ├── hooks/  de la base solo los hooks sin dependencias de etapas posteriores; cada uno con su test
     │   ├── i18n/
@@ -260,6 +261,7 @@ Decisión del usuario (2026-10-11): cada raíz de capa, área, módulo, proyecto
 | `src/shared/` | Componentes, hooks y servicios comunes a todas las áreas. | [docs/rules/estructura-y-features.md](../rules/estructura-y-features.md) | `src/shared/account/AddLoginMethodDialog.tsx` | [AGENTS.md](../../src/shared/AGENTS.md) |
 | `src/shared/account/` | Componentes y servicios de account. | [docs/rules/formularios.md](../rules/formularios.md) | `src/shared/account/AddLoginMethodDialog.tsx` | [AGENTS.md](../../src/shared/account/AGENTS.md) |
 | `src/shared/api/` | Cliente HTTP, contratos generados y alias tipados. | [docs/rules/datos-y-api.md](../rules/datos-y-api.md) | `src/shared/api/ApiError.ts` | [AGENTS.md](../../src/shared/api/AGENTS.md) |
+| `src/shared/assistant-actions/` | Registro de adaptadores y `useAssistantProposal` de las acciones del asistente (ADR 0068). | [docs/rules/datos-y-api.md](../rules/datos-y-api.md) | `src/shared/assistant-actions/useAssistantProposal.ts` | [AGENTS.md](../../src/shared/assistant-actions/AGENTS.md) |
 | `src/shared/format/` | Formateadores de datos visibles. | [docs/rules/formatos.md](../rules/formatos.md) | `src/shared/format/cultureName.ts` | [AGENTS.md](../../src/shared/format/AGENTS.md) |
 | `src/shared/hooks/` | Componentes y servicios de hooks. | [docs/rules/paginado-y-listados.md](../rules/paginado-y-listados.md) | `src/shared/hooks/usePagedQuery.ts` | [AGENTS.md](../../src/shared/hooks/AGENTS.md) |
 | `src/shared/modules/` | Manifiestos, registro y disponibilidad de módulos opcionales. | [docs/rules/estructura-y-features.md](../rules/estructura-y-features.md) | `src/shared/modules/ModuleRegistry.tsx` | [AGENTS.md](../../src/shared/modules/AGENTS.md) |

@@ -19,6 +19,29 @@ function waitForRetry(seconds: number, signal: AbortSignal): Promise<void> {
   });
 }
 
+const isInProgress = (error: unknown): error is ApiError => error instanceof ApiError && error.code === "Request.InProgress";
+
+/**
+ * Repite el envío con la misma clave mientras el servidor responda `Request.InProgress` (otro envío con esa clave
+ * todavía no terminó), con su Retry-After y hasta treinta veces. Lo usan esta mutación y la clave de una propuesta del
+ * asistente, que dos pestañas comparten.
+ */
+export async function retryWhileInProgress<T>(send: () => Promise<T>, signal: AbortSignal): Promise<T> {
+  let retries = 0;
+  for (;;) {
+    signal.throwIfAborted();
+    try {
+      const result = await send();
+      signal.throwIfAborted();
+      return result;
+    } catch (error) {
+      if (!isInProgress(error) || retries >= maxInProgressRetries) throw error;
+      retries++;
+      await waitForRetry(Math.max(1, error.retryAfterSeconds ?? 1), signal);
+    }
+  }
+}
+
 // El callback usa la clave con httpClient, por ejemplo:
 // (body, key) => api.post(path, body, { headers: { "Idempotency-Key": key } }).
 // La clave pertenece al formulario montado: red y 5xx la conservan; 4xx definitivos la renuevan.
@@ -54,31 +77,21 @@ export function useIdempotentMutation<TData, TVariables>(
       const key = keyRef.current!;
       const signal = lifetimeRef.current?.signal;
       if (!signal) throw new DOMException("", "AbortError");
-      let inProgressRetries = 0;
-      for (;;) {
-        signal.throwIfAborted();
-        try {
-          const result = await fn(variables, key);
-          signal.throwIfAborted();
-          if (keyRef.current === key) {
-            keyRef.current = globalThis.crypto.randomUUID();
-            operationRef.current = null;
-          }
-          return result;
-        } catch (error) {
-          if (error instanceof ApiError && error.code === "Request.InProgress") {
-            if (inProgressRetries >= maxInProgressRetries) throw error;
-            inProgressRetries++;
-            await waitForRetry(Math.max(1, error.retryAfterSeconds ?? 1), signal);
-            continue;
-          }
-          if (error instanceof ApiError && error.status >= 400 && error.status < 500
-            && keyRef.current === key && !signal.aborted) {
-            keyRef.current = globalThis.crypto.randomUUID();
-            operationRef.current = null;
-          }
-          throw error;
+      try {
+        const result = await retryWhileInProgress(() => fn(variables, key), signal);
+        if (keyRef.current === key) {
+          keyRef.current = globalThis.crypto.randomUUID();
+          operationRef.current = null;
         }
+        return result;
+      } catch (error) {
+        // Un Request.InProgress que agotó los reintentos no es un 4xx definitivo: la clave sigue.
+        if (error instanceof ApiError && error.status >= 400 && error.status < 500 && !isInProgress(error)
+          && keyRef.current === key && !signal.aborted) {
+          keyRef.current = globalThis.crypto.randomUUID();
+          operationRef.current = null;
+        }
+        throw error;
       }
     },
   });
