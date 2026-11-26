@@ -28,8 +28,7 @@ export const duplicatePath = (id: string) => `${newBroadcastPath}?${duplicateSou
 export const contactPath = (id: string) => `/org/whatsapp/contactos/${encodeURIComponent(id)}`;
 
 function dateCell(broadcast: WhatsAppBroadcastResponse): ReactNode {
-  const { value, withTime } = broadcastDate(broadcast);
-  return <DateText value={value} kind={withTime ? "dateTime" : "date"} />;
+  return <DateText value={broadcastDate(broadcast)} kind="dateTime" />;
 }
 
 export function createBroadcastColumns(t: TFunction): Column<WhatsAppBroadcastResponse>[] {

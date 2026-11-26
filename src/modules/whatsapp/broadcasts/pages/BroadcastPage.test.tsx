@@ -35,7 +35,8 @@ describe("Resultados de una difusión", () => {
     }));
     const { container, user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/difusiones/broadcast-sent");
     expect(await screen.findByRole("heading", { level: 1, name: "20 % en empanadas" })).toBeVisible();
-    expect(screen.getByText(/Enviada el 25\/09\/2026/)).toBeVisible();
+    // WA-Difusion-Resultados-Base2: «Enviada el 25/09/2026, 09:30», con la hora.
+    expect(screen.getByText(/Enviada el 25\/09\/2026, 09:00/)).toBeVisible();
     const counters = screen.getByRole("region", { name: "Resultados" });
     expect(within(counters).getByText("124")).toBeVisible();
     expect(within(counters).getByText("Se dieron de baja")).toBeVisible();

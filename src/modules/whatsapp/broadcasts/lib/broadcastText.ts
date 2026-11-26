@@ -12,9 +12,9 @@ export function broadcastResults(broadcast: WhatsAppBroadcastResponse): { delive
   return broadcast.status === "Sent" || broadcast.status === "Sending" ? { delivered: broadcast.delivered, read: broadcast.read } : null;
 }
 
-/** La fecha de la fila: cuándo salió o, si todavía no, para cuándo estaba programada. */
-export function broadcastDate(broadcast: WhatsAppBroadcastResponse): { value: string | null | undefined; withTime: boolean } {
-  return broadcast.sentAtUtc ? { value: broadcast.sentAtUtc, withTime: false } : { value: broadcast.scheduledAtUtc, withTime: true };
+/** La fecha de la fila: cuándo salió o, si todavía no, para cuándo estaba programada; las dos con la hora (WA-Difusiones-Base2). */
+export function broadcastDate(broadcast: WhatsAppBroadcastResponse): string | null | undefined {
+  return broadcast.sentAtUtc ?? broadcast.scheduledAtUtc;
 }
 
 /** La vista previa del mensaje: cada `{{n}}` de la plantilla con lo que se escribió en su variable. */

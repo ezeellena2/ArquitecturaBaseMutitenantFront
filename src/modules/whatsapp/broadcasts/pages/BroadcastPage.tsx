@@ -128,14 +128,15 @@ export function BroadcastPage({ me }: ModuleContentProps) {
   </>;
 }
 
-/// «Enviada el 25/09/2026 · Plantilla «Promo semanal» · Minorista»; en el teléfono, «25/09 · Promo semanal · Minorista».
+/// «Enviada el 25/09/2026, 09:30 · Plantilla «Promo semanal» · Minorista» (WA-Difusion-Resultados-Base2); en el teléfono,
+/// «25/09/2026 · Promo semanal · Minorista».
 function BroadcastSummary({ broadcast, short = false }: { broadcast: WhatsAppBroadcastResponse; short?: boolean }) {
   const { t } = useTranslation("whatsapp");
   const format = useFormat();
   const when = broadcast.sentAtUtc ?? broadcast.scheduledAtUtc;
   const audience = audienceLabel(broadcast.audience, t);
   if (short) return <>{when ? <><DateText value={when} kind={broadcast.sentAtUtc ? "date" : "dateTime"} />{" · "}</> : null}{broadcast.template.name}{" · "}{audience}</>;
-  const status = broadcast.status === "Sent" && broadcast.sentAtUtc ? t("broadcasts.detail.sentOn", { date: format.formatDate(broadcast.sentAtUtc) })
+  const status = broadcast.status === "Sent" && broadcast.sentAtUtc ? t("broadcasts.detail.sentOn", { date: format.formatDateTime(broadcast.sentAtUtc) })
     : broadcast.status === "Scheduled" && broadcast.scheduledAtUtc ? t("broadcasts.detail.scheduledFor", { date: format.formatDateTime(broadcast.scheduledAtUtc) })
       : format.formatEnum("WhatsAppBroadcastStatus", broadcast.status);
   return <>{status}{" · "}{t("broadcasts.template", { name: broadcast.template.name })}{" · "}{audience}</>;

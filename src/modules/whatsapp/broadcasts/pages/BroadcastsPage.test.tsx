@@ -30,6 +30,8 @@ describe("Difusiones", () => {
     const headers = screen.getAllByRole("columnheader").map((header) => header.textContent);
     expect(within(sentRow).getAllByRole("cell")[headers.indexOf("Entregados")]).toHaveTextContent("118");
     expect(within(sentRow).getAllByRole("cell")[headers.indexOf("Leídos")]).toHaveTextContent("86");
+    // WA-Difusiones-Base2: la fecha de la que ya salió lleva la hora, como la programada («25/09/2026, 09:00»).
+    expect(within(sentRow).getAllByRole("cell")[headers.findIndex((header) => header?.startsWith("Fecha"))]).toHaveTextContent("25/09/2026, 09:00");
     expect(screen.queryByText(/entregados ·/)).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Nueva difusión" })).toHaveAttribute("href", "/org/whatsapp/difusiones/nueva");
     expect(await axe(container)).toHaveNoViolations();
