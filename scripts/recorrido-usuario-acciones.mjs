@@ -41,13 +41,18 @@ export function actionMessage(action, values, target) {
   return `${actionMarker} ${JSON.stringify(target === undefined ? { action, values } : { action, target, values })}`;
 }
 
-/** Los nombres de cada ancho y corrida: los roles parecidos (Ventas), la persona y los correos de prueba. */
-export function accionesNames(width, tag) {
+/**
+ * Los nombres de cada ancho y corrida: los dos roles parecidos (`similar`, la palabra que tienen los dos, como «Ventas» y
+ * «Ventas mayoristas»), la persona y los correos de prueba. El E2E corre los dos anchos en la misma organización: cada uno
+ * con su palabra, así la duda es solo entre los suyos.
+ */
+export function accionesNames(width, tag, word = "Ventas") {
   assert.ok([1440, 390].includes(width), "Las acciones van en los dos anchos del recorrido.");
   assert.match(String(tag ?? ""), /^[a-z0-9]{2,8}$/u, "La marca de la corrida es corta.");
+  assert.match(word, /^\p{Lu}\p{Ll}+$/u, "La palabra de los roles parecidos es una sola.");
   const suffix = `${width} ${tag}`;
   return {
-    sales: `Ventas ${suffix}`, wholesale: `Ventas mayoristas ${suffix}`, hr: `Recursos humanos ${suffix}`, depot: `Depósito ${suffix}`,
+    similar: word, sales: `${word} ${suffix}`, wholesale: `${word} mayoristas ${suffix}`, hr: `Recursos humanos ${suffix}`, depot: `Depósito ${suffix}`,
     assistant: `Asistente ${suffix}`, inviter: `Invita ${suffix}`, audit: `Auditoría ${suffix}`, coordination: `Coordinación ${suffix}`,
     member: `e2e-acc-persona-${width}-${tag}@example.test`, invitee: `e2e-acc-ana-${width}-${tag}@example.test`,
     other: `e2e-acc-otra-${width}-${tag}@example.test`, replaced: `e2e-acc-reemplazo-${width}-${tag}@example.test`,
@@ -152,7 +157,7 @@ async function descriptionOf(control) {
 export async function inviteFromProposalInTwoTabs({ page, base, width, names }) {
   const phone = width < 768;
   await askAssistant(page, actionMessage("users.invite@1", [
-    { field: "email", value: names.invitee }, { field: "roles", value: ["Ventas"] },
+    { field: "email", value: names.invitee }, { field: "roles", value: [names.similar] },
   ]), proposedReply);
   const card = await actionCard(page, "Invitación de usuario");
   const rows = await cardRows(card);
@@ -275,7 +280,7 @@ export function accionesSteps(ctx) {
     await heading(member, `Te sumás a ${organization}`);
     await member.getByRole("button", { name: "Aceptar invitación", exact: true }).click();
     await heading(member, `Te sumaste a ${organization}`);
-    await member.getByRole("button", { name: "Más tarde", exact: true }).click().catch(() => {});
+    await member.getByRole("button", { name: "Más tarde", exact: true }).click({ timeout: 5_000 }).catch(() => {});
     await member.waitForURL((current) => current.pathname.startsWith("/org"));
     const listed = await assistantApi(page, { route: `/api/users/paged?search=${encodeURIComponent(names.member)}` });
     assert.equal(listed.status, 200);

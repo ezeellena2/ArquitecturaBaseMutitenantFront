@@ -28,8 +28,8 @@ export async function runActionsRealE2E({ build = false, widths = [1440, 390] } 
         await control("prepare", { email: env.businessEmail, access: "business" });
         await page.goto(new URL(assistantHomeRoute("business", width), baseUrl).href);
         await acceptAssistantNoticeFromHome(page);
-        // La misma organización en los dos anchos: cada uno con sus roles y su invitación.
-        const names = accionesNames(width, `e${Date.now().toString(36).slice(-5)}`);
+        // La misma organización en los dos anchos: cada uno con sus roles parecidos, con otra palabra, y su invitación.
+        const names = accionesNames(width, `e${Date.now().toString(36).slice(-5)}`, width === 1440 ? "Ventas" : "Cobranzas");
         await createActionRoles(page, accionesRoles(names).filter(([name]) => name === names.sales || name === names.wholesale));
         await startConversation(page);
         await inviteFromProposalInTwoTabs({ page, base: baseUrl, width, names });

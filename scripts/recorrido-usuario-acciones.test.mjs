@@ -33,11 +33,15 @@ test("el mensaje del escenario lleva el marcador del modelo falso y la propuesta
 test("los nombres son de cada ancho y corrida, los correos son de prueba y «Ventas» tiene su parecido", () => {
   const desktop = accionesNames(1440, "ab12");
   const phone = accionesNames(390, "ab12");
-  for (const key of Object.keys(desktop)) assert.notEqual(desktop[key], phone[key], key);
+  for (const key of Object.keys(desktop).filter((key) => key !== "similar")) assert.notEqual(desktop[key], phone[key], key);
   for (const key of ["member", "invitee", "other", "replaced"]) assert.match(desktop[key], /^e2e-acc-[a-z]+-1440-ab12@example\.test$/u, key);
   // La duda del paso 02: «Ventas» está en los dos nombres, y ninguno de los dos contiene al otro entero.
-  assert.ok(desktop.sales.startsWith("Ventas ") && desktop.wholesale.startsWith("Ventas "));
+  assert.ok(desktop.sales.startsWith(`${desktop.similar} `) && desktop.wholesale.startsWith(`${desktop.similar} `));
   assert.ok(!desktop.wholesale.includes(desktop.sales) && !desktop.sales.includes(desktop.wholesale));
+  // En el E2E los dos anchos comparten organización: con otra palabra, la duda de uno no toca los roles del otro.
+  const other = accionesNames(390, "ab12", "Cobranzas");
+  assert.ok(![other.sales, other.wholesale].some((name) => name.includes(desktop.similar)));
+  assert.throws(() => accionesNames(1440, "ab12", "dos palabras"));
   assert.throws(() => accionesNames(800, "ab12"));
   assert.throws(() => accionesNames(1440, "con espacio"));
 });
