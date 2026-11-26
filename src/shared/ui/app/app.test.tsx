@@ -31,6 +31,30 @@ describe("marco de app del teléfono", () => {
     expect(screen.getByRole("button", { name: "Buscar" })).toHaveClass("size-11", "rounded-full");
   });
 
+  // M-Filas-Base2 a 320 (174, el texto entero): el título baja la letra lo justo para entrar en el lugar que le dejan las
+  // acciones, hasta 16 px; recién ahí se corta con «…». jsdom no mide: el ancho del título sale de su letra.
+  it("el título baja la letra lo justo para entrar entero, hasta 16 px", () => {
+    const room = { width: 150 };
+    const scroll = vi.spyOn(Element.prototype, "scrollWidth", "get").mockImplementation(function (this: Element) {
+      return this instanceof HTMLHeadingElement ? (Number.parseFloat(this.style.fontSize) || 24) * 8 : 0;
+    });
+    const client = vi.spyOn(Element.prototype, "clientWidth", "get").mockImplementation(function (this: Element) {
+      return this instanceof HTMLHeadingElement ? room.width : 0;
+    });
+    try {
+      const { unmount } = render(<MemoryRouter><AppBar title="Organizaciones" /></MemoryRouter>);
+      expect(screen.getByRole("heading", { level: 1 }).style.fontSize).toBe("18px");
+      unmount();
+      room.width = 100;
+      render(<MemoryRouter><AppBar title="Contactos" /></MemoryRouter>);
+      expect(screen.getByRole("heading", { level: 1 }).style.fontSize).toBe("16px");
+      expect(screen.getByRole("heading", { level: 1 })).toHaveClass("truncate");
+    } finally {
+      scroll.mockRestore();
+      client.mockRestore();
+    }
+  });
+
   it("la barra de abajo marca la sección y «Más» lleva la inicial", () => {
     render(<MemoryRouter><BottomNav label="Secciones" items={[
       { key: "home", label: "Inicio", to: "/org", icon: <House />, active: false },

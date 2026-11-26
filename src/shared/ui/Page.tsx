@@ -1,5 +1,7 @@
 import { useEffect, useId, useRef, useState, type ComponentType, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
+import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { cn } from "@/shared/lib/utils";
 import { AppBar, AppIconButton } from "./app/AppBar";
 import { useAppChrome } from "./app/AppChrome";
@@ -164,6 +166,14 @@ export function Page({
   const moreSheetId = useId();
   const visibleMoreActions = moreActions?.items.filter((action) => !action.hidden) ?? [];
   const regularActions = visibleMoreActions.filter((action) => !action.destructive);
+  // M-Filas-Base2 a 320: en un teléfono angosto la acción de texto de la barra («Importar») pasa al ⋮, para que el título
+  // entre entero (174); el título baja la letra lo justo (AppBar).
+  const { t } = useTranslation();
+  const narrowPhone = useMediaQuery("(max-width: 359px)");
+  const barInSheet = chrome.phone && narrowPhone && barAction !== undefined && barAction.href === undefined;
+  const phoneRegular = [...(barInSheet && barAction ? [{ label: barAction.label, accessibleName: barAction.label, run: () => barAction.onClick?.() }] : []), ...regularActions.map(sheetAction)];
+  const phoneMore = visibleMoreActions.length > 0 || barInSheet;
+  const phoneMoreLabel = moreActions?.label ?? t("page.moreActions");
   const destructiveActions = visibleMoreActions.filter((action) => action.destructive);
   const moreMenuItems = <>
     {regularActions.map((action) => (
@@ -210,16 +220,16 @@ export function Page({
         leading={<div ref={setLeadingTools} className="flex items-center empty:hidden" />}
         actions={<>
           <div ref={setTools} className="flex items-center" />
-          {barAction ? barAction.href
+          {barAction && !barInSheet ? barAction.href
             ? <a href={barAction.href} target="_blank" rel="noreferrer" className={barTextClass}>{barAction.label}</a>
             : <button type="button" onClick={barAction.onClick} className={barTextClass}>{barAction.label}</button> : null}
-          {visibleMoreActions.length > 0 && moreActions ? <>
+          {phoneMore ? <>
             {/* «Criterio · Menús» (v136; M-Cuenta-Plat, M-Usuario, M-Usuarios, M-WA-Contacto, M-WA-Conversacion…): el ⋮ de
                 la barra de una ficha o de una lista abre la hoja de abajo, con su nombre de título; lo de peligro, al final. */}
-            <AppIconButton ref={moreTrigger} label={moreActions.label} aria-haspopup="dialog" aria-expanded={moreSheetOpen} aria-busy={morePending || undefined}
+            <AppIconButton ref={moreTrigger} label={phoneMoreLabel} aria-haspopup="dialog" aria-expanded={moreSheetOpen} aria-busy={morePending || undefined}
               onClick={() => { if (!morePending) setMoreSheetOpen(true); }}>{morePending ? <ButtonRing /> : <MoreVerticalIcon className="size-5" />}</AppIconButton>
-            <PhoneActionsSheet open={moreSheetOpen} onOpenChange={setMoreSheetOpen} label={moreActions.label} title={title} reasonId={moreSheetId}
-              regular={regularActions.map(sheetAction)} destructive={destructiveActions.map(sheetAction)}
+            <PhoneActionsSheet open={moreSheetOpen} onOpenChange={setMoreSheetOpen} label={phoneMoreLabel} title={title} reasonId={moreSheetId}
+              regular={phoneRegular} destructive={destructiveActions.map(sheetAction)}
               onSelect={(action) => { setMoreSheetOpen(false); action.run(moreTrigger.current); }} />
           </> : null}
         </>} />

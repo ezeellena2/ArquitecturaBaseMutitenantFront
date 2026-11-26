@@ -1,5 +1,5 @@
 import { ChevronLeft } from "lucide-react";
-import { createContext, useContext, type ComponentProps, type ReactNode } from "react";
+import { createContext, useContext, useLayoutEffect, useRef, type ComponentProps, type ReactNode } from "react";
 import { Link } from "react-router";
 import { cn } from "@/shared/lib/utils";
 import { useHostedNotices } from "./AppNotices";
@@ -9,6 +9,35 @@ const AppBarBellContext = createContext<ReactNode>(null);
 /** La campana de la barra (tableros M-Cuentas, M-WA-Chats, M-Mas-Plat…): la pone el marco y la barra la dibuja al final,
  *  en las pantallas de primer nivel, las que no llevan ‹. */
 export const AppBarBellProvider = AppBarBellContext.Provider;
+
+/** La letra más chica a la que baja el título de la barra para entrar entero. */
+const smallestTitle = 16;
+
+/// M-Filas-Base2 a 320 (174, el texto entero): el título baja la letra lo justo para entrar entero en el lugar que le dejan
+/// las acciones, hasta 16 px; recién ahí se corta con «…». Se mide de nuevo cuando cambia el ancho de la barra.
+function useFittedTitle(title: string, back: boolean) {
+  const ref = useRef<HTMLHeadingElement>(null);
+  useLayoutEffect(() => {
+    const heading = ref.current;
+    if (!heading) return;
+    const fit = () => {
+      heading.style.fontSize = "";
+      // El tamaño de su clase: 20 con ‹ y 24 sin ella, en rem.
+      const root = Number.parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+      let size = (back ? 1.25 : 1.5) * root;
+      while (size > smallestTitle && heading.scrollWidth > heading.clientWidth) {
+        size -= 1;
+        heading.style.fontSize = `${size}px`;
+      }
+    };
+    fit();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(fit);
+    observer.observe(heading.parentElement ?? heading);
+    return () => observer.disconnect();
+  }, [title, back]);
+  return ref;
+}
 
 // Tableros M-* (.ap-bar): barra de 60 debajo de la del teléfono. En una sección de la barra de abajo, el título grande
 // de 24; en una pantalla interna, ‹ y el título de 20. Debajo, en gris, la organización o el camino. A la derecha, las
@@ -26,6 +55,7 @@ export function AppBar({ title, titleHelp, subtitle, back, actions, leading }: {
 }) {
   const notices = useHostedNotices();
   const bell = useContext(AppBarBellContext);
+  const titleRef = useFittedTitle(title, Boolean(back));
   return <><header data-slot="app-bar" className={cn("sticky top-0 z-20 box-content flex h-15 shrink-0 items-center gap-1 bg-[var(--superficie)] pt-[env(safe-area-inset-top)] pr-1.5", back ? "pl-1" : "pl-4")}>
     {back ? <Link to={back.to} aria-label={back.label} title={back.label} className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
       <ChevronLeft className="size-6.5" strokeWidth={1.9} aria-hidden="true" />
@@ -35,9 +65,9 @@ export function AppBar({ title, titleHelp, subtitle, back, actions, leading }: {
       {/* .ap-bar h1 y .sub: el interlineado va después del tamaño, o tailwind-merge lo borra (y el título tomaba el 1.5 de
           la página: la bajada quedaba 4 a 6 px más abajo). La bajada, con el interlineado normal. */}
       {titleHelp ? <span className="flex min-w-0 items-center gap-1.5">
-        <h1 className={cn("truncate font-bold tracking-[-0.02em] text-[var(--t1)]", back ? "text-[1.25rem]" : "text-[1.5rem]", "leading-[1.15]")}>{title}</h1>
+        <h1 ref={titleRef} className={cn("truncate font-bold tracking-[-0.02em] text-[var(--t1)]", back ? "text-[1.25rem]" : "text-[1.5rem]", "leading-[1.15]")}>{title}</h1>
         {titleHelp}
-      </span> : <h1 className={cn("truncate font-bold tracking-[-0.02em] text-[var(--t1)]", back ? "text-[1.25rem]" : "text-[1.5rem]", "leading-[1.15]")}>{title}</h1>}
+      </span> : <h1 ref={titleRef} className={cn("truncate font-bold tracking-[-0.02em] text-[var(--t1)]", back ? "text-[1.25rem]" : "text-[1.5rem]", "leading-[1.15]")}>{title}</h1>}
       {subtitle ? <span className="block text-[0.78125rem] leading-[normal] font-medium text-[var(--t3)] [overflow-wrap:anywhere]">{subtitle}</span> : null}
     </div>
     {actions ? <div className="flex shrink-0 items-center">{actions}</div> : null}

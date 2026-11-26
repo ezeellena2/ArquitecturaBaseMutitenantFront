@@ -7,6 +7,9 @@
     "addEmailNotice": "Agregá un correo para no perder el acceso si cambiás de número.",
     "addEmail": "Agregar correo"
   },
+  "page": {
+    "moreActions": "Más acciones"
+  },
   "actions": {
     "cancel": "Cancelar",
     "confirm": "Confirmar",

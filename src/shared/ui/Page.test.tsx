@@ -314,6 +314,36 @@ describe("Page", () => {
       await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
     });
 
+    // M-Filas-Base2 a 320: en un teléfono angosto la acción de texto de la barra («Importar») va en el ⋮, para que el título
+    // entre entero; a 390 sigue en la barra.
+    it.each([[true], [false]])("en un teléfono angosto (%s), «Importar» pasa al ⋮ de la barra", async (narrow) => {
+      await configureI18n(referenceDataFixture().cultures);
+      await changeCulture("es-AR");
+      vi.stubGlobal("matchMedia", (query: string) => ({
+        matches: query === "(max-width: 767px)" || (narrow && query === "(max-width: 359px)"), media: query, onchange: null,
+        addEventListener: () => {}, removeEventListener: () => {}, addListener: () => {}, removeListener: () => {}, dispatchEvent: () => false,
+      }));
+      try {
+        const user = userEvent.setup();
+        const open = vi.fn();
+        renderWithProviders(<AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}>
+          <MemoryRouter><Page title="Contactos" barAction={{ label: "Importar", onClick: open }}><p>{"lista"}</p></Page></MemoryRouter>
+        </AppChromeProvider>);
+        if (!narrow) {
+          expect(screen.getByRole("button", { name: "Importar" })).toBeVisible();
+          expect(screen.queryByRole("button", { name: "Más acciones" })).not.toBeInTheDocument();
+          return;
+        }
+        expect(screen.queryByRole("button", { name: "Importar" })).not.toBeInTheDocument();
+        await user.click(screen.getByRole("button", { name: "Más acciones" }));
+        const sheet = await screen.findByRole("dialog", { name: "Contactos" });
+        await user.click(within(sheet).getByRole("menuitem", { name: "Importar" }));
+        expect(open).toHaveBeenCalledOnce();
+      } finally {
+        vi.unstubAllGlobals();
+      }
+    });
+
     // «Criterio · Menús» (v136): en la compu, cada opción del ⋮ de la banda lleva su ícono gris de 16.
     it("en la compu, cada opción del ⋮ de la banda lleva su ícono", async () => {
       const user = userEvent.setup();
