@@ -18,7 +18,7 @@ import { FilterBar } from "@/shared/ui/FilterBar";
 import { CloseIcon, LogOutIcon, RotateIcon } from "@/shared/ui/icons";
 import { Page } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
-import { useResendInvitation } from "@/shared/hooks/useResendInvitation";
+import { invitationPerson, useResendInvitation } from "@/shared/hooks/useResendInvitation";
 import { ResendInvitationDialog } from "@/shared/ui/InvitationDelivery";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
@@ -61,7 +61,7 @@ function AccountActions({ account, self, canManage, canInvite, route, onConfirm 
     { label: t("actions.suspend"), accessibleName: t("actions.suspend"), icon: Power, destructive: true, hidden: !canManage || !["Active", "NeedsRecovery"].includes(account.state), onSelect: (trigger) => confirm("suspend", trigger) },
     { label: t("actions.deletion"), accessibleName: t("actions.deletion"), icon: Trash2, destructive: true, hidden: !canManage || invitation, onSelect: (trigger) => confirm("deletion", trigger) },
   ]} />
-  <ResendInvitationDialog resend={confirmResend} name={accountLabel(account, t)} person={account.displayName} channel="email" pending={resend.isPending} /></>;
+  <ResendInvitationDialog resend={confirmResend} name={accountLabel(account, t)} person={invitationPerson(account.displayName)} channel="email" pending={resend.isPending} /></>;
 }
 
 export function AccountsPage() {

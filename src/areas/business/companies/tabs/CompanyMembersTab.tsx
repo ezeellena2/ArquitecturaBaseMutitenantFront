@@ -18,7 +18,7 @@ import { FilterBar } from "@/shared/ui/FilterBar";
 import { FormError } from "@/shared/ui/FormError";
 import { Pagination } from "@/shared/ui/Pagination";
 import { CloseIcon, RotateIcon } from "@/shared/ui/icons";
-import { useResendInvitation } from "@/shared/hooks/useResendInvitation";
+import { invitationPerson, useResendInvitation } from "@/shared/hooks/useResendInvitation";
 import { ResendInvitationDialog } from "@/shared/ui/InvitationDelivery";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
@@ -54,7 +54,7 @@ function InvitationRowActions({ company, member, hidden, onRevoke }: { company: 
       // «Criterio · Menús» y tablero Empresa (v109): abajo, después de la franja, en rojo y con la ✕.
       { label: t("companies:actions.revokeInvitation"), accessibleName: t("companies:actions.revokeInvitation"), icon: CloseIcon, destructive: true, hidden, onSelect: onRevoke },
     ]} />
-    <ResendInvitationDialog resend={confirmResend} name={member.displayName || member.email || ""} person={member.displayName} channel={memberInvitationChannel(member)} pending={resend.isPending} />
+    <ResendInvitationDialog resend={confirmResend} name={member.displayName || member.email || ""} person={invitationPerson(member.displayName)} channel={memberInvitationChannel(member)} pending={resend.isPending} />
   </>;
 }
 

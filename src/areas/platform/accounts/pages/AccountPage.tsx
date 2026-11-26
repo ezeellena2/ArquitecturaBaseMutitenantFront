@@ -14,7 +14,7 @@ import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { useMountedRef } from "@/shared/hooks/useMountedRef";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { InfoTip } from "@/shared/ui/InfoTip";
-import { useResendInvitation } from "@/shared/hooks/useResendInvitation";
+import { invitationPerson, useResendInvitation } from "@/shared/hooks/useResendInvitation";
 import { InvitationDeliveryBadge, InvitationSection, ResendInvitationDialog } from "@/shared/ui/InvitationDelivery";
 import { EmailText } from "@/shared/ui/format/EmailText";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
@@ -189,6 +189,6 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
       void client.invalidateQueries({ queryKey: platformAuditQueryRoot });
     }} /> : confirmation.action === "revoke" ? <RevokeInvitationDialog confirmation={confirmation} onClose={close} onSuccess={() => success(undefined)} />
       : confirmation.action === "deletion" ? <AccountDeletionDialog confirmation={confirmation} onClose={close} onSuccess={success} /> : <AccountReasonDialog confirmation={confirmation} onClose={close} onSuccess={success} /> : null}
-    <ResendInvitationDialog resend={confirmResend} name={name} person={data.displayName} channel="email" pending={resend.isPending} />
+    <ResendInvitationDialog resend={confirmResend} name={name} person={invitationPerson(data.displayName)} channel="email" pending={resend.isPending} />
   </>;
 }

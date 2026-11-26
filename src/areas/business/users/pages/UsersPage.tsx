@@ -29,7 +29,7 @@ import { activeOrganization } from "@/tenancy/access";
 import { useModulePageActions } from "@/shared/modules/useModules";
 import { useFormat } from "@/shared/format/useFormat";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
-import { useResendInvitation } from "@/shared/hooks/useResendInvitation";
+import { invitationPerson, useResendInvitation } from "@/shared/hooks/useResendInvitation";
 import { ResendInvitationDialog } from "@/shared/ui/InvitationDelivery";
 
 const userFilterKeys = ["state", "companyId"] as const;
@@ -57,7 +57,7 @@ function UserRowActions({ member, label, title, actions, pending }: { member: Or
   // Reenviar y Reactivar van directo a la red: mientras esperan, el ⋮ muestra que trabaja (115).
   return <>
     <RowActions label={label} title={title} actions={actions(confirmResend.start)} pending={pending || resend.isPending} />
-    <ResendInvitationDialog resend={confirmResend} name={title} person={member.displayName} channel={userInvitationChannel(member)} pending={resend.isPending} />
+    <ResendInvitationDialog resend={confirmResend} name={title} person={invitationPerson(member.displayName)} channel={userInvitationChannel(member)} pending={resend.isPending} />
   </>;
 }
 

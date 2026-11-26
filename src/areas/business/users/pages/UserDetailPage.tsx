@@ -21,7 +21,7 @@ import { useEditForm } from "@/shared/hooks/useEditForm";
 import { useEditPage } from "@/shared/hooks/useEditPage";
 import { orderLike } from "@/shared/lib/orderLike";
 import { InfoTip } from "@/shared/ui/InfoTip";
-import { useResendInvitation } from "@/shared/hooks/useResendInvitation";
+import { invitationPerson, useResendInvitation } from "@/shared/hooks/useResendInvitation";
 import { InvitationDeliveryBadge, InvitationSection, ResendInvitationDialog } from "@/shared/ui/InvitationDelivery";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
@@ -405,7 +405,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
       title={confirmation?.title ?? ""} description={confirmation?.description} confirmLabel={confirmation?.label ?? ""}
       pending={confirmation?.pending ?? false} pendingLabel={confirmation?.pendingLabel}
       onConfirm={() => confirmation?.run()} />
-    <ResendInvitationDialog resend={confirmResend} name={displayName} person={member.displayName} channel={channel} pending={resend.isPending} />
+    <ResendInvitationDialog resend={confirmResend} name={displayName} person={invitationPerson(member.displayName)} channel={channel} pending={resend.isPending} />
     {edit.leaveDialog}
   </>;
 }

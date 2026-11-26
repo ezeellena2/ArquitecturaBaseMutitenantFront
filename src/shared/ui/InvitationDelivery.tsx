@@ -35,12 +35,12 @@ export function InvitationDeliveryBadge({ value, channel, info = true }: { value
 
 /// La confirmación de reenviar una invitación sin confirmar (tableros `-Base2`, «Reenviar una invitación sin confirmar»), que
 /// abre `useResendInvitation`: «¿Reenviar la invitación a …?», con quién revisar (su nombre o «la persona») y el canal que no
-/// confirmó el envío.
+/// confirmó el envío. `person` va por `invitationPerson`, así nunca dice el correo ni el teléfono.
 export function ResendInvitationDialog({ resend, name, person, channel, pending }: {
   resend: ResendInvitation;
   /** A quién se reenvía, como dice la fila: el nombre, el correo o el teléfono. */
   name: string;
-  /** Con quién revisar: el nombre de la persona, si lo tiene. */
+  /** Con quién revisar: el nombre de la persona, si lo tiene (`invitationPerson`). */
   person?: string | null;
   channel: InvitationChannel;
   pending: boolean;
