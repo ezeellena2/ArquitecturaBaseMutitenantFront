@@ -3,14 +3,30 @@ import type { AssistantErrorEventResponse } from "@/modules/assistant/api/types"
 import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
 
+/// Cada falla del proveedor con su texto (0064 §7), el mismo que el back tiene para cada código (`AssistantTexts`).
 const streamTexts: Readonly<Record<string, string>> = {
   "Assistant.Provider.Unavailable": "streamErrors.unavailable",
   "Assistant.Provider.Uncertain": "streamErrors.uncertain",
   "Assistant.Provider.ContextTooLarge": "streamErrors.contextTooLarge",
+  "Assistant.Provider.CredentialRejected": "streamErrors.credentialRejected",
+  "Assistant.Provider.Limited": "streamErrors.limited",
+  "Assistant.Provider.ModelRejected": "streamErrors.modelRejected",
+  "Assistant.Provider.Rejected": "streamErrors.rejected",
+  "Assistant.Provider.KeyUnreadable": "streamErrors.keyUnreadable",
+  "Assistant.Provider.UnsupportedProvider": "streamErrors.unsupportedProvider",
+  "Assistant.Provider.PlatformUnavailable": "streamErrors.platformUnavailable",
 };
 
-export function assistantStreamErrorMessage(error: AssistantErrorEventResponse, t: TFunction): string {
-  const key = streamTexts[error.code];
+/// Lo que arregla quien paga: la clave rechazada o ilegible, el cupo de su cuenta y el proveedor desconocido. Con la clave de
+/// la plataforma el back ya le manda `PlatformUnavailable` a la organización (`AssistantProviderIssuePolicy`); con la clave
+/// propia llega como es, y solo quien puede configurar el asistente (`canConfigure`: `assistant.configure`, o
+/// `platform.assistant.configure` en Plataforma) lo puede arreglar. Los demás ven que no está disponible.
+const fixedByPayer: ReadonlySet<string> = new Set([
+  "Assistant.Provider.CredentialRejected", "Assistant.Provider.Limited", "Assistant.Provider.KeyUnreadable", "Assistant.Provider.UnsupportedProvider",
+]);
+
+export function assistantStreamErrorMessage(error: AssistantErrorEventResponse, t: TFunction, canConfigure: boolean): string {
+  const key = streamTexts[!canConfigure && fixedByPayer.has(error.code) ? "Assistant.Provider.PlatformUnavailable" : error.code];
   return key ? t(key) : apiErrorMessage(error, t);
 }
 

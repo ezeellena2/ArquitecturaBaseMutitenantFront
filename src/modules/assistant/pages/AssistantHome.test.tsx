@@ -42,6 +42,15 @@ function setup(initial = state, phone = false) {
   const result = renderWithProviders(view());
   return { ...result, user: userEvent.setup(), requests, created: () => created, changeState: (next: AssistantStateResponse) => { currentState = next; }, changeDetail: (next: AssistantConversationResponse) => { current = next; created = 1; }, rerenderAssistant: (next: AssistantHomeProps) => result.rerender(view(next)) };
 }
+/// El turno empieza (o no) y falla con `code`, como lo manda el back en el evento `error`.
+function failTurn(app: ReturnType<typeof setup>, code: string, start = true) {
+  server.use(http.post("/api/organization/assistant/conversations/chat/messages", () => {
+    if (start) app.changeDetail({ ...detail(), conversation: { ...detail().conversation, version: 2 }, messages: { items: [message("u", "user", "Consulta"), message("a", "assistant", "", "Failed")], hasMore: false } });
+    const failed = `event: error\ndata: ${JSON.stringify({ turnId: start ? "turn" : null, code, traceId: "private-report", status: "Failed" })}\n\n`;
+    const started = start ? `event: start\ndata: ${JSON.stringify({ turnId: "turn", userMessageId: "u", assistantMessageId: "a", conversationVersion: 2 })}\n\n` : "";
+    return new HttpResponse(started + failed, { headers: { "Content-Type": "text/event-stream" } });
+  }));
+}
 beforeEach(async () => { await configureI18n(referenceDataFixture().cultures); await changeCulture("es-AR"); Element.prototype.scrollTo = vi.fn(); URL.createObjectURL = vi.fn(() => "blob:private"); URL.revokeObjectURL = vi.fn(); });
 afterEach(() => { resetHttpClient(); vi.unstubAllGlobals(); });
 
@@ -154,6 +163,45 @@ describe("interfaz del asistente", () => {
     expect(assistant.queryByText("private-report")).not.toBeInTheDocument();
     expect(assistant.queryByText(code)).not.toBeInTheDocument();
     if (code !== "Assistant.Provider.Unavailable") expect(assistant.queryByText("El asistente no responde ahora.")).not.toBeInTheDocument();
+  });
+  // 0064 §7: cada falla del proveedor con el texto del back. Lo que arregla quien paga (la clave rechazada o ilegible, el cupo
+  // de su cuenta y el proveedor desconocido) se dice como es solo a quien puede configurar el asistente (`canConfigure`); los
+  // demás ven que no está disponible. Con la clave de la plataforma el back ya manda `PlatformUnavailable`. Sin Reintentar.
+  const forNow = { es: "El asistente no está disponible por ahora.", en: "The assistant isn't available for now." };
+  it.each([
+    { code: "Assistant.Provider.CredentialRejected", fixer: "El proveedor rechazó la clave. Reemplazala.", other: forNow.es },
+    { code: "Assistant.Provider.Limited", fixer: "La cuenta del proveedor llegó a su cupo. Revisá su facturación.", other: forNow.es },
+    { code: "Assistant.Provider.KeyUnreadable", fixer: "No pudimos leer la clave guardada: reemplazala.", other: forNow.es },
+    { code: "Assistant.Provider.UnsupportedProvider", fixer: "La conexión está pausada: el proveedor guardado no está disponible en esta versión. Guardá la configuración para descartarlo.", other: forNow.es },
+    { code: "Assistant.Provider.ModelRejected", fixer: "El proveedor no aceptó el modelo, el archivo o el pedido.", other: "El proveedor no aceptó el modelo, el archivo o el pedido." },
+    { code: "Assistant.Provider.Rejected", fixer: "El proveedor rechazó el pedido.", other: "El proveedor rechazó el pedido." },
+    { code: "Assistant.Provider.PlatformUnavailable", fixer: forNow.es, other: forNow.es },
+  ].flatMap((row) => [true, false].map((canConfigure) => ({ code: row.code, canConfigure, text: canConfigure ? row.fixer : row.other }))))("la falla $code, con canConfigure $canConfigure, dice su texto sin Reintentar", async ({ code, canConfigure, text }) => {
+    const app = setup({ ...state, canConfigure });
+    failTurn(app, code);
+    await app.user.type(await screen.findByRole("textbox", { name: "Tu consulta" }), "Consulta");
+    await app.user.click(screen.getByRole("button", { name: "Enviar" }));
+    const assistant = within(screen.getByRole("region", { name: "Asistente" }));
+    expect(await assistant.findByText(text)).toBeVisible();
+    expect(assistant.getAllByText(text)).toHaveLength(1);
+    expect(assistant.queryByRole("button", { name: "Reintentar" })).not.toBeInTheDocument();
+    expect(assistant.queryByText("Algo salió mal. Probá de nuevo en un rato.")).not.toBeInTheDocument();
+    expect(assistant.queryByText(code)).not.toBeInTheDocument();
+  });
+  it.each([
+    { canConfigure: true, start: true, text: "The provider rejected the key. Replace it." },
+    { canConfigure: false, start: true, text: forNow.en },
+    // Una falla antes del inicio del turno va debajo de la caja, con el mismo reparto.
+    { canConfigure: true, start: false, text: "The provider rejected the key. Replace it." },
+    { canConfigure: false, start: false, text: forNow.en },
+  ])("en inglés, la clave rechazada con canConfigure $canConfigure y start $start", async ({ canConfigure, start, text }) => {
+    const app = setup({ ...state, canConfigure });
+    await act(async () => { await changeCulture("en-US"); });
+    failTurn(app, "Assistant.Provider.CredentialRejected", start);
+    await app.user.type(await screen.findByRole("textbox", { name: "Your query" }), "Query");
+    await app.user.click(screen.getByRole("button", { name: "Send" }));
+    expect(await screen.findByText(text)).toBeVisible();
+    expect(screen.getAllByText(text)).toHaveLength(1);
   });
   it("el 429 mensual muestra el tope sin el aviso global de muchos pedidos", async () => {
     const app = setup();

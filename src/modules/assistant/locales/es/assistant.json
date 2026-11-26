@@ -50,7 +50,14 @@
   "streamErrors": {
     "unavailable": "El asistente no responde ahora.",
     "uncertain": "El pedido pudo llegar al proveedor, pero no hay una respuesta confirmada. Revisá el posible consumo antes de volver a probar.",
-    "contextTooLarge": "La conversación o los adjuntos son demasiado grandes. Empezá una nueva."
+    "contextTooLarge": "La conversación o los adjuntos son demasiado grandes. Empezá una nueva.",
+    "credentialRejected": "El proveedor rechazó la clave. Reemplazala.",
+    "limited": "La cuenta del proveedor llegó a su cupo. Revisá su facturación.",
+    "modelRejected": "El proveedor no aceptó el modelo, el archivo o el pedido.",
+    "rejected": "El proveedor rechazó el pedido.",
+    "keyUnreadable": "No pudimos leer la clave guardada: reemplazala.",
+    "unsupportedProvider": "La conexión está pausada: el proveedor guardado no está disponible en esta versión. Guardá la configuración para descartarlo.",
+    "platformUnavailable": "El asistente no está disponible por ahora."
   },
   "cancel": "Cancelar",
   "quick": {

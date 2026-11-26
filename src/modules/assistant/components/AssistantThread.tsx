@@ -20,6 +20,8 @@ interface MessageContextValue {
   links: AssistantLinkContext;
   canOpenLink?: (routeKey: AssistantRouteKey) => boolean;
   pending: boolean;
+  /// Si quien mira puede configurar el asistente: decide el texto de lo que arregla quien paga (0064 §7).
+  canConfigure: boolean;
   onDownload: (attachment: AssistantAttachmentSummaryResponse) => void;
   retry?: { messageId: string; retryAfter?: number | null; onRetry: () => void };
 }
@@ -53,7 +55,7 @@ function Message() {
         : target?.organizationId ? <Button key={index} variant="link" onClick={() => context.links.onOpenOrganization?.(target.organizationId!)}>{t(target.labelKey, { name: target.organizationName })}</Button> : null;
     })}
     {status?.type === "incomplete" ? status.reason === "cancelled" ? <p role="status" className="text-sm text-[var(--t2)]">{t("status.stopped")}</p>
-      : <div role="alert" className="flex items-center gap-3 rounded-lg bg-[var(--peligro-banda)] px-3 py-2 text-[var(--peligro-tx)]"><TriangleAlert className="size-4 shrink-0" aria-hidden="true" /><p className="flex-1 text-sm">{streamError ? assistantStreamErrorMessage(streamError, t) : t("status.failed")}</p>
+      : <div role="alert" className="flex items-center gap-3 rounded-lg bg-[var(--peligro-banda)] px-3 py-2 text-[var(--peligro-tx)]"><TriangleAlert className="size-4 shrink-0" aria-hidden="true" /><p className="flex-1 text-sm">{streamError ? assistantStreamErrorMessage(streamError, t, context.canConfigure) : t("status.failed")}</p>
         {context.retry?.messageId === id ? <AssistantRetryButton key={context.turn?.start?.turnId ?? id} retryAfter={context.retry.retryAfter} pending={context.pending} onRetry={context.retry.onRetry} /> : null}</div> : null}
     {role === "assistant" && status?.type !== "running" && durable?.status !== "Failed" ? <AssistantMessageActions message={durable} pending={context.pending} /> : null}
     </div>
