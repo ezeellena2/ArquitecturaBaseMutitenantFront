@@ -42,6 +42,12 @@ export function factorSecretMasks(page) {
   ];
 }
 
+/** La lista de Auditoría llega después del encabezado: antes de mirarla se espera un evento buscado o «Cargar más» (E9-07). */
+export async function waitForAuditList(page, summaries) {
+  const shown = summaries.map((summary) => page.getByText(summary, { exact: true })).reduce((all, one) => all.or(one));
+  await shown.or(page.getByRole("button", { name: "Cargar más", exact: true })).filter({ visible: true }).first().waitFor();
+}
+
 /** Sigue a la E11 en la pestaña de Plataforma: arranca y termina con el operador del recorrido adentro. */
 export async function runE9Journey({ platformPage: page, width, env, base, record, signOut, login, requestCode, verify, awaitPlatformHome, operator }) {
   assert.equal(typeof env?.command, "function", "El recorrido E9 necesita las órdenes privadas del preparador en el mismo entorno.");
@@ -157,6 +163,7 @@ export async function runE9Journey({ platformPage: page, width, env, base, recor
       await page.goto(url("/plataforma/auditoria"));
       await page.getByRole("heading", { name: "Auditoría", exact: true }).waitFor();
       const wanted = ["configured", "reset", "reauthenticated", "signedInWithAuthenticator"].map((key) => authenticatorAuditEvents[key].summary);
+      await waitForAuditList(page, wanted);
       const missing = new Set(wanted);
       for (let round = 0; round < 15 && missing.size; round++) {
         for (const summary of [...missing]) {

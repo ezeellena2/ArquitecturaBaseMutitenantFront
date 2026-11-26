@@ -8,7 +8,7 @@ import { execFileSync } from "node:child_process";
 import { e8Definitions, e8ManualChecks, e8SourceRevision, requireE8Control } from "./recorrido-usuario-whatsapp.mjs";
 import * as whatsappJourney from "./recorrido-usuario-whatsapp.mjs";
 import { botOption, e11Definitions, e11ManualChecks, enterPersonalHome, nationalPhone, outboundCount, runE11Journey } from "./recorrido-usuario-e11.mjs";
-import { e9Definitions, e9ManualChecks, factorSecretMasks, newcomerOf, operatorNameOf, runE9Journey } from "./recorrido-usuario-e9.mjs";
+import { e9Definitions, e9ManualChecks, factorSecretMasks, newcomerOf, operatorNameOf, runE9Journey, waitForAuditList } from "./recorrido-usuario-e9.mjs";
 import { awaitHomePastNotice, base12Definitions, base12ManualChecks, bellLabel, importedPhoneOf, invitationLinkFrom, isFullDateTime, runBase12Journey,
   whileHeld, workingButtonProblems, workingButtonState } from "./recorrido-usuario-base12.mjs";
 import { base12bDefinitions, base12bManualChecks, base12bPlatformCaptures, chatDeliveryOrder, chatPhones, dailyEmailLimitProblems, dailyEmailLimitText,
@@ -388,6 +388,22 @@ test("E11-15: en la compu la persona nueva acepta el aviso del asistente de su I
     const order = [];
     await enterPersonalHome(page, 390, { awaitApp: async () => { order.push("app"); }, acceptNotice: async () => { order.push("aviso"); } });
     assert.deepEqual(order, ["app"]);
+  } finally { await browser.close(); }
+});
+
+test("E9-07: Auditoría espera a que llegue la lista antes de buscar los eventos del autenticador", async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage();
+    // El encabezado ya estaba y la lista seguía cargando: la búsqueda no encontró nada y cortó E9-07 a 1440 (2026-11-26).
+    await page.setContent('<h1>Auditoría</h1><table><tbody><tr><td role="status">Cargando</td></tr></tbody></table>');
+    await page.evaluate(() => setTimeout(() => { document.querySelector("tbody").innerHTML = "<tr><td>Restableció el autenticador</td></tr>"; }, 100));
+    assert.equal(await page.getByText("Restableció el autenticador", { exact: true }).count(), 0);
+    await waitForAuditList(page, ["Configuró el autenticador", "Restableció el autenticador"]);
+    assert.equal(await page.getByText("Restableció el autenticador", { exact: true }).count(), 1);
+    // Con «Cargar más» a la vista y ningún evento buscado en la primera página, también sigue.
+    await page.setContent('<table><tbody><tr><td>Otro evento</td></tr></tbody></table><button>Cargar más</button>');
+    await waitForAuditList(page, ["Configuró el autenticador"]);
   } finally { await browser.close(); }
 });
 
