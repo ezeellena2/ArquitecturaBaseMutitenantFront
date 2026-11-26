@@ -34,6 +34,7 @@
     },
     "editDay": "Edit {{day}}",
     "attention": "Service",
+    "attentionOf": "Service on {{day}}",
     "open": "Open",
     "openHelp": "Open during set hours.",
     "closed": "Closed",

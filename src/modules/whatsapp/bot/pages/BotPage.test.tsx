@@ -115,6 +115,8 @@ describe("Bot de la organización", () => {
     await page.user.click(within(row("Sábado")).getByRole("button", { name: "Editar Sábado" }));
     const day = await screen.findByRole("dialog", { name: "Sábado" });
     expect(within(day).getByRole("button", { name: pickerName("Atención") })).toHaveTextContent("Cerrado");
+    // M-WA-Respuestas-Base2: la pieza se llama «Atención del sábado», el título de su lista en el teléfono.
+    expect(within(day).getByRole("button", { name: /^Atención del sábado Cerrado$/u })).toBeVisible();
     expect(within(day).queryByLabelText("Desde")).not.toBeInTheDocument();
     await choose(page.user, "Atención", /^Abierto/);
     expect(within(day).getByLabelText("Desde")).toHaveValue("09:00");
@@ -134,7 +136,8 @@ describe("Bot de la organización", () => {
     expect(await screen.findByText("Cambios guardados")).toBeVisible();
     expect(sent[0].schedule?.days?.map((item) => item.day)).toEqual(["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]);
     expect(sent[0].schedule?.days?.at(-1)).toMatchObject({ day: "Saturday", from: expect.stringMatching(/^09:00/), to: expect.stringMatching(/^18:00/) });
-  });
+  // Límite de 15 s: abre dos diálogos y dos piezas y pasa axe; con la suite entera en la máquina pasaba los 5 s de siempre.
+  }, 15_000);
 
   it("el diálogo de un día no cierra con «Hasta» antes de «Desde», y «Cancelar» lo deja como estaba", async () => {
     handlers();

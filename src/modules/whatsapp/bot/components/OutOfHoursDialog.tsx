@@ -128,6 +128,7 @@ export function OutOfHoursDialog({ outOfHours, schedule, onSave, onClose, return
         </DialogFooter>
       </form>
       {editing !== null ? <DayDialog key={editing.index} name={dayName(editing.index)} value={days[editing.index]}
+        inSentence={t(`whatsapp:bot.schedule.dayInText.${weekDays[editing.index]}`)}
         nearest={days.find((item, other) => item.open && other !== editing.index)} returnFocusTo={editing.trigger}
         onDone={(value) => { setDay(editing.index, value); setEditing(null); }} onClose={() => setEditing(null)} /> : null}
     </DialogContent>
@@ -136,9 +137,11 @@ export function OutOfHoursDialog({ outOfHours, schedule, onSave, onClose, return
 
 /// «La atención de un día» (WA-Respuestas-Base2, «Editar un día» y «Un día cerrado»): abierto o cerrado en la pieza y, si
 /// atiende, desde y hasta qué hora. Abrir un día cerrado copia el horario del día abierto más cercano. «Listo» lo pasa a la
-/// tabla; se guarda con el resto.
-function DayDialog({ name, value, nearest, onDone, onClose, returnFocusTo }: {
+/// tabla; se guarda con el resto. La pieza se llama «Atención del lunes»: en el teléfono es el título de su lista
+/// (M-WA-Respuestas-Base2, «La atención de un día»).
+function DayDialog({ name, inSentence, value, nearest, onDone, onClose, returnFocusTo }: {
   name: string;
+  inSentence: string;
   value: DayValue;
   nearest: DayValue | undefined;
   onDone: (value: DayValue) => void;
@@ -166,7 +169,7 @@ function DayDialog({ name, value, nearest, onDone, onClose, returnFocusTo }: {
       <DialogHeader><DialogTitle>{name}</DialogTitle></DialogHeader>
       <DialogBody>
         <FormField label={t("whatsapp:bot.outOfHours.attention")}>
-          <Picker value={draft.open ? "open" : "closed"} onChange={attention} options={[
+          <Picker label={t("whatsapp:bot.outOfHours.attentionOf", { day: inSentence })} value={draft.open ? "open" : "closed"} onChange={attention} options={[
             { value: "open", label: t("whatsapp:bot.outOfHours.open"), description: t("whatsapp:bot.outOfHours.openHelp") },
             { value: "closed", label: t("whatsapp:bot.outOfHours.closed"), description: t("whatsapp:bot.outOfHours.closedHelp") },
           ]} />

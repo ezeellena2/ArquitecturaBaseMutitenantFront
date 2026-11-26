@@ -34,6 +34,7 @@
     },
     "editDay": "Editar {{day}}",
     "attention": "Atención",
+    "attentionOf": "Atención del {{day}}",
     "open": "Abierto",
     "openHelp": "Atiende en un horario.",
     "closed": "Cerrado",
