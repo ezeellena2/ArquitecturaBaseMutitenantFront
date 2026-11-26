@@ -461,9 +461,12 @@ export function base12bSteps(ctx) {
       await createAssistantControl(env.command)("prepare", { email: ctx.operator, access: "platform" });
       await platformPage.goto(url("/plataforma/asistente/configuracion"));
       await heading(platformPage, "Configuración");
+      // El título llega antes que las pestañas: se espera la pestaña o el botón antes de ver si hay que cambiar de pestaña.
       const catalog = platformPage.getByRole("tab", { name: /^Catálogo de modelos/u });
+      const addModel = platformPage.getByRole("button", { name: /^Agregar modelo$/u }).filter({ visible: true }).first();
+      await catalog.or(addModel).first().waitFor();
       if (await catalog.count()) await catalog.click();
-      await platformPage.getByRole("button", { name: /^Agregar modelo$/u }).filter({ visible: true }).first().click();
+      await addModel.click();
       const dialog = platformPage.getByRole("dialog", { name: "Agregar modelo", exact: true });
       await dialog.waitFor();
       const model = `Recorrido ${width} ${tag}`;
@@ -654,7 +657,9 @@ export function base12bSteps(ctx) {
       await ensureOperator();
       await platformPage.goto(url("/plataforma/configuracion"));
       await heading(platformPage, "Configuración");
-      // El entorno aislado arranca sin los correos de contacto, que la configuración pide para guardar.
+      // El entorno aislado arranca sin los correos de contacto, que la configuración pide para guardar. El título llega antes
+      // que el formulario: sin esperarlo, los correos se saltean y «Guardar cambios» no abre el motivo.
+      await platformPage.getByRole("textbox", { name: /^Nombre de la aplicación/u }).waitFor();
       for (const [name, value] of [["Correo de ventas", "ventas@example.test"], ["Correo de soporte", "soporte@example.test"]]) {
         const contact = platformPage.getByRole("textbox", { name: new RegExp(`^${name}`, "u") }).first();
         if (await contact.count() && !await contact.inputValue()) await contact.fill(value);
