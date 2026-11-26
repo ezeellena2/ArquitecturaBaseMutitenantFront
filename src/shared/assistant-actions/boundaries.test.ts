@@ -23,9 +23,13 @@ function importsOf(file: string, source = readFileSync(file, "utf8")): string[] 
     .map((target) => relative(target.startsWith("@/") ? path.resolve(root, target.slice(2)) : path.resolve(path.dirname(file), target)));
 }
 
+/** La única excepción: la cobertura lee la composición para comprobar un adaptador por acción del contrato (ADR 0068). */
+const coverage = { file: `${folder}/coverage.test.ts`, target: "app/assistantActionComposition" };
+
 /** Lo que rompe la frontera: desde adentro, un área, un módulo o la composición; desde afuera, un archivo interno. */
 function violation(file: string, target: string): string | null {
   const inside = file.startsWith(`${folder}/`);
+  if (inside && file === coverage.file && target === coverage.target) return null;
   if (inside) return /^(areas|modules|app)\//.test(target) ? `${file} importa ${target}` : null;
   const internal = target.startsWith(`${folder}/`) && target !== `${folder}/index`;
   return internal ? `${file} importa ${target}: va por @/shared/assistant-actions` : null;
@@ -36,6 +40,8 @@ describe("la frontera de shared/assistant-actions", () => {
     expect(violation(`${folder}/registry.ts`, "areas/business/users/components/InviteUserDialog")).not.toBeNull();
     expect(violation(`${folder}/useAssistantProposal.ts`, "modules/assistant/api/types")).not.toBeNull();
     expect(violation(`${folder}/registry.ts`, "app/assistantActionComposition")).not.toBeNull();
+    expect(violation(`${folder}/coverage.test.ts`, "app/assistantActionComposition")).toBeNull();
+    expect(violation(`${folder}/coverage.test.ts`, "areas/business/users/assistantActions")).not.toBeNull();
     expect(violation(`${folder}/registry.ts`, "shared/api/httpClient")).toBeNull();
     expect(violation("modules/assistant/components/AssistantActionCard.tsx", `${folder}/registry`)).not.toBeNull();
     expect(violation("areas/business/users/components/InviteUserDialog.tsx", `${folder}/useAssistantProposal`)).not.toBeNull();
