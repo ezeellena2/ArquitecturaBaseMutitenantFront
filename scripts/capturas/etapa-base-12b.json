@@ -104241,6 +104241,7 @@
                 "replied": 12,
                 "unsubscribed": 2,
                 "failed": 6,
+                "uncertain": 1,
                 "estimatedCost": {
                   "amount": 7.66,
                   "currency": "USD"
@@ -104622,6 +104623,7 @@
                 "replied": 12,
                 "unsubscribed": 2,
                 "failed": 6,
+                "uncertain": 1,
                 "estimatedCost": {
                   "amount": 7.66,
                   "currency": "USD"
@@ -104996,6 +104998,7 @@
                 "replied": 12,
                 "unsubscribed": 2,
                 "failed": 6,
+                "uncertain": 1,
                 "estimatedCost": {
                   "amount": 7.66,
                   "currency": "USD"
@@ -105370,6 +105373,7 @@
                 "replied": 12,
                 "unsubscribed": 2,
                 "failed": 6,
+                "uncertain": 1,
                 "estimatedCost": {
                   "amount": 7.66,
                   "currency": "USD"

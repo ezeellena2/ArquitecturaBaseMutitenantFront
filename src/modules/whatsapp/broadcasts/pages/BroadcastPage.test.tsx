@@ -40,6 +40,8 @@ describe("Resultados de una difusión", () => {
     const counters = screen.getByRole("region", { name: "Resultados" });
     expect(within(counters).getByText("124")).toBeVisible();
     expect(within(counters).getByText("Se dieron de baja")).toBeVisible();
+    // Sin destinatarios dudosos, «Sin confirmar» no está entre las cifras (tablero WA-Difusion-Resultados).
+    expect(within(counters).queryByText("Sin confirmar")).not.toBeInTheDocument();
     expect(screen.getByText("Laura Méndez")).toBeVisible();
     // Una enviada no se cancela: solo se duplica.
     expect(screen.getByRole("button", { name: "Duplicar" })).toBeVisible();
@@ -76,6 +78,28 @@ describe("Resultados de una difusión", () => {
     await user.click(info);
     expect(await screen.findByRole("tooltip")).toHaveTextContent("No sabemos si le llegó: WhatsApp no confirmó el envío. No se repite solo, y no cuenta como mandado ni como «No llegó».");
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  // WA-Difusion-Resultados-Base2 y su M- (255): con un destinatario dudoso, «Resultados» suma «Sin confirmar» con su cifra al
+  // final; no cuenta como entregado ni como «No llegaron».
+  it("«Resultados» suma «Sin confirmar» con su cifra después de «Se dieron de baja»", async () => {
+    server.use(http.get("/api/organization/whatsapp/broadcasts/broadcast-sent", () =>
+      HttpResponse.json({ broadcast: { ...sent, uncertain: 1 }, recipients: paged(recipients) })));
+    const { container } = mountWhatsApp(whatsappOwner, "/org/whatsapp/difusiones/broadcast-sent");
+    const counters = await screen.findByRole("region", { name: "Resultados" });
+    expect(within(counters).getAllByRole("term").map((term) => term.textContent))
+      .toEqual(["Mandados", "Entregados", "Leídos", "Respondieron", "Se dieron de baja", "Sin confirmar"]);
+    expect(within(counters).getAllByRole("definition").map((value) => value.textContent)).toEqual(["124", "118", "86", "12", "2", "1"]);
+    expect(await axe(container)).toHaveNoViolations();
+  });
+  it("390: «Sin confirmar» va con su cifra después de «No llegaron»", async () => {
+    asPhone();
+    server.use(http.get("/api/organization/whatsapp/broadcasts/broadcast-sent", () =>
+      HttpResponse.json({ broadcast: { ...sent, uncertain: 1 }, recipients: paged(recipients) })));
+    mountWhatsApp(whatsappOwner, "/org/whatsapp/difusiones/broadcast-sent");
+    const counters = await screen.findByRole("list", { name: "Resultados" });
+    expect(within(counters).getAllByRole("listitem").map((item) => item.textContent))
+      .toEqual(["124Mandados", "118Entregados", "86Leídos", "12Respondieron", "2Se dieron de baja", "6No llegaron", "1Sin confirmar"]);
   });
 
   it("la búsqueda y el filtro de estado van a la URL y a la consulta de los destinatarios", async () => {

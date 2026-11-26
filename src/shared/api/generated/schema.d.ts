@@ -32314,7 +32314,10 @@ export interface components {
             /** Format: int32 */
             scheduled: number;
         };
-        /** @description variables son los valores con que se creó la difusión, para duplicarla. */
+        /**
+         * @description variables son los valores con que se creó la difusión, para duplicarla. uncertain cuenta los destinatarios «Sin confirmar»
+         *     (decisión 255): la cola no sabe si salieron, y no cuentan en delivered ni en failed.
+         */
         WhatsAppBroadcastResponse: {
             /** Format: uuid */
             id: string;
@@ -32339,6 +32342,8 @@ export interface components {
             unsubscribed: number;
             /** Format: int32 */
             failed: number;
+            /** Format: int32 */
+            uncertain: number;
             estimatedCost: components["schemas"]["Money"];
             /** Format: uint32 */
             version: number;

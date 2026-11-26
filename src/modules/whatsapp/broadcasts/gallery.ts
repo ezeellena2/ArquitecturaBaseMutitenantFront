@@ -8,7 +8,7 @@ const broadcasts = "/api/organization/whatsapp/broadcasts";
 /// Tablero WA-Difusiones: dos enviadas y una programada para el 20/12 a las 09:00 de Buenos Aires. Cada una va a quienes
 /// aceptan promociones con esa etiqueta; el costo lo calcula el back con la tarifa de Marketing de Argentina (0,0618 USD).
 const broadcast = (values: Partial<WhatsAppBroadcastResponse> & Pick<WhatsAppBroadcastResponse, "id" | "name" | "template" | "audience" | "recipients">): WhatsAppBroadcastResponse => ({
-  variables: [], status: "Sent", scheduledAtUtc: null, sentAtUtc: null, delivered: 0, read: 0, replied: 0, unsubscribed: 0, failed: 0,
+  variables: [], status: "Sent", scheduledAtUtc: null, sentAtUtc: null, delivered: 0, read: 0, replied: 0, unsubscribed: 0, failed: 0, uncertain: 0,
   estimatedCost: { amount: 0, currency: "USD" }, version: 1, ...values,
 });
 const empanadas = broadcast({

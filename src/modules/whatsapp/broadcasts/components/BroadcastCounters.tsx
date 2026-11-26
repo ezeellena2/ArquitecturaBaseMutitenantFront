@@ -8,6 +8,8 @@ type Counter = { key: string; value: number };
 
 /// «Resultados» de una difusión (tableros WA-Difusion-Resultados y su M-*): en la compu, cinco cifras en una caja; en el
 /// teléfono, seis tarjetas debajo de la barra, también «No llegaron». Solo cuentan: el filtro va en «Filtros» (v123).
+/// Con un destinatario dudoso suma «Sin confirmar» al final, en los dos (WA-Difusion-Resultados-Base2 y su M-*, 255): no
+/// cuenta como entregado ni como «No llegaron».
 export function BroadcastCounters({ broadcast }: { broadcast: WhatsAppBroadcastResponse }) {
   const { t } = useTranslation("whatsapp");
   const { phone } = useAppChrome();
@@ -18,16 +20,17 @@ export function BroadcastCounters({ broadcast }: { broadcast: WhatsAppBroadcastR
     { key: "replied", value: broadcast.replied },
     { key: "unsubscribed", value: broadcast.unsubscribed },
   ];
+  const uncertain: Counter[] = broadcast.uncertain > 0 ? [{ key: "uncertain", value: broadcast.uncertain }] : [];
   if (phone) return <ul aria-label={t("broadcasts.counters.title")} className="m-0 flex list-none flex-wrap gap-2 px-4 pt-1 pb-3">
-    {[...counters, { key: "failed", value: broadcast.failed }].map((counter) => <li key={counter.key}
+    {[...counters, { key: "failed", value: broadcast.failed }, ...uncertain].map((counter) => <li key={counter.key}
       className="flex h-14.5 min-w-21 flex-col justify-center rounded-[0.875rem] border border-[var(--borde)] bg-[var(--superficie)] px-3.5 leading-[1.25]">
       <NumberText value={counter.value} className="text-left text-[1.0625rem] font-semibold text-[var(--t1)]" />
       <span className="text-[0.78125rem] text-[var(--t3)]">{t(`broadcasts.counters.${counter.key}`)}</span>
     </li>)}
   </ul>;
   return <Section title={t("broadcasts.counters.title")}>
-    <dl className="grid grid-cols-2 md:grid-cols-5">
-      {counters.map((counter) => <div key={counter.key} className="flex min-h-14 flex-col-reverse justify-center border-[var(--borde)] py-1.5 pr-2 pl-4 leading-[1.35] md:border-r md:last:border-r-0">
+    <dl className={`grid grid-cols-2 ${uncertain.length ? "md:grid-cols-6" : "md:grid-cols-5"}`}>
+      {[...counters, ...uncertain].map((counter) => <div key={counter.key} className="flex min-h-14 flex-col-reverse justify-center border-[var(--borde)] py-1.5 pr-2 pl-4 leading-[1.35] md:border-r md:last:border-r-0">
         <dt className="text-[0.75rem] text-[var(--t3)]">{t(`broadcasts.counters.${counter.key}`)}</dt>
         <dd><NumberText value={counter.value} className="text-left text-[1.125rem] font-semibold text-[var(--t1)]" /></dd>
       </div>)}

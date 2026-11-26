@@ -1779,6 +1779,10 @@ export const validationConstraints = {
     "failed": {
       "minimum": -2147483648,
       "maximum": 2147483647
+    },
+    "uncertain": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
     }
   },
   "WhatsAppContactConversationResponse": {

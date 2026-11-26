@@ -63,7 +63,8 @@
     "read": "Leídos",
     "replied": "Respondieron",
     "unsubscribed": "Se dieron de baja",
-    "failed": "No llegaron"
+    "failed": "No llegaron",
+    "uncertain": "Sin confirmar"
   },
   "recipients": {
     "columns": {

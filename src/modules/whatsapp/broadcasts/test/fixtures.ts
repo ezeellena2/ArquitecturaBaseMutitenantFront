@@ -5,13 +5,13 @@ import type { WhatsAppBroadcastResponse, WhatsAppRecipientResponse, WhatsAppTemp
 /// Datos de prueba de Difusiones: solo a quienes aceptan y ningún número de empleado. El costo llega del back.
 export const sent: WhatsAppBroadcastResponse = {
   id: "broadcast-sent", name: "20 % en empanadas", template: { id: "template-promo", name: "Promo semanal" }, variables: ["Martina"], audience: { kind: "Tag", tag: "Minorista" },
-  recipients: 124, status: "Sent", scheduledAtUtc: null, sentAtUtc: "2026-09-25T12:00:00Z", delivered: 118, read: 86, replied: 12, unsubscribed: 2, failed: 6,
+  recipients: 124, status: "Sent", scheduledAtUtc: null, sentAtUtc: "2026-09-25T12:00:00Z", delivered: 118, read: 86, replied: 12, unsubscribed: 2, failed: 6, uncertain: 0,
   estimatedCost: { amount: 7.66, currency: "ARS" }, version: 3,
 };
 
 export const scheduled: WhatsAppBroadcastResponse = {
   ...sent, id: "broadcast-scheduled", name: "Horario de fiestas", template: { id: "template-hours", name: "Aviso de horario" }, audience: { kind: "AllAccepting", tag: null },
-  recipients: 48, status: "Scheduled", scheduledAtUtc: "2026-12-20T12:00:00Z", sentAtUtc: null, delivered: 0, read: 0, replied: 0, unsubscribed: 0, failed: 0, version: 7,
+  recipients: 48, status: "Scheduled", scheduledAtUtc: "2026-12-20T12:00:00Z", sentAtUtc: null, delivered: 0, read: 0, replied: 0, unsubscribed: 0, failed: 0, uncertain: 0, version: 7,
 };
 
 export const promoTemplate: WhatsAppTemplateOptionResponse = {
