@@ -11,8 +11,11 @@ import { botOption, e11Definitions, e11ManualChecks, enterPersonalHome, national
 import { e9Definitions, e9ManualChecks, factorSecretMasks, newcomerOf, operatorNameOf, runE9Journey } from "./recorrido-usuario-e9.mjs";
 import { base12Definitions, base12ManualChecks, bellLabel, importedPhoneOf, invitationLinkFrom, isFullDateTime, runBase12Journey, whileHeld,
   workingButtonProblems, workingButtonState } from "./recorrido-usuario-base12.mjs";
-import { base12bDefinitions, base12bManualChecks, dailyLimitProblems, decodeMimeWords, emptiesLast, isJoinedPercent, isMonthRange, runBase12bJourney, senderNameOf }
+import { base12bDefinitions, base12bManualChecks, base12bPlatformCaptures, chatDeliveryOrder, chatPhones, dailyEmailLimitProblems, dailyEmailLimitText,
+  dailyLimitProblems, decodeMimeWords, deliveryWords, emailDeliveryReasons, emptiesLast, invitationDeliveryOrder, invitationQuotaOrders, isJoinedPercent,
+  isMonthRange, isReviewedLine, keyUnreadableText, resendUncertainText, runBase12bJourney, senderNameOf, uncertainChatReason, waitInHours }
   from "./recorrido-usuario-base12b.mjs";
+import { readFileSync } from "node:fs";
 
 test("la selección de ancho conserva el recorrido completo por defecto y permite sólo un ancho vigente", () => {
   assert.deepEqual(parseJourneyArguments([]), { build: true, widths: [1440, 390] });
@@ -550,15 +553,88 @@ test("sin el correo aislado del entorno o sin las sesiones del recorrido, la bas
   assert.deepEqual(touched, []);
 });
 
-test("la segunda parte de la base tiene sus pasos en orden y deja a mano lo que el preparador todavía no deja (B-2 y B-3)", () => {
-  assert.deepEqual(base12bDefinitions.map((step) => step.id), Array.from({ length: 11 }, (_, index) => `B12B-${String(index + 1).padStart(2, "0")}`));
+test("la segunda parte de la base tiene sus pasos en orden, y lo que el preparador no dejaba (B-2 y B-3) ya es paso", () => {
+  assert.deepEqual(base12bDefinitions.map((step) => step.id), Array.from({ length: 15 }, (_, index) => `B12B-${String(index + 1).padStart(2, "0")}`));
   for (const step of base12bDefinitions) assert.ok(step.title.startsWith("B12B · ") && step.expected && !step.controlled);
   const titles = base12bDefinitions.map((step) => step.title.slice("B12B · ".length));
   for (const expected of ["Un rol en áreas plegables", "Un permiso ajeno da 403 con su texto", "El chat del Inicio sin cupo", "Dos subidas a la vez",
     "Un modelo nuevo en dos pasos", "Una fecha, un porcentaje y un mes como rango", "Un aviso de cada tipo", "Elegir con la pieza", "Ordenar una tabla",
-    "El plazo de los chats y el nombre de los correos", "Salir con dos pestañas abiertas"]) assert.ok(titles.includes(expected), expected);
-  assert.equal(base12bManualChecks.length, 4);
-  for (const item of base12bManualChecks) assert.match(item, /\(B-[23]\)\.$/u);
+    "El plazo de los chats y el nombre de los correos", "Salir con dos pestañas abiertas", "Una invitación en cada estado de entrega",
+    "Un mensaje «Sin confirmar» revisado", "La clave ilegible en las dos configuraciones", "Invitar hasta el tope"]) assert.ok(titles.includes(expected), expected);
+  assert.deepEqual(base12bManualChecks, []);
+});
+
+// Los textos que esperan los pasos 12 a 15 son los de los recursos: si cambia uno, el paso cambia con él.
+const locale = (file) => JSON.parse(readFileSync(new URL(`../src/${file}`, import.meta.url), "utf8"));
+
+test("B12B-12: la entrega de una invitación por correo, su (i) y la confirmación de reenviarla dicen lo de los recursos", () => {
+  const enums = locale("locales/es/enums.json").InvitationDeliveryStatus;
+  const delivery = locale("locales/es/common.json").invitationDelivery;
+  assert.deepEqual(deliveryWords, enums);
+  assert.deepEqual(emailDeliveryReasons, { Pending: delivery.why.Pending, Uncertain: delivery.why.UncertainEmail, Failed: delivery.why.FailedEmail });
+  assert.equal(resendUncertainText, delivery.resend.descriptionEmail.replace("{{person}}", delivery.resend.thePerson));
+  assert.deepEqual(invitationDeliveryOrder("e2e-b12b-entrega@example.test", "Uncertain"), { kind: "invitation", email: "e2e-b12b-entrega@example.test", outcome: "Uncertain" });
+  assert.deepEqual(invitationDeliveryOrder("e2e-b12b-entrega@example.test", "Failed").outcome, "Failed");
+  assert.throws(() => invitationDeliveryOrder("persona@gmail.com", "Uncertain"), /prueba/);
+  assert.throws(() => invitationDeliveryOrder("e2e-b12b-entrega@example.test", "Sent"));
+});
+
+test("B12B-13: el mensaje «Sin confirmar» del chat, su (i) y quién lo revisó, en la organización y en Plataforma", () => {
+  const thread = locale("modules/whatsapp/locales/es/chats.json").thread;
+  assert.equal(deliveryWords.Uncertain, thread.uncertain);
+  assert.equal(uncertainChatReason, thread.uncertainInfo);
+  assert.equal(thread.markReviewed, "Marcar como revisado");
+  assert.ok(isReviewedLine(thread.reviewedBy.replace("{{name}}", "Cuenta E2E").replace("{{when}}", "25/11/2026, 22:22")));
+  assert.equal(isReviewedLine("Lo revisó Cuenta E2E · 25/11/2026 22:22"), false);
+  assert.equal(isReviewedLine("Revisado · 25/11/2026, 22:22"), false);
+  // El cliente de la E11 en cada ancho, y una consulta propia de Plataforma, distinta en cada ancho.
+  assert.deepEqual(chatPhones(1440), { organization: "+5491134567884", platform: "+5491134567872" });
+  assert.deepEqual(chatPhones(390), { organization: "+5491134567885", platform: "+5491134567873" });
+  assert.throws(() => chatPhones(320));
+  assert.deepEqual(chatDeliveryOrder("platform", "+5491134567872"), { kind: "chatMessage", scope: "platform", phone: "+5491134567872", outcome: "Uncertain" });
+  assert.throws(() => chatDeliveryOrder("organization", "+5491155550000"), /sintético/);
+  assert.throws(() => chatDeliveryOrder("company", "+5491134567872"));
+});
+
+test("B12B-14: la clave ilegible dice el texto de la configuración del asistente", () => {
+  const settings = locale("modules/assistant/locales/es/assistant.json").settings;
+  assert.equal(keyUnreadableText, settings.issues.keyUnreadable);
+  assert.equal(settings.replaceKey, "Reemplazar clave");
+});
+
+test("B12B-15: el tope de invitaciones responde 429 con la espera en horas y el aviso del correo", () => {
+  assert.deepEqual(invitationQuotaOrders("e2e-recorrido@example.test"), { fill: { kind: "fill", email: "e2e-recorrido@example.test", remaining: 1 },
+    release: { kind: "release", email: "e2e-recorrido@example.test" } });
+  assert.throws(() => invitationQuotaOrders("e2e-recorrido@example.test", 11));
+  assert.throws(() => invitationQuotaOrders("persona@gmail.com"));
+  // Como formatWait del front: «22 h 53 min», con los minutos para arriba.
+  assert.equal(waitInHours(82345), "22 h 53 min");
+  assert.equal(waitInHours(3600), "1 h");
+  assert.equal(waitInHours(7201), "2 h 1 min");
+  assert.throws(() => waitInHours(59 * 60));
+  const problem = { code: "Messaging.Email.DailyLimit", retryAfter: 83000, detail: dailyEmailLimitText };
+  assert.deepEqual(dailyEmailLimitProblems(429, problem, "83000"), []);
+  assert.deepEqual(dailyEmailLimitProblems(201, problem, "83000"), ["respondió 201 y no 429"]);
+  assert.deepEqual(dailyEmailLimitProblems(429, { ...problem, retryAfter: 59 }, "59"), ["la espera no es de horas"]);
+  assert.deepEqual(dailyEmailLimitProblems(429, problem, "60"), ["Retry-After no dice la misma espera"]);
+  assert.deepEqual(dailyEmailLimitProblems(429, { ...problem, code: "Security.RateLimit.Exceeded", detail: "Hiciste muchos pedidos seguidos." }, "83000"),
+    ["el código es Security.RateLimit.Exceeded", "el aviso no es el del tope del correo"]);
+});
+
+test("la segunda parte corre sus quince pasos en orden y captura en la pestaña del operador los que terminan ahí", async () => {
+  const page = { url: () => "https://localtest.me:5174/org", name: "organización" };
+  const platformPage = { url: () => "https://localtest.me:5174/plataforma", name: "plataforma" };
+  const recorded = [];
+  const record = async (id, width, getPage, action) => { recorded.push([id, getPage().name, typeof action]); };
+  await runBase12bJourney({ page, platformPage, width: 1440, env: { command: async () => ({}), files: async () => [], messages: async () => [] }, base: baseUrl,
+    record, signOut: async () => {}, awaitApp: async () => {}, login: async () => {}, owner: "e2e-recorrido-empresa@example.test",
+    organization: "Recorrido 1440", operator: "e2e-a3-operator@example.test" });
+  assert.deepEqual(recorded.map(([id]) => id), base12bDefinitions.map((step) => step.id));
+  assert.deepEqual([...base12bPlatformCaptures].sort(), ["05", "13", "14"]);
+  for (const [id, target, action] of recorded) {
+    assert.equal(target, base12bPlatformCaptures.has(id.slice(5)) ? "plataforma" : "organización", id);
+    assert.equal(action, "function", id);
+  }
 });
 
 test("el mes va como rango del primero al último día, y el porcentaje va pegado", () => {

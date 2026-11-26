@@ -9,8 +9,8 @@ import { fillOtp } from "./test-e2e-real-ui.mjs";
 // Segunda parte de la base de la 12 en el recorrido de usuario (I3 del plan 2026-11-19-etapa-base-de-la-12-segunda-parte):
 // lo que se probó a mano en la puerta queda acá como paso, para que la próxima puerta pase sola. Va después de la base de
 // la 12, en las mismas pestañas: arranca y termina con la persona afuera y el operador del recorrido en Plataforma.
-// Lo que pide un estado que el preparador todavía no deja (B-2 y B-3 de la puerta) o un proveedor real queda «para probar a
-// mano», con su motivo.
+// Los estados que el entorno no deja solo los deja el preparador con sus órdenes privadas (B-2 y B-3 de la puerta):
+// `delivery` (la cola de una invitación o de un mensaje del chat), `assistant` con `unreadableKey` e `invitation-quota`.
 
 const definition = (id, title, expected) => ({ id: `B12B-${id}`, title: `B12B · ${title}`, expected });
 export const base12bDefinitions = [
@@ -25,14 +25,96 @@ export const base12bDefinitions = [
   definition("09", "Ordenar una tabla", "Usuarios se ordena desde el encabezado de una columna (↑ y ↓) y desde «Ordenar por», con la columna y el orden en palabras; lo vacío va al final en los dos sentidos, y el orden queda en la dirección."),
   definition("10", "El plazo de los chats y el nombre de los correos", "La Dueña cambia el plazo de los chats de su organización y lo guarda; el operador cambia el nombre de los correos en Plataforma, y el correo con un código llega con el nombre nuevo."),
   definition("11", "Salir con dos pestañas abiertas", "Con dos pestañas de la organización abiertas, salir en una cierra la sesión también en la otra, que vuelve al ingreso."),
+  definition("12", "Una invitación en cada estado de entrega", "Cuatro invitaciones por correo: una en la cola («Pendiente»), una que salió («Enviada»), una que el servidor de correo no confirmó («Sin confirmar») y una que no salió («No se pudo enviar»), cada una salvo la enviada con su (i). «Reenviar invitación» de la «Sin confirmar» pide revisar con la persona antes y la reenvía, que queda «Enviada»."),
+  definition("13", "Un mensaje «Sin confirmar» revisado", "El último mensaje que salió de un chat de la organización y el de una consulta de Plataforma quedan «Sin confirmar», con su (i) y «Marcar como revisado»; revisado, dicen quién y cuándo («Lo revisó …»), y queda al recargar."),
+  definition("14", "La clave ilegible en las dos configuraciones", "Con la clave guardada ilegible, la configuración del asistente de la organización y la de Plataforma dicen «No pudimos leer la clave guardada: reemplazala.» con «Reemplazar clave»."),
+  definition("15", "Invitar hasta el tope", "A la Dueña le queda una invitación por correo de su tope del día: esa sale; la siguiente responde 429 con la espera en horas y el aviso dice que no se pueden mandar más correos y que no se guardó nada; Usuarios no la tiene."),
 ];
 
-export const base12bManualChecks = [
-  "Invitar hasta el tope, con la espera en horas: el entorno aislado corre con los topes de correo en 1.000.000 (TestMessageQuotas) y ningún perfil de cuotas frena el envío; falta una orden del preparador que baje el tope del día, pedida en la puerta de la base 2 (B-3).",
-  "Una invitación por correo en cada estado de entrega (en la cola, enviada, «Sin confirmar» y no se pudo enviar): el preparador todavía no deja un envío de la cola en Uncertain o en Failed (B-2).",
-  "Un mensaje «Sin confirmar» revisado, en la organización y en Plataforma: el preparador todavía no deja un mensaje del chat en Uncertain (B-2).",
-  "La clave ilegible en la configuración del asistente de la organización y en la de Plataforma: el preparador todavía no deja una clave guardada ilegible (B-2).",
-];
+// B-2 y B-3 de la puerta de la base 2 ya son pasos (12 a 15): no queda nada de esta parte para probar a mano.
+export const base12bManualChecks = [];
+
+/** La entrega de una invitación en pantalla (`enums:InvitationDeliveryStatus`). */
+export const deliveryWords = Object.freeze({ Pending: "Pendiente", Sent: "Enviada", Uncertain: "Sin confirmar", Failed: "No se pudo enviar" });
+
+/** El porqué de la entrega de una invitación por correo, en su (i) (`common:invitationDelivery.why`); la enviada no lleva. */
+export const emailDeliveryReasons = Object.freeze({
+  Pending: "Está en la cola: sale en unos minutos.",
+  Uncertain: "No sabemos si llegó: el servidor de correo no confirmó el envío. Revisá con la persona antes de reenviarla.",
+  Failed: "El servidor de correo no la aceptó. Revisá la dirección y reenviala.",
+});
+
+/** Lo que pide la confirmación de reenviar una invitación «Sin confirmar» por correo (`common:invitationDelivery.resend`). */
+export const resendUncertainText = "No sabemos si le llegó la anterior: el servidor de correo no confirmó el envío. Revisá con la persona antes de reenviarla, así no le llegan dos.";
+
+/** La (i) de un mensaje «Sin confirmar» del chat (`whatsapp:chats.thread.uncertainInfo`). */
+export const uncertainChatReason = "No sabemos si salió: WhatsApp no confirmó el envío. Mirá el chat en el teléfono antes de mandarlo de nuevo: no se repite solo. Marcarlo como revisado no lo reenvía.";
+
+/** La clave ilegible (`assistant:settings.issues.keyUnreadable`, 0064 §7). */
+export const keyUnreadableText = "No pudimos leer la clave guardada: reemplazala.";
+
+/** El aviso del tope del correo, el `detail` que traduce el back (`Messaging.Email.DailyLimit`). */
+export const dailyEmailLimitText = "Por ahora no se pueden mandar más correos, y no se guardó nada. Probá de nuevo más tarde.";
+
+const syntheticPhone = /^\+54911345678\d{2}$/u;
+const testMailbox = /^[^@\s]+@example\.test$/u;
+
+/**
+ * Los teléfonos de los chats del paso 13, propios de cada ancho: el del cliente de la E11 (su conversación tiene la respuesta
+ * de la Dueña) y el de la consulta mínima de Plataforma que arma el preparador.
+ */
+export function chatPhones(width) {
+  assert.ok(width === 1440 || width === 390, "Los chats son de los dos anchos del recorrido.");
+  return width === 1440 ? { organization: "+5491134567884", platform: "+5491134567872" } : { organization: "+5491134567885", platform: "+5491134567873" };
+}
+
+/** La orden `delivery` que deja la última invitación de un correo de prueba en un estado de la cola (B-2). */
+export function invitationDeliveryOrder(email, outcome) {
+  assert.ok(["Pending", "Uncertain", "Failed"].includes(outcome), "La cola queda en espera, sin confirmar o sin salir.");
+  assert.match(email, testMailbox, "La invitación es de un correo de prueba.");
+  return { kind: "invitation", email, outcome };
+}
+
+/** La orden `delivery` que deja «Sin confirmar» el último mensaje que salió de un chat, de la organización o de Plataforma (B-2). */
+export function chatDeliveryOrder(scope, phone) {
+  assert.ok(scope === "organization" || scope === "platform", "El chat es de la organización o de Plataforma.");
+  assert.match(phone, syntheticPhone, "El teléfono es sintético de la fixture.");
+  return { kind: "chatMessage", scope, phone, outcome: "Uncertain" };
+}
+
+/** Las órdenes `invitation-quota` (B-3): dejar a quien invita a `remaining` invitaciones de su tope del día, y soltarlo. */
+export function invitationQuotaOrders(email, remaining = 1) {
+  assert.ok(Number.isInteger(remaining) && remaining >= 0 && remaining <= 10, "Quedan de 0 a 10 invitaciones.");
+  assert.match(email, testMailbox, "Quien invita tiene un correo de prueba.");
+  return { fill: { kind: "fill", email, remaining }, release: { kind: "release", email } };
+}
+
+/** «Lo revisó Cuenta E2E · 25/11/2026, 22:22»: quién y cuándo, con la fecha y la hora después de una coma. */
+export function isReviewedLine(text) {
+  return /^Lo revisó \S.* · \d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}$/u.test(String(text).replace(/\s+/gu, " ").trim());
+}
+
+/** Una espera de un 429 desde una hora, como la dice el front (`formatWait`): horas y minutos, redondeados para arriba. */
+export function waitInHours(seconds) {
+  assert.ok(Number.isFinite(seconds) && seconds >= 3600, "La espera es de una hora o más.");
+  const minutes = Math.ceil(Math.ceil(seconds) / 60);
+  const rest = minutes % 60;
+  return rest === 0 ? `${Math.floor(minutes / 60)} h` : `${Math.floor(minutes / 60)} h ${rest} min`;
+}
+
+/**
+ * Lo que falta en el 429 del tope del correo (ADR 0063): el código, la espera de horas en `retryAfter` y en `Retry-After`,
+ * y el aviso traducido. Devuelve lo que falta, o nada.
+ */
+export function dailyEmailLimitProblems(status, problem, retryAfterHeader) {
+  const problems = [];
+  if (status !== 429) problems.push(`respondió ${status} y no 429`);
+  if (problem?.code !== "Messaging.Email.DailyLimit") problems.push(`el código es ${problem?.code ?? "ninguno"}`);
+  if (!Number.isInteger(problem?.retryAfter) || problem.retryAfter < 3600) problems.push("la espera no es de horas");
+  else if (String(problem.retryAfter) !== String(retryAfterHeader ?? "")) problems.push("Retry-After no dice la misma espera");
+  if (problem?.detail !== dailyEmailLimitText) problems.push("el aviso no es el del tope del correo");
+  return problems;
+}
 
 /** El mes como rango (formatos.md, `month`): «01/11/2026 – 30/11/2026», del primero al último día, con la raya y espacios. */
 export function isMonthRange(text) {
@@ -142,6 +224,50 @@ export function base12bSteps(ctx) {
     const tip = target.getByRole("tooltip").filter({ visible: true }).first();
     await tip.waitFor();
     return (await tip.innerText()).trim();
+  };
+  // Lo que una orden cambió vuelve como estaba aunque el paso falle; si falla el paso, manda su error y no el de volver.
+  const withRestore = async (work, restore) => {
+    let result;
+    try { result = await work(); } catch (error) { await restore().catch(() => {}); throw error; }
+    await restore();
+    return result;
+  };
+  // «Invitar usuario» por correo, sin roles, desde Usuarios; devuelve la respuesta del POST y el diálogo.
+  const inviteByEmail = async (email, { created = true } = {}) => {
+    // El aviso de la invitación anterior puede tapar el botón en el teléfono: se espera a que se vaya.
+    await page.locator("[data-sonner-toast]").first().waitFor({ state: "detached", timeout: 15_000 }).catch(() => {});
+    await page.getByRole("button", { name: "Invitar usuario", exact: true }).click();
+    const dialog = page.getByRole("dialog", { name: "Invitar usuario", exact: true });
+    await dialog.getByRole("textbox", { name: /^Correo/u }).fill(email);
+    const [reply] = await Promise.all([
+      page.waitForResponse((response) => new URL(response.url()).pathname === "/api/users/invitations" && response.request().method() === "POST"),
+      dialog.getByRole("button", { name: /^Invitar$|^Enviar invitación$/u }).click(),
+    ]);
+    if (created) {
+      assert.equal(reply.status(), 201, `Invitar respondió ${reply.status()}.`);
+      await dialog.waitFor({ state: "hidden" });
+    }
+    return { reply, dialog };
+  };
+  // La ficha de una invitación, buscada en Usuarios por su correo: la caja «Invitación».
+  const openInvitation = async (email) => {
+    await page.goto(url(`/org/usuarios?search=${encodeURIComponent(email)}`));
+    await heading(page, "Usuarios");
+    await page.getByRole("link", { name: new RegExp(escapeRegExp(email), "u") }).filter({ visible: true }).first().click();
+    await page.waitForURL((current) => /^\/org\/usuarios\/[^/]+$/u.test(current.pathname));
+    const box = page.getByRole("region", { name: "Invitación", exact: true });
+    await box.waitFor();
+    return box;
+  };
+  // La entrega que dice la caja: la cola sale cada 250 ms en el entorno, así que se recarga hasta verla.
+  const deliveryIn = async (state, timeout = 60_000) => {
+    const word = deliveryWords[state];
+    for (const deadline = Date.now() + timeout; ;) {
+      const box = page.getByRole("region", { name: "Invitación", exact: true });
+      if (await box.getByText(word, { exact: true }).waitFor({ timeout: 5_000 }).then(() => true, () => false)) return box;
+      assert.ok(Date.now() < deadline, `La entrega no llegó a «${word}».`);
+      await page.reload();
+    }
   };
 
   return {
@@ -553,8 +679,139 @@ export function base12bSteps(ctx) {
         return `Salió en una pestaña y la otra, que estaba en Usuarios, dejó la organización sola y quedó en ${where}, con el ingreso.`;
       } finally { await other.close(); }
     },
+    // 0066 §4 (B6) y tablero Usuario-Base2: la entrega de una invitación por correo en cada estado, cada una con su (i) salvo
+    // la enviada, y «Reenviar» de la «Sin confirmar» pide revisar con la persona. En el entorno el correo sale enseguida: la
+    // orden `delivery` deja la cola en espera, sin confirmar o sin salir.
+    "12": async () => {
+      await asOwner("/org/usuarios");
+      await heading(page, "Usuarios");
+      const states = ["Pending", "Sent", "Uncertain", "Failed"];
+      const emails = Object.fromEntries(states.map((state) => [state, `e2e-b12b-entrega-${state.toLowerCase()}-${width}-${tag}@example.test`]));
+      const before = new Set(await env.files());
+      for (const state of states) await inviteByEmail(emails[state]);
+      for (const state of ["Pending", "Uncertain", "Failed"]) await env.command("delivery", invitationDeliveryOrder(emails[state], state));
+      // La enviada: su correo llegó al pickup aislado.
+      for (const deadline = Date.now() + 60_000; !(await env.messages(emails.Sent, before)).length;) {
+        assert.ok(Date.now() < deadline, "Llegó la invitación que salió.");
+        await new Promise((resolve) => { setTimeout(resolve, 250); });
+      }
+      const seen = [];
+      for (const state of states) {
+        await openInvitation(emails[state]);
+        const box = await deliveryIn(state);
+        if (state !== "Sent") {
+          const why = await tooltipOf(page, box.getByRole("button", { name: `Más información sobre ${deliveryWords[state]}`, exact: true }));
+          assert.equal(why, emailDeliveryReasons[state], `La (i) de «${deliveryWords[state]}» dice por qué.`);
+          await page.keyboard.press("Escape");
+        }
+        seen.push(deliveryWords[state]);
+      }
+      // «Reenviar invitación» de la «Sin confirmar»: pide revisar con la persona antes, y la nueva sale.
+      const box = await openInvitation(emails.Uncertain);
+      await box.getByRole("button", { name: "Reenviar invitación", exact: true }).click();
+      const confirm = page.getByRole("dialog", { name: /^¿Reenviar la invitación a /u });
+      await confirm.waitFor();
+      assert.ok((await confirm.innerText()).replace(/\s+/gu, " ").includes(resendUncertainText), "La confirmación pide revisar con la persona antes de reenviar.");
+      await confirm.getByRole("button", { name: "Reenviar", exact: true }).click();
+      await page.getByText(`Reenviamos la invitación a ${emails.Uncertain}.`, { exact: true }).first().waitFor();
+      await deliveryIn("Sent");
+      return `Las cuatro invitaciones dijeron ${seen.map((word) => `«${word}»`).join(", ")}, con su (i) salvo la enviada; «Reenviar» de la «Sin confirmar» pidió revisar con la persona y la reenvió, que quedó «Enviada».`;
+    },
+    // 0066 §2 y tableros WA-Chats-Base2 y Plat-WA-Chats-Base2: lo que salió sin que WhatsApp lo confirmara queda «Sin
+    // confirmar» con su (i) y «Marcar como revisado»; revisado, quién y cuándo. En el entorno WhatsApp no sale nunca: la orden
+    // `delivery` deja el mensaje así, y en Plataforma arma una consulta mínima (su número atiende el ingreso de la E8).
+    "13": async () => {
+      const phones = chatPhones(width);
+      const review = async (target, route) => {
+        await target.goto(url(route));
+        const thread = () => target.getByRole("log", { name: /^Mensajes con /u }).filter({ visible: true }).first();
+        await thread().getByText(deliveryWords.Uncertain, { exact: true }).first().waitFor();
+        const why = await tooltipOf(target, thread().getByRole("button", { name: `Más información sobre ${deliveryWords.Uncertain}`, exact: true }).first());
+        assert.equal(why, uncertainChatReason, "La (i) dice que no se sabe si salió y que revisar no lo reenvía.");
+        await target.keyboard.press("Escape");
+        await thread().getByRole("button", { name: "Marcar como revisado", exact: true }).click();
+        const line = thread().getByText(/^Lo revisó /u).first();
+        await line.waitFor();
+        const reviewed = (await line.innerText()).replace(/\s+/gu, " ").trim();
+        assert.ok(isReviewedLine(reviewed), `Revisado dice quién y cuándo, y dice «${reviewed}».`);
+        await target.reload();
+        await thread().getByText(reviewed, { exact: true }).waitFor();
+        return reviewed;
+      };
+      const organizationChat = await env.command("delivery", chatDeliveryOrder("organization", phones.organization));
+      await asOwner(`/org/whatsapp/chats/${organizationChat.chatId}`);
+      const inOrganization = await review(page, `/org/whatsapp/chats/${organizationChat.chatId}`);
+      const consultation = await env.command("delivery", chatDeliveryOrder("platform", phones.platform));
+      await ensureOperator();
+      const inPlatform = await review(platformPage, `/plataforma/whatsapp/consultas/${consultation.chatId}`);
+      return `La organización: «Sin confirmar» con su (i) y «${inOrganization}» al revisarlo, que quedó al recargar; Plataforma, en Consultas: «${inPlatform}».`;
+    },
+    // 0064 §7: la clave guardada que no se puede leer se dice en las dos configuraciones, con «Reemplazar clave». La orden
+    // `unreadableKey` la deja cifrada con otro propósito; al final las dos vuelven a la clave del entorno.
+    "14": async () => {
+      const assistant = createAssistantControl(env.command);
+      const unreadable = async (target, route) => {
+        await target.goto(url(route));
+        await heading(target, "Configuración");
+        const notice = target.getByRole("dialog", { name: "Antes de tu primera consulta", exact: true });
+        const issue = target.getByRole("alert").filter({ hasText: keyUnreadableText }).first();
+        await issue.or(notice).first().waitFor();
+        if (await notice.isVisible()) { await notice.getByRole("button", { name: "Entendido", exact: true }).click(); await notice.waitFor({ state: "hidden" }); }
+        await issue.waitFor();
+        await target.getByRole("button", { name: "Reemplazar clave", exact: true }).filter({ visible: true }).first().waitFor();
+        return (await issue.innerText()).trim();
+      };
+      // Al final, las dos vuelven a la clave del entorno, para lo que sigue y para el otro ancho.
+      return withRestore(async () => {
+        await assistant("prepare", { email: owner, access: "business" });
+        await assistant("unreadableKey", { email: owner, access: "business" });
+        await asOwner("/org/asistente/configuracion");
+        const inOrganization = await unreadable(page, "/org/asistente/configuracion");
+        await ensureOperator();
+        await assistant("prepare", { email: ctx.operator, access: "platform" });
+        await assistant("unreadableKey", { email: ctx.operator, access: "platform" });
+        const inPlatform = await unreadable(platformPage, "/plataforma/asistente/configuracion");
+        return `La organización dijo «${inOrganization}» y Plataforma «${inPlatform}», cada una con «Reemplazar clave».`;
+      }, async () => {
+        await assistant("prepare", { email: owner, access: "business" });
+        await assistant("prepare", { email: ctx.operator, access: "platform" });
+      });
+    },
+    // ADR 0063 y 256: el tope de invitaciones por correo de quien invita. El entorno corre con los topes altos: la orden
+    // `invitation-quota` deja a la Dueña a una invitación del suyo y después lo suelta, así lo que sigue invita como siempre.
+    // Termina con la persona afuera, como la segunda parte.
+    "15": async () => {
+      const orders = invitationQuotaOrders(owner, 1);
+      await env.command("invitation-quota", orders.fill);
+      return withRestore(async () => {
+        await asOwner("/org/usuarios");
+        await heading(page, "Usuarios");
+        const last = `e2e-b12b-tope-ultima-${width}-${tag}@example.test`;
+        const over = `e2e-b12b-tope-pasada-${width}-${tag}@example.test`;
+        await inviteByEmail(last);
+        const { reply, dialog } = await inviteByEmail(over, { created: false });
+        const problem = await reply.json().catch(() => ({}));
+        const problems = dailyEmailLimitProblems(reply.status(), problem, reply.headers()["retry-after"]);
+        assert.deepEqual(problems, [], `El tope ${problems.join(", ")}.`);
+        await page.locator('[data-sonner-toast][data-type="error"]').filter({ hasText: dailyEmailLimitText }).first().waitFor();
+        await dialog.getByRole("button", { name: "Cancelar", exact: true }).click();
+        await dialog.waitFor({ state: "hidden" });
+        // No se guardó: Usuarios no la encuentra.
+        const [listed] = await Promise.all([
+          page.waitForResponse((response) => new URL(response.url()).pathname === "/api/users/paged"
+            && new URL(response.url()).searchParams.get("search") === over && response.ok()),
+          page.goto(url(`/org/usuarios?search=${encodeURIComponent(over)}`)),
+        ]);
+        assert.equal((await listed.json()).items.length, 0, "La invitación pasada del tope no quedó en Usuarios.");
+        await ctx.signOut(page, organization);
+        return `La última del tope salió; la siguiente respondió 429 ${problem.code} con la espera de ${waitInHours(problem.retryAfter)} y el aviso «${dailyEmailLimitText}», y no quedó en Usuarios.`;
+      }, () => env.command("invitation-quota", orders.release));
+    },
   };
 }
+
+/** Los pasos que terminan en la pestaña del operador. */
+export const base12bPlatformCaptures = new Set(["05", "13", "14"]);
 
 /** Sigue a la base de la 12 en las mismas pestañas; arranca y termina con la persona afuera y el operador en Plataforma. */
 export async function runBase12bJourney(ctx) {
@@ -566,8 +823,9 @@ export async function runBase12bJourney(ctx) {
   const steps = base12bSteps(ctx);
   for (const { id } of base12bDefinitions) {
     const key = id.slice("B12B-".length);
-    // El modelo nuevo se agrega en la pestaña del operador: su captura es la de esa pestaña.
-    const target = key === "05" ? ctx.platformPage : ctx.page;
+    // Los pasos que terminan en la pestaña del operador (el modelo nuevo, la consulta revisada y la clave ilegible de
+    // Plataforma) se capturan en esa pestaña.
+    const target = base12bPlatformCaptures.has(key) ? ctx.platformPage : ctx.page;
     await ctx.record(id, ctx.width, () => target, steps[key], (error) => `Ruta ${new URL(target.url()).pathname}; ${error.name}. Los correos y los códigos se omiten.`);
   }
 }

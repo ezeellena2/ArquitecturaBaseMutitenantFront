@@ -78,8 +78,14 @@ export function createPrivateCommand(readyFile, { wait = (file) => waitFile(file
       let result;
       try { result = await wait(`${file}.done`); }
       catch { throw new Error("El preparador no completó la orden privada."); }
-      try { return result ? JSON.parse(result) : null; }
+      let reply;
+      try { reply = result ? JSON.parse(result) : null; }
       catch { throw new Error("El preparador no devolvió JSON válido."); }
+      // B-4 de la puerta de la base 2: una orden que el preparador rechaza vuelve con su tipo y su frase técnica, y el
+      // entorno sigue en pie para la próxima.
+      if (reply !== null && typeof reply === "object" && typeof reply.rejected === "string")
+        throw new Error(`El preparador rechazó la orden «${suffix}» (${reply.rejected})${typeof reply.detail === "string" ? `: ${reply.detail}` : "."}`);
+      return reply;
     } finally {
       try { await Promise.all([file, `${file}.done`, temporary].map((item) => rm(item, { force: true }))); }
       finally { pending = false; }

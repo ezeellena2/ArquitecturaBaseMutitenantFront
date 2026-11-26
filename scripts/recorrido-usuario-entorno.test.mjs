@@ -90,6 +90,21 @@ test("un segundo comando no borra la solicitud pendiente ni reinicia su cursor",
   assert.deepEqual(await readdir(directory), []);
 });
 
+test("una orden que el preparador rechaza falla con su motivo, limpia sus archivos y deja usar el comando otra vez", async (t) => {
+  const { directory, readyFile } = await workspace(t);
+  let answer = '{"rejected":"InvalidOperationException","detail":"An isolated platform session with recent proof is required."}';
+  const command = environment.createPrivateCommand(readyFile, { wait: async () => answer });
+  await assert.rejects(command("recent-proof", { kind: "expire", email: "e2e-a3-operator@example.test" }),
+    /rechazó la orden «recent-proof» \(InvalidOperationException\): An isolated platform session with recent proof is required\./u);
+  assert.deepEqual(await readdir(directory), []);
+  answer = '{"rejected":"IOException","detail":null}';
+  await assert.rejects(command("delivery", { kind: "invitation" }), /rechazó la orden «delivery» \(IOException\)\.$/u);
+  // El entorno sigue: la próxima orden contesta como siempre.
+  answer = '{"expired":1}';
+  assert.deepEqual(await command("recent-proof", { kind: "expire", email: "e2e-a3-operator@example.test" }), { expired: 1 });
+  assert.deepEqual(await readdir(directory), []);
+});
+
 test("IPC rechaza más de 2048 bytes y rutas derivadas inválidas antes de escribir", async (t) => {
   const { directory, readyFile } = await workspace(t);
   const command = environment.createPrivateCommand(readyFile);

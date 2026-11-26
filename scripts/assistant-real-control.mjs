@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 
-const kinds = new Set(["prepare", "quotas", "clock", "providerScenario", "providerCounters"]);
+// «unreadableKey» (B-2 de la puerta de la base 2): la clave guardada de la organización o de Plataforma queda ilegible.
+const kinds = new Set(["prepare", "quotas", "clock", "unreadableKey", "providerScenario", "providerCounters"]);
 const record = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
 
 /** Control local del setup aislado; nunca agrega rutas técnicas al producto. */
