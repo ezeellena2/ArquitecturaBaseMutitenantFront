@@ -103,9 +103,11 @@ export function invitationQuotaOrders(email, remaining = 1) {
   return { fill: { kind: "fill", email, remaining }, release: { kind: "release", email } };
 }
 
-/** «Lo revisó Cuenta E2E · 25/11/2026, 22:22»: quién y cuándo, con la fecha y la hora después de una coma. */
-export function isReviewedLine(text) {
-  return /^Lo revisó \S.* · \d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}$/u.test(String(text).replace(/\s+/gu, " ").trim());
+/** «Lo revisó Cuenta E2E · 25/11/2026, 22:22»: quién y cuándo, con la fecha y la hora después de una coma. Quien revisa sin
+ * nombre (la Dueña del recorrido se registra solo con su correo) queda «Revisado · 25/11/2026, 22:22», sin el correo. */
+export function isReviewedLine(text, named = true) {
+  const who = named ? "Lo revisó \\S.*" : "Revisado";
+  return new RegExp(`^${who} · \\d{2}/\\d{2}/\\d{4}, \\d{2}:\\d{2}$`, "u").test(String(text).replace(/\s+/gu, " ").trim());
 }
 
 /** Una espera de un 429 desde una hora, como la dice el front (`formatWait`): horas y minutos, redondeados para arriba. */
@@ -763,7 +765,8 @@ export function base12bSteps(ctx) {
     // `delivery` deja el mensaje así, y en Plataforma arma una consulta mínima (su número atiende el ingreso de la E8).
     "13": async () => {
       const phones = chatPhones(width);
-      const review = async (target, route) => {
+      // `named`: el operador tiene nombre; la Dueña no, y su revisión dice «Revisado · …» (`chats.thread.reviewed`).
+      const review = async (target, route, named) => {
         await target.goto(url(route));
         const thread = () => target.getByRole("log", { name: /^Mensajes con /u }).filter({ visible: true }).first();
         await thread().getByText(deliveryWords.Uncertain, { exact: true }).first().waitFor();
@@ -771,20 +774,20 @@ export function base12bSteps(ctx) {
         assert.equal(why, uncertainChatReason, "La (i) dice que no se sabe si salió y que revisar no lo reenvía.");
         await target.keyboard.press("Escape");
         await thread().getByRole("button", { name: "Marcar como revisado", exact: true }).click();
-        const line = thread().getByText(/^Lo revisó /u).first();
+        const line = thread().getByText(named ? /^Lo revisó /u : /^Revisado · /u).first();
         await line.waitFor();
         const reviewed = (await line.innerText()).replace(/\s+/gu, " ").trim();
-        assert.ok(isReviewedLine(reviewed), `Revisado dice quién y cuándo, y dice «${reviewed}».`);
+        assert.ok(isReviewedLine(reviewed, named), `Revisado dice ${named ? "quién y " : ""}cuándo, y dice «${reviewed}».`);
         await target.reload();
         await thread().getByText(reviewed, { exact: true }).waitFor();
         return reviewed;
       };
       const organizationChat = await env.command("delivery", chatDeliveryOrder("organization", phones.organization, await organizationId()));
       await asOwner(`/org/whatsapp/chats/${organizationChat.chatId}`);
-      const inOrganization = await review(page, `/org/whatsapp/chats/${organizationChat.chatId}`);
+      const inOrganization = await review(page, `/org/whatsapp/chats/${organizationChat.chatId}`, false);
       const consultation = await env.command("delivery", chatDeliveryOrder("platform", phones.platform));
       await ensureOperator();
-      const inPlatform = await review(platformPage, `/plataforma/whatsapp/consultas/${consultation.chatId}`);
+      const inPlatform = await review(platformPage, `/plataforma/whatsapp/consultas/${consultation.chatId}`, true);
       return `La organización: «Sin confirmar» con su (i) y «${inOrganization}» al revisarlo, que quedó al recargar; Plataforma, en Consultas: «${inPlatform}».`;
     },
     // 0064 §7: la clave guardada que no se puede leer se dice en las dos configuraciones, con «Reemplazar clave». La orden

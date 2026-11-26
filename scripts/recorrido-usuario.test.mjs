@@ -630,6 +630,10 @@ test("B12B-13: el mensaje «Sin confirmar» del chat, su (i) y quién lo revisó
   assert.ok(isReviewedLine(thread.reviewedBy.replace("{{name}}", "Cuenta E2E").replace("{{when}}", "25/11/2026, 22:22")));
   assert.equal(isReviewedLine("Lo revisó Cuenta E2E · 25/11/2026 22:22"), false);
   assert.equal(isReviewedLine("Revisado · 25/11/2026, 22:22"), false);
+  // La Dueña del recorrido no tiene nombre: su revisión dice cuándo, sin quién (ni su correo).
+  assert.ok(isReviewedLine(thread.reviewed.replace("{{when}}", "25/11/2026, 22:22"), false));
+  assert.equal(isReviewedLine("Lo revisó Cuenta E2E · 25/11/2026, 22:22", false), false);
+  assert.equal(isReviewedLine("Revisado · 25/11/2026 22:22", false), false);
   // El cliente de la E11 en cada ancho, y una consulta propia de Plataforma, distinta en cada ancho.
   assert.deepEqual(chatPhones(1440), { organization: "+5491134567884", platform: "+5491134567872" });
   assert.deepEqual(chatPhones(390), { organization: "+5491134567885", platform: "+5491134567873" });
