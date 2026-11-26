@@ -1,6 +1,5 @@
 import { companyOptions, companyQuery, roleOptions } from "@/shared/api/resourceOptions";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
-import { RemoteOptionFooter, RemoteOptionSearch } from "@/shared/ui/RemoteOptionControls";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueries, useQueryClient } from "@tanstack/react-query";
 import { Building2 } from "lucide-react";
@@ -38,14 +37,14 @@ import { RowActions } from "@/shared/ui/RowActions";
 import { Section, SectionFields } from "@/shared/ui/Section";
 import { Picker } from "@/shared/ui/Picker";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
-import { SettingsItem } from "@/shared/ui/app/SettingsGroup";
+import { SettingsItem, settingsLineClass } from "@/shared/ui/app/SettingsGroup";
 import { DateText } from "@/shared/ui/format/DateText";
 import { StatusBadge } from "@/shared/ui/format/StatusBadge";
 import { activeOrganization, homeOf } from "@/tenancy/access";
 import { fetchUser, removeUser, resendUserInvitation, revokeUserInvitation, updateUser, userQueryKey, usersQueryRoot } from "../api/users";
 import { userContact, userContactText, userInvitationChannel, userStateTones } from "../columns";
 import { useFormat } from "@/shared/format/useFormat";
-import { ChoiceSheet, CheckRow, RadioRow } from "@/shared/ui/app/ChoiceSheet";
+import { ChoiceSheet, RadioRow } from "@/shared/ui/app/ChoiceSheet";
 import { RolesField } from "../components/RolesField";
 import { UserCompanyDialog } from "../components/UserCompanyDialog";
 import { userErrorMessage, type UserAction } from "../errors";
@@ -110,7 +109,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   const client = useQueryClient();
   const navigate = useNavigate();
   const { phone } = useAppChrome();
-  const [sheet, setSheet] = useState<"state" | "roles" | null>(null);
+  const [sheet, setSheet] = useState<"state" | null>(null);
   const { form, version, resetTo, wrote } = useEditForm({ read: member, toValues: savedAccess, resolver: zodResolver(accessFormSchema) });
   const isActiveField = useController({ control: form.control, name: "isActive" });
   const roleIdsField = useController({ control: form.control, name: "roleIds" });
@@ -344,7 +343,14 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
             {phone ? <ul className="m-0 list-none p-0">
               {/* 175: el renglón «Estado» va solo si se puede cambiar; si no, repetía la banda. */}
               {editable && isMember ? <SettingsItem title={t("users:detail.status")} detail={stateLabel} onClick={() => setSheet("state")} /> : null}
-              <SettingsItem title={t("users:detail.organizationRoles")} detail={roleNames || t("users:detail.noRoles")} onClick={editable ? () => setSheet("roles") : undefined} />
+              {/* M-Usuario-Base2 («Elegir los roles»): la fila abre la pieza a pantalla completa, con la descripción de cada rol, lo
+                  que no se puede dar apagado con su motivo (269) y «Listo (N)». */}
+              {editable ? <li className={settingsLineClass}>
+                <Picker trigger="row" multiple label={t("users:detail.organizationRoles")} placeholder={t("users:detail.noRoles")} remote={orgOptions.remote}
+                  selectedOptions={[...member.roles, ...orgOptions.knownItems].map((role) => ({ value: role.id, label: role.name }))}
+                  options={orgRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined, disabledReason: role.grantable === false ? t("common:roleChoice.notGrantable") : undefined }))}
+                  value={current.roleIds} onChange={(roleIds) => changeAccess({ roleIds })} />
+              </li> : <SettingsItem title={t("users:detail.organizationRoles")} detail={roleNames || t("users:detail.noRoles")} />}
             </ul> : <SectionFields className="grid gap-4 md:grid-cols-2">
               {editable && isMember ? <FormField label={t("users:detail.status")}>
                 <Picker value={current.isActive ? "Active" : "Inactive"} onChange={(value) => { if ((value === "Active") !== current.isActive) changeAccess({ isActive: value === "Active" }); }}
@@ -384,18 +390,11 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
         </Section>
       </div>
     </Page>
-    {/* Tablero M-Usuario (v99): el estado, con tilde y sin descripción, se elige y la hoja se cierra; los roles se marcan
-        con casillas, sin «Todos», y «Listo» cierra la hoja. Lo elegido queda como «Cambios sin guardar» hasta guardar. */}
+    {/* Tablero M-Usuario (v99): el estado, con tilde y sin descripción, se elige y la hoja se cierra. Los roles van en la
+        pieza (arriba, la fila de «Roles de la organización»). */}
     <ChoiceSheet open={sheet === "state"} onOpenChange={(open) => { if (!open) setSheet(null); }} title={t("users:detail.status")}>
       {(["Active", "Inactive"] as const).map((value) => <RadioRow key={value} name="user-state" label={t(`users:states.${value}`)}
         checked={current.isActive === (value === "Active")} onChoose={() => { changeAccess({ isActive: value === "Active" }); setSheet(null); }} />)}
-    </ChoiceSheet>
-    <ChoiceSheet open={sheet === "roles"} onOpenChange={(open) => { if (!open) setSheet(null); }} title={t("users:detail.organizationRoles")}
-      done={{ label: t("common:actions.done"), onClick: () => setSheet(null) }}>
-      <RemoteOptionSearch remote={orgOptions.remote} />
-      {orgRoles.map((role) => <CheckRow key={role.id} label={role.name} checked={current.roleIds.includes(role.id)}
-        onCheckedChange={(checked) => changeAccess({ roleIds: checked ? [...current.roleIds, role.id] : current.roleIds.filter((id) => id !== role.id) })} />)}
-      <RemoteOptionFooter remote={orgOptions.remote} />
     </ChoiceSheet>
     {companyDialog ? <UserCompanyDialog mode={companyDialog.mode} assignment={companyDialog.assignment} companyName={companyName(companyDialog.assignment.companyId)}
       assignedRoles={member.companies.find((company) => company.companyId === companyDialog.assignment.companyId)?.roles}

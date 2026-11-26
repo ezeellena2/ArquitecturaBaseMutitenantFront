@@ -146,18 +146,15 @@ describe("UserDetailPage (tablero Usuario)", () => {
       expect(bar).not.toHaveTextContent("Cambios sin guardar");
       expect(bar).toHaveTextContent("lucia@example.com");
 
-      // Tablero M-Usuario (v99, «Elegir los roles»): la casilla a la izquierda de cada rol, sin «Todos», y «Listo» cierra
-      // la hoja. Lo elegido queda en la ficha hasta guardar.
+      // M-Usuario-Base2 («Elegir los roles»): la fila abre la pieza a pantalla completa, sin «Todos», y «Listo (N)» aplica
+      // lo marcado (F11). Lo elegido queda en la ficha hasta guardar.
       await user.click(rolesRow);
       const rolesSheet = await screen.findByRole("dialog", { name: "Roles de la organización" });
-      expect(within(rolesSheet).queryByRole("checkbox", { name: "Todos" })).not.toBeInTheDocument();
-      const support = within(rolesSheet).getByRole("checkbox", { name: "Soporte" });
-      expect(support).toHaveClass("size-5.5", "rounded-[0.375rem]");
-      expect(support.compareDocumentPosition(within(rolesSheet).getByText("Soporte")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+      expect(within(rolesSheet).queryByRole("option", { name: /^Todos/u })).not.toBeInTheDocument();
+      const support = within(rolesSheet).getByRole("option", { name: /^Soporte/u });
       await user.click(support);
-      expect(support).toBeChecked();
-      expect(support.closest("label")).toHaveClass("text-[var(--marca-tx)]");
-      await user.click(within(rolesSheet).getByRole("button", { name: "Listo" }));
+      expect(support).toHaveAttribute("aria-selected", "true");
+      await user.click(within(rolesSheet).getByRole("button", { name: "Listo (1)" }));
       await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
       expect(rolesRow).toHaveTextContent("Soporte");
       expect(bar).not.toHaveTextContent("Cambios sin guardar");
@@ -646,8 +643,8 @@ describe("UserDetailPage (tablero Usuario)", () => {
       const bar = (await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" })).closest("header")!;
       await user.click(await screen.findByRole("button", { name: /Roles de la organización/ }));
       const sheet = await screen.findByRole("dialog", { name: "Roles de la organización" });
-      await user.click(within(sheet).getByRole("checkbox", { name: "Dueño" }));
-      await user.click(within(sheet).getByRole("button", { name: "Listo" }));
+      await user.click(within(sheet).getByRole("option", { name: /^Dueño/u }));
+      await user.click(within(sheet).getByRole("button", { name: /^Listo \(\d+\)$/u }));
       await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
       await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
 

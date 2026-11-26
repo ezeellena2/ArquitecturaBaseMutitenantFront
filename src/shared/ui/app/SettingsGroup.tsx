@@ -16,8 +16,11 @@ export function SettingsGroup({ label, children, className }: { label: string; c
   return <ul aria-label={label} className={cn("mx-4 shrink-0 list-none overflow-hidden rounded-[0.875rem] bg-[var(--superficie)] p-0 shadow-[0_0_0_1px_var(--borde)]", className)}>{children}</ul>;
 }
 
-const itemClass = "relative flex min-h-14 items-center gap-3 py-2 pr-3.5 pl-4 text-[var(--t1)]";
-const lineClass = "relative [&+&]:before:absolute [&+&]:before:top-0 [&+&]:before:right-0 [&+&]:before:left-4 [&+&]:before:h-px [&+&]:before:bg-[var(--borde)]";
+/** La fila y su renglón (con la línea fina entre filas), también para la pieza para elegir como fila (`Picker`, `trigger="row"`). */
+export const settingsItemClass = "relative flex min-h-14 items-center gap-3 py-2 pr-3.5 pl-4 text-[var(--t1)]";
+export const settingsLineClass = "relative [&+&]:before:absolute [&+&]:before:top-0 [&+&]:before:right-0 [&+&]:before:left-4 [&+&]:before:h-px [&+&]:before:bg-[var(--borde)]";
+const itemClass = settingsItemClass;
+const lineClass = settingsLineClass;
 
 /// Una fila del grupo: el dato y, en gris debajo, lo que lo aclara; a la derecha, una flecha si lleva a otra pantalla,
 /// o la acción que pida (⋮, «Verificar»).

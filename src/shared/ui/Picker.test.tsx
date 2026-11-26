@@ -362,6 +362,30 @@ describe("Picker en el teléfono", () => {
     await waitFor(() => expect(screen.getByRole("button", { name: /^Roles de la organización/ })).toHaveFocus());
   });
 
+  // M-Usuario-Base2 («Elegir los roles»): en una ficha del teléfono, la pieza es la fila con su nombre, lo elegido en gris y
+  // la flecha, y abre la misma lista a pantalla completa, con la descripción, lo apagado con su motivo y «Listo (N)».
+  it("como fila de una ficha dice su nombre y lo elegido, y abre la lista a pantalla completa", async () => {
+    function Row() {
+      const [value, setValue] = useState<string[]>(["sales"]);
+      return <ul><li><Picker trigger="row" label="Roles de la organización" multiple options={roles} value={value} onChange={setValue} placeholder="Ninguno" /></li></ul>;
+    }
+    renderWithProviders(<AppChromeProvider value={phone}><Row /></AppChromeProvider>);
+    const user = userEvent.setup();
+    const row = screen.getByRole("button", { name: "Roles de la organización Ventas" });
+    expect(row).toHaveTextContent(/^Roles de la organizaciónVentas$/u);
+    expect(row).toHaveClass("min-h-14");
+    expect(row).toHaveAttribute("aria-haspopup", "dialog");
+
+    await user.click(row);
+    const screenList = await screen.findByRole("dialog", { name: "Roles de la organización" });
+    expect(within(screenList).getByRole("option", { name: /^Dueño/u })).toHaveAttribute("aria-disabled", "true");
+    expect(within(screenList).getByText("Invita, edita y da de baja usuarios.")).toBeInTheDocument();
+    await user.click(within(screenList).getByRole("option", { name: /^Recursos humanos/u }));
+    await user.click(within(screenList).getByRole("button", { name: "Listo (2)" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(screen.getByRole("button", { name: "Roles de la organización Recursos humanos, Ventas" })).toBeInTheDocument();
+  });
+
   it("la ✕ descarta lo marcado", async () => {
     renderWithProviders(<AppChromeProvider value={phone}><Roles initial={["sales"]} /></AppChromeProvider>);
     const user = userEvent.setup();

@@ -4,7 +4,9 @@ import { useTranslation } from "react-i18next";
 import type { RemoteOptions } from "@/shared/hooks/useResourceOptions";
 import { summarizeChoices } from "@/shared/lib/summarizeChoices";
 import { cn } from "@/shared/lib/utils";
+import { ChevronRight } from "lucide-react";
 import { useAppChrome } from "./app/AppChrome";
+import { settingsItemClass } from "./app/SettingsGroup";
 import { Button } from "./button";
 import { Dialog, DialogContent, DialogTitle } from "./dialog";
 import { ChevronDownIcon, CloseIcon } from "./icons";
@@ -27,8 +29,9 @@ interface PickerBase {
   first?: PickerOption;
   /** Las elegidas que pueden no estar entre las opciones porque llegaron en otra página del servidor: van primero. */
   selectedOptions?: readonly PickerOption[];
-  /** El campo de un formulario, o el botón de la barra de un listado, que conserva su aspecto y abre la misma lista. */
-  trigger?: "field" | "button";
+  /** El campo de un formulario, el botón de la barra de un listado o, en una ficha del teléfono, la fila con su nombre, lo
+   * elegido en gris y la flecha (M-Usuario-Base2, `SettingsItem`); conserva su aspecto y abre la misma lista. */
+  trigger?: "field" | "button" | "row";
   /** En la barra, el botón con lo elegido lleva el color de la marca. */
   active?: boolean;
   /** Lo que dice el botón de la barra, sea lo que sea lo elegido («Estado: activos»), y su nombre. */
@@ -227,7 +230,19 @@ function pickerTrigger({ props, choice, multiple, open, phone, uid, nameId, valu
   };
   const arrow = <ChevronDownIcon aria-hidden="true" strokeWidth={2}
     className="size-3.5 shrink-0 text-[var(--t2)] group-disabled:text-[var(--t3)] group-aria-disabled:text-[var(--t3)] max-md:size-4.5 max-md:text-[var(--t1)]" />;
-  const button = props.trigger === "button"
+  const button = props.trigger === "row"
+    // M-Usuario-Base2: la fila de una ficha del teléfono, como `SettingsItem`: el nombre, lo elegido en gris y la flecha.
+    ? <button {...triggerProps} className={cn(settingsItemClass, "w-full text-left outline-none focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] aria-disabled:opacity-55", props.className)}>
+      <span className="flex min-w-0 flex-1 flex-col gap-px leading-tight">
+        <span aria-hidden="true" className="text-[0.96875rem] font-medium [overflow-wrap:anywhere]">{props.label}</span>
+        <span aria-hidden="true" className="flex min-w-0 text-[0.8125rem] text-[var(--t3)]">
+          {empty ? <span className="min-w-0 flex-1 truncate">{spoken}</span>
+            : multiple ? <ChoiceSummary labels={picks.map((option) => option.label)} /> : <span className="min-w-0 flex-1 truncate">{single?.short ?? single?.label}</span>}
+        </span>
+      </span>
+      <ChevronRight aria-hidden="true" className="size-4.5 shrink-0 text-[var(--t3)]" />
+    </button>
+    : props.trigger === "button"
     // «Criterio · Elegir»: en la barra de un listado, el filtro conserva su botón; con algo elegido, en el color de la marca.
     ? <Button {...triggerProps} variant="outline" className={cn("group h-8 gap-1.5 rounded-[0.5rem] px-3 text-[0.8125rem] shadow-none",
       props.active ? "border-[var(--marca)] bg-[var(--marca-t)] font-medium text-[var(--marca-tx)]" : "border-[var(--borde)] bg-[var(--superficie)] font-normal text-[var(--t2)]",
