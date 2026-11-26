@@ -1,5 +1,7 @@
 // Lo único que ven el módulo del asistente y las áreas: se hablan solo por acá (ADR 0068; boundaries.test.ts).
 export type { AssistantActionContract, AssistantActionContractField, AssistantActionFieldType, AssistantActionKey } from "@/shared/api/generated/assistant-actions";
+export { assistantActions } from "@/shared/api/generated/assistant-actions";
+export { AssistantProposalDialog } from "./AssistantProposalDialog";
 export { assistantProposalQueryKey } from "./api";
 export type {
   AssistantProposalChanges, AssistantProposalFieldValue, AssistantProposalOption, AssistantProposalRow, AssistantProposalValues,

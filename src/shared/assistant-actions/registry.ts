@@ -13,8 +13,15 @@ export interface AssistantActionAdapter {
   readonly action: AssistantActionKey;
   /** La pantalla de la acción con `?proposal=<id>` (`withAssistantProposal`); la de editar o quitar, la de su destino. */
   readonly href: (proposal: { readonly id: string; readonly target?: { readonly id: string } | null }) => string;
-  /** Solo si la acción se confirma en un diálogo: el diálogo, que lee la propuesta de la dirección. */
+  /**
+   * Solo si la acción se confirma en un diálogo: el diálogo, que lee la propuesta de la dirección. La tarjeta lo abre donde
+   * está, sobre el Inicio (o el asistente del teléfono), con `?proposal=<id>` (`AssistantProposalDialog`), y no usa `href`.
+   */
   readonly Dialog?: ComponentType<{ readonly onClose: () => void }>;
+  /** El enlace de la tarjeta aplicada a lo hecho («Ver el rol»), si se puede ver; sin él, la tarjeta no lleva enlace. */
+  readonly appliedHref?: (proposal: { readonly target?: { readonly id: string } | null; readonly appliedLocation?: string | null }) => string | undefined;
+  /** Solo al crear: el listado donde se revisa una propuesta «Sin confirmar» («Revisar en Usuarios»). */
+  readonly reviewHref?: string;
 }
 
 export const assistantActionKey = (action: string, version: number) => `${action}@${version}`;

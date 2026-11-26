@@ -418,5 +418,102 @@
       "description": "View aggregated costs and queries without reading conversations."
     }
   },
+  "actionCard": {
+    "review": "Review",
+    "reason": "Reason",
+    "replaced": "Replaced",
+    "unavailable": "No longer available",
+    "unconfirmed": "Unconfirmed",
+    "reasons": {
+      "module": "That feature is no longer enabled in your organization.",
+      "version": "It's from an earlier version. Ask for it again.",
+      "subject": "That person's account was closed."
+    },
+    "doubts": {
+      "similar": "There's more than one similar option."
+    },
+    "actions": {
+      "users": {
+        "invite": {
+          "name": "User invitation",
+          "open": "Review and invite",
+          "applied": "Invitation sent",
+          "appliedLink": "View in Users",
+          "reviewLink": "Review in Users",
+          "noPermission": "You no longer have the “Invite users” permission.",
+          "fields": {
+            "email": "Email",
+            "roles": "Organization roles",
+            "company": "Company",
+            "companyRoles": "Company roles"
+          }
+        },
+        "edit": {
+          "name": "Roles change",
+          "open": "Review changes",
+          "applied": "Roles changed",
+          "appliedLink": "View profile",
+          "target": "Person",
+          "noPermission": "You no longer have the “Manage users” permission.",
+          "noTarget": "The person is no longer in the organization.",
+          "fields": {
+            "rolesAdded": "Added in the organization",
+            "rolesRemoved": "Removed in the organization",
+            "company": "Company",
+            "companyRolesAdded": "Added in the company",
+            "companyRolesRemoved": "Removed in the company"
+          }
+        },
+        "remove": {
+          "name": "Remove from organization",
+          "open": "Review and remove",
+          "applied": "Removed",
+          "target": "Person",
+          "noPermission": "You no longer have the “Manage users” permission.",
+          "noTarget": "The person is no longer in the organization."
+        }
+      },
+      "roles": {
+        "create": {
+          "name": "New role",
+          "open": "Review and create",
+          "applied": "Role created",
+          "appliedLink": "View role",
+          "reviewLink": "Review in Roles",
+          "noPermission": "You no longer have the “Manage roles” permission.",
+          "fields": {
+            "name": "Name",
+            "description": "Description",
+            "scope": "Applies to",
+            "company": "Company",
+            "permissions": "Permissions"
+          }
+        },
+        "edit": {
+          "name": "Role change",
+          "open": "Review changes",
+          "applied": "Role changed",
+          "appliedLink": "View role",
+          "target": "Role",
+          "noPermission": "You no longer have the “Manage roles” permission.",
+          "noTarget": "The role is no longer in the organization.",
+          "fields": {
+            "name": "Name",
+            "description": "Description",
+            "permissionsAdded": "Added",
+            "permissionsRemoved": "Removed"
+          }
+        },
+        "remove": {
+          "name": "Role deactivation",
+          "open": "Review and deactivate",
+          "applied": "Role deactivated",
+          "target": "Role",
+          "noPermission": "You no longer have the “Manage roles” permission.",
+          "noTarget": "The role is no longer in the organization."
+        }
+      }
+    }
+  },
   "rateLimited": "You made many queries in a row. Try again in {{time}}."
 }

@@ -12,6 +12,7 @@ import { ToolStatus } from "./ToolStatus";
 import type { AssistantTurnState } from "../runtime/assistantTurnState";
 import { assistantStreamErrorMessage } from "../errors";
 import { AssistantRetryButton } from "./AssistantRetryButton";
+import { AssistantActionCard } from "./AssistantActionCard";
 
 interface MessageContextValue {
   turn: AssistantTurnState | null;
@@ -47,6 +48,7 @@ function Message() {
     <div className="flex min-w-0 flex-1 flex-col gap-1.5">
     {role === "assistant" && context.turn?.start?.assistantMessageId === id ? <ToolStatus turn={context.turn} pending={context.turnPending} /> : null}
     <MessagePrimitive.Parts components={{ Text: MarkdownPart }} />
+    {role === "assistant" && durable?.proposal?.kind === "action" ? <AssistantActionCard proposal={durable.proposal} /> : null}
     {durable?.attachments.map((attachment) => <Button key={attachment.id} variant="outline" onClick={() => context.onDownload(attachment)}>{attachment.fileName}</Button>)}
     {durable?.links.map((link, index) => {
       if (context.canOpenLink && !context.canOpenLink(link.routeKey)) return null;

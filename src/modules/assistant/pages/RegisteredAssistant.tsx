@@ -6,6 +6,7 @@ import { useProfiles } from "@/tenancy/useProfiles";
 import { activeOrganization, homeOf } from "@/tenancy/access";
 import type { ModuleContentProps } from "@/shared/modules/types";
 import { useModuleRegistry } from "@/shared/modules/useModules";
+import { AssistantProposalDialog } from "@/shared/assistant-actions";
 import { Page } from "@/shared/ui/Page";
 import { AssistantHome } from "./AssistantHome";
 import { AssistantPhonePage } from "./AssistantPhonePage";
@@ -42,6 +43,7 @@ export function RegisteredAssistantHome(props: ModuleContentProps) {
     bodyClassName="flex min-h-0 flex-1 flex-col"><RegisteredAssistant {...props} phone={false} /></Page></div>;
 }
 
+/** En el teléfono, el diálogo de una propuesta abre sobre el asistente, donde está su tarjeta (M-Usuarios-Invitar-Propuesta). */
 export function RegisteredAssistantPhone(props: ModuleContentProps) {
-  return <RegisteredAssistant {...props} phone />;
+  return <><RegisteredAssistant {...props} phone />{props.me.access === "business" ? <AssistantProposalDialog /> : null}</>;
 }

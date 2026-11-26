@@ -418,5 +418,102 @@
       "description": "Ver costos y consultas agregados sin leer conversaciones."
     }
   },
+  "actionCard": {
+    "review": "Revisá",
+    "reason": "Motivo",
+    "replaced": "Reemplazada",
+    "unavailable": "Ya no disponible",
+    "unconfirmed": "Sin confirmar",
+    "reasons": {
+      "module": "Esa función ya no está habilitada en tu organización.",
+      "version": "Es de una versión anterior. Pedila de nuevo.",
+      "subject": "La cuenta de esa persona se dio de baja."
+    },
+    "doubts": {
+      "similar": "Hay más de una opción parecida."
+    },
+    "actions": {
+      "users": {
+        "invite": {
+          "name": "Invitación de usuario",
+          "open": "Revisar e invitar",
+          "applied": "Invitación enviada",
+          "appliedLink": "Ver en Usuarios",
+          "reviewLink": "Revisar en Usuarios",
+          "noPermission": "Ya no tenés el permiso «Invitar usuarios».",
+          "fields": {
+            "email": "Correo",
+            "roles": "Roles de la organización",
+            "company": "Empresa",
+            "companyRoles": "Roles en la empresa"
+          }
+        },
+        "edit": {
+          "name": "Cambio de roles",
+          "open": "Revisar cambios",
+          "applied": "Roles cambiados",
+          "appliedLink": "Ver la ficha",
+          "target": "Persona",
+          "noPermission": "Ya no tenés el permiso «Administrar usuarios».",
+          "noTarget": "La persona ya no está en la organización.",
+          "fields": {
+            "rolesAdded": "Se suma en la organización",
+            "rolesRemoved": "Se quita en la organización",
+            "company": "Empresa",
+            "companyRolesAdded": "Se suma en la empresa",
+            "companyRolesRemoved": "Se quita en la empresa"
+          }
+        },
+        "remove": {
+          "name": "Quitar de la organización",
+          "open": "Revisar y quitar",
+          "applied": "Quitado",
+          "target": "Persona",
+          "noPermission": "Ya no tenés el permiso «Administrar usuarios».",
+          "noTarget": "La persona ya no está en la organización."
+        }
+      },
+      "roles": {
+        "create": {
+          "name": "Rol nuevo",
+          "open": "Revisar y crear",
+          "applied": "Rol creado",
+          "appliedLink": "Ver el rol",
+          "reviewLink": "Revisar en Roles",
+          "noPermission": "Ya no tenés el permiso «Administrar roles».",
+          "fields": {
+            "name": "Nombre",
+            "description": "Descripción",
+            "scope": "Vale en",
+            "company": "Empresa",
+            "permissions": "Permisos"
+          }
+        },
+        "edit": {
+          "name": "Cambio de rol",
+          "open": "Revisar cambios",
+          "applied": "Rol cambiado",
+          "appliedLink": "Ver el rol",
+          "target": "Rol",
+          "noPermission": "Ya no tenés el permiso «Administrar roles».",
+          "noTarget": "El rol ya no está en la organización.",
+          "fields": {
+            "name": "Nombre",
+            "description": "Descripción",
+            "permissionsAdded": "Se suma",
+            "permissionsRemoved": "Se quita"
+          }
+        },
+        "remove": {
+          "name": "Baja de rol",
+          "open": "Revisar y dar de baja",
+          "applied": "Rol dado de baja",
+          "target": "Rol",
+          "noPermission": "Ya no tenés el permiso «Administrar roles».",
+          "noTarget": "El rol ya no está en la organización."
+        }
+      }
+    }
+  },
   "rateLimited": "Hiciste muchas consultas seguidas. Probá de nuevo en {{time}}."
 }

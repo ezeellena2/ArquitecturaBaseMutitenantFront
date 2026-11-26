@@ -12,10 +12,12 @@ import { PhoneHome } from "../components/PhoneHome";
 import { describePendingGroups } from "../components/pendingItems";
 import { ToResolve } from "../components/ToResolve";
 import { activeOrganization } from "@/tenancy/access";
+import { AssistantProposalDialog } from "@/shared/assistant-actions";
 
 /**
  * Inicio de la organización (ADR 0040). La API decide qué ve cada persona: con permisos de la organización, las
- * tarjetas de sus áreas (Inicio-Org); si no, «Tus empresas» (Inicio-Miembro). Debajo, «Para resolver».
+ * tarjetas de sus áreas (Inicio-Org); si no, «Tus empresas» (Inicio-Miembro). Debajo, «Para resolver». Encima, el diálogo
+ * de la propuesta del asistente que se confirma en un diálogo (ADR 0068 §9).
  */
 export function BusinessHomePage() {
   const { t } = useTranslation(["home", "common"]);
@@ -35,8 +37,8 @@ export function BusinessHomePage() {
 
   // Tableros M-Inicio-Org y M-Inicio-Miembro: en el teléfono, los dos inicios son la billetera.
   if (phone && home.data) {
-    return <PhoneHome organization={organization ?? null} moduleCards={moduleCards} companies={home.data.companies} groups={groups} organizationName={organizationName}
-      firstName={currentUser?.displayName?.trim().split(/\s+/)[0] ?? ""} />;
+    return <><PhoneHome organization={organization ?? null} moduleCards={moduleCards} companies={home.data.companies} groups={groups} organizationName={organizationName}
+      firstName={currentUser?.displayName?.trim().split(/\s+/)[0] ?? ""} /><AssistantProposalDialog /></>;
   }
   // Tableros Inicio-Org e Inicio-Miembro (.ini): los bloques del inicio van a 20 uno del otro.
   const content = <>
@@ -52,5 +54,5 @@ export function BusinessHomePage() {
   </>;
   const original = <Page title={t("common:home.title")} summary={organizationName}>{content}</Page>;
   const moduleContent = organization ? <div className="flex flex-col gap-5"><ToResolve groups={groups} /><AreaCards organization={organization} moduleCards={moduleCards} /></div> : content;
-  return phone ? original : <ModuleHome access="business" fallback={original}>{moduleContent}</ModuleHome>;
+  return <>{phone ? original : <ModuleHome access="business" fallback={original}>{moduleContent}</ModuleHome>}<AssistantProposalDialog /></>;
 }
