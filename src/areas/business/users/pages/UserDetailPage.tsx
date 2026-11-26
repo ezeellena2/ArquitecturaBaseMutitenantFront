@@ -308,7 +308,8 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
 
   return <>
     <Page banner={edit.banner} backTo={{ to: "/org/usuarios", label: t("users:back") }} title={displayName || t("users:detail.title")} summary={summary}
-      phoneSubtitle={userContact(member) ?? undefined} phoneBody="gray"
+      // M-Usuario-Base2: el título de una invitación ya es su contacto; debajo, su estado y cuándo vence.
+      phoneSubtitle={isInvitation ? <><StatusBadge tones={userStateTones} value={shownState} />{" · "}{detail}</> : userContact(member) ?? undefined} phoneBody="gray"
       // Usuario-Base2: «Reenviar invitación» va a la vista, en la caja «Invitación»; el ⋮ queda con revocarla o quitar (209).
       moreActions={canManage && !pendingDeletion ? { label: t("users:detail.moreActions"), items: [
         { label: t("users:actions.revoke"), icon: CloseIcon, onSelect: () => setConfirmAction("revoke"), destructive: true, hidden: !isInvitation || !member.invitationId },

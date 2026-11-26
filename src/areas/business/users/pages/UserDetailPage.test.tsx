@@ -325,6 +325,22 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(await screen.findByText("Revocamos la invitación a sofia@example.com.")).toBeVisible();
   });
 
+  // M-Usuario-Base2: en el teléfono, debajo del título de una invitación va su estado y cuándo vence, sin repetir el
+  // contacto, que ya es el título (la galería mostraba «011 15-5555-8812» dos veces).
+  it("en el teléfono, una invitación dice su estado y su vencimiento debajo del título, sin repetir el contacto", async () => {
+    const restore = asPhone();
+    try {
+      api({ ...member, userId: null, displayName: "", email: "sofia@example.com", state: "Invited" as never,
+        roles: [], invitationId: "inv-1", invitationIssuedAtUtc: "2026-09-25T12:00:00Z", invitationExpiresAtUtc: "2026-10-02T12:00:00Z" });
+      renderRouteWithProviders("/org/usuarios/member-1", { as: "business-e6-admin" });
+      const bar = (await screen.findByRole("heading", { level: 1, name: "sofia@example.com" })).closest("header")!;
+      await waitFor(() => expect(bar).toHaveTextContent("Invitación pendiente · vence el 02/10/2026"));
+      expect(bar.textContent?.match(/sofia@example\.com/g)).toHaveLength(1);
+    } finally {
+      restore();
+    }
+  });
+
   // Tablero Usuario-Base2 (0066 §4): la caja «Invitación», primera en el cuerpo, dice por dónde salió, a quién, hasta cuándo
   // vale y su entrega, con el porqué en la (i). Si quedó «Sin confirmar», reenviar pide revisar con la persona antes; con
   // «Reenviar» sale y la confirmación espera la respuesta.
