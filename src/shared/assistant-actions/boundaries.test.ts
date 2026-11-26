@@ -55,6 +55,15 @@ describe("la frontera de shared/assistant-actions", () => {
       .toEqual([`${folder}`, `${folder}/operations`]);
   });
 
+  // Sacar `?proposal`, cargar lo propuesto una vez y no reabrir la confirmación cerrada son de la carpeta
+  // (useAssistantProposalLifecycle): una pantalla que lo copia queda distinta de las otras cuando cambia cómo se descarta.
+  it("afuera nadie saca ?proposal de la dirección a mano", () => {
+    const found = files(root).filter((file) => !relative(file).startsWith(`${folder}/`))
+      .filter((file) => /\.delete\(\s*assistantProposalParam\s*\)/.test(readFileSync(file, "utf8")))
+      .map((file) => `${relative(file)}: usá useDropAssistantProposal o useAssistantProposalConfirmation`);
+    expect(found).toEqual([]);
+  });
+
   it("adentro no importa áreas, módulos ni la composición, y afuera se usa solo por su índice", () => {
     const found = files(root).flatMap((file) => importsOf(file).map((target) => violation(relative(file), target)))
       .filter((problem): problem is string => problem !== null);

@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Eye, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate, useSearchParams } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { usePermissions } from "@/auth/usePermissions";
 import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
@@ -19,7 +19,7 @@ import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
 import { toast } from "sonner";
 import type { RoleResponse } from "@/shared/api/types";
-import { AssistantProposalMark, assistantProposalParam, useAssistantProposal } from "@/shared/assistant-actions";
+import { AssistantProposalMark, useAssistantProposal, useAssistantProposalConfirmation } from "@/shared/assistant-actions";
 import {
   deleteRole,
   fetchRole,
@@ -74,26 +74,17 @@ export function RolesPage() {
   const [roleToDelete, setRoleToDelete] = useState<RoleResponse | null>(null);
   // Confirmar-Propuesta y su M- (ADR 0068 §9): con `?proposal=<id>`, la confirmación de dar de baja abre sobre el rol que
   // nombra la propuesta, con «Propuesta del asistente» en el título, hasta que se cierra. Lo lee de nuevo para decir si
-  // alguien lo tiene, como siempre: con personas, «Dar de baja» queda apagado con su motivo.
-  const [searchParams, setSearchParams] = useSearchParams();
+  // alguien lo tiene, como siempre: con personas, «Dar de baja» queda apagado con su motivo. Cerrarla saca `?proposal` y la
+  // lista vuelve a ser la de siempre.
   const removeProposal = useAssistantProposal("roles.remove@1", toRemoveProposal);
   const proposedRoleId = removeProposal.status === "ready" ? removeProposal.proposal.target?.id : undefined;
   const proposedRole = useQuery({ queryKey: roleQueryKey(proposedRoleId ?? ""), queryFn: () => fetchRole(proposedRoleId!),
     enabled: canManage && Boolean(proposedRoleId), meta: { silent: true } });
-  const [closedProposal, setClosedProposal] = useState<string | null>(null);
-  const removing = removeProposal.status === "ready" && canManage && proposedRole.data && proposedRole.data.id === proposedRoleId
-    && !proposedRole.data.isSystemRole && closedProposal !== removeProposal.proposalId && roleToDelete === null
-    ? { proposal: removeProposal, role: proposedRole.data } : undefined;
-  // Sin `?proposal` la lista vuelve a ser la de siempre: cerrar la confirmación no la vuelve a abrir.
-  function closeProposal(proposalId: string) {
-    setClosedProposal(proposalId);
-    if (!searchParams.has(assistantProposalParam)) return;
-    setSearchParams((current) => {
-      const next = new URLSearchParams(current);
-      next.delete(assistantProposalParam);
-      return next;
-    }, { replace: true });
-  }
+  const removeConfirmation = useAssistantProposalConfirmation(removeProposal.status === "ready" ? removeProposal : undefined);
+  const closeProposal = removeConfirmation.close;
+  const removing = removeConfirmation.open && canManage && proposedRole.data && proposedRole.data.id === proposedRoleId
+    && !proposedRole.data.isSystemRole && roleToDelete === null
+    ? { proposal: removeConfirmation.open, role: proposedRole.data } : undefined;
   const remove = useMutation({
     mutationFn: ({ role, version }: RemoveVariables) => deleteRole(role.id, version),
     onSuccess: async (_result, { role, markApplied }) => {

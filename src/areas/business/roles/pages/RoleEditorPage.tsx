@@ -18,8 +18,9 @@ import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { CreateRoleRequest, PermissionGroupResponse, RoleResponse, RoleScope, UpdateRoleRequest } from "@/shared/api/types";
 import {
-  AssistantProposalChangesSection, AssistantProposalMark, AssistantProposalReviewMark, assistantProposalAlreadySaved, assistantProposalParam,
-  useAssistantProposal, useAssistantProposalFieldReview, type AssistantProposalChangeItem, type AssistantProposalOption, type AssistantProposalValues,
+  AssistantProposalChangesSection, AssistantProposalMark, AssistantProposalReviewMark, assistantProposalAlreadySaved, useAssistantProposal,
+  useAssistantProposalFieldReview, useDropAssistantProposal, useLoadAssistantProposalOnce, type AssistantProposalChangeItem, type AssistantProposalOption,
+  type AssistantProposalValues,
 } from "@/shared/assistant-actions";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useResourceAction } from "@/shared/hooks/useResourceAction";
@@ -171,7 +172,7 @@ function sameRoleRequest(previous: CreateRoleRequest, next: CreateRoleRequest) {
 function RoleEditor({ role, groups, reload }: { role?: RoleResponse; groups?: readonly PermissionGroupResponse[]; reload?: () => Promise<RoleResponse | undefined> }) {
   const { t } = useTranslation(["roles", "common"]);
   const format = useFormat();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { can } = usePermissions();
@@ -227,11 +228,8 @@ function RoleEditor({ role, groups, reload }: { role?: RoleResponse; groups?: re
         && fitsCatalog(role.scope, editProposal.formValues.permissions.map((permission) => permission.id).filter((code) => !savedPermissions.includes(code)))
         ? editProposal : undefined;
   // Lo propuesto entra una vez en lo que se edita, sin guardar; desde ahí, la persona lo cambia como siempre.
-  const appliedProposal = useRef<string | null>(null);
-  useEffect(() => {
-    if (!proposing || !catalog || appliedProposal.current === proposing.proposalId) return;
-    appliedProposal.current = proposing.proposalId;
-    const proposed = proposing.formValues;
+  const proposalLoaded = useLoadAssistantProposalOnce(catalog ? proposing : undefined, ({ formValues: proposed }) => {
+    if (!catalog) return;
     const dirty = { shouldDirty: true } as const;
     form.setValue("name", proposed.name, dirty);
     form.setValue("description", proposed.description, dirty);
@@ -240,13 +238,9 @@ function RoleEditor({ role, groups, reload }: { role?: RoleResponse; groups?: re
       form.setValue("companyId", proposed.company?.id ?? "", dirty);
     }
     form.setValue("permissions", allowedPermissions(catalog, proposed.permissions.map((permission) => permission.id)), dirty);
-  }, [proposing, catalog, form, role]);
+  });
   // Sin `?proposal` el editor vuelve a ser el de siempre: descartar no la vuelve a cargar.
-  const dropProposal = () => setSearchParams((current) => {
-    const next = new URLSearchParams(current);
-    next.delete(assistantProposalParam);
-    return next;
-  }, { replace: true });
+  const dropProposal = useDropAssistantProposal();
 
   const companies = useResourceOptions(companyOptionResource, can("companies.read") && (!role || role.scope === "SpecificCompany"));
   // La empresa propuesta, con el nombre de la propuesta: no se busca por id.
@@ -309,7 +303,7 @@ function RoleEditor({ role, groups, reload }: { role?: RoleResponse; groups?: re
   }
   // La propuesta cargada pasó a aplicada sin que este editor la guardara: la guardó otra pestaña.
   useEffect(() => {
-    if (role || createProposal.status !== "applied" || appliedProposal.current !== createProposal.proposalId) return;
+    if (role || createProposal.status !== "applied" || !proposalLoaded(createProposal.proposalId)) return;
     if (createProposed.isPending || createProposed.isSuccess) return;
     leaveToSaved(createProposal.proposal.appliedLocation);
   });

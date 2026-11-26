@@ -16,3 +16,4 @@ export {
   useAssistantActionAdapters, withAssistantProposal, type AssistantActionAdapter,
 } from "./registry";
 export { assistantProposalAlreadySaved, useAssistantProposal, useAssistantProposalQuery, type AssistantProposal } from "./useAssistantProposal";
+export { useAssistantProposalConfirmation, useDropAssistantProposal, useLoadAssistantProposalOnce } from "./useAssistantProposalLifecycle";

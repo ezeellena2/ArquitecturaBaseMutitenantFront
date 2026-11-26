@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueries, useQueryClient } from "@tanstack/react-query";
 import { Building2 } from "lucide-react";
 import { CloseIcon, ShieldIcon, UserMinusIcon } from "@/shared/ui/icons";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useController } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
 import { useNavigate, useParams, useSearchParams } from "react-router";
@@ -22,8 +22,8 @@ import { useEditPage } from "@/shared/hooks/useEditPage";
 import { orderLike } from "@/shared/lib/orderLike";
 import { InfoTip } from "@/shared/ui/InfoTip";
 import {
-  AssistantProposalChangesSection, AssistantProposalMark, assistantProposalParam, useAssistantProposal, useAssistantProposalFieldReview,
-  useAssistantProposalQuery, type AssistantProposalChangeItem, type AssistantProposalChangeRow, type AssistantProposalValues,
+  AssistantProposalChangesSection, AssistantProposalMark, assistantProposalParam, useAssistantProposal, useAssistantProposalConfirmation,
+  useAssistantProposalFieldReview, useAssistantProposalQuery, useDropAssistantProposal, useLoadAssistantProposalOnce,
 } from "@/shared/assistant-actions";
 import { Banner } from "@/shared/ui/Banner";
 import { invitationPerson, useResendInvitation } from "@/shared/hooks/useResendInvitation";
@@ -40,7 +40,7 @@ import { Page, SublineSeparator } from "@/shared/ui/Page";
 import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Section, SectionFields } from "@/shared/ui/Section";
-import { Picker, type PickerOption } from "@/shared/ui/Picker";
+import { Picker } from "@/shared/ui/Picker";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { SettingsItem, settingsLineClass } from "@/shared/ui/app/SettingsGroup";
 import { DateText } from "@/shared/ui/format/DateText";
@@ -54,6 +54,9 @@ import { RolesField } from "../components/RolesField";
 import { UserCompanyDialog } from "../components/UserCompanyDialog";
 import { userErrorMessage, type UserAction } from "../errors";
 import { companyAssignments, organizationRoleIds, sentence, uniqueOptions, type CompanyAssignment } from "../lib/access";
+import {
+  companiesWithProposal, proposedCompanyChange, proposedCompanyId, toEditProposal, toRemoveProposal, userProposalBase, userProposalChangeRows,
+} from "../lib/proposal";
 
 /// El acceso a la organización no tiene reglas propias en la pantalla: lo que el back rechaza va en la franja.
 const accessFormSchema = z.object({ isActive: z.boolean(), roleIds: z.array(z.string()) });
@@ -78,34 +81,6 @@ interface SaveVariables {
 
 function savedAccess(user: OrganizationUserResponse): AccessForm {
   return { isActive: user.state === "Active", roleIds: organizationRoleIds(user) };
-}
-
-/** Lo que propone el asistente al cambiar roles (users.edit@1), ya aplicado sobre lo guardado: los roles de la
- * organización y, si nombra una empresa, sus roles, con el nombre que trae la propuesta. */
-interface EditProposal {
-  readonly roles: readonly PickerOption[];
-  readonly company?: { readonly id: string; readonly label: string; readonly roles: readonly PickerOption[] };
-}
-
-const optionsOf = (list: AssistantProposalValues["lists"][string] | undefined): PickerOption[] =>
-  (list ?? []).map((option) => ({ value: option.id, label: option.label }));
-
-/** Sin empresa no entran sus roles: la ficha no abre la propuesta. */
-function toEditProposal(values: AssistantProposalValues): EditProposal | undefined {
-  const company = values.fields.company;
-  const companyId = typeof company?.value === "string" ? company.value : "";
-  const companyRoles = optionsOf(values.lists.companyRoles);
-  if (!companyId && companyRoles.length > 0) return undefined;
-  return { roles: optionsOf(values.lists.roles), company: companyId ? { id: companyId, label: company?.label ?? "", roles: companyRoles } : undefined };
-}
-
-/** Quitar no tiene campos: lo que se confirma es a quién, que es esta ficha. */
-const toRemoveProposal = (): true => true;
-
-/** La empresa que nombra una propuesta, para que «lo leído» traiga sus roles de ahora. */
-function proposedCompanyId(values: readonly { field: string; value?: unknown }[] | undefined): string | undefined {
-  const value = values?.find((entry) => entry.field === "company")?.value;
-  return typeof value === "string" ? value : undefined;
 }
 
 function Separator() {
@@ -148,21 +123,11 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   const [sheet, setSheet] = useState<"state" | null>(null);
   const { form, version, resetTo, wrote } = useEditForm({ read: member, toValues: savedAccess, resolver: zodResolver(accessFormSchema) });
   // Usuario-Propuesta y Confirmar-Propuesta (ADR 0068 §9): con `?proposal=<id>`, lo que propone el asistente para esta
-  // persona, aplicado sobre lo que la ficha leyó (los roles de ahora; si nombra una empresa, los de esa empresa).
-  const [searchParams, setSearchParams] = useSearchParams();
+  // persona, aplicado sobre lo que la ficha leyó (los roles de ahora; si nombra una empresa, los de esa empresa). Lo que
+  // se aplica, lo que se manda y «Lo que cambia» salen de lib/proposal.
+  const [searchParams] = useSearchParams();
   const proposalCompanyId = proposedCompanyId(useAssistantProposalQuery(searchParams.get(assistantProposalParam)).data?.values);
-  const proposalBase = useMemo<AssistantProposalValues>(() => {
-    const assignment = member.companies.find((company) => company.companyId === proposalCompanyId);
-    const fields: AssistantProposalValues["fields"] = assignment ? { company: { value: assignment.companyId, label: assignment.companyName } } : {};
-    return {
-      fields,
-      lists: {
-        roles: member.roles.filter((role) => role.scope === "Organization").map((role) => ({ id: role.id, label: role.name })),
-        companyRoles: assignment ? assignment.roles.map((role) => ({ id: role.id, label: role.name })) : [],
-      },
-      rows: {},
-    };
-  }, [member, proposalCompanyId]);
+  const proposalBase = useMemo(() => userProposalBase(member, proposalCompanyId), [member, proposalCompanyId]);
   const editProposal = useAssistantProposal("users.edit@1", toEditProposal, proposalBase);
   const removeProposal = useAssistantProposal("users.remove@1", toRemoveProposal);
   const review = useAssistantProposalFieldReview();
@@ -207,29 +172,18 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
     ? removeProposal : undefined;
   // Lo propuesto entra una vez en lo que se edita, sin guardar; desde ahí, la persona lo cambia como siempre.
   const proposing = editReady;
-  const appliedProposal = useRef<string | null>(null);
-  useEffect(() => {
-    if (!editReady || appliedProposal.current === editReady.proposalId) return;
-    appliedProposal.current = editReady.proposalId;
-    form.setValue("roleIds", orderLike(form.formState.defaultValues?.roleIds, editReady.formValues.roles.map((role) => role.value)), { shouldDirty: true });
-  }, [editReady, form]);
+  useLoadAssistantProposalOnce(editReady, ({ formValues }) =>
+    form.setValue("roleIds", orderLike(form.formState.defaultValues?.roleIds, formValues.roles.map((role) => role.value)), { shouldDirty: true }));
   // La empresa que nombra, con sus roles: se manda con «Guardar cambios» y no antes, como lo demás de la propuesta.
-  const savedAssignment = proposing?.formValues.company ? changeableAssignments.find((item) => item.companyId === proposing.formValues.company?.id) : undefined;
-  const proposedAssignment: CompanyAssignment | undefined = proposing?.formValues.company
-    && !(savedAssignment && savedAssignment.roleIds.length === proposing.formValues.company.roles.length
-      && savedAssignment.roleIds.every((id) => proposing.formValues.company?.roles.some((role) => role.value === id)))
-    ? { companyId: proposing.formValues.company.id, roleIds: proposing.formValues.company.roles.map((role) => role.value) } : undefined;
+  const companyChange = proposedCompanyChange(proposing?.formValues.company, changeableAssignments);
+  const proposedAssignment = companyChange.proposed;
   // Confirmar-Propuesta: la confirmación de quitar abre desde la tarjeta, con «Propuesta del asistente» en el título,
-  // hasta que se cierra; manda la versión que leyó la propuesta al abrirse (R01).
-  const [closedRemoveProposal, setClosedRemoveProposal] = useState<string | null>(null);
-  const removing = removeReady && closedRemoveProposal !== removeReady.proposalId && confirmAction === null ? removeReady : undefined;
-  // Sin `?proposal` la ficha vuelve a ser la de siempre: descartar o cerrar la confirmación no la vuelve a abrir.
-  const dropProposal = () => setSearchParams((current) => {
-    const next = new URLSearchParams(current);
-    next.delete(assistantProposalParam);
-    return next;
-  }, { replace: true });
-  const closeRemoveProposal = (proposalId: string) => { setClosedRemoveProposal(proposalId); dropProposal(); };
+  // hasta que se cierra; manda la versión que leyó la propuesta al abrirse (R01). Sin `?proposal` la ficha vuelve a ser
+  // la de siempre: descartar o cerrar la confirmación no la vuelve a abrir.
+  const removeConfirmation = useAssistantProposalConfirmation(removeReady);
+  const removing = confirmAction === null ? removeConfirmation.open : undefined;
+  const closeRemoveProposal = removeConfirmation.close;
+  const dropProposal = useDropAssistantProposal();
   // Con la propuesta, su empresa también es un cambio sin guardar.
   const isDirty = editable && (form.formState.isDirty || proposedAssignment !== undefined);
   // Tableros Usuario y Avisos: el 409 en su cartel, «Cambios sin guardar» en la banda, el error de guardado en la franja
@@ -299,8 +253,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   function saveAccess(values: AccessForm, settled?: () => void) {
     setFailure(undefined);
     // Con la propuesta, su empresa va con lo demás: la reemplaza con sus roles, o se suma.
-    const companies = proposedAssignment
-      ? [...changeableAssignments.filter((item) => item.companyId !== proposedAssignment.companyId), proposedAssignment] : changeableAssignments;
+    const companies = companiesWithProposal(changeableAssignments, proposedAssignment);
     save.mutate({
       request: { ...(isMember ? { isActive: values.isActive } : {}), roleIds: values.roleIds, companies, version },
       message: t("users:detail.messages.saved", { name: displayName }), origin: "page", access: values, markApplied: proposing?.markApplied,
@@ -397,23 +350,9 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   const selectedRoleOptions = uniqueOptions(proposing?.formValues.roles, [...member.roles, ...orgOptions.knownItems].map((role) => ({ value: role.id, label: role.name })));
   const rolesReview = proposing ? review(current.roleIds.map((id) => proposing.doubtOf("roles", id))) : undefined;
   // «Lo que cambia», sobre lo guardado y con lo que se va a mandar: lo propuesto y lo que la persona cambie después.
-  const changeRows: AssistantProposalChangeRow[] = [];
-  if (proposing) {
-    const savedRoleIds = organizationRoleIds(member);
-    const item = (doubtField: string, names: readonly PickerOption[]) => (id: string): AssistantProposalChangeItem =>
-      ({ key: id, label: names.find((option) => option.value === id)?.label ?? "", review: Boolean(proposing.doubtOf(doubtField, id)) });
-    const roleItem = item("roles", selectedRoleOptions);
-    changeRows.push({ key: "organization", where: t("users:detail.proposal.organization"), whereIn: t("users:detail.proposal.inOrganization"),
-      added: current.roleIds.filter((id) => !savedRoleIds.includes(id)).map(roleItem), removed: savedRoleIds.filter((id) => !current.roleIds.includes(id)).map(roleItem) });
-    const proposedCompany = proposing.formValues.company;
-    if (proposedAssignment && proposedCompany) {
-      const before = savedAssignment?.roleIds ?? [];
-      const savedNames = member.companies.find((company) => company.companyId === proposedCompany.id)?.roles.map((role) => ({ value: role.id, label: role.name }));
-      const companyItem = item("companyRoles", uniqueOptions(proposedCompany.roles, savedNames));
-      changeRows.push({ key: proposedCompany.id, where: proposedCompany.label, whereIn: proposedCompany.label, whereReview: Boolean(proposing.doubtOf("company")),
-        added: proposedAssignment.roleIds.filter((id) => !before.includes(id)).map(companyItem), removed: before.filter((id) => !proposedAssignment.roleIds.includes(id)).map(companyItem) });
-    }
-  }
+  const changeRows = proposing ? userProposalChangeRows({ member, roleIds: current.roleIds, roleOptions: selectedRoleOptions,
+    company: proposing.formValues.company, companyChange, doubtOf: proposing.doubtOf,
+    organization: { where: t("users:detail.proposal.organization"), whereIn: t("users:detail.proposal.inOrganization") } }) : [];
   const changedSinceProposal = proposing && proposing.proposal.baseVersion != null && proposing.proposal.baseVersion !== member.version;
 
   const detail = isInvitation
