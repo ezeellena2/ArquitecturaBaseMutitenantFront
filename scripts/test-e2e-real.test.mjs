@@ -15,6 +15,7 @@ import { reloadResponse, responsesForAction } from "./test-e2e-real-whatsapp-act
 import { acceptPublishedLegalAndReturn, assertPendingTerms, assertPublishedLegalVersion, assertPublishedTerms, observeLegalTransition, parseLegalPublicationReceipt } from "./test-e2e-real-legal.mjs";
 import { fixtureChecks } from "./test-e2e-real-whatsapp-ipc.mjs";
 import { runAssistantRealE2E } from "./test-e2e-real-assistant.mjs";
+import { runActionsRealE2E } from "./test-e2e-real-acciones.mjs";
 import { acceptAssistantNoticeFromHome } from "./assistant-real-ui.mjs";
 import { completeOperatorFactor } from "./platform-factor-real.mjs";
 import { etapa9Cases } from "./test-e2e-real-e9.mjs";
@@ -2618,6 +2619,10 @@ test("registro real y puerta empresa usan un PostgreSQL aislado, front, Api y pi
 // Este fixture usa Kestrel/Testcontainers propios y no inicia otro Aspire.
 test("Asistente real E8b en 1440 y 390: seis guiones, SSE durable, archivos y financiación", { timeout: 1_200_000 }, async () => {
   await runAssistantRealE2E({ build: false });
+});
+
+test("Acciones del asistente en 1440 y 390: «Invitar usuario» desde una propuesta del modelo falso y «Ya se guardó» en otra pestaña", { timeout: 900_000 }, async () => {
+  await runActionsRealE2E({ build: false });
 });
 
 test("WhatsApp real en 1440 y 390: OTP, recuperación humana, enlaces y baja", { timeout: 1_920_000 }, async (t) => {
