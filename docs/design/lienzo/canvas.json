@@ -15,7 +15,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "org",
-      "title": "Administración › Asistente › Configuración",
+      "title": "Administración › Asistente › Configuración · para aprobar",
       "w": 1440,
       "x": 1990,
       "y": 6408
@@ -375,7 +375,7 @@
     "FRM-Biblioteca.dc.html": {
       "h": 900,
       "page": "formularios",
-      "title": "Formularios · biblioteca · etapa 22",
+      "title": "Formularios · biblioteca · etapa 22 · para aprobar",
       "w": 1440,
       "x": 1520,
       "y": 30710
@@ -777,10 +777,10 @@
       "y": 27626
     },
     "FRM-Editor-Reglas-Plantilla.dc.html": {
-      "h": 1600,
+      "h": 1700,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · las reglas que trae una plantilla · etapa 22",
+      "title": "Formularios · las reglas que trae una plantilla · etapa 22 · para aprobar",
       "w": 1440,
       "x": 6080,
       "y": 30710
@@ -879,7 +879,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · la lista · etapa 22",
+      "title": "Formularios · la lista · etapa 22 · para aprobar",
       "w": 1440,
       "x": 0,
       "y": 30710
@@ -923,7 +923,7 @@
     "FRM-Plantilla-Usar.dc.html": {
       "h": 1000,
       "page": "formularios",
-      "title": "Formularios · usar una plantilla · etapa 22",
+      "title": "Formularios · usar una plantilla · etapa 22 · para aprobar",
       "w": 1440,
       "x": 4560,
       "y": 30710
@@ -931,7 +931,7 @@
     "FRM-Plantilla.dc.html": {
       "h": 1960,
       "page": "formularios",
-      "title": "Formularios · una plantilla · etapa 22",
+      "title": "Formularios · una plantilla · etapa 22 · para aprobar",
       "w": 1440,
       "x": 3040,
       "y": 30710
@@ -1442,7 +1442,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "org",
-      "title": "Asistente › Configuración · teléfono",
+      "title": "Asistente › Configuración · teléfono · para aprobar",
       "w": 390,
       "x": 5030,
       "y": 6408
@@ -1756,7 +1756,7 @@
     "M-FRM-Biblioteca.dc.html": {
       "h": 844,
       "page": "formularios",
-      "title": "Formularios · biblioteca · teléfono · etapa 22",
+      "title": "Formularios · biblioteca · teléfono · etapa 22 · para aprobar",
       "w": 390,
       "x": 470,
       "y": 32790
@@ -2098,7 +2098,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · la lista · teléfono · etapa 22",
+      "title": "Formularios · la lista · teléfono · etapa 22 · para aprobar",
       "w": 390,
       "x": 0,
       "y": 32790
@@ -2124,7 +2124,7 @@
     "M-FRM-Plantilla.dc.html": {
       "h": 844,
       "page": "formularios",
-      "title": "Formularios · una plantilla · teléfono · etapa 22",
+      "title": "Formularios · una plantilla · teléfono · etapa 22 · para aprobar",
       "w": 390,
       "x": 940,
       "y": 32790
@@ -2160,7 +2160,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · las reglas que trae una plantilla · teléfono · etapa 22",
+      "title": "Formularios · las reglas que trae una plantilla · teléfono · etapa 22 · para aprobar",
       "w": 390,
       "x": 1410,
       "y": 32790
@@ -2520,7 +2520,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "plataforma",
-      "title": "Asistente › Configuración · teléfono",
+      "title": "Asistente › Configuración · teléfono · para aprobar",
       "w": 390,
       "x": 5030,
       "y": 4420
@@ -2537,7 +2537,7 @@
     "M-Plat-FRM-Biblioteca.dc.html": {
       "h": 844,
       "page": "plat-formularios",
-      "title": "Plataforma · biblioteca de formularios · teléfono",
+      "title": "Plataforma · biblioteca de formularios · teléfono · para aprobar",
       "w": 390,
       "x": 4560,
       "y": 260
@@ -2771,7 +2771,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Los asistentes · teléfono · etapa 24",
+      "title": "Los asistentes · teléfono · etapa 24 · para aprobar",
       "w": 390,
       "x": 0,
       "y": 38058
@@ -3041,7 +3041,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "El asistente de un equipo · teléfono · etapa 24",
+      "title": "El asistente de un equipo · teléfono · etapa 24 · para aprobar",
       "w": 390,
       "x": 470,
       "y": 38058
@@ -3282,7 +3282,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "plataforma",
-      "title": "Administración › Asistente › Configuración",
+      "title": "Administración › Asistente › Configuración · para aprobar",
       "w": 1440,
       "x": 1990,
       "y": 4420
@@ -3299,7 +3299,7 @@
     "Plat-FRM-Biblioteca.dc.html": {
       "h": 900,
       "page": "plat-formularios",
-      "title": "Plataforma · Biblioteca de formularios",
+      "title": "Plataforma · Biblioteca de formularios · para aprobar",
       "w": 1440,
       "x": 0,
       "y": 260
@@ -3316,7 +3316,7 @@
       "h": 1500,
       "is_interactive": true,
       "page": "plat-formularios",
-      "title": "Plataforma · plantilla · diseño del PDF",
+      "title": "Plataforma · plantilla · diseño del PDF · para aprobar",
       "w": 1440,
       "x": 4560,
       "y": 1280
@@ -3333,16 +3333,16 @@
     "Plat-FRM-Plantilla-Nueva.dc.html": {
       "h": 900,
       "page": "plat-formularios",
-      "title": "Plataforma · nueva plantilla",
+      "title": "Plataforma · nueva plantilla · para aprobar",
       "w": 1440,
       "x": 1520,
       "y": 260
     },
     "Plat-FRM-Plantilla-Reglas.dc.html": {
-      "h": 1500,
+      "h": 1700,
       "is_interactive": true,
       "page": "plat-formularios",
-      "title": "Plataforma · plantilla · reglas de ejemplo",
+      "title": "Plataforma · plantilla · reglas de ejemplo · para aprobar",
       "w": 1440,
       "x": 1520,
       "y": 1280
@@ -3351,7 +3351,7 @@
       "h": 1960,
       "is_interactive": true,
       "page": "plat-formularios",
-      "title": "Plataforma · plantilla de formulario",
+      "title": "Plataforma · plantilla de formulario · para aprobar",
       "w": 1440,
       "x": 0,
       "y": 1280
@@ -3360,7 +3360,7 @@
       "h": 1100,
       "is_interactive": true,
       "page": "plat-formularios",
-      "title": "Plataforma · publicar una plantilla",
+      "title": "Plataforma · publicar una plantilla · para aprobar",
       "w": 1440,
       "x": 6080,
       "y": 1280
@@ -3369,7 +3369,7 @@
       "h": 1000,
       "is_interactive": true,
       "page": "plat-formularios",
-      "title": "Plataforma · retirar una plantilla",
+      "title": "Plataforma · retirar una plantilla · para aprobar",
       "w": 1440,
       "x": 7600,
       "y": 1280
@@ -3637,7 +3637,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · los asistentes · etapa 24",
+      "title": "WhatsApp · los asistentes · etapa 24 · para aprobar",
       "w": 1440,
       "x": 0,
       "y": 37038
@@ -3906,7 +3906,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · el asistente de un equipo · etapa 24",
+      "title": "WhatsApp · el asistente de un equipo · etapa 24 · para aprobar",
       "w": 1440,
       "x": 1520,
       "y": 37038
@@ -4117,7 +4117,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "propuesta-base2",
-      "title": "Editar un rol · permisos en áreas plegables · /org/roles/:id",
+      "title": "Editar un rol · permisos en áreas plegables · /org/roles/:id · para aprobar",
       "w": 1440,
       "x": 700,
       "y": 5760
@@ -4126,7 +4126,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-base2",
-      "title": "Editar un rol · permisos en áreas plegables · teléfono",
+      "title": "Editar un rol · permisos en áreas plegables · teléfono · para aprobar",
       "w": 390,
       "x": 2240,
       "y": 5760
@@ -4135,7 +4135,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "propuesta-base2",
-      "title": "Usuarios · la entrega de una invitación y lo que no podés dar · /org/usuarios",
+      "title": "Usuarios · la entrega de una invitación y lo que no podés dar · /org/usuarios · para aprobar",
       "w": 1440,
       "x": 2730,
       "y": 5760
@@ -4144,7 +4144,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-base2",
-      "title": "Usuarios · la entrega de una invitación · teléfono",
+      "title": "Usuarios · la entrega de una invitación · teléfono · para aprobar",
       "w": 390,
       "x": 4270,
       "y": 5760
@@ -4153,7 +4153,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "propuesta-base2",
-      "title": "Editar usuario · la entrega de su invitación y lo que no podés dar · /org/usuarios/:id",
+      "title": "Editar usuario · la entrega de su invitación y lo que no podés dar · /org/usuarios/:id · para aprobar",
       "w": 1440,
       "x": 4760,
       "y": 5760
@@ -4162,7 +4162,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-base2",
-      "title": "Editar usuario · la entrega de su invitación · teléfono",
+      "title": "Editar usuario · la entrega de su invitación · teléfono · para aprobar",
       "w": 390,
       "x": 6300,
       "y": 5760
@@ -4171,7 +4171,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "propuesta-base2",
-      "title": "Ficha de empresa · la entrega de una invitación y lo que no podés dar · /org/empresas/:id",
+      "title": "Ficha de empresa · la entrega de una invitación y lo que no podés dar · /org/empresas/:id · para aprobar",
       "w": 1440,
       "x": 6790,
       "y": 5760
@@ -4180,7 +4180,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-base2",
-      "title": "Ficha de empresa · la entrega de una invitación · teléfono",
+      "title": "Ficha de empresa · la entrega de una invitación · teléfono · para aprobar",
       "w": 390,
       "x": 8330,
       "y": 5760
@@ -4198,7 +4198,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-base2",
-      "title": "Cuentas · la entrega de una invitación · teléfono",
+      "title": "Cuentas · la entrega de una invitación · teléfono · para aprobar",
       "w": 390,
       "x": 2240,
       "y": 6820
@@ -4207,7 +4207,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "propuesta-base2",
-      "title": "Ficha de una cuenta · los permisos de un operador en áreas y la entrega de su invitación",
+      "title": "Ficha de una cuenta · los permisos de un operador en áreas y la entrega de su invitación · para aprobar",
       "w": 1440,
       "x": 2730,
       "y": 6820
@@ -4216,7 +4216,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-base2",
-      "title": "Ficha de una cuenta · operador · teléfono",
+      "title": "Ficha de una cuenta · operador · teléfono · para aprobar",
       "w": 390,
       "x": 4270,
       "y": 6820
@@ -4234,7 +4234,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-base2",
-      "title": "Auditoría de seguridad · la (i) del plazo · teléfono",
+      "title": "Auditoría de seguridad · la (i) del plazo · teléfono · para aprobar",
       "w": 390,
       "x": 6300,
       "y": 6820
@@ -4288,7 +4288,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-base2",
-      "title": "Resultados de una difusión · un destinatario sin confirmar · teléfono",
+      "title": "Resultados de una difusión · un destinatario sin confirmar · teléfono · para aprobar",
       "w": 390,
       "x": 6300,
       "y": 7880
@@ -4297,7 +4297,7 @@
       "h": 1820,
       "is_interactive": true,
       "page": "propuesta-base2",
-      "title": "Configuración de la plataforma · nombre y correos, privacidad y retención, y WhatsApp",
+      "title": "Configuración de la plataforma · nombre y correos, privacidad y retención, y WhatsApp · para aprobar",
       "w": 1440,
       "x": 700,
       "y": 8940
@@ -4315,7 +4315,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "propuesta-base2",
-      "title": "Administración · WhatsApp · Configuración (nueva) · el plazo de los chats y el tiempo para contestar un formulario",
+      "title": "Administración · WhatsApp · Configuración (nueva) · el plazo de los chats y el tiempo para contestar un formulario · para aprobar",
       "w": 1440,
       "x": 2730,
       "y": 8940
@@ -4324,7 +4324,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-base2",
-      "title": "Configuración de WhatsApp · teléfono",
+      "title": "Configuración de WhatsApp · teléfono · para aprobar",
       "w": 390,
       "x": 4270,
       "y": 8940
@@ -4459,7 +4459,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-base2",
-      "title": "Las listas del núcleo en el teléfono · cada fila, una tarjeta con sus datos nombrados",
+      "title": "Las listas del núcleo en el teléfono · cada fila, una tarjeta con sus datos nombrados · para aprobar",
       "w": 390,
       "x": 3780,
       "y": 11920

@@ -45,13 +45,28 @@ ETAPAS = {
            "FRM-Dar-De-Baja-21", "FRM-Editor-Baja-21", "FRM-Respuesta-Corregir", "M-FRM-Respuesta-Corregir",
            "FRM-Respuesta-Anular", "M-FRM-Respuesta-Anular", "FRM-Respuestas-21", "M-FRM-Respuestas-21",
            "FRM-Respuestas-Propias-21", "M-FRM-Respuestas-Propias-21"],
-    "22": [],
-    "23": [],
-    "24": [],
-    "25": [],
+    "22": ["FRM-Formularios-22", "M-FRM-Formularios-22", "FRM-Biblioteca", "M-FRM-Biblioteca", "FRM-Plantilla", "M-FRM-Plantilla",
+           "FRM-Plantilla-Usar", "FRM-Editor-Reglas-Plantilla", "M-FRM-Reglas-Plantilla", "Plat-FRM-Biblioteca",
+           "M-Plat-FRM-Biblioteca", "Plat-FRM-Plantilla-Nueva", "Plat-FRM-Plantilla", "Plat-FRM-Plantilla-Reglas", "Plat-FRM-Pdf",
+           "Plat-FRM-Publicar", "Plat-FRM-Retirar", "Plat-FRM-Categorias"],
+    "23": ["WA-Asistente", "WA-Asistente-Casos", "WA-Asistente-Probar", "M-WA-Asistente", "WA-Asistente-Limites", "WA-Modo-Atencion",
+           "M-WA-Modo-Atencion", "Plat-Asistente-Config-23", "M-Plat-Asistente-Config-23", "WA-Chats-Casos", "M-WA-Chats-Casos",
+           "WA-Chats-Asistente", "M-WA-Conversacion-Asistente", "WA-Chats-Audio", "WA-Preguntas-Sin-Respuesta",
+           "M-WA-Preguntas-Sin-Respuesta", "FRM-Faltan", "M-FRM-Faltan", "FRM-Editor-Sugerencias", "FRM-Editor-Asistente",
+           "FRM-Editor-Reglas-23", "M-FRM-Reglas-23", "FRM-Respuesta-Cadena", "FRM-Dar-De-Baja-23", "FRM-Editor-Baja-23"],
+    "24": ["WA-Asistentes", "M-WA-Asistentes", "WA-Equipo-Asistente", "M-WA-Equipo-Asistente"],
+    "25": ["WA-Chats-Documento", "M-WA-Chats-Documento", "FRM-Documentos", "M-FRM-Documentos", "FRM-Respuesta-25",
+           "M-FRM-Respuesta-25", "Asistente-Org-25", "M-Asistente-Org-25", "FRM-Editor-Lectura", "M-FRM-Editor-Lectura",
+           "Plat-FRM-Plantilla-Lectura", "FRM-Plantilla-25", "M-FRM-Plantilla-25", "FRM-Armar-Con-IA", "M-FRM-Armar-Con-IA",
+           "M-WA-Armar-Con-IA", "FRM-Formularios-25", "FRM-Catalogos-25", "FRM-Faltan-25", "WA-Asistente-Casos-25",
+           "FRM-Catalogo-Propuesta-25", "Campana-25"],
+    "base2": ["Asistente-Config-Org", "M-Asistente-Config-Org", "Plat-Asistente-Config", "M-Plat-Asistente-Config", "M-Filas-Base2",
+              "M-Usuarios-Base2", "M-Cuentas-Base2", "M-Empresa-Base2", "M-Usuario-Base2", "M-Auditoria-Plat-Base2",
+              "M-WA-Difusion-Resultados-Base2", "Usuarios-Base2", "Usuario-Base2", "Empresa-Base2", "Cuenta-Plat-Base2",
+              "M-Cuenta-Plat-Base2", "Config-Plat-Base2", "Rol-Base2", "M-Rol-Base2", "WA-Config-Base2", "M-WA-Config-Base2"],
 }
 # El alto nuevo de los tableros que crecieron al redibujarlos (lo dicen los reportes de cada grupo).
-ALTOS = {"FRM-Editor-Reglas": 1700, "FRM-Respuesta-19": 1000, "FRM-Respuesta-20": 1100, "FRM-Respuesta-Aprobacion": 1500}
+ALTOS = {"FRM-Editor-Reglas": 1700, "FRM-Respuesta-19": 1000, "FRM-Respuesta-20": 1100, "FRM-Respuesta-Aprobacion": 1500, "FRM-Editor-Reglas-Plantilla": 1700, "Plat-FRM-Plantilla-Reglas": 1700, "FRM-Respuesta-Cadena": 1200}
 # Los tableros nuevos: su entrada entera en `canvas.json`.
 NUEVOS = {}
 
@@ -62,7 +77,7 @@ SVG_BIBLIOTECA = ('<svg width="18" height="18" viewBox="0 0 24 24" fill="none" s
 BIBLIOTECA_MARCADA = {"FRM-Biblioteca", "FRM-Plantilla", "FRM-Plantilla-Usar", "FRM-Plantilla-25"}
 
 
-FORMULARIOS = re.compile(r'Formularios\s*(?:<span class="cnt">[^<]*</span>)?\s*</a>')
+FORMULARIOS = re.compile(r'Formularios\s*(?:<sc-if[^>]*>)?\s*(?:<span class="cnt">[^<]*</span>)?\s*(?:</sc-if>)?\s*</a>')
 
 
 def partir(panel):
@@ -76,13 +91,16 @@ def partir(panel):
 
 
 def con_biblioteca(panel, marcada):
-    m = e14p.CATALOGOS.search(panel)
-    if 'href="FRM-Biblioteca.dc.html"' in panel or not m:
+    if 'href="FRM-Biblioteca.dc.html"' in panel or not e14p.CATALOGOS.search(panel):
         return panel
     if marcada:
         panel = panel.replace('class="w-ln on"', 'class="w-ln"')
+    m = e14p.CATALOGOS.search(panel)
     clase = "w-ln on" if marcada else "w-ln"
     enlace = f'<a class="{clase}" href="FRM-Biblioteca.dc.html">{SVG_BIBLIOTECA} Biblioteca</a>'
+    envoltura = re.match(r'<sc-if [^>]*>', m.group(0))
+    if envoltura:  # quien no ve «Catálogos» tampoco ve «Biblioteca»
+        enlace = envoltura.group(0) + enlace + "</sc-if>"
     return panel[:m.end()] + enlace + panel[m.end():]
 
 
