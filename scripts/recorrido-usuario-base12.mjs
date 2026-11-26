@@ -131,6 +131,23 @@ export async function whileHeld(target, { method, path }, press, inspect, { time
 
 const escapeRegExp = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
+/**
+ * Al cancelar el borrado la persona llega a su Inicio, que en la compu es el asistente: la primera vez «Antes de tu primera
+ * consulta» puede abrir antes que el menú del perfil y, como es modal, lo tapa. Si ya abrió, se acepta antes de esperar el
+ * menú; si abre después, lo acepta el final de B12-07. En el teléfono el asistente vive en /asistente y no aparece.
+ */
+export async function awaitHomePastNotice(page, { awaitApp, phone }) {
+  if (!phone) {
+    const notice = page.getByRole("dialog", { name: "Antes de tu primera consulta", exact: true });
+    await notice.or(page.getByRole("button", { name: /, Personal$/u })).first().waitFor();
+    if (await notice.isVisible()) {
+      await notice.getByRole("button", { name: "Entendido", exact: true }).click();
+      await notice.waitFor({ state: "hidden" });
+    }
+  }
+  await awaitApp(page);
+}
+
 /** Sigue a la E9 en las mismas pestañas: arranca y termina con la persona afuera y el operador del recorrido en Plataforma. */
 export async function runBase12Journey({ page, platformPage, width, env, base, record, signOut, awaitApp, login, requestCode, verify,
   owner, organization, person, signal }) {
@@ -451,7 +468,7 @@ export async function runBase12Journey({ page, platformPage, width, env, base, r
         () => page.getByRole("button", { name: "Cancelar el borrado y entrar", exact: true }).click());
       assert.equal(cancelled.status(), 200, "El borrado se cancela.");
       await page.getByText("Cancelamos el borrado.", { exact: true }).waitFor();
-      await awaitApp(page);
+      await awaitHomePastNotice(page, { awaitApp, phone: isPhone(page) });
       phase = "activa en Plataforma";
       const active = await platformAccount(personal);
       assert.equal(active.account.state, "Active", "La cuenta vuelve a estar activa.");

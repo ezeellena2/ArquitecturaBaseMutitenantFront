@@ -9,8 +9,8 @@ import { e8Definitions, e8ManualChecks, e8SourceRevision, requireE8Control } fro
 import * as whatsappJourney from "./recorrido-usuario-whatsapp.mjs";
 import { botOption, e11Definitions, e11ManualChecks, enterPersonalHome, nationalPhone, outboundCount, runE11Journey } from "./recorrido-usuario-e11.mjs";
 import { e9Definitions, e9ManualChecks, factorSecretMasks, newcomerOf, operatorNameOf, runE9Journey } from "./recorrido-usuario-e9.mjs";
-import { base12Definitions, base12ManualChecks, bellLabel, importedPhoneOf, invitationLinkFrom, isFullDateTime, runBase12Journey, whileHeld,
-  workingButtonProblems, workingButtonState } from "./recorrido-usuario-base12.mjs";
+import { awaitHomePastNotice, base12Definitions, base12ManualChecks, bellLabel, importedPhoneOf, invitationLinkFrom, isFullDateTime, runBase12Journey,
+  whileHeld, workingButtonProblems, workingButtonState } from "./recorrido-usuario-base12.mjs";
 import { base12bDefinitions, base12bManualChecks, base12bPlatformCaptures, chatDeliveryOrder, chatPhones, dailyEmailLimitProblems, dailyEmailLimitText,
   dailyLimitProblems, decodeMimeWords, deliveryWords, emailDeliveryReasons, emptiesLast, invitationDeliveryOrder, invitationQuotaOrders, isJoinedPercent,
   isMonthRange, isReviewedLine, keyUnreadableText, resendUncertainText, runBase12bJourney, screenWaitProblems, senderNameOf, uncertainChatReason,
@@ -387,6 +387,28 @@ test("E11-15: en la compu la persona nueva acepta el aviso del asistente de su I
     // En el teléfono el Inicio no monta el asistente (vive en /asistente): no se espera un aviso que no llega.
     const order = [];
     await enterPersonalHome(page, 390, { awaitApp: async () => { order.push("app"); }, acceptNotice: async () => { order.push("aviso"); } });
+    assert.deepEqual(order, ["app"]);
+  } finally { await browser.close(); }
+});
+
+test("B12-07: en la compu, si el aviso del asistente abre antes que el menú del perfil, se acepta antes de esperar el menú", async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage();
+    // El aviso modal abrió primero y tapó el menú que esperaba awaitApp: así cortó B12-07 a 1440 (2026-11-26).
+    await page.setContent('<header aria-hidden="true"><button>Persona Base 1440, Personal</button></header><main><div role="dialog" aria-label="Antes de tu primera consulta"><button>Entendido</button></div></main>');
+    await page.evaluate(() => document.querySelector('[role="dialog"] button').addEventListener("click", () => {
+      document.body.dataset.accepted = "explicit";
+      document.querySelector('[role="dialog"]').remove();
+      document.querySelector("header").removeAttribute("aria-hidden");
+    }));
+    const awaitApp = (target) => target.getByRole("button", { name: /, Personal$/ }).waitFor({ timeout: 2_000 });
+    await awaitHomePastNotice(page, { awaitApp, phone: false });
+    assert.equal(await page.locator("body").getAttribute("data-accepted"), "explicit");
+    // Con el menú a la vista y sin aviso sigue de largo; en el teléfono no busca un aviso que no llega.
+    await awaitHomePastNotice(page, { awaitApp, phone: false });
+    const order = [];
+    await awaitHomePastNotice(page, { awaitApp: async () => { order.push("app"); }, phone: true });
     assert.deepEqual(order, ["app"]);
   } finally { await browser.close(); }
 });
