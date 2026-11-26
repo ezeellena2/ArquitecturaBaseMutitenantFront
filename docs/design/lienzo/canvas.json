@@ -843,7 +843,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · la lista · etapa 15",
+      "title": "Formularios · la lista · etapa 15 · para aprobar",
       "w": 1440,
       "x": 0,
       "y": 9322
@@ -1075,7 +1075,7 @@
       "h": 1000,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · una respuesta · pantalla completa",
+      "title": "Formularios · una respuesta · pantalla completa · para aprobar",
       "w": 1440,
       "x": 6080,
       "y": 9322
@@ -1093,7 +1093,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · Respuestas · una respuesta al costado",
+      "title": "Formularios · Respuestas · una respuesta al costado · para aprobar",
       "w": 1440,
       "x": 4560,
       "y": 9322
@@ -1156,7 +1156,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · Respuestas · exportar a Excel",
+      "title": "Formularios · Respuestas · exportar a Excel · para aprobar",
       "w": 1440,
       "x": 7600,
       "y": 9322
@@ -1165,7 +1165,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · Respuestas · Filtros",
+      "title": "Formularios · Respuestas · Filtros · para aprobar",
       "w": 1440,
       "x": 3040,
       "y": 9322
@@ -1192,7 +1192,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · Respuestas · la planilla",
+      "title": "Formularios · Respuestas · la planilla · para aprobar",
       "w": 1440,
       "x": 1520,
       "y": 9322
@@ -1219,7 +1219,7 @@
       "h": 1500,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · un formulario · Tablero",
+      "title": "Formularios · un formulario · Tablero · para aprobar",
       "w": 1440,
       "x": 9120,
       "y": 9322
@@ -2062,7 +2062,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · la lista · teléfono · etapa 15",
+      "title": "Formularios · la lista · teléfono · etapa 15 · para aprobar",
       "w": 390,
       "x": 0,
       "y": 10942
@@ -2241,7 +2241,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · una respuesta · teléfono",
+      "title": "Formularios · una respuesta · teléfono · para aprobar",
       "w": 390,
       "x": 940,
       "y": 10942
@@ -2313,7 +2313,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · un formulario · Respuestas · teléfono",
+      "title": "Formularios · un formulario · Respuestas · teléfono · para aprobar",
       "w": 390,
       "x": 470,
       "y": 10942
@@ -2340,7 +2340,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · un formulario · Tablero · teléfono",
+      "title": "Formularios · un formulario · Tablero · teléfono · para aprobar",
       "w": 390,
       "x": 1410,
       "y": 10942
