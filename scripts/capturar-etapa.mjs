@@ -359,7 +359,8 @@ export async function buildManifest(casesFile = defaultCases) {
   return JSON.parse(readFileSync(path.resolve(root, casesFile), "utf8"));
 }
 export function validateManifest(manifest, canvasRoot = canvas) {
-  if (manifest.version !== 1 || !/^(base-)?[0-9]+[a-z]?$/.test(manifest.stage) || !Array.isArray(manifest.cases) || !Array.isArray(manifest.pending)) throw new Error("Datos de captura inválidos");
+  // Una etapa numerada (12, 12b), su base (base-12) o una con nombre, como «acciones-del-asistente» (su plan no lleva número).
+  if (manifest.version !== 1 || !/^(base-)?[0-9]+[a-z]?$|^[a-z]+(-[a-z]+)+$/.test(manifest.stage) || !Array.isArray(manifest.cases) || !Array.isArray(manifest.pending)) throw new Error("Datos de captura inválidos");
   const seen = new Set();
   for (const entry of [...manifest.cases, ...manifest.pending]) {
     if (!/^[a-z0-9-]+$/.test(entry.id) || seen.has(entry.id) || !/^[A-Za-z0-9-]+$/.test(entry.board)) throw new Error("Caso inválido o repetido");

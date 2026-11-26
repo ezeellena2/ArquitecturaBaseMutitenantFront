@@ -45,12 +45,14 @@ test("un caso del teléfono pasa a 320 con sus datos y pasos, y se compara con e
 });
 
 // La base de una etapa tiene su galería (scripts/capturas/etapa-base-12.json, en docs/design/capturas/etapa-base-12/).
-test("la base de una etapa es una etapa de la galería; otro nombre no", () => {
+test("la base de una etapa o una etapa con nombre son etapas de la galería; otro nombre no", () => {
   const canvas = canvasWith({ "Prueba-Editar": { width: 1440, height: 900 } });
   try {
     const desktop = galleryCase("bot", "Prueba-Editar", "Editar opción", app);
     assert.equal(validateManifest({ ...manifest(desktop), stage: "base-12" }, canvas).stage, "base-12");
-    for (const stage of ["base12", "base-", "otra-12", "12-base"]) {
+    // Una etapa sin número se nombra como su plan (2026-11-23-etapa-acciones-del-asistente).
+    assert.equal(validateManifest({ ...manifest(desktop), stage: "acciones-del-asistente" }, canvas).stage, "acciones-del-asistente");
+    for (const stage of ["base12", "base-", "otra-12", "12-base", "acciones", "Acciones-del-asistente", "acciones--asistente"]) {
       assert.throws(() => validateManifest({ ...manifest(desktop), stage }, canvas), /Datos de captura inválidos/);
     }
   } finally { rmSync(canvas, { recursive: true, force: true }); }
