@@ -474,7 +474,7 @@
       "h": 1000,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · catálogo de los contactos",
+      "title": "Catálogo de los contactos · /org/formularios/catalogos/:id · para aprobar",
       "w": 1440,
       "x": 10640,
       "y": 460
@@ -483,7 +483,7 @@
       "h": 1000,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · catálogo de los miembros",
+      "title": "Catálogo de los miembros · /org/formularios/catalogos/:id · para aprobar",
       "w": 1440,
       "x": 9120,
       "y": 460
@@ -492,18 +492,9 @@
       "h": 1200,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · importar opciones",
+      "title": "Importar opciones · para aprobar",
       "w": 1440,
       "x": 6080,
-      "y": 460
-    },
-    "FRM-Catalogo-Nuevo.dc.html": {
-      "h": 900,
-      "is_interactive": true,
-      "page": "formularios",
-      "title": "Formularios · nuevo catálogo",
-      "w": 1440,
-      "x": 1520,
       "y": 460
     },
     "FRM-Catalogo-Opciones-13.dc.html": {
@@ -519,7 +510,7 @@
       "h": 1200,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · las opciones de un catálogo",
+      "title": "Opciones de un catálogo · modal · para aprobar",
       "w": 1440,
       "x": 4560,
       "y": 460
@@ -537,7 +528,7 @@
       "h": 1200,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · ordenar las opciones",
+      "title": "Ordenar las opciones · /org/formularios/catalogos/:id · para aprobar",
       "w": 1440,
       "x": 12160,
       "y": 460
@@ -551,20 +542,11 @@
       "x": 13680,
       "y": 39422
     },
-    "FRM-Catalogo-Tipo.dc.html": {
-      "h": 1000,
-      "is_interactive": true,
-      "page": "formularios",
-      "title": "Formularios · catálogo con tipo de valor",
-      "w": 1440,
-      "x": 7600,
-      "y": 460
-    },
     "FRM-Catalogo.dc.html": {
       "h": 1200,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · catálogo escrito a mano",
+      "title": "Catálogo escrito a mano · /org/formularios/catalogos/:id · para aprobar",
       "w": 1440,
       "x": 3040,
       "y": 460
@@ -591,7 +573,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · Catálogos",
+      "title": "Catálogos · /org/formularios/catalogos · para aprobar",
       "w": 1440,
       "x": 0,
       "y": 460
@@ -1864,7 +1846,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Catálogo de los contactos · teléfono",
+      "title": "Catálogo de los contactos · teléfono · para aprobar",
       "w": 390,
       "x": 1880,
       "y": 1780
@@ -1873,7 +1855,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Catálogo de los miembros · teléfono",
+      "title": "Catálogo de los miembros · teléfono · para aprobar",
       "w": 390,
       "x": 1410,
       "y": 1780
@@ -1891,7 +1873,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Las opciones de un catálogo · teléfono",
+      "title": "Opciones de un catálogo · teléfono · para aprobar",
       "w": 390,
       "x": 940,
       "y": 1780
@@ -1909,7 +1891,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Ordenar las opciones · teléfono",
+      "title": "Ordenar las opciones · teléfono · para aprobar",
       "w": 390,
       "x": 2380,
       "y": 1780
@@ -1918,7 +1900,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Catálogo escrito a mano · teléfono",
+      "title": "Catálogo escrito a mano · teléfono · para aprobar",
       "w": 390,
       "x": 470,
       "y": 1780
@@ -1936,7 +1918,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Catálogos · teléfono",
+      "title": "Catálogos · teléfono · para aprobar",
       "w": 390,
       "x": 0,
       "y": 1780
@@ -4481,6 +4463,24 @@
       "w": 390,
       "x": 3780,
       "y": 11920
+    },
+    "FRM-Catalogo-Opciones-Propuesta.dc.html": {
+      "h": 1320,
+      "is_interactive": true,
+      "page": "formularios",
+      "title": "Formularios · cambiar las opciones de un catálogo · propuesta del asistente · para aprobar",
+      "w": 1440,
+      "x": 13680,
+      "y": 460
+    },
+    "M-FRM-Catalogo-Opciones-Propuesta.dc.html": {
+      "h": 844,
+      "is_interactive": true,
+      "page": "formularios",
+      "title": "Cambiar las opciones de un catálogo · propuesta del asistente · teléfono · para aprobar",
+      "w": 390,
+      "x": 2850,
+      "y": 1780
     }
   },
   "createdOnFiles": {
@@ -5082,7 +5082,6 @@
     "M-WA-Chats-Formulario.dc.html",
     "M-WA-Conversacion-Respuesta.dc.html",
     "FRM-Catalogos.dc.html",
-    "FRM-Catalogo-Nuevo.dc.html",
     "FRM-Catalogo.dc.html",
     "FRM-Catalogo-Filtros.dc.html",
     "M-FRM-Catalogos.dc.html",
@@ -5161,10 +5160,11 @@
     "FRM-Catalogo-Contactos.dc.html",
     "FRM-Catalogo-Importar.dc.html",
     "FRM-Catalogo-Ordenar.dc.html",
+    "FRM-Catalogo-Opciones-Propuesta.dc.html",
+    "M-FRM-Catalogo-Opciones-Propuesta.dc.html",
     "FRM-Catalogo-Opciones-13.dc.html",
     "FRM-Catalogo-Ordenar-13.dc.html",
     "FRM-Catalogo-Opciones.dc.html",
-    "FRM-Catalogo-Tipo.dc.html",
     "FRM-Catalogos-14.dc.html",
     "FRM-Copiar.dc.html",
     "FRM-Dar-De-Baja.dc.html",
