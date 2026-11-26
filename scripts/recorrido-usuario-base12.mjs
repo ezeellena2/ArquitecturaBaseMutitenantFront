@@ -495,7 +495,7 @@ export async function runBase12Journey({ page, platformPage, width, env, base, r
     });
     await step("09", async () => {
       phase = "usuarios";
-      const [reply] = await responsesForAction(page, [responseFor("/api/users/paged")], () => page.reload());
+      const [reply] = await navigationResponses(page, [responseFor("/api/users/paged")], () => page.reload());
       assert.equal(reply.status(), 200, "Usuarios lee su lista.");
       const joined = (await reply.json()).items.find((item) => item.email === member);
       assert.equal(joined?.state, "Active", "La persona que aceptó la invitación ya es miembro.");
@@ -560,7 +560,7 @@ export async function runBase12Journey({ page, platformPage, width, env, base, r
       await page.waitForURL((current) => current.pathname === "/org/usuarios");
       await page.getByText(/^Vinculamos \d+ teléfonos y mandamos 1 invitación\.$/u).waitFor();
       phase = "la invitación en Usuarios";
-      const [users] = await responsesForAction(page, [responseFor("/api/users/paged")], () => page.reload());
+      const [users] = await navigationResponses(page, [responseFor("/api/users/paged")], () => page.reload());
       assert.equal(users.status(), 200, "Usuarios lee su lista.");
       const invitation = (await users.json()).items.find((item) => item.phone === importedPhone);
       assert.equal(invitation?.state, "Invited", "Usuarios tiene la invitación por WhatsApp pendiente.");
