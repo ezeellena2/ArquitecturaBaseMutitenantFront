@@ -611,10 +611,15 @@ test("B12B-12: la entrega de una invitación por correo, su (i) y la confirmaci�
   assert.deepEqual(deliveryWords, enums);
   assert.deepEqual(emailDeliveryReasons, { Pending: delivery.why.Pending, Uncertain: delivery.why.UncertainEmail, Failed: delivery.why.FailedEmail });
   assert.equal(resendUncertainText, delivery.resend.descriptionEmail.replace("{{person}}", delivery.resend.thePerson));
-  assert.deepEqual(invitationDeliveryOrder("e2e-b12b-entrega@example.test", "Uncertain"), { kind: "invitation", email: "e2e-b12b-entrega@example.test", outcome: "Uncertain" });
-  assert.deepEqual(invitationDeliveryOrder("e2e-b12b-entrega@example.test", "Failed").outcome, "Failed");
-  assert.throws(() => invitationDeliveryOrder("persona@gmail.com", "Uncertain"), /prueba/);
-  assert.throws(() => invitationDeliveryOrder("e2e-b12b-entrega@example.test", "Sent"));
+  // La orden lleva la organización del recorrido, que invita en la suya y no en la empresa fija de E7.
+  const tenantId = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
+  assert.deepEqual(invitationDeliveryOrder("e2e-b12b-entrega@example.test", "Uncertain", tenantId),
+    { kind: "invitation", email: "e2e-b12b-entrega@example.test", outcome: "Uncertain", tenantId });
+  assert.deepEqual(invitationDeliveryOrder("e2e-b12b-entrega@example.test", "Failed", tenantId).outcome, "Failed");
+  assert.throws(() => invitationDeliveryOrder("persona@gmail.com", "Uncertain", tenantId), /prueba/);
+  assert.throws(() => invitationDeliveryOrder("e2e-b12b-entrega@example.test", "Sent", tenantId));
+  assert.throws(() => invitationDeliveryOrder("e2e-b12b-entrega@example.test", "Uncertain"), /organización del recorrido/);
+  assert.throws(() => invitationDeliveryOrder("e2e-b12b-entrega@example.test", "Uncertain", "otra"), /organización del recorrido/);
 });
 
 test("B12B-13: el mensaje «Sin confirmar» del chat, su (i) y quién lo revisó, en la organización y en Plataforma", () => {
@@ -630,7 +635,13 @@ test("B12B-13: el mensaje «Sin confirmar» del chat, su (i) y quién lo revisó
   assert.deepEqual(chatPhones(390), { organization: "+5491134567885", platform: "+5491134567873" });
   assert.throws(() => chatPhones(320));
   assert.deepEqual(chatDeliveryOrder("platform", "+5491134567872"), { kind: "chatMessage", scope: "platform", phone: "+5491134567872", outcome: "Uncertain" });
-  assert.throws(() => chatDeliveryOrder("organization", "+5491155550000"), /sintético/);
+  // El chat de la organización es el de la del recorrido, donde conversó el cliente de la E11; Plataforma no lleva una.
+  const tenantId = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
+  assert.deepEqual(chatDeliveryOrder("organization", "+5491134567884", tenantId),
+    { kind: "chatMessage", scope: "organization", phone: "+5491134567884", outcome: "Uncertain", tenantId });
+  assert.throws(() => chatDeliveryOrder("organization", "+5491134567884"), /organización del recorrido/);
+  assert.throws(() => chatDeliveryOrder("platform", "+5491134567872", tenantId), /Plataforma/);
+  assert.throws(() => chatDeliveryOrder("organization", "+5491155550000", tenantId), /sintético/);
   assert.throws(() => chatDeliveryOrder("company", "+5491134567872"));
 });
 

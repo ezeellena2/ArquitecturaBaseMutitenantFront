@@ -5,6 +5,7 @@ import { checkByLabel } from "./platform-factor-real.mjs";
 import { acceptAssistantNoticeFromHome } from "./assistant-real-ui.mjs";
 import { pickupCode, plainTextBody } from "./test-e2e-real-mail.mjs";
 import { fillOtp } from "./test-e2e-real-ui.mjs";
+import { readJourneyIdentity } from "./recorrido-usuario-whatsapp.mjs";
 
 // Segunda parte de la base de la 12 en el recorrido de usuario (I3 del plan 2026-11-19-etapa-base-de-la-12-segunda-parte):
 // lo que se probó a mano en la puerta queda acá como paso, para que la próxima puerta pase sola. Va después de la base de
@@ -58,6 +59,7 @@ export const dailyEmailLimitText = "Por ahora no se pueden mandar más correos, 
 
 const syntheticPhone = /^\+54911345678\d{2}$/u;
 const testMailbox = /^[^@\s]+@example\.test$/u;
+const organizationIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iu;
 
 /**
  * Los teléfonos de los chats del paso 13, propios de cada ancho: el del cliente de la E11 (su conversación tiene la respuesta
@@ -68,18 +70,30 @@ export function chatPhones(width) {
   return width === 1440 ? { organization: "+5491134567884", platform: "+5491134567872" } : { organization: "+5491134567885", platform: "+5491134567873" };
 }
 
-/** La orden `delivery` que deja la última invitación de un correo de prueba en un estado de la cola (B-2). */
-export function invitationDeliveryOrder(email, outcome) {
+/**
+ * La orden `delivery` que deja la última invitación de un correo de prueba en un estado de la cola (B-2). Lleva la
+ * organización del recorrido, que invita en la suya: sin ella, el preparador busca en la empresa fija de E7.
+ */
+export function invitationDeliveryOrder(email, outcome, tenantId) {
   assert.ok(["Pending", "Uncertain", "Failed"].includes(outcome), "La cola queda en espera, sin confirmar o sin salir.");
   assert.match(email, testMailbox, "La invitación es de un correo de prueba.");
-  return { kind: "invitation", email, outcome };
+  assert.match(String(tenantId ?? ""), organizationIdPattern, "La invitación es de la organización del recorrido.");
+  return { kind: "invitation", email, outcome, tenantId };
 }
 
-/** La orden `delivery` que deja «Sin confirmar» el último mensaje que salió de un chat, de la organización o de Plataforma (B-2). */
-export function chatDeliveryOrder(scope, phone) {
+/**
+ * La orden `delivery` que deja «Sin confirmar» el último mensaje que salió de un chat, de la organización o de Plataforma (B-2).
+ * El de la organización lleva la del recorrido, donde conversó el cliente de la E11; el de Plataforma, ninguna.
+ */
+export function chatDeliveryOrder(scope, phone, tenantId) {
   assert.ok(scope === "organization" || scope === "platform", "El chat es de la organización o de Plataforma.");
   assert.match(phone, syntheticPhone, "El teléfono es sintético de la fixture.");
-  return { kind: "chatMessage", scope, phone, outcome: "Uncertain" };
+  if (scope === "platform") {
+    assert.equal(tenantId, undefined, "Una consulta de Plataforma no es de una organización.");
+    return { kind: "chatMessage", scope, phone, outcome: "Uncertain" };
+  }
+  assert.match(String(tenantId ?? ""), organizationIdPattern, "El chat es de la organización del recorrido.");
+  return { kind: "chatMessage", scope, phone, outcome: "Uncertain", tenantId };
 }
 
 /** Las órdenes `invitation-quota` (B-3): dejar a quien invita a `remaining` invitaciones de su tope del día, y soltarlo. */
@@ -232,6 +246,16 @@ export function base12bSteps(ctx) {
       await page.goto(url(route));
       await inside.filter({ visible: true }).first().waitFor({ timeout: 30_000 });
     }
+  };
+  // La organización del recorrido (la de la Dueña), para las órdenes `delivery` de los pasos 12 y 13: se lee una vez.
+  let tenantId;
+  const organizationId = async () => {
+    if (!tenantId) {
+      await asOwner("/org");
+      tenantId = (await readJourneyIdentity(page, { base, access: "business" })).activeTenantId;
+      assert.match(String(tenantId ?? ""), organizationIdPattern, "La Dueña tiene una organización activa.");
+    }
+    return tenantId;
   };
   const tooltipOf = async (target, control) => {
     await control.click({ force: true });
@@ -697,13 +721,16 @@ export function base12bSteps(ctx) {
     // la enviada, y «Reenviar» de la «Sin confirmar» pide revisar con la persona. En el entorno el correo sale enseguida: la
     // orden `delivery` deja la cola en espera, sin confirmar o sin salir.
     "12": async () => {
+      const organizationTenant = await organizationId();
       await asOwner("/org/usuarios");
       await heading(page, "Usuarios");
       const states = ["Pending", "Sent", "Uncertain", "Failed"];
       const emails = Object.fromEntries(states.map((state) => [state, `e2e-b12b-entrega-${state.toLowerCase()}-${width}-${tag}@example.test`]));
       const before = new Set(await env.files());
       for (const state of states) await inviteByEmail(emails[state]);
-      for (const state of ["Pending", "Uncertain", "Failed"]) await env.command("delivery", invitationDeliveryOrder(emails[state], state));
+      for (const state of ["Pending", "Uncertain", "Failed"]) {
+        await env.command("delivery", invitationDeliveryOrder(emails[state], state, organizationTenant));
+      }
       // La enviada: su correo llegó al pickup aislado.
       for (const deadline = Date.now() + 60_000; !(await env.messages(emails.Sent, before)).length;) {
         assert.ok(Date.now() < deadline, "Llegó la invitación que salió.");
@@ -752,7 +779,7 @@ export function base12bSteps(ctx) {
         await thread().getByText(reviewed, { exact: true }).waitFor();
         return reviewed;
       };
-      const organizationChat = await env.command("delivery", chatDeliveryOrder("organization", phones.organization));
+      const organizationChat = await env.command("delivery", chatDeliveryOrder("organization", phones.organization, await organizationId()));
       await asOwner(`/org/whatsapp/chats/${organizationChat.chatId}`);
       const inOrganization = await review(page, `/org/whatsapp/chats/${organizationChat.chatId}`);
       const consultation = await env.command("delivery", chatDeliveryOrder("platform", phones.platform));
