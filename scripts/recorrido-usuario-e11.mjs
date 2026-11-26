@@ -270,9 +270,12 @@ export async function runE11Journey({ page, platformPage, width, env, base, reco
     if (width === 390) await barAction("Editar contacto");
     else await page.getByRole("button", { name: "Editar contacto", exact: true }).click();
     const dialog = page.getByRole("dialog", { name: "Editar contacto", exact: true });
+    // La pieza para elegir (262), que deja crear: su buscador y la opción «Crear «…»»; en el teléfono, «Listo (N)» aplica lo
+    // marcado y la ✕ o Escape lo descartan.
     await dialog.getByRole("button", { name: /Etiquetas/ }).click();
-    await page.getByRole("searchbox", { name: "Buscar", exact: true }).fill(tag);
-    await page.getByRole("menuitem", { name: `Crear «${tag}»`, exact: true }).click(); await closeMenu();
+    await page.getByRole("combobox", { name: /^Buscar en Etiquetas/u }).fill(tag);
+    await page.getByRole("option", { name: `Crear «${tag}»`, exact: true }).click();
+    if (width === 390) await page.getByRole("button", { name: /^Listo \(\d+\)$/u }).click(); else await closeMenu();
     // En el teléfono la hoja dice «Guardar» (contacts.edit.savePhone); en la compu, «Guardar cambios».
     const save = width === 390 ? "Guardar" : "Guardar cambios";
     const saved = await act(page, () => dialog.getByRole("button", { name: save, exact: true }).click(), `${organizationApi}/contacts/${conversation.contactId}`, "PUT");
