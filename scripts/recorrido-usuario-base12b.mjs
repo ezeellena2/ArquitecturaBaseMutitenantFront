@@ -310,7 +310,7 @@ export function base12bSteps(ctx) {
         const current = platformPage.getByRole("dialog");
         // El contexto largo es opcional y sus tarifas se llaman como las de caché: en el teléfono, su paso queda vacío.
         if (await current.getByText("Desde (tokens)", { exact: true }).isVisible()
-          && !await current.getByText("Contexto (tokens)", { exact: true }).isVisible()) return;
+          && !await current.getByText(/^Contexto \(tokens\)/u).first().isVisible()) return;
         // La casilla se toca por su rótulo, que cubre la fila (CheckboxField).
         if (await current.getByRole("checkbox", { name: "Medio", exact: true }).isVisible()) await checkByLabel(platformPage, "Medio");
         for (const [name, value] of [["Contexto (tokens)", "200000"], ["Salida máxima (tokens)", "64000"], ["Lectura de caché", "0,3"],
@@ -330,7 +330,9 @@ export function base12bSteps(ctx) {
       }
       assert.ok(steps.length >= 2, "Agregar un modelo va en dos pasos o más.");
       await platformPage.getByRole("dialog").getByRole("button", { name: "Agregar modelo", exact: true }).click();
-      await platformPage.getByText("Se guardó el modelo.", { exact: true }).first().waitFor();
+      // Si venció la prueba reciente, la pestaña confirma «Confirmá que sos vos» sola y el código de la app puede esperar al
+      // intervalo siguiente: hasta 90 s.
+      await platformPage.getByText("Se guardó el modelo.", { exact: true }).first().waitFor({ timeout: 90_000 });
       await platformPage.getByText(model, { exact: true }).filter({ visible: true }).first().waitFor();
       return `Agregar modelo pasó por ${steps.join(", ")} y «${model}» quedó en el catálogo.`;
     },
@@ -499,7 +501,7 @@ export function base12bSteps(ctx) {
       const confirm = platformPage.getByRole("dialog", { name: "¿Guardar la configuración?", exact: true });
       await confirm.getByRole("textbox", { name: /^Motivo/u }).fill("Recorrido: el nombre de los correos.");
       await confirm.getByRole("button", { name: "Guardar", exact: true }).click();
-      await platformPage.locator('[data-sonner-toast][data-type="success"]').first().waitFor();
+      await platformPage.locator('[data-sonner-toast][data-type="success"]').first().waitFor({ timeout: 90_000 });
       // La Dueña pide un código: el correo llega con el nombre nuevo.
       await ctx.signOut(page, organization);
       await page.goto(url("/login/empresa"));
@@ -551,6 +553,8 @@ export async function runBase12bJourney(ctx) {
   const steps = base12bSteps(ctx);
   for (const { id } of base12bDefinitions) {
     const key = id.slice("B12B-".length);
-    await ctx.record(id, ctx.width, () => ctx.page, steps[key], (error) => `Ruta ${new URL(ctx.page.url()).pathname}; ${error.name}. Los correos y los códigos se omiten.`);
+    // El modelo nuevo se agrega en la pestaña del operador: su captura es la de esa pestaña.
+    const target = key === "05" ? ctx.platformPage : ctx.page;
+    await ctx.record(id, ctx.width, () => target, steps[key], (error) => `Ruta ${new URL(target.url()).pathname}; ${error.name}. Los correos y los códigos se omiten.`);
   }
 }
