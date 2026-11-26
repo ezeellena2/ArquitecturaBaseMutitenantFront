@@ -9918,8 +9918,8 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * La propuesta de quien pide, con su estado calculado al leer (ADR 0068 §9). 501 hasta la B5.
-         * @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Propuesta de una acción (ADR 0068), solo de quien pide: la de otra persona u organización es 404 Assistant.Proposal.NotFound. 501 General.Contract.NotImplemented hasta la B5. state (new, replaced, applied, unconfirmed o unavailable, con unavailableReason) y los nombres se calculan en cada lectura, con los permisos de ese momento y en la empresa de la acción; el destino y cada registro se vuelven a resolver con la fuente.
+         * La propuesta de quien pide, con su estado calculado al leer (ADR 0068 §9).
+         * @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Propuesta de una acción (ADR 0068), solo de quien pide: la de otra persona u organización es 404 Assistant.Proposal.NotFound. state (new, replaced, applied, unconfirmed o unavailable, con unavailableReason) y los nombres se calculan en cada lectura, con los permisos de ese momento y en la empresa de la acción; el destino y cada registro se vuelven a resolver con la fuente.
          */
         get: {
             parameters: {
@@ -9997,15 +9997,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         put?: never;
@@ -10027,8 +10018,8 @@ export interface paths {
         put?: never;
         /**
          * La clave del intento de guardar (ADR 0068 §10). Sin `[Idempotent]`: es idempotente por naturaleza, porque repetirlo
-         *     devuelve la misma clave mientras ese intento no termine en 4xx, y responde 200 sin crear nada. 501 hasta la B5.
-         * @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Propuesta de una acción (ADR 0068), solo de quien pide: la de otra persona u organización es 404 Assistant.Proposal.NotFound. 501 General.Contract.NotImplemented hasta la B5. Devuelve la clave del intento de guardar ({idempotencyKey}) para el encabezado Idempotency-Key de la ruta que guarda; la misma mientras ese intento no termine en 4xx. Sin Idempotency-Key propia: repetirlo devuelve la misma clave. Con una clave de la propuesta que ya terminó en 2xx la marca aplicada y responde 409 Assistant.Proposal.AlreadyApplied con location; reemplazada, no disponible o sin confirmar, 409 Assistant.Proposal.Unavailable con su motivo.
+         *     devuelve la misma clave mientras ese intento no termine en 4xx, y responde 200 sin crear nada.
+         * @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Propuesta de una acción (ADR 0068), solo de quien pide: la de otra persona u organización es 404 Assistant.Proposal.NotFound. Devuelve la clave del intento de guardar ({idempotencyKey}) para el encabezado Idempotency-Key de la ruta que guarda; la misma mientras ese intento no termine en 4xx. Sin Idempotency-Key propia: repetirlo devuelve la misma clave. Con una clave de la propuesta que ya terminó en 2xx la marca aplicada y responde 409 Assistant.Proposal.AlreadyApplied con location; reemplazada, no disponible o sin confirmar, 409 Assistant.Proposal.Unavailable con su motivo.
          */
         post: {
             parameters: {
@@ -10121,15 +10112,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -10149,8 +10131,8 @@ export interface paths {
         put?: never;
         /**
          * La pantalla guardó: el servidor lo comprueba y la marca aplicada (ADR 0068 §10). Al editar, la versión del cuerpo es la
-         *     nueva del registro, la que devuelve `target.version`. 501 hasta la B5.
-         * @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Propuesta de una acción (ADR 0068), solo de quien pide: la de otra persona u organización es 404 Assistant.Proposal.NotFound. 501 General.Contract.NotImplemented hasta la B5. La pantalla guardó: el servidor lo comprueba (al crear, una clave de la propuesta terminó en 2xx para esa persona y esa ruta; al quitar o dar de baja, el destino ya no se resuelve; al editar, version es la de ahora y distinta de la propuesta) y responde la propuesta aplicada. Sin poder comprobarlo, 409 Assistant.Proposal.NotApplied; reemplazada, no disponible o sin confirmar, 409 Assistant.Proposal.Unavailable.
+         *     nueva del registro, la que devuelve `target.version`.
+         * @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Propuesta de una acción (ADR 0068), solo de quien pide: la de otra persona u organización es 404 Assistant.Proposal.NotFound. La pantalla guardó: el servidor lo comprueba (al crear, una clave de la propuesta terminó en 2xx para esa persona y esa ruta; al quitar o dar de baja, el destino ya no se resuelve; al editar, version es la de ahora y distinta de la propuesta) y responde la propuesta aplicada. Sin poder comprobarlo, 409 Assistant.Proposal.NotApplied; reemplazada, no disponible o sin confirmar, 409 Assistant.Proposal.Unavailable.
          */
         post: {
             parameters: {
@@ -10236,15 +10218,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -29695,7 +29668,10 @@ export interface components {
             isVerified: boolean;
             isUsable: boolean;
         };
-        /** @description Lo que el mensaje del historial y del SSE dice de su propuesta; lo demás lo trae el GET de la propuesta. */
+        /**
+         * @description Lo que el mensaje del historial y del SSE dice de su propuesta, con su estado guardado (nueva, reemplazada o aplicada); lo
+         *     demás, también «no disponible» y «Sin confirmar», lo calcula el GET de la propuesta.
+         */
         AssistantMessageProposalResponse: {
             /** Format: uuid */
             id: string;
@@ -29836,7 +29812,8 @@ export interface components {
         AssistantProposalKind: "action";
         /**
          * @description La propuesta de un turno (ADR 0068 §8 y §9), leída por id desde la pantalla que la confirma. El estado y los nombres se
-         *     calculan en cada lectura, con los permisos de ese momento y en la empresa de la acción; nunca se guardan.
+         *     calculan en cada lectura, con los permisos de ese momento y en la empresa de la acción; nunca se guardan. `BaseVersion`
+         *     es la versión del registro cuando la IA preparó la propuesta: si difiere de `Target.Version`, cambió desde entonces.
          */
         AssistantProposalResponse: {
             /** Format: uuid */
@@ -29851,6 +29828,8 @@ export interface components {
             unavailableReason?: null | components["schemas"]["AssistantProposalUnavailableReason"];
             values: components["schemas"]["AssistantProposalValueResponse"][];
             target?: null | components["schemas"]["AssistantProposalTargetResponse"];
+            /** Format: uint32 */
+            baseVersion?: null | number;
             appliedLocation?: null | string;
         };
         /** @enum {string} */
