@@ -8,7 +8,7 @@ import { server } from "@/test/mocks/server";
 import { asPhone } from "@/test/utils/phone";
 import type { UpdateWhatsAppBotRequest, WhatsAppBotMenuOption, WhatsAppBotResponse, WhatsAppNumberResponse, WhatsAppTeamResponse } from "../../api/types";
 import { mountWhatsApp, whatsappMember, whatsappOwner } from "../../test/support";
-import { pickerName } from "@/test/picker";
+import { choose, pickerName } from "@/test/picker";
 
 const central: WhatsAppNumberResponse = { id: "11111111-1111-4111-8111-111111111111", displayNumber: "+5491155550100", verifiedName: "Grupo Delta",
   company: null, status: "Connected", coexistence: false, serviceMessagesThisMonth: 640, freeServiceMessages: 1000, chargedServiceMessagesThisMonth: 0,
@@ -95,6 +95,64 @@ describe("Bot de la organización", () => {
     expect(sent).toHaveLength(1);
     expect(sent[0]).toMatchObject({ welcome: "¡Hola! ¿En qué te ayudamos?", outOfHours: "Ahora estamos cerrados.", askPromotions: true, employeesTeamId: "t-orders", version: 5 });
     expect(sent[0].menu).toHaveLength(4);
+  });
+
+  it("fuera de horario: los días en una tabla y cada uno en su diálogo, con la atención en la pieza (WA-Respuestas-Base2)", async () => {
+    handlers();
+    const sent = saving(() => HttpResponse.json(bot({ version: 6 })));
+    const page = mountWhatsApp(whatsappOwner, "/org/whatsapp/bot");
+    await page.user.click(within(await openMenu(page.user, "Fuera de horario")).getByRole("menuitem", { name: "Editar" }));
+    const dialog = await screen.findByRole("dialog", { name: "Fuera de horario" });
+    const table = within(dialog).getByRole("table", { name: "Días y horarios de atención" });
+    expect(within(table).getAllByRole("columnheader").map((header) => header.textContent)).toEqual(["Día", "Horario", "Acciones"]);
+    const row = (day: string) => within(table).getByRole("row", { name: new RegExp(`^${day} `) });
+    expect(within(row("Lunes")).getByText("09:00 a 18:00")).toBeVisible();
+    expect(within(row("Sábado")).getByText("Cerrado")).toBeVisible();
+    expect(within(dialog).queryByRole("checkbox")).not.toBeInTheDocument();
+    expect(await axe(page.container)).toHaveNoViolations();
+
+    // Abrir un día cerrado copia el horario del día abierto más cercano.
+    await page.user.click(within(row("Sábado")).getByRole("button", { name: "Editar Sábado" }));
+    const day = await screen.findByRole("dialog", { name: "Sábado" });
+    expect(within(day).getByRole("button", { name: pickerName("Atención") })).toHaveTextContent("Cerrado");
+    expect(within(day).queryByLabelText("Desde")).not.toBeInTheDocument();
+    await choose(page.user, "Atención", /^Abierto/);
+    expect(within(day).getByLabelText("Desde")).toHaveValue("09:00");
+    expect(within(day).getByLabelText("Hasta")).toHaveValue("18:00");
+    await page.user.click(within(day).getByRole("button", { name: "Listo" }));
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Sábado" })).not.toBeInTheDocument());
+    expect(within(row("Sábado")).getByText("09:00 a 18:00")).toBeVisible();
+    expect(within(row("Sábado")).getByRole("button", { name: "Editar Sábado" })).toHaveFocus();
+
+    // Cerrar un día lo deja «Cerrado» y no se guarda.
+    await page.user.click(within(row("Lunes")).getByRole("button", { name: "Editar Lunes" }));
+    await choose(page.user, "Atención", /^Cerrado/);
+    await page.user.click(within(await screen.findByRole("dialog", { name: "Lunes" })).getByRole("button", { name: "Listo" }));
+    expect(within(row("Lunes")).getByText("Cerrado")).toBeVisible();
+
+    await page.user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
+    expect(await screen.findByText("Cambios guardados")).toBeVisible();
+    expect(sent[0].schedule?.days?.map((item) => item.day)).toEqual(["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]);
+    expect(sent[0].schedule?.days?.at(-1)).toMatchObject({ day: "Saturday", from: expect.stringMatching(/^09:00/), to: expect.stringMatching(/^18:00/) });
+  });
+
+  it("el diálogo de un día no cierra con «Hasta» antes de «Desde», y «Cancelar» lo deja como estaba", async () => {
+    handlers();
+    const page = mountWhatsApp(whatsappOwner, "/org/whatsapp/bot");
+    await page.user.click(within(await openMenu(page.user, "Fuera de horario")).getByRole("menuitem", { name: "Editar" }));
+    const dialog = await screen.findByRole("dialog", { name: "Fuera de horario" });
+    await page.user.click(within(dialog).getByRole("button", { name: "Editar Martes" }));
+    const day = await screen.findByRole("dialog", { name: "Martes" });
+    const until = within(day).getByLabelText("Hasta");
+    await page.user.clear(until);
+    await page.user.type(until, "08:00");
+    await page.user.click(within(day).getByRole("button", { name: "Listo" }));
+    expect(await within(day).findByText("La hora de cierre tiene que ser después de la de apertura.")).toBeVisible();
+    expect(screen.getByRole("dialog", { name: "Martes" })).toBeVisible();
+    await page.user.click(within(day).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Martes" })).not.toBeInTheDocument());
+    expect(within(dialog).getByRole("row", { name: /^Martes / })).toHaveTextContent("09:00 a 18:00");
+    expect(within(dialog).getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
   });
 
   it("con 10 opciones, «Agregar opción» explica el tope; si el back lo rechaza, va en el diálogo", async () => {
@@ -329,7 +387,9 @@ describe("Bot de la organización", () => {
       expect(await axe(page.container)).toHaveNoViolations();
       await page.user.click(screen.getByRole("button", { name: /Fuera de horario/ }));
       const dialog = await screen.findByRole("dialog", { name: "Fuera de horario" });
-      expect(within(dialog).getByRole("checkbox", { name: "Sábado" })).not.toBeChecked();
+      // M-WA-Respuestas-Base2: la misma tabla, con el lápiz de cada día.
+      expect(within(dialog).getByRole("row", { name: /^Sábado / })).toHaveTextContent("Cerrado");
+      expect(within(dialog).getByRole("button", { name: "Editar Sábado" })).toBeVisible();
       expect(within(dialog).getAllByText("Cerrado")).toHaveLength(2);
       expect(await axe(page.container)).toHaveNoViolations();
     } finally { restore(); }

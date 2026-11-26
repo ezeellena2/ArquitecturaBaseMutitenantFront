@@ -27,10 +27,20 @@
     "title": "Out of hours",
     "timeZone": "Time zone",
     "days": "Service days and hours",
-    "from": "{{day}}, from",
-    "until": "{{day}}, until",
-    "to": "to",
-    "closed": "Closed"
+    "columns": {
+      "day": "Day",
+      "hours": "Hours",
+      "actions": "Actions"
+    },
+    "editDay": "Edit {{day}}",
+    "attention": "Service",
+    "open": "Open",
+    "openHelp": "Open during set hours.",
+    "closed": "Closed",
+    "closedHelp": "Closed all day.",
+    "from": "From",
+    "until": "Until",
+    "hours": "{{from}} to {{to}}"
   },
   "schedule": {
     "alwaysClosed": "No service hours",

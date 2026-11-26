@@ -27,10 +27,20 @@
     "title": "Fuera de horario",
     "timeZone": "Zona horaria",
     "days": "Días y horarios de atención",
-    "from": "{{day}}, desde",
-    "until": "{{day}}, hasta",
-    "to": "a",
-    "closed": "Cerrado"
+    "columns": {
+      "day": "Día",
+      "hours": "Horario",
+      "actions": "Acciones"
+    },
+    "editDay": "Editar {{day}}",
+    "attention": "Atención",
+    "open": "Abierto",
+    "openHelp": "Atiende en un horario.",
+    "closed": "Cerrado",
+    "closedHelp": "No atiende en todo el día.",
+    "from": "Desde",
+    "until": "Hasta",
+    "hours": "{{from}} a {{to}}"
   },
   "schedule": {
     "alwaysClosed": "Sin horario de atención",
