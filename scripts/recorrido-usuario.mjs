@@ -15,6 +15,7 @@ import { loadAssistantJourneyDefinitions } from "./recorrido-usuario-asistente.m
 import { e11Definitions, e11ManualChecks, runE11Journey } from "./recorrido-usuario-e11.mjs";
 import { e9Definitions, e9ManualChecks, factorSecretMasks, runE9Journey } from "./recorrido-usuario-e9.mjs";
 import { base12Definitions, base12ManualChecks, runBase12Journey } from "./recorrido-usuario-base12.mjs";
+import { base12bDefinitions, base12bManualChecks, runBase12bJourney } from "./recorrido-usuario-base12b.mjs";
 import { runAssistantJourney } from "./assistant-real-ui.mjs";
 import { completeOperatorFactor } from "./platform-factor-real.mjs";
 
@@ -608,6 +609,10 @@ async function runWidth({ width, context, env, record, output, signal }) {
   // de los pasos 01 y 14, con el nombre que guardó ahí; la organización y su Dueña, las de la E7.
   await runBase12Journey({ page, platformPage, width, env, base: baseUrl, record, signOut, awaitApp, login, requestCode, verify,
     owner: businessEmail, organization, person: { email, name: "Alex Recorrido" }, signal });
+  // Segunda parte de la base (I3 de su puerta): lo que se probó a mano queda acá, en las mismas pestañas, con la misma Dueña,
+  // su organización y el operador de la E9.
+  await runBase12bJourney({ page, platformPage, width, env, base: baseUrl, record, signOut, awaitApp, login,
+    owner: businessEmail, organization, operator });
   // Salida real de la sesión de Plataforma, sin tocar cookies a mano entre recorridos.
   await platformPage.setViewportSize(viewport(1440)); await signOut(platformPage, "Plataforma");
   await platformPage.close(); await page.close();
@@ -621,9 +626,9 @@ export async function main({ build = true, widths: selectedWidths = widths } = {
   await mkdir(output, { recursive: true });
   const steps = definitions.map(([id, title, expected]) => ({ id, title, expected }));
   steps.splice(29, 0, ...e8Definitions);
-  steps.push(...await loadAssistantJourneyDefinitions(), ...e11Definitions, ...e9Definitions, ...base12Definitions);
-  const report = { date, stage: "Etapas 7, 8, 8b, 11, 9 y base de la 12", widths: selectedWidths, sourceRevision: e8SourceRevision,
-    manual: [...e8ManualChecks, "Anthropic real: cargar la clave y probar el proveedor externo.", ...e11ManualChecks, ...e9ManualChecks, ...base12ManualChecks], startedAtUtc: new Date(started).toISOString(), finished: false, cleanup: "pendiente", steps: steps.map((step) => ({ ...step, results: selectedWidths.map((width) => ({ width, status: "pending", actual: "Pendiente" })) })) };
+  steps.push(...await loadAssistantJourneyDefinitions(), ...e11Definitions, ...e9Definitions, ...base12Definitions, ...base12bDefinitions);
+  const report = { date, stage: "Etapas 7, 8, 8b, 11, 9 y base de la 12, con su segunda parte", widths: selectedWidths, sourceRevision: e8SourceRevision,
+    manual: [...e8ManualChecks, "Anthropic real: cargar la clave y probar el proveedor externo.", ...e11ManualChecks, ...e9ManualChecks, ...base12ManualChecks, ...base12bManualChecks], startedAtUtc: new Date(started).toISOString(), finished: false, cleanup: "pendiente", steps: steps.map((step) => ({ ...step, results: selectedWidths.map((width) => ({ width, status: "pending", actual: "Pendiente" })) })) };
   const persist = async () => {
     await writeFile(path.join(output, "resultados.json"), `${JSON.stringify(report, null, 2)}\n`);
     await writeFile(path.join(output, "index.html"), renderIndex(report));

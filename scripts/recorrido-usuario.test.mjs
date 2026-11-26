@@ -11,6 +11,8 @@ import { botOption, e11Definitions, e11ManualChecks, enterPersonalHome, national
 import { e9Definitions, e9ManualChecks, factorSecretMasks, newcomerOf, operatorNameOf, runE9Journey } from "./recorrido-usuario-e9.mjs";
 import { base12Definitions, base12ManualChecks, bellLabel, importedPhoneOf, invitationLinkFrom, isFullDateTime, runBase12Journey, whileHeld,
   workingButtonProblems, workingButtonState } from "./recorrido-usuario-base12.mjs";
+import { base12bDefinitions, base12bManualChecks, dailyLimitProblems, decodeMimeWords, emptiesLast, isJoinedPercent, isMonthRange, runBase12bJourney, senderNameOf }
+  from "./recorrido-usuario-base12b.mjs";
 
 test("la selección de ancho conserva el recorrido completo por defecto y permite sólo un ancho vigente", () => {
   assert.deepEqual(parseJourneyArguments([]), { build: true, widths: [1440, 390] });
@@ -545,5 +547,60 @@ test("sin el correo aislado del entorno o sin las sesiones del recorrido, la bas
   await assert.rejects(runBase12Journey({ ...journey, env: {} }), /correo aislado/);
   await assert.rejects(runBase12Journey({ ...journey, person: undefined }), /persona del paso 14/);
   await assert.rejects(runBase12Journey({ ...journey, login: undefined }), /sesiones/);
+  assert.deepEqual(touched, []);
+});
+
+test("la segunda parte de la base tiene sus pasos en orden y deja a mano lo que el preparador todavía no deja (B-2 y B-3)", () => {
+  assert.deepEqual(base12bDefinitions.map((step) => step.id), Array.from({ length: 11 }, (_, index) => `B12B-${String(index + 1).padStart(2, "0")}`));
+  for (const step of base12bDefinitions) assert.ok(step.title.startsWith("B12B · ") && step.expected && !step.controlled);
+  const titles = base12bDefinitions.map((step) => step.title.slice("B12B · ".length));
+  for (const expected of ["Un rol en áreas plegables", "Un permiso ajeno da 403 con su texto", "El chat del Inicio sin cupo", "Dos subidas a la vez",
+    "Un modelo nuevo en dos pasos", "Una fecha, un porcentaje y un mes como rango", "Un aviso de cada tipo", "Elegir con la pieza", "Ordenar una tabla",
+    "El plazo de los chats y el nombre de los correos", "Salir con dos pestañas abiertas"]) assert.ok(titles.includes(expected), expected);
+  assert.equal(base12bManualChecks.length, 4);
+  for (const item of base12bManualChecks) assert.match(item, /\(B-[23]\)\.$/u);
+});
+
+test("el mes va como rango del primero al último día, y el porcentaje va pegado", () => {
+  assert.equal(isMonthRange("01/11/2026 – 30/11/2026"), true);
+  assert.equal(isMonthRange("01/02/2028 – 29/02/2028"), true);
+  assert.equal(isMonthRange("01/02/2027 – 29/02/2027"), false);
+  assert.equal(isMonthRange("noviembre de 2026"), false);
+  assert.equal(isMonthRange("01/11/2026 - 30/11/2026"), false);
+  assert.equal(isJoinedPercent("80%"), true);
+  assert.equal(isJoinedPercent("12,5%"), true);
+  assert.equal(isJoinedPercent("80 %"), false);
+});
+
+test("lo vacío de una columna ordenada va al final", () => {
+  assert.equal(emptiesLast(["20/10/2026", "21/10/2026", "—", "—"]), true);
+  assert.equal(emptiesLast(["21/10/2026", "20/10/2026", ""]), true);
+  assert.equal(emptiesLast(["—", "20/10/2026"]), false);
+  assert.equal(emptiesLast(["20/10/2026"]), true);
+});
+
+test("el tope del día nombra la organización, vuelve a las 00:00 y dice la hora de la organización", () => {
+  const ok = "Usaste tus 50 consultas de hoy en Empresa E2E. Vuelven el 26/11/2026, a las 00:00, hora de Empresa E2E.";
+  assert.deepEqual(dailyLimitProblems(ok, "Empresa E2E"), []);
+  assert.deepEqual(dailyLimitProblems(ok.replace("a las 00:00", "a las 21:00"), "Empresa E2E"), ["no dice que vuelven a las 00:00 con la fecha"]);
+  assert.deepEqual(dailyLimitProblems(ok.replace("hora de Empresa E2E", "hora de tu perfil"), "Empresa E2E"), ["no nombra la hora de la organización"]);
+});
+
+test("el nombre con que firma un correo sale de su From, también codificado", () => {
+  assert.equal(senderNameOf("To: x@example.test\r\nFrom: \"Tienda Recorrido\" <no-responder@example.test>\r\n"), "Tienda Recorrido");
+  assert.equal(senderNameOf("From: =?utf-8?B?" + Buffer.from("Ñandú Recorrido").toString("base64") + "?= <a@example.test>"), "Ñandú Recorrido");
+  assert.equal(decodeMimeWords("=?utf-8?Q?Caf=C3=A9_Recorrido?="), "Café Recorrido");
+});
+
+test("sin las órdenes del entorno o sin las sesiones del recorrido, la segunda parte de la base no abre pantallas ni se declara aprobada", async () => {
+  const touched = [];
+  const page = new Proxy({}, { get: (_, name) => { touched.push(String(name)); return () => {}; } });
+  const record = async () => { touched.push("record"); };
+  const env = { command: async () => ({}), files: async () => [], messages: async () => [] };
+  const journey = { page, platformPage: page, width: 1440, env, base: baseUrl, record, signOut: async () => {}, awaitApp: async () => {}, login: async () => {},
+    owner: "e2e-recorrido-empresa@example.test", organization: "Recorrido 1440", operator: "e2e-a3-operator@example.test" };
+  await assert.rejects(runBase12bJourney({ ...journey, env: { files: env.files } }), /órdenes y el correo aislados/u);
+  await assert.rejects(runBase12bJourney({ ...journey, operator: undefined }), /el operador/u);
+  await assert.rejects(runBase12bJourney({ ...journey, login: undefined }), /sesiones/u);
   assert.deepEqual(touched, []);
 });
