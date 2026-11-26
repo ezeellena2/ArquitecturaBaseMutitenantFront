@@ -66,7 +66,7 @@ ETAPAS = {
               "M-Cuenta-Plat-Base2", "Config-Plat-Base2", "Rol-Base2", "M-Rol-Base2", "WA-Config-Base2", "M-WA-Config-Base2"],
 }
 # El alto nuevo de los tableros que crecieron al redibujarlos (lo dicen los reportes de cada grupo).
-ALTOS = {"FRM-Editor-Reglas": 1700, "FRM-Respuesta-19": 1000, "FRM-Respuesta-20": 1100, "FRM-Respuesta-Aprobacion": 1500, "FRM-Editor-Reglas-Plantilla": 1700, "Plat-FRM-Plantilla-Reglas": 1700, "FRM-Respuesta-Cadena": 1200}
+ALTOS = {"FRM-Editor-Reglas": 1700, "FRM-Respuesta-19": 1000, "FRM-Respuesta-20": 1100, "FRM-Respuesta-Aprobacion": 1500, "FRM-Editor-Reglas-Plantilla": 1700, "Plat-FRM-Plantilla-Reglas": 1700, "FRM-Respuesta-Cadena": 1200, "FRM-Respuesta-Corregir": 1500}
 # Los tableros nuevos: su entrada entera en `canvas.json`.
 NUEVOS = {}
 

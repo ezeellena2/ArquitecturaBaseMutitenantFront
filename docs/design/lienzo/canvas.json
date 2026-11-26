@@ -105,7 +105,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Avisos · la campana · etapa 21",
+      "title": "Avisos · la campana · etapa 21 · para aprobar",
       "w": 1440,
       "x": 18240,
       "y": 27626
@@ -259,7 +259,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Mi cuenta · el chat de WhatsApp · etapa 21",
+      "title": "Mi cuenta · el chat de WhatsApp · etapa 21 · para aprobar",
       "w": 1440,
       "x": 19760,
       "y": 27626
@@ -420,7 +420,7 @@
       "h": 1100,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Nueva respuesta · la pregunta «Correo» · etapa 21",
+      "title": "Nueva respuesta · la pregunta «Correo» · etapa 21 · para aprobar",
       "w": 1440,
       "x": 16720,
       "y": 27626
@@ -600,7 +600,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · dar de baja · etapa 21",
+      "title": "Formularios · dar de baja · etapa 21 · para aprobar",
       "w": 1440,
       "x": 24320,
       "y": 27626
@@ -672,7 +672,7 @@
       "h": 1400,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · la pregunta «Correo» · etapa 21",
+      "title": "Formularios · la pregunta «Correo» · etapa 21 · para aprobar",
       "w": 1440,
       "x": 15200,
       "y": 27626
@@ -771,7 +771,7 @@
       "h": 1500,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · las reglas con el bloque · etapa 21",
+      "title": "Formularios · las reglas con el bloque · etapa 21 · para aprobar",
       "w": 1440,
       "x": 3040,
       "y": 27626
@@ -786,10 +786,10 @@
       "y": 30710
     },
     "FRM-Editor-Reglas.dc.html": {
-      "h": 1600,
+      "h": 1700,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · las reglas · etapa 21",
+      "title": "Formularios · las reglas · etapa 21 · para aprobar",
       "w": 1440,
       "x": 1520,
       "y": 27626
@@ -870,7 +870,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · la lista · etapa 21",
+      "title": "Formularios · la lista · etapa 21 · para aprobar",
       "w": 1440,
       "x": 0,
       "y": 27626
@@ -906,7 +906,7 @@
       "h": 1500,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · el diseño del PDF · etapa 21",
+      "title": "Formularios · el diseño del PDF · etapa 21 · para aprobar",
       "w": 1440,
       "x": 4560,
       "y": 27626
@@ -1039,16 +1039,16 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · anular una respuesta · etapa 21",
+      "title": "Formularios · anular una respuesta · etapa 21 · para aprobar",
       "w": 1440,
       "x": 12160,
       "y": 27626
     },
     "FRM-Respuesta-Aprobacion.dc.html": {
-      "h": 1200,
+      "h": 1500,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · aprobar o rechazar · etapa 21",
+      "title": "Formularios · aprobar o rechazar · etapa 21 · para aprobar",
       "w": 1440,
       "x": 7600,
       "y": 27626
@@ -1081,10 +1081,10 @@
       "y": 9322
     },
     "FRM-Respuesta-Corregir.dc.html": {
-      "h": 1400,
+      "h": 1500,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · corregir una respuesta · etapa 21",
+      "title": "Formularios · corregir una respuesta · etapa 21 · para aprobar",
       "w": 1440,
       "x": 10640,
       "y": 27626
@@ -1138,7 +1138,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · la planilla con «Estado» · etapa 21",
+      "title": "Formularios · la planilla con «Estado» · etapa 21 · para aprobar",
       "w": 1440,
       "x": 6080,
       "y": 27626
@@ -1174,7 +1174,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · lo propio · etapa 21",
+      "title": "Formularios · lo propio · etapa 21 · para aprobar",
       "w": 1440,
       "x": 13680,
       "y": 27626
@@ -1210,7 +1210,7 @@
       "h": 1500,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · el tablero con «Por estado» · etapa 21",
+      "title": "Formularios · el tablero con «Por estado» · etapa 21 · para aprobar",
       "w": 1440,
       "x": 9120,
       "y": 27626
@@ -1640,7 +1640,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Mi cuenta · el chat de WhatsApp · teléfono · etapa 21",
+      "title": "Mi cuenta · el chat de WhatsApp · teléfono · etapa 21 · para aprobar",
       "w": 390,
       "x": 5640,
       "y": 29346
@@ -1792,7 +1792,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Nueva respuesta · «Correo» · teléfono · etapa 21",
+      "title": "Nueva respuesta · «Correo» · teléfono · etapa 21 · para aprobar",
       "w": 390,
       "x": 4700,
       "y": 29346
@@ -1972,7 +1972,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "La pregunta «Correo» · teléfono · etapa 21",
+      "title": "La pregunta «Correo» · teléfono · etapa 21 · para aprobar",
       "w": 390,
       "x": 4230,
       "y": 29346
@@ -2089,7 +2089,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · la lista · teléfono · etapa 21",
+      "title": "Formularios · la lista · teléfono · etapa 21 · para aprobar",
       "w": 390,
       "x": 0,
       "y": 29346
@@ -2151,7 +2151,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Las reglas con el bloque · teléfono · etapa 21",
+      "title": "Las reglas con el bloque · teléfono · etapa 21 · para aprobar",
       "w": 390,
       "x": 940,
       "y": 29346
@@ -2169,7 +2169,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Las reglas · teléfono · etapa 21",
+      "title": "Las reglas · teléfono · etapa 21 · para aprobar",
       "w": 390,
       "x": 470,
       "y": 29346
@@ -2214,7 +2214,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Anular · teléfono · etapa 21",
+      "title": "Anular · teléfono · etapa 21 · para aprobar",
       "w": 390,
       "x": 3290,
       "y": 29346
@@ -2223,7 +2223,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Aprobar o rechazar · teléfono · etapa 21",
+      "title": "Aprobar o rechazar · teléfono · etapa 21 · para aprobar",
       "w": 390,
       "x": 1880,
       "y": 29346
@@ -2232,7 +2232,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Corregir · teléfono · etapa 21",
+      "title": "Corregir · teléfono · etapa 21 · para aprobar",
       "w": 390,
       "x": 2820,
       "y": 29346
@@ -2286,7 +2286,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "La planilla · teléfono · etapa 21",
+      "title": "La planilla · teléfono · etapa 21 · para aprobar",
       "w": 390,
       "x": 1410,
       "y": 29346
@@ -2295,7 +2295,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Lo propio · teléfono · etapa 21",
+      "title": "Lo propio · teléfono · etapa 21 · para aprobar",
       "w": 390,
       "x": 3760,
       "y": 29346
@@ -2331,7 +2331,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "El tablero · teléfono · etapa 21",
+      "title": "El tablero · teléfono · etapa 21 · para aprobar",
       "w": 390,
       "x": 2350,
       "y": 29346
@@ -2951,7 +2951,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Los avisos · teléfono · etapa 21",
+      "title": "Los avisos · teléfono · etapa 21 · para aprobar",
       "w": 390,
       "x": 6110,
       "y": 29346
@@ -3122,7 +3122,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Nueva plantilla con «Encabezado» · teléfono · etapa 21",
+      "title": "Nueva plantilla con «Encabezado» · teléfono · etapa 21 · para aprobar",
       "w": 390,
       "x": 7050,
       "y": 29346
@@ -3689,7 +3689,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · los avisos de un formulario · etapa 21",
+      "title": "WhatsApp · los avisos de un formulario · etapa 21 · para aprobar",
       "w": 1440,
       "x": 21280,
       "y": 27626
@@ -3957,7 +3957,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · nueva plantilla con «Encabezado» · etapa 21",
+      "title": "WhatsApp · nueva plantilla con «Encabezado» · etapa 21 · para aprobar",
       "w": 1440,
       "x": 27360,
       "y": 27626
