@@ -179,7 +179,7 @@ function DialogFooter({
     <div
       data-slot="dialog-footer"
       className={cn(
-        "sticky bottom-0 flex flex-row gap-2.5 bg-[var(--superficie)] px-5 pt-2 pb-[calc(1rem+env(safe-area-inset-bottom))] max-md:border-0 max-md:[&_button]:h-12 max-md:[&_button]:flex-1 max-md:[&_button]:rounded-[0.75rem] max-md:[&_button]:text-[0.9375rem] md:static md:justify-end md:border-t md:border-[var(--borde)] md:py-3 md:[&_button]:w-auto",
+        "sticky bottom-0 flex flex-row gap-2.5 bg-[var(--superficie)] px-5 pt-2 pb-[calc(1rem+env(safe-area-inset-bottom))] max-md:border-0 max-md:[&_button]:h-12 max-md:[&_button]:flex-1 max-md:[&_button]:rounded-[0.75rem] max-md:[&_button]:text-[0.9375rem] md:justify-end md:border-t md:border-[var(--borde)] md:py-3 md:[&_button]:w-auto",
         className
       )}
       {...props}

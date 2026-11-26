@@ -72,6 +72,10 @@ describe("Dialog: medidas (Criterio-Dialogos)", () => {
     expect([...cross!.querySelectorAll("path")].map((path) => path.getAttribute("d"))).toEqual(["M7 7l10 10", "M17 7 7 17"]);
     expect(screen.getByText("Te mandamos un código.").parentElement).toHaveClass("flex", "flex-col", "gap-3.5", "md:p-5");
     expect(screen.getByRole("button", { name: "Verificar" }).parentElement).toHaveClass("md:border-t", "md:py-3");
+    // Plat-Asistente-Config, «Editar un modelo» a 1440: un diálogo más alto que la ventana deja el pie a la vista, también en
+    // la compu, como en el teléfono.
+    expect(screen.getByRole("button", { name: "Verificar" }).parentElement).toHaveClass("sticky", "bottom-0", "bg-[var(--superficie)]");
+    expect(screen.getByRole("button", { name: "Verificar" }).parentElement?.className).not.toMatch(/(^|\s)md:static(\s|$)/);
     // «Criterio · Diálogos» (v97): atrás, la pantalla oscurecida, sin difuminar.
     const overlay = document.querySelector("[data-slot='dialog-overlay']");
     expect(overlay).toHaveClass("bg-[var(--velo)]");
