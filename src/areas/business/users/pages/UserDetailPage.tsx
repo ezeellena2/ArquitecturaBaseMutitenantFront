@@ -4,10 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueries, useQueryClient } from "@tanstack/react-query";
 import { Building2 } from "lucide-react";
 import { CloseIcon, ShieldIcon, UserMinusIcon } from "@/shared/ui/icons";
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useController } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams, useSearchParams } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 import { useCurrentUser } from "@/auth/useCurrentUser";
@@ -21,6 +21,11 @@ import { useEditForm } from "@/shared/hooks/useEditForm";
 import { useEditPage } from "@/shared/hooks/useEditPage";
 import { orderLike } from "@/shared/lib/orderLike";
 import { InfoTip } from "@/shared/ui/InfoTip";
+import {
+  AssistantProposalChangesSection, AssistantProposalMark, assistantProposalParam, useAssistantProposal, useAssistantProposalFieldReview,
+  useAssistantProposalQuery, type AssistantProposalChangeItem, type AssistantProposalChangeRow, type AssistantProposalValues,
+} from "@/shared/assistant-actions";
+import { Banner } from "@/shared/ui/Banner";
 import { invitationPerson, useResendInvitation } from "@/shared/hooks/useResendInvitation";
 import { InvitationDeliveryBadge, InvitationSection, ResendInvitationDialog } from "@/shared/ui/InvitationDelivery";
 import { Button } from "@/shared/ui/button";
@@ -35,7 +40,7 @@ import { Page, SublineSeparator } from "@/shared/ui/Page";
 import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Section, SectionFields } from "@/shared/ui/Section";
-import { Picker } from "@/shared/ui/Picker";
+import { Picker, type PickerOption } from "@/shared/ui/Picker";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { SettingsItem, settingsLineClass } from "@/shared/ui/app/SettingsGroup";
 import { DateText } from "@/shared/ui/format/DateText";
@@ -48,7 +53,7 @@ import { ChoiceSheet, RadioRow } from "@/shared/ui/app/ChoiceSheet";
 import { RolesField } from "../components/RolesField";
 import { UserCompanyDialog } from "../components/UserCompanyDialog";
 import { userErrorMessage, type UserAction } from "../errors";
-import { companyAssignments, organizationRoleIds, sentence, type CompanyAssignment } from "../lib/access";
+import { companyAssignments, organizationRoleIds, sentence, uniqueOptions, type CompanyAssignment } from "../lib/access";
 
 /// El acceso a la organización no tiene reglas propias en la pantalla: lo que el back rechaza va en la franja.
 const accessFormSchema = z.object({ isActive: z.boolean(), roleIds: z.array(z.string()) });
@@ -66,10 +71,41 @@ interface SaveVariables {
   origin: SaveOrigin;
   /** El acceso que se guardó: la ficha queda limpia con eso. Sin esto (las empresas), lo que se está editando se conserva. */
   access?: AccessForm;
+  /** Con una propuesta del asistente: la tarjeta pasa a aplicada con la versión que respondió el guardado. Va antes de
+   * releer la ficha, que puede armarse de nuevo (otro estado) y llevarse las devoluciones de `mutate`. */
+  markApplied?: (version: number) => Promise<void>;
 }
 
 function savedAccess(user: OrganizationUserResponse): AccessForm {
   return { isActive: user.state === "Active", roleIds: organizationRoleIds(user) };
+}
+
+/** Lo que propone el asistente al cambiar roles (users.edit@1), ya aplicado sobre lo guardado: los roles de la
+ * organización y, si nombra una empresa, sus roles, con el nombre que trae la propuesta. */
+interface EditProposal {
+  readonly roles: readonly PickerOption[];
+  readonly company?: { readonly id: string; readonly label: string; readonly roles: readonly PickerOption[] };
+}
+
+const optionsOf = (list: AssistantProposalValues["lists"][string] | undefined): PickerOption[] =>
+  (list ?? []).map((option) => ({ value: option.id, label: option.label }));
+
+/** Sin empresa no entran sus roles: la ficha no abre la propuesta. */
+function toEditProposal(values: AssistantProposalValues): EditProposal | undefined {
+  const company = values.fields.company;
+  const companyId = typeof company?.value === "string" ? company.value : "";
+  const companyRoles = optionsOf(values.lists.companyRoles);
+  if (!companyId && companyRoles.length > 0) return undefined;
+  return { roles: optionsOf(values.lists.roles), company: companyId ? { id: companyId, label: company?.label ?? "", roles: companyRoles } : undefined };
+}
+
+/** Quitar no tiene campos: lo que se confirma es a quién, que es esta ficha. */
+const toRemoveProposal = (): true => true;
+
+/** La empresa que nombra una propuesta, para que «lo leído» traiga sus roles de ahora. */
+function proposedCompanyId(values: readonly { field: string; value?: unknown }[] | undefined): string | undefined {
+  const value = values?.find((entry) => entry.field === "company")?.value;
+  return typeof value === "string" ? value : undefined;
 }
 
 function Separator() {
@@ -111,6 +147,25 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   const { phone } = useAppChrome();
   const [sheet, setSheet] = useState<"state" | null>(null);
   const { form, version, resetTo, wrote } = useEditForm({ read: member, toValues: savedAccess, resolver: zodResolver(accessFormSchema) });
+  // Usuario-Propuesta y Confirmar-Propuesta (ADR 0068 §9): con `?proposal=<id>`, lo que propone el asistente para esta
+  // persona, aplicado sobre lo que la ficha leyó (los roles de ahora; si nombra una empresa, los de esa empresa).
+  const [searchParams, setSearchParams] = useSearchParams();
+  const proposalCompanyId = proposedCompanyId(useAssistantProposalQuery(searchParams.get(assistantProposalParam)).data?.values);
+  const proposalBase = useMemo<AssistantProposalValues>(() => {
+    const assignment = member.companies.find((company) => company.companyId === proposalCompanyId);
+    const fields: AssistantProposalValues["fields"] = assignment ? { company: { value: assignment.companyId, label: assignment.companyName } } : {};
+    return {
+      fields,
+      lists: {
+        roles: member.roles.filter((role) => role.scope === "Organization").map((role) => ({ id: role.id, label: role.name })),
+        companyRoles: assignment ? assignment.roles.map((role) => ({ id: role.id, label: role.name })) : [],
+      },
+      rows: {},
+    };
+  }, [member, proposalCompanyId]);
+  const editProposal = useAssistantProposal("users.edit@1", toEditProposal, proposalBase);
+  const removeProposal = useAssistantProposal("users.remove@1", toRemoveProposal);
+  const review = useAssistantProposalFieldReview();
   const isActiveField = useController({ control: form.control, name: "isActive" });
   const roleIdsField = useController({ control: form.control, name: "roleIds" });
   const current: AccessForm = { isActive: isActiveField.field.value, roleIds: roleIdsField.field.value };
@@ -129,17 +184,8 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   const isMember = member.state === "Active" || member.state === "Inactive";
   const pendingDeletion = member.state === "PendingDeletion";
   const editable = canManage && !pendingDeletion;
-  const isDirty = editable && form.formState.isDirty;
   // La ficha es la de quien está mirando («Lucía (vos)» en el tablero Usuario): los errores de la última Dueña lo dicen.
   const self = Boolean(member.userId && member.userId === currentUser?.id);
-  // Tableros Usuario y Avisos: el 409 en su cartel, «Cambios sin guardar» en la banda, el error de guardado en la franja
-  // y «¿Salir sin guardar?» antes de irse con cambios.
-  const edit = useEditPage({
-    isDirty, error: failure?.error,
-    onSeeNew: () => { void reload().then((fresh) => { if (fresh) resetTo(fresh); setFailure(undefined); }); },
-    onContinueEditing: () => setFailure(undefined),
-    errorMessage: (error) => userErrorMessage(error, t, { self, action: failure?.action ?? "save" }),
-  });
   const orgOptions = useResourceOptions(roleOptions("Organization"), canManage);
   const companyRoleQuery = useResourceOptions(roleOptions("Company"), canManage);
   const companies = useResourceOptions(companyOptions, canManage);
@@ -152,12 +198,55 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   const orgRoles = orgOptions.items;
   const companyRoles = companyRoleQuery.knownItems;
   const activeCompanies = registry.filter((company) => company.status === "Active");
+  const { preserved: preservedCompanyIds, changeable: changeableAssignments } = companyAssignments(member.companies, registry);
+  // La propuesta es de esta persona y entra en la ficha: una empresa que la ficha conserva como está (inactiva) no entra.
+  const proposalFor = (proposal: { readonly target?: { readonly id: string } | null }) => proposal.target?.id === memberId;
+  const editReady = editProposal.status === "ready" && editable && proposalFor(editProposal.proposal)
+    && !(editProposal.formValues.company && preservedCompanyIds.has(editProposal.formValues.company.id)) ? editProposal : undefined;
+  const removeReady = removeProposal.status === "ready" && canManage && (isMember || pendingDeletion) && proposalFor(removeProposal.proposal)
+    ? removeProposal : undefined;
+  // Lo propuesto entra una vez en lo que se edita, sin guardar; desde ahí, la persona lo cambia como siempre.
+  const proposing = editReady;
+  const appliedProposal = useRef<string | null>(null);
+  useEffect(() => {
+    if (!editReady || appliedProposal.current === editReady.proposalId) return;
+    appliedProposal.current = editReady.proposalId;
+    form.setValue("roleIds", orderLike(form.formState.defaultValues?.roleIds, editReady.formValues.roles.map((role) => role.value)), { shouldDirty: true });
+  }, [editReady, form]);
+  // La empresa que nombra, con sus roles: se manda con «Guardar cambios» y no antes, como lo demás de la propuesta.
+  const savedAssignment = proposing?.formValues.company ? changeableAssignments.find((item) => item.companyId === proposing.formValues.company?.id) : undefined;
+  const proposedAssignment: CompanyAssignment | undefined = proposing?.formValues.company
+    && !(savedAssignment && savedAssignment.roleIds.length === proposing.formValues.company.roles.length
+      && savedAssignment.roleIds.every((id) => proposing.formValues.company?.roles.some((role) => role.value === id)))
+    ? { companyId: proposing.formValues.company.id, roleIds: proposing.formValues.company.roles.map((role) => role.value) } : undefined;
+  // Confirmar-Propuesta: la confirmación de quitar abre desde la tarjeta, con «Propuesta del asistente» en el título,
+  // hasta que se cierra; manda la versión que leyó la propuesta al abrirse (R01).
+  const [closedRemoveProposal, setClosedRemoveProposal] = useState<string | null>(null);
+  const removing = removeReady && closedRemoveProposal !== removeReady.proposalId && confirmAction === null ? removeReady : undefined;
+  // Sin `?proposal` la ficha vuelve a ser la de siempre: descartar o cerrar la confirmación no la vuelve a abrir.
+  const dropProposal = () => setSearchParams((current) => {
+    const next = new URLSearchParams(current);
+    next.delete(assistantProposalParam);
+    return next;
+  }, { replace: true });
+  const closeRemoveProposal = (proposalId: string) => { setClosedRemoveProposal(proposalId); dropProposal(); };
+  // Con la propuesta, su empresa también es un cambio sin guardar.
+  const isDirty = editable && (form.formState.isDirty || proposedAssignment !== undefined);
+  // Tableros Usuario y Avisos: el 409 en su cartel, «Cambios sin guardar» en la banda, el error de guardado en la franja
+  // y «¿Salir sin guardar?» antes de irse con cambios.
+  const edit = useEditPage({
+    isDirty, error: failure?.error,
+    onSeeNew: () => { void reload().then((fresh) => { if (fresh) resetTo(fresh); setFailure(undefined); }); },
+    onContinueEditing: () => setFailure(undefined),
+    errorMessage: (error) => userErrorMessage(error, t, { self, action: failure?.action ?? "save" }),
+  });
   const refresh = () => Promise.all([client.invalidateQueries({ queryKey: userQueryKey(memberId) }), client.invalidateQueries({ queryKey: usersQueryRoot })]);
   const save = useMutation({
     mutationFn: ({ request }: SaveVariables) => updateUser(memberId, request),
     // Lo guardado (el acceso, o las empresas sin tocar lo que se está editando) pasa a ser la base, con la versión que
     // respondió el guardado.
-    onSuccess: async (result, { request, message, access }) => {
+    onSuccess: async (result, { request, message, access, markApplied }) => {
+      if (markApplied) void markApplied(result.version);
       setFailure(undefined);
       setDialogFailure(undefined);
       if (access) form.reset(access);
@@ -173,9 +262,12 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
     },
   });
   const remove = useMutation({
-    mutationFn: ({ version }: { message: string; version: number }) => removeUser(memberId, version),
-    // Ya no hay nada que perder: la salida al listado no pregunta.
-    onSuccess: async (_result, { message }) => { toast.success(sentence(message)); await client.invalidateQueries({ queryKey: usersQueryRoot }); edit.allowNextNavigation(); void navigate("/org/usuarios"); },
+    mutationFn: ({ version }: { message: string; version: number; markApplied?: () => Promise<void> }) => removeUser(memberId, version),
+    // Ya no hay nada que perder: la salida al listado no pregunta. Con la propuesta, la tarjeta pasa a aplicada antes de irse.
+    onSuccess: async (_result, { message, markApplied }) => {
+      if (markApplied) void markApplied();
+      toast.success(sentence(message)); await client.invalidateQueries({ queryKey: usersQueryRoot }); edit.allowNextNavigation(); void navigate("/org/usuarios");
+    },
     onError: (error) => setFailure({ error, action: "remove" }),
   });
   const revoke = useMutation({
@@ -191,7 +283,6 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   const channel = userInvitationChannel(member);
   const shownState: UserState = isMember ? (current.isActive ? "Active" : "Inactive") : member.state;
   const dialogError = actionErrorMessage(dialogFailure, t);
-  const { preserved: preservedCompanyIds, changeable: changeableAssignments } = companyAssignments(member.companies, registry);
   const assignedCompanyIds = new Set(member.companies.map((company) => company.companyId));
   const activeAssignedCount = new Set(registry.filter((company) => company.status === "Active" && assignedCompanyIds.has(company.id)).map((company) => company.id)).size;
   const companyName = (companyId: string) => activeCompanies.find((company) => company.id === companyId)?.name
@@ -207,9 +298,12 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
 
   function saveAccess(values: AccessForm, settled?: () => void) {
     setFailure(undefined);
+    // Con la propuesta, su empresa va con lo demás: la reemplaza con sus roles, o se suma.
+    const companies = proposedAssignment
+      ? [...changeableAssignments.filter((item) => item.companyId !== proposedAssignment.companyId), proposedAssignment] : changeableAssignments;
     save.mutate({
-      request: { ...(isMember ? { isActive: values.isActive } : {}), roleIds: values.roleIds, companies: changeableAssignments, version },
-      message: t("users:detail.messages.saved", { name: displayName }), origin: "page", access: values,
+      request: { ...(isMember ? { isActive: values.isActive } : {}), roleIds: values.roleIds, companies, version },
+      message: t("users:detail.messages.saved", { name: displayName }), origin: "page", access: values, markApplied: proposing?.markApplied,
     }, { onSettled: settled });
   }
 
@@ -255,10 +349,11 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
     });
   }
 
-  // «Descartar cambios» vuelve a la última lectura de lo guardado, con su versión.
+  // «Descartar cambios» vuelve a la última lectura de lo guardado, con su versión; también descarta la propuesta.
   function discard() {
     resetTo(member);
     setFailure(undefined);
+    if (proposing) dropProposal();
   }
 
   function resendInvitation(settled?: () => void) {
@@ -282,14 +377,44 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
   const settled = () => setConfirmAction(null);
   const confirmations = {
     disable: { title: t("users:detail.confirm.disableTitle", { name: displayName }), description: t("users:detail.confirm.disableDescription", { organization: organizationName }), label: t("users:detail.confirm.disableConfirm"), pending: save.isPending, pendingLabel: t("users:detail.confirm.disabling"), run: () => saveAccess(form.getValues(), settled) },
-    remove: { title: t("users:detail.confirm.removeTitle", { name: displayName, organization: organizationName }), description: removeDescription, label: t("users:detail.confirm.removeConfirm"), pending: remove.isPending, pendingLabel: t("users:detail.confirm.removing"), run: () => { setFailure(undefined); remove.mutate({ message: t("users:detail.messages.removed", { name: displayName, organization: organizationName }), version: removeVersion }, { onSettled: settled }); } },
+    remove: { title: t("users:detail.confirm.removeTitle", { name: displayName, organization: organizationName }), description: removeDescription, label: t("users:detail.confirm.removeConfirm"), pending: remove.isPending, pendingLabel: t("users:detail.confirm.removing"), run: () => {
+      setFailure(undefined);
+      const applied = removing;
+      remove.mutate({ message: t("users:detail.messages.removed", { name: displayName, organization: organizationName }),
+        version: applied ? applied.proposal.target?.version ?? member.version : removeVersion, markApplied: applied?.markApplied },
+      // Si no se pudo quitar, la confirmación se cierra con la propuesta; si se quitó, la ficha ya se va al listado.
+      { onSettled: settled, onError: () => { if (applied) closeRemoveProposal(applied.proposalId); } });
+    } },
     revoke: { title: t("users:detail.confirm.revokeTitle", { email: userContactText(member, format) }), description: t("users:detail.confirm.revokeDescription"), label: t("users:detail.confirm.revokeConfirm"), pending: revoke.isPending, pendingLabel: t("users:detail.confirm.revoking"), run: () => { if (member.invitationId) revoke.mutate(member.invitationId, { onSettled: settled }); } },
   };
-  const confirmation = confirmAction ? confirmations[confirmAction] : null;
+  const shownConfirm = removing ? "remove" : confirmAction;
+  const confirmation = shownConfirm ? confirmations[shownConfirm] : null;
   // Tableros Usuario y M-Usuario: punto de color y palabra, sin pastilla, con los tonos de Usuarios.
   const stateLabel = <StatusBadge tones={userStateTones} value={shownState} className="text-[var(--t3)]" />;
   const roleNames = current.roleIds.map((id) => orgOptions.knownItems.find((role) => role.id === id)?.name ?? member.roles.find((role) => role.id === id)?.name)
     .filter(Boolean).join(", ");
+  // Lo elegido que puede no estar en la página cargada: lo guardado, lo propuesto (con el nombre de la propuesta) y lo leído.
+  const selectedRoleOptions = uniqueOptions(proposing?.formValues.roles, [...member.roles, ...orgOptions.knownItems].map((role) => ({ value: role.id, label: role.name })));
+  const rolesReview = proposing ? review(current.roleIds.map((id) => proposing.doubtOf("roles", id))) : undefined;
+  // «Lo que cambia», sobre lo guardado y con lo que se va a mandar: lo propuesto y lo que la persona cambie después.
+  const changeRows: AssistantProposalChangeRow[] = [];
+  if (proposing) {
+    const savedRoleIds = organizationRoleIds(member);
+    const item = (doubtField: string, names: readonly PickerOption[]) => (id: string): AssistantProposalChangeItem =>
+      ({ key: id, label: names.find((option) => option.value === id)?.label ?? "", review: Boolean(proposing.doubtOf(doubtField, id)) });
+    const roleItem = item("roles", selectedRoleOptions);
+    changeRows.push({ key: "organization", where: t("users:detail.proposal.organization"), whereIn: t("users:detail.proposal.inOrganization"),
+      added: current.roleIds.filter((id) => !savedRoleIds.includes(id)).map(roleItem), removed: savedRoleIds.filter((id) => !current.roleIds.includes(id)).map(roleItem) });
+    const proposedCompany = proposing.formValues.company;
+    if (proposedAssignment && proposedCompany) {
+      const before = savedAssignment?.roleIds ?? [];
+      const savedNames = member.companies.find((company) => company.companyId === proposedCompany.id)?.roles.map((role) => ({ value: role.id, label: role.name }));
+      const companyItem = item("companyRoles", uniqueOptions(proposedCompany.roles, savedNames));
+      changeRows.push({ key: proposedCompany.id, where: proposedCompany.label, whereIn: proposedCompany.label, whereReview: Boolean(proposing.doubtOf("company")),
+        added: proposedAssignment.roleIds.filter((id) => !before.includes(id)).map(companyItem), removed: before.filter((id) => !proposedAssignment.roleIds.includes(id)).map(companyItem) });
+    }
+  }
+  const changedSinceProposal = proposing && proposing.proposal.baseVersion != null && proposing.proposal.baseVersion !== member.version;
 
   const detail = isInvitation
     ? <Trans ns="users" i18nKey={member.state === "Expired" ? "detail.expiredOn" : "detail.expiresOn"} components={{ date: <DateText value={member.invitationExpiresAtUtc} kind="date" /> }} />
@@ -307,6 +432,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
 
   return <>
     <Page banner={edit.banner} backTo={{ to: "/org/usuarios", label: t("users:back") }} title={displayName || t("users:detail.title")} summary={summary}
+      titleAside={proposing ? <AssistantProposalMark /> : undefined}
       // M-Usuario-Base2: el título de una invitación ya es su contacto; debajo, su estado y cuándo vence.
       phoneSubtitle={isInvitation ? <><StatusBadge tones={userStateTones} value={shownState} />{" · "}{detail}</> : userContact(member) ?? undefined} phoneBody="gray"
       // Usuario-Base2: «Reenviar invitación» va a la vista, en la caja «Invitación»; el ⋮ queda con revocarla o quitar (209).
@@ -328,6 +454,11 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
             la barra (M-Usuario, v106): la pone useEditPage en `banner`. */}
         {edit.formError}
 
+        {/* Usuario-Propuesta y su M-: si la persona cambió desde que el asistente preparó la propuesta, lo dice arriba; «Lo
+            que cambia» ya va sobre lo de ahora. */}
+        {changedSinceProposal ? <Banner tone="warning" className="max-md:mx-4 max-md:mt-4">{t("users:detail.proposal.changedSince", { name: displayName })}</Banner> : null}
+        {proposing ? <AssistantProposalChangesSection rows={changeRows} /> : null}
+
         {/* Tableros Usuario-Base2 y M-Usuario-Base2 (0066 §4): la caja «Invitación», primera en el cuerpo, con por dónde salió,
             a quién, hasta cuándo vale y su entrega; «Reenviar invitación» en su encabezado. */}
         {isInvitation ? <InvitationSection details={[
@@ -347,7 +478,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
                   que no se puede dar apagado con su motivo (269) y «Listo (N)». */}
               {editable ? <li className={settingsLineClass}>
                 <Picker trigger="row" multiple label={t("users:detail.organizationRoles")} placeholder={t("users:detail.noRoles")} remote={orgOptions.remote}
-                  selectedOptions={[...member.roles, ...orgOptions.knownItems].map((role) => ({ value: role.id, label: role.name }))}
+                  selectedOptions={selectedRoleOptions}
                   options={orgRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined, disabledReason: role.grantable === false ? t("common:roleChoice.notGrantable") : undefined }))}
                   value={current.roleIds} onChange={(roleIds) => changeAccess({ roleIds })} />
               </li> : <SettingsItem title={t("users:detail.organizationRoles")} detail={roleNames || t("users:detail.noRoles")} />}
@@ -359,7 +490,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
               </FormField> : null}
               {editable ? <RolesField label={t("users:detail.organizationRoles")} allLabel={t("users:detail.allRoles")}
                 remote={orgOptions.remote} allCount={orgOptions.allCount} allOptions={async () => (await orgOptions.allItems()).map((role) => ({ value: role.id, label: role.name, disabledReason: role.grantable === false ? t("common:roleChoice.notGrantable") : undefined }))}
-                selectedOptions={[...member.roles, ...orgOptions.knownItems].map((role) => ({ value: role.id, label: role.name }))} options={orgRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined, disabledReason: role.grantable === false ? t("common:roleChoice.notGrantable") : undefined }))} value={current.roleIds}
+                review={rolesReview} selectedOptions={selectedRoleOptions} options={orgRoles.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined, disabledReason: role.grantable === false ? t("common:roleChoice.notGrantable") : undefined }))} value={current.roleIds}
                 onChange={(roleIds) => changeAccess({ roleIds })} placeholder={t("users:detail.noRoles")} />
                 : <ReadOnlyField control="select" label={t("users:detail.organizationRoles")} muted={!member.roles.some((role) => role.scope === "Organization")}>{member.roles.filter((role) => role.scope === "Organization").map((role) => role.name).join(", ") || t("users:detail.noRoles")}</ReadOnlyField>}
             </SectionFields>}
@@ -401,8 +532,13 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
       excludedCompanyIds={[...assignedCompanyIds]} companies={activeCompanies.filter((company) => !assignedCompanyIds.has(company.id))} roles={companyRoles} pending={save.isPending} error={dialogError}
       returnFocusTo={companyDialog.returnFocusTo} onEdit={() => setDialogFailure(undefined)} onClose={closeCompanyDialog}
       onSave={(assignment) => saveCompanyDialog(companyDialog, assignment)} /> : null}
-    <ConfirmDialog open={confirmation !== null} onOpenChange={(open) => { if (!open) setConfirmAction(null); }} destructive={confirmAction !== "disable"}
-      title={confirmation?.title ?? ""} description={confirmation?.description} confirmLabel={confirmation?.label ?? ""}
+    <ConfirmDialog open={confirmation !== null} onOpenChange={(open) => {
+      if (open) return;
+      setConfirmAction(null);
+      if (removing) closeRemoveProposal(removing.proposalId);
+    }} destructive={shownConfirm !== "disable"}
+      title={confirmation?.title ?? ""} titleAside={removing ? <AssistantProposalMark /> : undefined}
+      description={confirmation?.description} confirmLabel={confirmation?.label ?? ""}
       pending={confirmation?.pending ?? false} pendingLabel={confirmation?.pendingLabel}
       onConfirm={() => confirmation?.run()} />
     <ResendInvitationDialog resend={confirmResend} name={displayName} person={invitationPerson(member.displayName)} channel={channel} pending={resend.isPending} />

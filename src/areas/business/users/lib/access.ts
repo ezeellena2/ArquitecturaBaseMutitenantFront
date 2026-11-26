@@ -1,4 +1,5 @@
 import type { OrganizationUserResponse } from "@/shared/api/types";
+import type { PickerOption } from "@/shared/ui/Picker";
 
 /// Una empresa de la persona con sus roles, como la manda el guardado de la ficha.
 export interface CompanyAssignment {
@@ -28,4 +29,15 @@ export function companyAssignments(
 /// «Sumamos a Ana a Delta S.A.» no lleva otro punto: el nombre ya termina en uno (tablero Usuario).
 export function sentence(text: string): string {
   return text.replace(/\.\.$/, ".");
+}
+
+/// Lo elegido que puede no estar en la página cargada de una lista (`selectedOptions`): una vez cada opción, con el
+/// nombre de la primera lista que la trae (el de la propuesta del asistente, si la hay).
+export function uniqueOptions(...lists: (readonly PickerOption[] | undefined)[]): PickerOption[] {
+  const seen = new Set<string>();
+  return lists.flatMap((list) => list ?? []).filter((option) => {
+    if (seen.has(option.value)) return false;
+    seen.add(option.value);
+    return true;
+  });
 }

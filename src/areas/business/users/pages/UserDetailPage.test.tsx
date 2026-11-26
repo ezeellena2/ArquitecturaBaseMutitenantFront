@@ -933,3 +933,126 @@ describe("UserDetailPage (tablero Usuario)", () => {
     expect(backend.writes.map((write) => write.version)).toEqual([2, 3]);
   });
 });
+
+// Usuario-Propuesta y Confirmar-Propuesta (ADR 0068 §9): la ficha con `?proposal=<id>` de una propuesta del asistente.
+describe("UserDetailPage con una propuesta del asistente", () => {
+  const proposalPath = "/api/organization/assistant/proposals/p-1";
+  const supportRole = { id: "role-support", name: "Soporte", isSystemRole: false, scope: "Organization" as const, companyId: null };
+  const withSupport = { ...member, roles: [supportRole] };
+  type Value = { field: string; value: unknown; label?: string; doubt?: string };
+  const editProposal = (values: Value[], overrides: Record<string, unknown> = {}) => ({
+    id: "p-1", conversationId: "c-1", kind: "action", action: "users.edit", version: 1, state: "new", values,
+    target: { id: "member-1", label: "Lucía Fernández", version: 2 }, baseVersion: 2, ...overrides,
+  });
+  // Suma «Ventas», que no está en la página cargada de roles (el nombre sale de la propuesta), con duda, y quita «Soporte».
+  const salesForSupport: Value[] = [
+    { field: "roles", value: { op: "add", id: "role-sales" }, label: "Ventas", doubt: "Assistant.Action.Doubt.Similar" },
+    { field: "roles", value: { op: "remove", id: "role-support" }, label: "Soporte" },
+  ];
+
+  function proposalApi(proposal: Record<string, unknown>) {
+    const writes = { applied: [] as unknown[], put: [] as unknown[], deleted: [] as string[] };
+    api(withSupport, writes);
+    server.use(
+      http.get(proposalPath, () => HttpResponse.json(proposal)),
+      http.post(`${proposalPath}/applied`, async ({ request }) => { writes.applied.push(await request.json()); return HttpResponse.json({ ...proposal, state: "applied" }); }),
+    );
+    return writes;
+  }
+
+  function changesTable() {
+    const table = screen.getByRole("table", { name: "Lo que cambia" });
+    return within(table).getAllByRole("row").map((row) => Array.from(row.children, (cell) => cell.textContent?.trim()));
+  }
+
+  it("cambiar roles muestra lo propuesto en la ficha y en «Lo que cambia», y «Guardar cambios» manda lo que se ve", async () => {
+    const user = userEvent.setup();
+    const writes = proposalApi(editProposal(salesForSupport));
+    renderRouteWithProviders("/org/usuarios/member-1?proposal=p-1", { as: "business-e6-admin" });
+
+    const mark = await screen.findByText("Propuesta del asistente");
+    expect(screen.getByRole("heading", { level: 1, name: "Lucía Fernández" }).parentElement).toContainElement(mark);
+    expect(changesTable()).toEqual([["Dónde", "Se suma", "Se quita"], ["Organización", "VentasRevisá", "Soporte"]]);
+    const roles = screen.getByRole("button", { name: /^Roles de la organización( |$)/ });
+    expect(roles).toHaveAccessibleName("Roles de la organización Ventas");
+    expect(roles).toHaveAccessibleDescription("Hay más de una opción parecida.");
+    expect(screen.queryByText(/cambió desde la propuesta/)).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    await waitFor(() => expect(writes.applied).toEqual([{ version: 3 }]));
+    expect(writes.put).toEqual([{ isActive: true, roleIds: ["role-sales"], companies: [], version: 2 }]);
+    await waitFor(() => expect(screen.queryByText("Propuesta del asistente")).not.toBeInTheDocument());
+  });
+
+  it("si la persona cambió desde la propuesta, lo avisa arriba y «Lo que cambia» va sobre lo de ahora", async () => {
+    // La IA preparó la propuesta sobre la versión 1; ahora es la 2 y Lucía ya tiene «Ventas».
+    proposalApi(editProposal(salesForSupport, { baseVersion: 1 }));
+    server.use(http.get("/api/users/member-1", () => HttpResponse.json({ ...withSupport,
+      roles: [supportRole, { ...supportRole, id: "role-sales", name: "Ventas" }] })));
+    renderRouteWithProviders("/org/usuarios/member-1?proposal=p-1", { as: "business-e6-admin" });
+
+    expect(await screen.findByText("Lucía Fernández cambió desde la propuesta.")).toBeVisible();
+    expect(changesTable()).toEqual([["Dónde", "Se suma", "Se quita"], ["Organización", "—", "Soporte"]]);
+  });
+
+  it("una empresa propuesta se suma con sus roles al guardar, aunque los roles de la organización no cambien", async () => {
+    const user = userEvent.setup();
+    const writes = proposalApi(editProposal([
+      { field: "company", value: company.id, label: "Delta S.A." },
+      { field: "companyRoles", value: { op: "add", id: "role-company-manager" }, label: "Administrador" },
+    ]));
+    renderRouteWithProviders("/org/usuarios/member-1?proposal=p-1", { as: "business-e6-admin" });
+
+    await screen.findByText("Propuesta del asistente");
+    expect(changesTable()).toEqual([["Dónde", "Se suma", "Se quita"], ["Delta S.A.", "Administrador", "—"]]);
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    await waitFor(() => expect(writes.put).toEqual([{ isActive: true, roleIds: ["role-support"], companies: [{ companyId: company.id, roleIds: ["role-company-manager"] }], version: 2 }]));
+  });
+
+  it.each([
+    ["roles de empresa sin la empresa", editProposal([{ field: "companyRoles", value: { op: "add", id: "role-company-manager" }, label: "Administrador" }])],
+    ["un rol sin su nombre", editProposal([{ field: "roles", value: { op: "add", id: "role-sales" } }])],
+    ["de otra persona", editProposal(salesForSupport, { target: { id: "member-2", label: "Martín Paz", version: 4 } })],
+  ])("si un valor no entra (%s), la ficha es la de siempre", async (_case, proposal) => {
+    proposalApi(proposal);
+    renderRouteWithProviders("/org/usuarios/member-1?proposal=p-1", { as: "business-e6-admin" });
+
+    await screen.findByRole("heading", { level: 1, name: "Lucía Fernández" });
+    await screen.findByRole("button", { name: "Roles de la organización Soporte" });
+    expect(screen.queryByText("Propuesta del asistente")).not.toBeInTheDocument();
+    expect(screen.queryByRole("table", { name: "Lo que cambia" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Guardar cambios" })).toBeDisabled();
+  });
+
+  it("quitar abre la confirmación desde la tarjeta y, al confirmar, quita con la versión leída y la marca aplicada", async () => {
+    const user = userEvent.setup();
+    const writes = proposalApi({ id: "p-1", conversationId: "c-1", kind: "action", action: "users.remove", version: 1, state: "new", values: [],
+      target: { id: "member-1", label: "Lucía Fernández", version: 2 }, baseVersion: 2 });
+    const { router } = renderRouteWithProviders("/org/usuarios/member-1?proposal=p-1", { as: "business-e6-admin" });
+
+    const confirm = await screen.findByRole("dialog", { name: /^¿Quitar a Lucía Fernández de / });
+    expect(within(confirm).getByText("Propuesta del asistente")).toBeInTheDocument();
+    await user.click(within(confirm).getByRole("button", { name: "Quitar" }));
+
+    await waitFor(() => expect(router.state.location.pathname).toBe("/org/usuarios"));
+    expect(writes.deleted).toEqual(["?version=2"]);
+    await waitFor(() => expect(writes.applied).toEqual([{}]));
+  });
+
+  it("cerrar la confirmación de quitar no quita y deja la ficha de siempre", async () => {
+    const user = userEvent.setup();
+    const writes = proposalApi({ id: "p-1", conversationId: "c-1", kind: "action", action: "users.remove", version: 1, state: "new", values: [],
+      target: { id: "member-1", label: "Lucía Fernández", version: 2 }, baseVersion: 2 });
+    const { router } = renderRouteWithProviders("/org/usuarios/member-1?proposal=p-1", { as: "business-e6-admin" });
+
+    const confirm = await screen.findByRole("dialog", { name: /^¿Quitar a Lucía Fernández de / });
+    await user.click(within(confirm).getByRole("button", { name: "Cancelar" }));
+
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: /^¿Quitar a/ })).not.toBeInTheDocument());
+    expect(router.state.location.search).toBe("");
+    expect(writes.deleted).toEqual([]);
+    expect(writes.applied).toEqual([]);
+  });
+});

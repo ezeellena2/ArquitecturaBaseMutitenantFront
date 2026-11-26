@@ -59,6 +59,9 @@ interface PickerBase {
   onOpenChange?: (open: boolean) => void;
   /** Como mucho estas: la lista dice «Hasta 5» y, al llegar, «Elegiste 5 de 5», y apaga las demás. */
   max?: number;
+  /** En el campo, después de lo elegido y antes de la flecha: «Revisá» en lo que propone el asistente (tableros
+   * *-Propuesta, .acc-rev). No entra en el nombre del botón; su motivo va en la descripción del campo. */
+  adornment?: ReactNode;
 }
 
 export type PickerProps = PickerBase & (
@@ -263,6 +266,7 @@ function pickerTrigger({ props, choice, multiple, open, phone, uid, nameId, valu
           : <span aria-hidden="true" className="min-w-0 flex-1 truncate">
             {single?.short ?? single?.label}{detail ? <span className="text-[var(--t3)]">{` · ${detail}`}</span> : null}
           </span>}
+      {props.adornment ? <span aria-hidden="true" className="flex shrink-0">{props.adornment}</span> : null}
       {arrow}
     </button>;
   return off ? <>

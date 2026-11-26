@@ -60,7 +60,9 @@
     "noRoles": "Ninguno",
     "noCompany": "Ninguna",
     "chooseCompanyFirst": "Elegí una empresa primero",
-    "chooseCompany": "Elegí una empresa"
+    "chooseCompany": "Elegí una empresa",
+    "sendsInvitation": "Se le manda la invitación por correo.",
+    "seeInUsers": "Ver en Usuarios"
   },
   "actions": {
     "view": "Editar",
@@ -152,6 +154,11 @@
       "companyAdded": "Sumamos a {{name}} a {{company}}.",
       "companyRolesSaved": "Guardamos los roles en {{company}}.",
       "companyRemoved": "Quitamos a {{name}} de {{company}}."
+    },
+    "proposal": {
+      "changedSince": "{{name}} cambió desde la propuesta.",
+      "organization": "Organización",
+      "inOrganization": "la organización"
     }
   },
   "errors": {

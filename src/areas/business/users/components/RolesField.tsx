@@ -3,12 +3,13 @@ import { Checkbox } from "@/shared/ui/checkbox";
 import { FormField } from "@/shared/ui/FormField";
 import { Picker, type PickerOption } from "@/shared/ui/Picker";
 import type { RemoteOptions } from "@/shared/hooks/useResourceOptions";
+import type { AssistantProposalFieldReview } from "@/shared/assistant-actions";
 import { toastActionError } from "@/shared/api/errorMessage";
 import { useTranslation } from "react-i18next";
 import { useMountedRef } from "@/shared/hooks/useMountedRef";
 
 /// Roles con «Todos» como casilla junto al rótulo, nunca como una opción más (tablero Usuario).
-export function RolesField({ label, allLabel, options, value, onChange, placeholder, remote, selectedOptions, allOptions, allCount }: {
+export function RolesField({ label, allLabel, options, value, onChange, placeholder, remote, selectedOptions, allOptions, allCount, review }: {
   label: string;
   allLabel: string;
   options: readonly PickerOption[];
@@ -19,6 +20,8 @@ export function RolesField({ label, allLabel, options, value, onChange, placehol
   selectedOptions?: readonly PickerOption[];
   allOptions?: () => Promise<readonly PickerOption[]>;
   allCount?: number;
+  /** «Revisá» en un rol que propone el asistente con duda (Usuario-Propuesta): la marca en el campo y el motivo debajo. */
+  review?: AssistantProposalFieldReview;
 }): ReactNode {
   const { t } = useTranslation();
   const [selectingAll, setSelectingAll] = useState(false);
@@ -46,12 +49,12 @@ export function RolesField({ label, allLabel, options, value, onChange, placehol
   return (
     // Tablero Usuario (.o-todos): con la letra del rótulo, en 500 y a 6 de la casilla. Tablero M-Usuario-Empresa
     // (.ap-todos): en el teléfono, en 14 con la casilla de 20, radio 6 y borde de 1,5, a 8 del texto.
-    <FormField label={label} aside={<label className="inline-flex items-center gap-1.5 text-[0.78125rem] font-medium text-[var(--t2)] max-md:gap-2 max-md:text-[0.875rem]">
+    <FormField label={label} warning={review?.warning} aside={<label className="inline-flex items-center gap-1.5 text-[0.78125rem] font-medium text-[var(--t2)] max-md:gap-2 max-md:text-[0.875rem]">
       <Checkbox checked={allChecked} disabled={selectingAll || optionValues.length === 0} onCheckedChange={(checked) => { void toggleAll(checked === true); }}
         className="max-md:size-5 max-md:rounded-[0.375rem] max-md:border-[1.5px] max-md:border-[var(--borde2)]" />
       {allLabel}
     </label>}>
-      <Picker multiple disabled={selectingAll} options={options} selectedOptions={selectedOptions} remote={remote} value={value} onChange={onChange} placeholder={placeholder} />
+      <Picker multiple disabled={selectingAll} adornment={review?.adornment} className={review?.className} options={options} selectedOptions={selectedOptions} remote={remote} value={value} onChange={onChange} placeholder={placeholder} />
     </FormField>
   );
 }

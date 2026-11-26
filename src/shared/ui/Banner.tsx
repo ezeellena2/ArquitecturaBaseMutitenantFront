@@ -1,16 +1,17 @@
 import type { ComponentType, ReactNode } from "react";
 import { cn } from "@/shared/lib/utils";
-import { AlertTriangleIcon, ErrorIcon, InfoIcon } from "./icons";
+import { AlertTriangleIcon, CircleCheckIcon, ErrorIcon, InfoIcon } from "./icons";
 import { noticeSurface, noticeTones, type NoticeTone } from "./noticeTones";
 
-type Tone = Exclude<NoticeTone, "success">;
+type Tone = NoticeTone;
 
 interface BannerProps {
   /// `info` (por defecto) describe una condición que sigue vigente mientras la pantalla está abierta: es un
   /// `status`, que el lector de pantalla anuncia sin interrumpir. `warning` también es un `status`: avisa una
   /// consecuencia de algo que se puede hacer igual ("es su único medio de ingreso"), no algo que haya que corregir.
   /// `danger` es un error que hay que corregir: un `alert`, como cualquier error de formulario (fundamento visual,
-  /// "Avisos y estados").
+  /// "Avisos y estados"). `success` dice algo que ya pasó y sigue valiendo («Ya se guardó.», de una propuesta del
+  /// asistente que otra pestaña guardó): también un `status`.
   tone?: Tone;
   /// Lo que se puede hacer al respecto ("Agregar correo"). Va a la derecha, sin partirse.
   action?: ReactNode;
@@ -22,6 +23,7 @@ interface BannerProps {
 // «Criterio · Avisos» (210): cartel de información (i), de atención (triángulo) y de problema (octógono), blanco, con el
 // filo y el ícono del color de su tipo (noticeTones); el ícono, con el trazo 2 de los carteles del lienzo.
 const icons: Record<Tone, ComponentType<{ className?: string; strokeWidth?: number }>> = {
+  success: CircleCheckIcon,
   info: InfoIcon,
   warning: AlertTriangleIcon,
   danger: ErrorIcon,

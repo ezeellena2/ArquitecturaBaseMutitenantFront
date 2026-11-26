@@ -2,6 +2,10 @@
 export type { AssistantActionContract, AssistantActionContractField, AssistantActionFieldType, AssistantActionKey } from "@/shared/api/generated/assistant-actions";
 export { assistantActions } from "@/shared/api/generated/assistant-actions";
 export { AssistantProposalDialog } from "./AssistantProposalDialog";
+export {
+  AssistantProposalChangesSection, AssistantProposalMark, AssistantProposalReviewMark, type AssistantProposalChangeItem, type AssistantProposalChangeRow,
+} from "./AssistantProposalParts";
+export { useAssistantProposalFieldReview, type AssistantProposalFieldReview } from "./useAssistantProposalFieldReview";
 export { assistantProposalQueryKey } from "./api";
 export type {
   AssistantProposalChanges, AssistantProposalFieldValue, AssistantProposalOption, AssistantProposalRow, AssistantProposalValues,

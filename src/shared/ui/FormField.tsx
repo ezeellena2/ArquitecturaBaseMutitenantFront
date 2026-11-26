@@ -11,6 +11,9 @@ interface FormFieldProps {
   /// campo. Sin leyendas debajo: el renglón de abajo es solo para el error.
   help?: string;
   error?: string;
+  /// Lo que conviene revisar sin ser un error: el motivo de «Revisá» en lo que propone el asistente (tableros
+  /// *-Propuesta, .acc-dudam), en el renglón del error y con el color de atención. Con un error, va el error.
+  warning?: string;
   required?: boolean;
   /// A la derecha del rótulo, en la misma línea: la casilla «Todos» de un desplegable de varios.
   aside?: ReactNode;
@@ -19,12 +22,12 @@ interface FormFieldProps {
 }
 
 /// Etiqueta, control y mensaje de error, atados entre sí para lectores de pantalla (sección 7.4).
-export function FormField({ label, htmlFor, help, error, required, aside, variant = "default", children }: FormFieldProps): ReactNode {
+export function FormField({ label, htmlFor, help, error, warning, required, aside, variant = "default", children }: FormFieldProps): ReactNode {
   const generatedId = useId();
   const controlId = htmlFor ?? children.props.id ?? generatedId;
   const messageId = `${controlId}-message`;
   const helpId = `${controlId}-help`;
-  const message = error;
+  const message = error ?? warning;
   const describedBy = [help ? helpId : undefined, message ? messageId : undefined].filter(Boolean).join(" ") || undefined;
 
   // «Criterio · Formularios»: rótulo de 12,5 a 6 del campo; en el teléfono de la app (tableros M-*, .ap-cmp .rt), de 13,5
@@ -51,11 +54,11 @@ export function FormField({ label, htmlFor, help, error, required, aside, varian
         "aria-describedby": describedBy,
         "aria-required": required ? true : undefined,
       })}
-      {message ? (
+      {error ? (
         <p id={messageId} role="alert" className="text-[0.78125rem] text-[var(--peligro)]">
-          {message}
+          {error}
         </p>
-      ) : null}
+      ) : warning ? <p id={messageId} className="text-[0.78125rem] text-[var(--alerta-tx)]">{warning}</p> : null}
     </div>
   );
 }

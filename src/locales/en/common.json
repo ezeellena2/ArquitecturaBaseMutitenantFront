@@ -286,5 +286,21 @@
     "chosenOf": "You chose {{count}} of {{max}}",
     "done": "Done ({{count}})",
     "andMore": "and {{count}} more"
+  },
+  "assistantProposal": {
+    "mark": "Assistant proposal",
+    "review": "Review",
+    "doubts": {
+      "similar": "There's more than one similar option."
+    },
+    "alreadySaved": "Already saved.",
+    "changes": {
+      "title": "What changes",
+      "where": "Where",
+      "added": "Added",
+      "removed": "Removed",
+      "addedIn": "Added in {{where}}",
+      "removedIn": "Removed in {{where}}"
+    }
   }
 }

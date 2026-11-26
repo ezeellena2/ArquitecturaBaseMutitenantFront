@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import { Button } from "./button";
@@ -9,6 +9,8 @@ interface ConfirmDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
+  /** Junto al título, sin sumarse a su nombre: «Propuesta del asistente» cuando la abre una propuesta (Confirmar-Propuesta). */
+  titleAside?: ReactNode;
   description?: string;
   confirmLabel: string;
   /// Por defecto, "Cancelar". Cuando la confirmación es salir o quedarse, conviene nombrar lo que se conserva
@@ -35,6 +37,7 @@ export function ConfirmDialog({
   open,
   onOpenChange,
   title,
+  titleAside,
   description,
   confirmLabel,
   cancelLabel,
@@ -59,7 +62,10 @@ export function ConfirmDialog({
       >
         <DialogHeader>
           {/* Un correo del título baja de renglón donde lo parten los tableros (174): no ensancha la hoja del teléfono. */}
-          <DialogTitle><TextWithEmails value={title} /></DialogTitle>
+          {titleAside
+            // Confirmar-Propuesta (.acc-dh): el título y, a 12, lo que va al lado; si no entra, abajo.
+            ? <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1"><DialogTitle><TextWithEmails value={title} /></DialogTitle>{titleAside}</div>
+            : <DialogTitle><TextWithEmails value={title} /></DialogTitle>}
         </DialogHeader>
         {/* Tablero Avisos («¿Salir sin guardar?») y M-Avisos: el texto con la letra de los diálogos, con 20 de margen en la
             compu y 8/20/16 en la hoja del teléfono. */}

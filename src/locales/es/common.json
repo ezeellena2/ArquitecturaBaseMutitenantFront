@@ -286,5 +286,21 @@
     "chosenOf": "Elegiste {{count}} de {{max}}",
     "done": "Listo ({{count}})",
     "andMore": "y {{count}} más"
+  },
+  "assistantProposal": {
+    "mark": "Propuesta del asistente",
+    "review": "Revisá",
+    "doubts": {
+      "similar": "Hay más de una opción parecida."
+    },
+    "alreadySaved": "Ya se guardó.",
+    "changes": {
+      "title": "Lo que cambia",
+      "where": "Dónde",
+      "added": "Se suma",
+      "removed": "Se quita",
+      "addedIn": "Se suma en {{where}}",
+      "removedIn": "Se quita en {{where}}"
+    }
   }
 }

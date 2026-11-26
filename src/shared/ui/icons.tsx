@@ -610,3 +610,14 @@ export function DeleteIcon(props: IconProps) {
     </Icon>
   );
 }
+
+/// «Propuesta del asistente» junto al título de la pantalla que la abre (tableros *-Propuesta, .acc-prop): la chispa
+/// con la cruz chica.
+export function SparkleIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M12 3.5 13.8 9 19.5 10.5 13.8 12 12 17.5 10.2 12 4.5 10.5 10.2 9z" />
+      <path d="M18.5 16v4M16.5 18h4" />
+    </Icon>
+  );
+}

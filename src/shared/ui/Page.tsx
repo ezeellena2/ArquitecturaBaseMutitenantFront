@@ -71,6 +71,9 @@ export interface PageTabs {
 
 interface PageProps {
   title: string;
+  /** Junto al título, sin sumarse a su nombre: «Propuesta del asistente» (tableros *-Propuesta, .acc-tit). En el teléfono
+   * va debajo del título, en lugar de `phoneSubtitle` (.sub.acc-prop). */
+  titleAside?: ReactNode;
   /** La ayuda que sirve (116): una (i) junto al título, con su tooltip, que también se abre con un toque (211). */
   help?: string;
   summary?: ReactNode;
@@ -129,6 +132,7 @@ export function SublineSeparator(): ReactNode {
 /// pasan ya traducidas y van en el menú ⋮; la principal queda a la derecha.
 export function Page({
   title,
+  titleAside,
   help,
   summary,
   backTo,
@@ -216,7 +220,7 @@ export function Page({
     // chat mide justo el alto del marco: el `main` no se desplaza, la barra queda arriba y la caja de escribir, abajo.
     return withTabs(<div className={cn("flex flex-col", phoneBody === "chat" ? "min-h-0 flex-1" : "min-h-full shrink-0",
       phoneBody === "gray" ? "bg-[var(--s2)]" : "bg-[var(--superficie)]")}>
-      <AppBar title={title} titleHelp={info} back={back} subtitle={phoneSubtitle ?? status ?? chrome.subtitle ?? undefined}
+      <AppBar title={title} titleHelp={info} back={back} subtitle={titleAside ?? phoneSubtitle ?? status ?? chrome.subtitle ?? undefined}
         leading={<div ref={setLeadingTools} className="flex items-center empty:hidden" />}
         actions={<>
           <div ref={setTools} className="flex items-center" />
@@ -261,7 +265,13 @@ export function Page({
             {info ? <span className="flex min-w-0 items-center gap-1.5">
               <h1 aria-describedby={helpId} className="min-w-0 wrap-break-word text-[1.125rem] font-bold leading-tight tracking-[-0.015em] text-[var(--t1)]">{title}</h1>
               {info}
-            </span> : <h1 className="wrap-break-word text-[1.125rem] font-bold leading-tight tracking-[-0.015em] text-[var(--t1)]">{title}</h1>}
+            </span> : titleAside
+              // Tableros *-Propuesta (.acc-tit): el título y, a 12, lo que va al lado; si no entra, abajo.
+              ? <span className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1">
+                <h1 className="min-w-0 wrap-break-word text-[1.125rem] font-bold leading-tight tracking-[-0.015em] text-[var(--t1)]">{title}</h1>
+                {titleAside}
+              </span>
+              : <h1 className="wrap-break-word text-[1.125rem] font-bold leading-tight tracking-[-0.015em] text-[var(--t1)]">{title}</h1>}
             {summary === null || summary === undefined ? (
               status ? <p data-slot="page-subline" className="mt-0.5 wrap-break-word text-[0.8125rem] text-[var(--t2)]">{status}</p> : null
             ) : (
