@@ -24,7 +24,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Asistente · inicio de la organización · armar con la IA · etapa 25",
+      "title": "Asistente · inicio de la organización · armar con la IA · etapa 25 · para aprobar",
       "w": 1440,
       "x": 12160,
       "y": 39422
@@ -123,7 +123,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Avisos · la campana · etapa 25",
+      "title": "Avisos · la campana · etapa 25 · para aprobar",
       "w": 1440,
       "x": 1520,
       "y": 39422
@@ -367,7 +367,7 @@
       "h": 1100,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · armar un formulario con la IA · etapa 25",
+      "title": "Formularios · armar un formulario con la IA · etapa 25 · para aprobar",
       "w": 1440,
       "x": 4560,
       "y": 39422
@@ -537,7 +537,7 @@
       "h": 1100,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · el catálogo que propone el asistente · etapa 25",
+      "title": "Formularios · el catálogo que propone el asistente · etapa 25 · para aprobar",
       "w": 1440,
       "x": 13680,
       "y": 39422
@@ -564,7 +564,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · Catálogos · etapa 25",
+      "title": "Formularios · Catálogos · etapa 25 · para aprobar",
       "w": 1440,
       "x": 16720,
       "y": 39422
@@ -609,7 +609,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · dar de baja · etapa 23",
+      "title": "Formularios · dar de baja · etapa 23 · para aprobar",
       "w": 1440,
       "x": 22800,
       "y": 34154
@@ -636,7 +636,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · documentos recibidos · etapa 25",
+      "title": "Formularios · documentos recibidos · etapa 25 · para aprobar",
       "w": 1440,
       "x": 0,
       "y": 39422
@@ -681,7 +681,7 @@
       "h": 1400,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · cuándo lo ofrece el asistente · etapa 23",
+      "title": "Formularios · cuándo lo ofrece el asistente · etapa 23 · para aprobar",
       "w": 1440,
       "x": 15200,
       "y": 34154
@@ -699,7 +699,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · un dado de baja · etapa 23",
+      "title": "Formularios · un dado de baja · etapa 23 · para aprobar",
       "w": 1440,
       "x": 24320,
       "y": 34154
@@ -735,7 +735,7 @@
       "h": 2350,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · la lectura de documentos · etapa 25",
+      "title": "Formularios · la lectura de documentos · etapa 25 · para aprobar",
       "w": 1440,
       "x": 7600,
       "y": 39422
@@ -762,7 +762,7 @@
       "h": 1300,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · armar una regla desde un texto · etapa 23",
+      "title": "Formularios · armar una regla desde un texto · etapa 23 · para aprobar",
       "w": 1440,
       "x": 18240,
       "y": 34154
@@ -798,7 +798,7 @@
       "h": 1100,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · las sugerencias · etapa 23",
+      "title": "Formularios · las sugerencias · etapa 23 · para aprobar",
       "w": 1440,
       "x": 16720,
       "y": 34154
@@ -825,7 +825,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · formularios que faltan · etapa 25",
+      "title": "Formularios · formularios que faltan · etapa 25 · para aprobar",
       "w": 1440,
       "x": 18240,
       "y": 39422
@@ -834,7 +834,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · formularios que faltan · etapa 23",
+      "title": "Formularios · formularios que faltan · etapa 23 · para aprobar",
       "w": 1440,
       "x": 21280,
       "y": 34154
@@ -888,7 +888,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · la lista · etapa 25",
+      "title": "Formularios · la lista · etapa 25 · para aprobar",
       "w": 1440,
       "x": 15200,
       "y": 39422
@@ -915,7 +915,7 @@
       "h": 2000,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · una plantilla · qué lee · etapa 25",
+      "title": "Formularios · una plantilla · qué lee · etapa 25 · para aprobar",
       "w": 1440,
       "x": 9120,
       "y": 39422
@@ -1027,10 +1027,10 @@
       "y": 24542
     },
     "FRM-Respuesta-25.dc.html": {
-      "h": 900,
+      "h": 1100,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · una respuesta · de qué documento salió · etapa 25",
+      "title": "Formularios · una respuesta · de qué documento salió · etapa 25 · para aprobar",
       "w": 1440,
       "x": 6080,
       "y": 39422
@@ -1054,10 +1054,10 @@
       "y": 27626
     },
     "FRM-Respuesta-Cadena.dc.html": {
-      "h": 900,
+      "h": 1200,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · de dónde vino una respuesta · etapa 23",
+      "title": "Formularios · de dónde vino una respuesta · etapa 23 · para aprobar",
       "w": 1440,
       "x": 19760,
       "y": 34154
@@ -1451,7 +1451,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Asistente · organización · armar con la IA · teléfono · etapa 25",
+      "title": "Asistente · organización · armar con la IA · teléfono · etapa 25 · para aprobar",
       "w": 390,
       "x": 3760,
       "y": 41892
@@ -1748,7 +1748,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · armar con la IA · teléfono · etapa 25",
+      "title": "Formularios · armar con la IA · teléfono · etapa 25 · para aprobar",
       "w": 390,
       "x": 1880,
       "y": 41892
@@ -1936,7 +1936,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · documentos recibidos · teléfono · etapa 25",
+      "title": "Formularios · documentos recibidos · teléfono · etapa 25 · para aprobar",
       "w": 390,
       "x": 0,
       "y": 41892
@@ -2008,7 +2008,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · la lectura de documentos · teléfono · etapa 25",
+      "title": "Formularios · la lectura de documentos · teléfono · etapa 25 · para aprobar",
       "w": 390,
       "x": 2820,
       "y": 41892
@@ -2053,7 +2053,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios que faltan · teléfono · etapa 23",
+      "title": "Formularios que faltan · teléfono · etapa 23 · para aprobar",
       "w": 390,
       "x": 2820,
       "y": 35674
@@ -2116,7 +2116,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · una plantilla · qué lee · teléfono · etapa 25",
+      "title": "Formularios · una plantilla · qué lee · teléfono · etapa 25 · para aprobar",
       "w": 390,
       "x": 3290,
       "y": 41892
@@ -2142,7 +2142,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Armar una regla · teléfono · etapa 23",
+      "title": "Armar una regla · teléfono · etapa 23 · para aprobar",
       "w": 390,
       "x": 2350,
       "y": 35674
@@ -2205,7 +2205,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · una respuesta · de qué documento salió · teléfono · etapa 25",
+      "title": "Formularios · una respuesta · de qué documento salió · teléfono · etapa 25 · para aprobar",
       "w": 390,
       "x": 2350,
       "y": 41892
@@ -2511,7 +2511,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "plat-formularios",
-      "title": "Plataforma · los máximos · teléfono · etapa 23",
+      "title": "Plataforma · los máximos · teléfono · etapa 23 · para aprobar",
       "w": 390,
       "x": 1520,
       "y": 3820
@@ -2762,7 +2762,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "El asistente · teléfono · etapa 23",
+      "title": "El asistente · teléfono · etapa 23 · para aprobar",
       "w": 390,
       "x": 0,
       "y": 35674
@@ -2807,7 +2807,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Los casos · teléfono · etapa 23",
+      "title": "Los casos · teléfono · etapa 23 · para aprobar",
       "w": 390,
       "x": 470,
       "y": 35674
@@ -2816,7 +2816,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · Internos · documentos · teléfono · etapa 25",
+      "title": "WhatsApp · Internos · documentos · teléfono · etapa 25 · para aprobar",
       "w": 390,
       "x": 940,
       "y": 41892
@@ -2942,7 +2942,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · el asistente · teléfono · etapa 23",
+      "title": "WhatsApp · el asistente · teléfono · etapa 23 · para aprobar",
       "w": 390,
       "x": 1880,
       "y": 35674
@@ -3113,7 +3113,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "El modo de atención · teléfono · etapa 23",
+      "title": "El modo de atención · teléfono · etapa 23 · para aprobar",
       "w": 390,
       "x": 940,
       "y": 35674
@@ -3149,7 +3149,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Preguntas sin respuesta · teléfono · etapa 23",
+      "title": "Preguntas sin respuesta · teléfono · etapa 23 · para aprobar",
       "w": 390,
       "x": 1410,
       "y": 35674
@@ -3273,7 +3273,7 @@
       "h": 1100,
       "is_interactive": true,
       "page": "plat-formularios",
-      "title": "Plataforma · el asistente · los máximos · etapa 23",
+      "title": "Plataforma · el asistente · los máximos · etapa 23 · para aprobar",
       "w": 1440,
       "x": 0,
       "y": 3820
@@ -3325,7 +3325,7 @@
       "h": 2300,
       "is_interactive": true,
       "page": "plat-formularios",
-      "title": "Plataforma · plantilla · lectura de documentos · etapa 25",
+      "title": "Plataforma · plantilla · lectura de documentos · etapa 25 · para aprobar",
       "w": 1440,
       "x": 3040,
       "y": 1280
@@ -3592,25 +3592,25 @@
       "h": 1500,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · el asistente · los casos · etapa 25",
+      "title": "WhatsApp · el asistente · los casos · etapa 25 · para aprobar",
       "w": 1440,
       "x": 10640,
       "y": 39422
     },
     "WA-Asistente-Casos.dc.html": {
-      "h": 1300,
+      "h": 1400,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · el asistente · los casos · etapa 23",
+      "title": "WhatsApp · el asistente · los casos · etapa 23 · para aprobar",
       "w": 1440,
       "x": 1520,
       "y": 34154
     },
     "WA-Asistente-Limites.dc.html": {
-      "h": 1300,
+      "h": 1400,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · el asistente · límites y conocimiento · etapa 23",
+      "title": "WhatsApp · el asistente · límites y conocimiento · etapa 23 · para aprobar",
       "w": 1440,
       "x": 4560,
       "y": 34154
@@ -3619,7 +3619,7 @@
       "h": 1300,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · el asistente · probar · etapa 23",
+      "title": "WhatsApp · el asistente · probar · etapa 23 · para aprobar",
       "w": 1440,
       "x": 3040,
       "y": 34154
@@ -3628,7 +3628,7 @@
       "h": 1300,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · el asistente · etapa 23",
+      "title": "WhatsApp · el asistente · etapa 23 · para aprobar",
       "w": 1440,
       "x": 0,
       "y": 34154
@@ -3671,7 +3671,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · Internos · el asistente atiende · etapa 23",
+      "title": "WhatsApp · Internos · el asistente atiende · etapa 23 · para aprobar",
       "w": 1440,
       "x": 10640,
       "y": 34154
@@ -3680,7 +3680,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · Internos · audios · etapa 23",
+      "title": "WhatsApp · Internos · audios · etapa 23 · para aprobar",
       "w": 1440,
       "x": 13680,
       "y": 34154
@@ -3707,7 +3707,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · Clientes · los casos del asistente · etapa 23",
+      "title": "WhatsApp · Clientes · los casos del asistente · etapa 23 · para aprobar",
       "w": 1440,
       "x": 7600,
       "y": 34154
@@ -3716,7 +3716,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · Internos · documentos · etapa 25",
+      "title": "WhatsApp · Internos · documentos · etapa 25 · para aprobar",
       "w": 1440,
       "x": 3040,
       "y": 39422
@@ -3948,7 +3948,7 @@
       "h": 1000,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · el asistente · atención · etapa 23",
+      "title": "WhatsApp · el asistente · atención · etapa 23 · para aprobar",
       "w": 1440,
       "x": 6080,
       "y": 34154
@@ -3983,7 +3983,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · preguntas sin respuesta · etapa 23",
+      "title": "WhatsApp · preguntas sin respuesta · etapa 23 · para aprobar",
       "w": 1440,
       "x": 9120,
       "y": 34154
@@ -4489,7 +4489,7 @@
       "w": 1440,
       "x": 13680,
       "y": 18334,
-      "title": "Administración · Formularios · Configuración (nueva) · el tamaño máximo de un archivo"
+      "title": "Administración · Formularios · Configuración (nueva) · el tamaño máximo de un archivo · para aprobar"
     },
     "M-FRM-Config-Org.dc.html": {
       "h": 844,
@@ -4498,7 +4498,7 @@
       "w": 390,
       "x": 2820,
       "y": 19854,
-      "title": "Formularios · Configuración · teléfono (nueva)"
+      "title": "Formularios · Configuración · teléfono (nueva) · para aprobar"
     },
     "FRM-Config-Plat.dc.html": {
       "h": 900,
@@ -4507,7 +4507,7 @@
       "w": 1440,
       "x": 15200,
       "y": 18334,
-      "title": "Plataforma · Administración · Formularios · Configuración (nueva) · el máximo de un archivo"
+      "title": "Plataforma · Administración · Formularios · Configuración (nueva) · el máximo de un archivo · para aprobar"
     }
   },
   "createdOnFiles": {
