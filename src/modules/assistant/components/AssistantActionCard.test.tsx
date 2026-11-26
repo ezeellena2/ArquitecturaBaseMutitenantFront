@@ -44,7 +44,7 @@ const editUser = (overrides: Partial<AssistantProposalResponse> = {}): Assistant
 
 const removeUser = (overrides: Partial<AssistantProposalResponse> = {}): AssistantProposalResponse => ({
   id: "p-3", conversationId: "c-1", kind: "action", action: "users.remove", version: 1, state: "new",
-  target: { id: "m-2", label: "Martín Paz", version: 1 }, values: [], ...overrides,
+  target: { id: "m-2", label: "Martín Paz", version: 1, detail: "martin.paz@delta.ejemplo.com" }, values: [], ...overrides,
 });
 
 const removeRole = (overrides: Partial<AssistantProposalResponse> = {}): AssistantProposalResponse => ({
@@ -155,6 +155,22 @@ describe("AssistantActionCard", () => {
       ["Se quita en la organización", "Recursos humanos"],
     ]);
     expect(within(found).getByRole("link", { name: "Revisar cambios" })).toHaveAttribute("data-variant", "default");
+  });
+
+  it("quitar: la persona con su correo, que la distingue de otra con su nombre; editar nombra solo a la persona", async () => {
+    const app = await mount(removeUser());
+    const found = await card("Quitar de la organización");
+
+    expect(cardData(found)).toEqual([
+      ["Persona", "Martín Paz"],
+      ["Correo", "martin.paz@delta.ejemplo.com"],
+    ]);
+    expect(await axe(app.container)).toHaveNoViolations();
+    app.unmount();
+
+    await mount(editUser({ target: { id: "m-1", label: "Tomás Acosta", version: 3, detail: "tomas.acosta@delta.ejemplo.com" } }));
+    expect(cardData(await card("Cambio de roles"))[0]).toEqual(["Persona", "Tomás Acosta"]);
+    expect(screen.queryByText("tomas.acosta@delta.ejemplo.com")).toBeNull();
   });
 
   it("crear un rol: varios permisos en un renglón, y el alcance con su nombre", async () => {

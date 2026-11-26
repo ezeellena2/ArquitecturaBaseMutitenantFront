@@ -469,6 +469,7 @@
           "open": "Revisar y quitar",
           "applied": "Quitado",
           "target": "Persona",
+          "targetDetail": "Correo",
           "noPermission": "Ya no tenés el permiso «Administrar usuarios».",
           "noTarget": "La persona ya no está en la organización."
         }

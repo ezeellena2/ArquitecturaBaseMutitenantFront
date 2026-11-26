@@ -29834,13 +29834,14 @@ export interface components {
         };
         /** @enum {string} */
         AssistantProposalState: "new" | "replaced" | "applied" | "unconfirmed" | "unavailable";
-        /** @description El registro al que se refiere una propuesta que edita o elimina, como está ahora. */
+        /** @description El registro de una propuesta que edita o elimina, como está ahora, y el dato que lo distingue de otro del mismo nombre. */
         AssistantProposalTargetResponse: {
             /** Format: uuid */
             id: string;
             label: string;
             /** Format: uint32 */
             version: number;
+            detail?: null | string;
         };
         /** @enum {null|string} */
         AssistantProposalUnavailableReason: "permission" | "module" | "version" | "target" | "subject" | null;

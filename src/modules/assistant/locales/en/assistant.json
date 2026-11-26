@@ -469,6 +469,7 @@
           "open": "Review and remove",
           "applied": "Removed",
           "target": "Person",
+          "targetDetail": "Email",
           "noPermission": "You no longer have the “Manage users” permission.",
           "noTarget": "The person is no longer in the organization."
         }

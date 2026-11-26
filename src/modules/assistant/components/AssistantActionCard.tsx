@@ -33,10 +33,16 @@ interface CardRow {
 
 const isOperation = (value: unknown, op: "add" | "remove") => typeof value === "object" && value !== null && (value as { op?: unknown }).op === op;
 
-/** Cada dato propuesto con su nombre leído del servidor, en el orden de los campos de la acción; nunca un id. */
-function cardRows(contract: AssistantActionContract, proposal: AssistantProposalResponse, t: TFunction<"assistant">): CardRow[] {
+/**
+ * Cada dato propuesto con su nombre leído del servidor, en el orden de los campos de la acción; nunca un id. El destino va
+ * primero y, si la acción tiene el texto para nombrarlo (`targetDetail`, el correo de quien se quita), con el dato que lo
+ * distingue de otro con el mismo nombre.
+ */
+function cardRows(contract: AssistantActionContract, proposal: AssistantProposalResponse, t: TFunction<"assistant">, hasText: (key: string) => boolean): CardRow[] {
   const texts = `actionCard.actions.${contract.id}`;
   const rows: CardRow[] = proposal.target ? [{ key: "target", label: t(`${texts}.target`), items: [{ text: proposal.target.label }] }] : [];
+  if (proposal.target?.detail && hasText(`${texts}.targetDetail`))
+    rows.push({ key: "targetDetail", label: t(`${texts}.targetDetail`), items: [{ text: proposal.target.detail }] });
   for (const field of contract.fields) {
     const entries = proposal.values.filter((entry) => entry.field === field.name);
     const item = (entry: (typeof entries)[number]): CardItem[] => {
@@ -108,7 +114,7 @@ function OpenButton({ adapter, contract, proposal, label, phone }: { adapter: As
  * ya no disponible, aplicada y sin confirmar. El botón abre la pantalla de la acción con `?proposal=<id>`.
  */
 export function AssistantActionCard({ proposal: summary }: { proposal: MessageProposal }) {
-  const { t } = useTranslation("assistant");
+  const { t, i18n } = useTranslation("assistant");
   const phone = useMediaQuery("(max-width: 767px)");
   const client = useQueryClient();
   const query = useAssistantProposalQuery(summary.id);
@@ -148,7 +154,7 @@ export function AssistantActionCard({ proposal: summary }: { proposal: MessagePr
       return null;
   }
 
-  const rows = cardRows(contract, proposal, t);
+  const rows = cardRows(contract, proposal, t, (key) => i18n.exists(key, { ns: "assistant" }));
   const button = adapter ? <OpenButton adapter={adapter} contract={contract} proposal={proposal} label={t(`${texts}.open`)} phone={phone} /> : null;
   return <div role="group" aria-label={name} className="mt-1.5 overflow-hidden rounded-[0.625rem] border border-[var(--borde2)] bg-[var(--superficie)] text-[0.8125rem] max-md:text-[0.875rem]">
     <div className="flex items-center gap-2 border-b border-[var(--borde)] bg-[var(--s2)] px-2.5 py-1.75 max-md:px-3 max-md:py-2.5">
