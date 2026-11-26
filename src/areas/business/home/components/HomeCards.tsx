@@ -27,7 +27,10 @@ function Card({ to, icon, title, detail }: { to: string; icon: ReactNode; title:
   </Link>;
 }
 
-const grid = "grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4";
+// Las tarjetas que entren enteras en el ancho que de verdad queda, de 15 rem como mínimo: cuatro por fila con el asistente
+// cerrado y dos o tres con él abierto al costado, sin partir palabras (174). Antes eran cuatro desde `lg` sin mirar el lugar
+// que le saca el asistente, y cada tarjeta quedaba en unos 130 px.
+const grid = "grid gap-3.5 grid-cols-[repeat(auto-fill,minmax(min(100%,15rem),1fr))]";
 
 /** Tablero Inicio-Org: una tarjeta por área que la API devolvió, cada una con su dato real. */
 export function AreaCards({ organization, moduleCards = [] }: { organization: HomeOrganizationSummary; moduleCards?: readonly ModuleCardRow[] }) {

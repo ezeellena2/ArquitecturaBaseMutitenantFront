@@ -126,6 +126,10 @@ describe("BusinessHomePage", () => {
     const areas = await screen.findByRole("navigation", { name: "Áreas de la organización" });
     const audit = within(areas).getByRole("link", { name: /^Auditoría/ });
     expect(audit).toHaveTextContent("01/10/2026, 10:42");
+    // Con el asistente abierto al costado, la grilla pone las tarjetas que entran en el ancho que le queda, de 15 rem como
+    // mínimo, y no cuatro fijas: así ninguna parte palabras (174).
+    expect(areas).toHaveClass("grid-cols-[repeat(auto-fill,minmax(min(100%,15rem),1fr))]");
+    expect(areas.className).not.toMatch(/lg:grid-cols-4/);
     expect(audit).not.toHaveTextContent("Último cambio");
   });
 
