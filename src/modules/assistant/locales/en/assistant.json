@@ -49,6 +49,7 @@
   "retry": "Retry",
   "streamErrors": {
     "unavailable": "The assistant is unavailable now.",
+    "uncertain": "The request may have reached the provider, but no answer was confirmed. Review possible usage before trying again.",
     "contextTooLarge": "The conversation or attachments are too large. Start a new one."
   },
   "cancel": "Cancel",

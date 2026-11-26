@@ -49,6 +49,7 @@
   "retry": "Reintentar",
   "streamErrors": {
     "unavailable": "El asistente no responde ahora.",
+    "uncertain": "El pedido pudo llegar al proveedor, pero no hay una respuesta confirmada. Revisá el posible consumo antes de volver a probar.",
     "contextTooLarge": "La conversación o los adjuntos son demasiado grandes. Empezá una nueva."
   },
   "cancel": "Cancelar",

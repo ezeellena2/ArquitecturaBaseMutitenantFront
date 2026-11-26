@@ -5,6 +5,7 @@ import { apiErrorMessage } from "@/shared/api/errorMessage";
 
 const streamTexts: Readonly<Record<string, string>> = {
   "Assistant.Provider.Unavailable": "streamErrors.unavailable",
+  "Assistant.Provider.Uncertain": "streamErrors.uncertain",
   "Assistant.Provider.ContextTooLarge": "streamErrors.contextTooLarge",
 };
 
@@ -13,9 +14,13 @@ export function assistantStreamErrorMessage(error: AssistantErrorEventResponse, 
   return key ? t(key) : apiErrorMessage(error, t);
 }
 
+/// Se puede volver a probar, con un turno nuevo, lo que no llegó al proveedor (`Unavailable`) y lo que pudo llegar sin una
+/// respuesta confirmada (`Uncertain`, 0064 §7: un 5xx o una respuesta cortada), después de avisar el posible consumo.
+const retryableFailures: ReadonlySet<string> = new Set(["Assistant.Provider.Unavailable", "Assistant.Provider.Uncertain"]);
+
 export function canRetryAssistantFailure(error: AssistantErrorEventResponse | undefined): boolean {
   // La ficha durable anterior no publica el motivo del fallo.
-  return !error || error.code === "Assistant.Provider.Unavailable";
+  return !error || retryableFailures.has(error.code);
 }
 
 /// Lo que frena una subida antes de leer el archivo (0064 §2 y §4): sin cupo, otra subida de la misma persona, la cola

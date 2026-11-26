@@ -131,6 +131,9 @@ describe("interfaz del asistente", () => {
   it.each([
     { code: "Assistant.Provider.ContextTooLarge", text: "La conversación o los adjuntos son demasiado grandes. Empezá una nueva.", retry: false },
     { code: "Assistant.Provider.Unavailable", text: "El asistente no responde ahora.", retry: true },
+    // 0064 §7: un 5xx o una respuesta cortada pudieron llegar al proveedor. Se avisa el posible consumo y se puede volver a
+    // probar, con un turno nuevo, como después de recargar.
+    { code: "Assistant.Provider.Uncertain", text: "El pedido pudo llegar al proveedor, pero no hay una respuesta confirmada. Revisá el posible consumo antes de volver a probar.", retry: true },
     { code: "Unknown.PrivateProviderFailure", text: "Algo salió mal. Probá de nuevo en un rato.", retry: false },
   ])("el error SSE $code tiene un solo texto seguro y Retry sólo si corresponde", async ({ code, text, retry }) => {
     const app = setup();
