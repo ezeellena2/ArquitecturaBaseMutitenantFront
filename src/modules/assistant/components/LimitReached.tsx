@@ -11,16 +11,28 @@ import { Button } from "@/shared/ui/button";
  * dice en la zona en que corta el cupo, `dailyResetTimeZoneId`: la de la organización («hora de Grupo Delta») o, fuera de
  * una, la del perfil.
  */
-export function LimitReached({ monthly, state, organizationName, inOrganization = false, onUsage }: { monthly: boolean; state: AssistantStateResponse; organizationName?: string; inOrganization?: boolean; onUsage?: () => void }) {
+export function LimitReached({ monthly, state, organizationName, inOrganization = false, onUsage }: LimitReachedTextProps & { state: AssistantStateResponse; onUsage?: () => void }) {
   const { t } = useTranslation("assistant");
-  const zone = state.dailyResetTimeZoneId;
-  const components = { count: <NumberText value={state.dailyLimit} />, date: <DateInTimeZoneText value={state.dailyResetAtUtc} timeZone={zone} />,
-    time: <DateInTimeZoneText value={state.dailyResetAtUtc} timeZone={zone} kind="time" /> };
-  const organization = organizationName ?? t("limit.organization");
+  const sentence = <LimitReachedText monthly={monthly} state={state} organizationName={organizationName} inOrganization={inOrganization} />;
   return <div role="status" className="flex flex-wrap items-center gap-3 rounded-xl bg-[var(--alerta-t)] px-4 py-3 text-[var(--alerta-tx)]">
-    {monthly ? <span>{t("limit.monthly", { organization })}</span>
-      : inOrganization ? <span className="inline-flex flex-wrap items-center gap-1"><span><Trans ns="assistant" i18nKey="limit.dailyOrganization" values={{ organization }} components={components} /></span><InfoTip text={t("limit.dailyOrganizationHelp")} title={t("limit.dailyTitle")} /></span>
-        : <span><Trans ns="assistant" i18nKey="limit.daily" components={components} /></span>}
+    {!monthly && inOrganization ? <span className="inline-flex flex-wrap items-center gap-1"><span>{sentence}</span><InfoTip text={t("limit.dailyOrganizationHelp")} title={t("limit.dailyTitle")} /></span>
+      : <span>{sentence}</span>}
     {monthly && onUsage ? <Button variant="link" onClick={onUsage}>{t("limit.usage")}</Button> : null}
   </div>;
+}
+
+type LimitReachedTextProps = { monthly: boolean; state: Pick<AssistantStateResponse, "dailyLimit" | "dailyResetAtUtc" | "dailyResetTimeZoneId">; organizationName?: string; inOrganization?: boolean };
+
+/**
+ * La frase del tope, la misma en el aviso que reemplaza la caja y en la subida que el back frena sin cupo (283): un solo
+ * texto para el mismo cupo. El `detail` del 429 no lleva números ni la zona; esta frase los arma.
+ */
+export function LimitReachedText({ monthly, state, organizationName, inOrganization = false }: LimitReachedTextProps) {
+  const { t } = useTranslation("assistant");
+  const zone = state.dailyResetTimeZoneId;
+  const organization = organizationName ?? t("limit.organization");
+  if (monthly) return t("limit.monthly", { organization });
+  const components = { count: <NumberText value={state.dailyLimit} />, date: <DateInTimeZoneText value={state.dailyResetAtUtc} timeZone={zone} />,
+    time: <DateInTimeZoneText value={state.dailyResetAtUtc} timeZone={zone} kind="time" /> };
+  return <Trans ns="assistant" i18nKey={inOrganization ? "limit.dailyOrganization" : "limit.daily"} values={{ organization }} components={components} />;
 }

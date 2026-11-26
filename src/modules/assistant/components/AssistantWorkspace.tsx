@@ -18,7 +18,7 @@ import { AttachmentComposer } from "./AttachmentComposer";
 import { assistantAttachmentTypes, validateAssistantFiles } from "../lib/assistantFiles";
 import { ConversationList } from "./ConversationList";
 import { ConversationDialog } from "./ConversationDialog";
-import { LimitReached } from "./LimitReached";
+import { LimitReached, LimitReachedText } from "./LimitReached";
 import { NotConfigured } from "./NotConfigured";
 import { QuickQueries } from "./QuickQueries";
 import { assistantStreamErrorMessage, canRetryAssistantFailure, isUnavailableConversation } from "../errors";
@@ -61,7 +61,9 @@ export function AssistantWorkspace({ props, session, state }: { props: Assistant
     }}
     onStop={() => { void runtime.stop().catch(() => undefined); }} />
       {state.remainingMessages != null && state.remainingMessages > 0 && state.remainingMessages <= 10 ? <p className="pb-3 text-center text-sm text-[var(--t2)]"><Trans ns="assistant" i18nKey="limit.remaining" count={state.remainingMessages} components={{ remaining: <NumberText value={state.remainingMessages} /> }} /></p> : null}
-      {hasAttachmentError ? <p id={fileErrorId} role="alert" className="px-5 pb-3 text-[var(--peligro)]">{fileError ? <span className="block">{fileError}</span> : null}{invalidFiles.map(({ id, file }) =>
+      {hasAttachmentError ? <p id={fileErrorId} role="alert" className="px-5 pb-3 text-[var(--peligro)]">{fileError ? <span className="block">{typeof fileError === "string" ? fileError
+        : <LimitReachedText monthly={fileError.limit === "monthly"} organizationName={props.organizationName} inOrganization={scope.access === "business"}
+          state={fileError.limit === "daily" ? { ...state, dailyLimit: fileError.dailyLimit ?? state.dailyLimit, dailyResetAtUtc: fileError.dailyResetAtUtc ?? state.dailyResetAtUtc } : state} />}</span> : null}{invalidFiles.map(({ id, file }) =>
         <span key={id} id={`${fileErrorId}-${id}`} className="block">{t("attachments.tooLargeNamed", { name: file.name, size: format.formatFileSize(state.maxAttachmentBytes) })}</span>)}</p> : null}
     </>;
   // «Conversación no disponible» (0064 §6): esta versión no la puede leer; se dice en el hilo, sin la caja, y se borra desde su ⋮.

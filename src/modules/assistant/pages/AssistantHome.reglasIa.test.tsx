@@ -21,7 +21,7 @@ const state: AssistantStateResponse = { configured: true, canConfigure: true, mo
   dailyResetAtUtc: "2026-10-10T21:00:00Z", dailyResetTimeZoneId: "America/Argentina/Buenos_Aires", remainingMessages: 40, noticeVersion: "v1", noticeAccepted: true, retentionDays: 30, maxAttachmentBytes: 10 * 1024 * 1024, maxAttachments: 5, monthlyBudgetProgress: null };
 const unreadable: AssistantConversationSummaryResponse = { id: "nd", title: null, version: 7, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z", available: false };
 const chat = (): AssistantConversationResponse => ({ conversation: { id: "chat", title: "Mi consulta", version: 1, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z", available: true }, messages: { items: [], hasMore: false }, activeTurnId: null });
-const props: AssistantHomeProps = { scope: { access: "business", userId: "user", tenantId: "org" }, enabled: true, hasPermission: () => true, onPrivacy: () => {} };
+const props: AssistantHomeProps = { scope: { access: "business", userId: "user", tenantId: "org" }, enabled: true, hasPermission: () => true, onPrivacy: () => {}, organizationName: "Grupo Delta" };
 
 function setup(phone = false, conversations: AssistantConversationSummaryResponse[] = [unreadable]) {
   server.use(http.get("/api/organization/assistant", () => HttpResponse.json(state)),
@@ -69,16 +69,20 @@ describe("las reglas de toda la IA en el Inicio", () => {
     expect(within(dialog).getByText("Se borra para siempre. Se borran también sus archivos.")).toBeVisible();
   });
 
+  // Sin cupo (283) no se dice el detalle del back, que no lleva números ni la zona, sino la frase del tope de siempre: el tope y la
+  // hora del 429, más nuevos que los del estado, en la zona en que corta el cupo y nombrando la organización.
   it.each([
-    ["Assistant.Limit.DailyReached", 429, "Llegaste a las 50 consultas de hoy. Se renuevan a las 21:00."],
-    ["Assistant.Attachment.UploadBusy", 429, "Ya estás subiendo un archivo. Esperá a que termine."],
-    ["Assistant.Attachment.UploadQueueFull", 429, "Hay muchos archivos subiéndose ahora. Probá de nuevo en un momento."],
-    ["Assistant.Attachment.UploadTimedOut", 400, "El archivo tardó demasiado en subir. Probá de nuevo."],
-  ] as const)("la subida que frena %s dice «Subiendo…» mientras espera y después su motivo debajo de la caja, sin mandar la consulta", async (code, status, detail) => {
+    ["Assistant.Limit.DailyReached", 429, "Usaste tus consultas de hoy.", "Usaste tus 30 consultas de hoy en Grupo Delta. Vuelven el 25/11/2026, a las 00:00, hora de Grupo Delta."],
+    ["Assistant.Limit.MonthlyReached", 429, "La organización llegó al tope del mes del asistente.", "Grupo Delta llegó al tope del mes del asistente."],
+    ["Assistant.Attachment.UploadBusy", 429, "Ya estás subiendo un archivo. Esperá a que termine.", null],
+    ["Assistant.Attachment.UploadQueueFull", 429, "Hay muchos archivos subiéndose ahora. Probá de nuevo en un momento.", null],
+    ["Assistant.Attachment.UploadTimedOut", 400, "El archivo tardó demasiado en subir. Probá de nuevo.", null],
+  ] as const)("la subida que frena %s dice «Subiendo…» mientras espera y después su motivo debajo de la caja, sin mandar la consulta", async (code, status, detail, limitText) => {
     const nativeForm = await new Request("http://localhost/form", { method: "POST", headers: { "content-type": "multipart/form-data; boundary=test" }, body: "--test--\r\n" }).formData();
     vi.stubGlobal("FormData", nativeForm.constructor); vi.stubGlobal("File", FetchFile);
     let release!: () => void; const gate = new Promise<void>((resolve) => { release = resolve; }); let sent = 0;
-    server.use(http.post("/api/organization/assistant/conversations/chat/attachments", async () => { await gate; return HttpResponse.json({ code, detail, traceId: "t", retryAfter: 30 }, { status, headers: status === 429 ? { "Retry-After": "30" } : {} }); }),
+    const quota = code === "Assistant.Limit.DailyReached" ? { dailyLimit: 30, dailyResetAtUtc: "2026-11-25T03:00:00Z" } : {};
+    server.use(http.post("/api/organization/assistant/conversations/chat/attachments", async () => { await gate; return HttpResponse.json({ code, detail, traceId: "t", retryAfter: 30, ...quota }, { status, headers: status === 429 ? { "Retry-After": "30" } : {} }); }),
       http.post("/api/organization/assistant/conversations/chat/messages", () => { sent++; return HttpResponse.json({}); }));
     const app = setup(false, []);
     const input = await screen.findByRole("textbox", { name: "Tu consulta" });
@@ -87,7 +91,10 @@ describe("las reglas de toda la IA en el Inicio", () => {
     await app.user.click(screen.getByRole("button", { name: "Enviar" }));
     expect(await screen.findByText("Subiendo…")).toBeVisible();
     await act(async () => { release(); });
-    expect(await screen.findByText(detail)).toBeVisible();
+    if (limitText) {
+      await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent(limitText));
+      expect(screen.queryByText(detail)).not.toBeInTheDocument();
+    } else expect(await screen.findByText(detail)).toBeVisible();
     expect(screen.queryByText("Subiendo…")).not.toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: "Tu consulta" })).toBeVisible();
     expect(screen.getByRole("button", { name: "Quitar uno.pdf" })).toBeVisible();

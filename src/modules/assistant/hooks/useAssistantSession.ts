@@ -21,7 +21,7 @@ import { saveAssistantDownload } from "../lib/privateDownload";
 import { assistantAttachmentTypes, validateAssistantFiles, type PendingAssistantFile } from "../lib/assistantFiles";
 import { type ConversationDialogState } from "../components/ConversationDialog";
 import type { AssistantHomeProps } from "../pages/assistantHomeProps";
-import { assistantUploadRefusal } from "../errors";
+import { assistantLimitRefusal, assistantUploadRefusal, type AssistantLimitRefusal } from "../errors";
 import { assistantConversationTitle } from "../lib/conversationTitle";
 
 export function useAssistantSession(props: AssistantHomeProps) {
@@ -49,7 +49,7 @@ export function useAssistantSession(props: AssistantHomeProps) {
   const [files, setFiles] = useState<PendingAssistantFile[]>([]);
   const filesRef = useRef(files);
   function changeFiles(items: PendingAssistantFile[]) { filesRef.current = items; setFiles(items); }
-  const [fileError, setFileError] = useState<string | null>(null);
+  const [fileError, setFileError] = useState<string | AssistantLimitRefusal | null>(null);
   // El archivo que se está subiendo dice «Subiendo…» en su lugar de la caja (0064 §4, «Una subida a la vez»).
   const [uploadingId, setUploadingId] = useState<string | null>(null);
   const fileErrorId = useId();
@@ -210,12 +210,13 @@ export function useAssistantSession(props: AssistantHomeProps) {
     } catch { return false; }
   }
   /// Una subida que el back frena antes de leer el archivo (sin cupo, otra a la vez, la cola llena) se dice debajo de la
-  /// caja y no manda la consulta: el archivo queda para volver a probar. Lo demás sigue al error de la operación.
+  /// caja y no manda la consulta: el archivo queda para volver a probar. Sin cupo, con la frase del tope (283). Lo demás
+  /// sigue al error de la operación.
   async function uploadRefused(fileId: string | null, upload: () => Promise<AssistantAttachmentSummaryResponse>, context: AssistantOperationContext) {
     setUploadingId(fileId);
     try { return await upload(); }
     catch (error) {
-      const refusal = assistantUploadRefusal(error, t);
+      const refusal = assistantLimitRefusal(error) ?? assistantUploadRefusal(error, t);
       if (!refusal) throw error;
       context.assertActive(); setFileError(refusal); return null;
     } finally { setUploadingId((current) => current === fileId ? null : current); }

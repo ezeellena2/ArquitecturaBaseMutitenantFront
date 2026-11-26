@@ -23,16 +23,29 @@ export function canRetryAssistantFailure(error: AssistantErrorEventResponse | un
   return !error || retryableFailures.has(error.code);
 }
 
-/// Lo que frena una subida antes de leer el archivo (0064 §2 y §4): sin cupo, otra subida de la misma persona, la cola
-/// llena, los 120 s del cuerpo o la misma clave con otro archivo. Se dice debajo de la caja, con el texto del back, y el
-/// archivo queda para volver a mandarlo: no es el tope que reemplaza la caja ni «muchas consultas seguidas».
+/// Lo que frena una subida antes de leer el archivo (0064 §2 y §4): otra subida de la misma persona, la cola llena, los
+/// 120 s del cuerpo o la misma clave con otro archivo. Se dice debajo de la caja, con el texto del back, y el archivo queda
+/// para volver a mandarlo: no es el tope que reemplaza la caja ni «muchas consultas seguidas». Sin cupo es
+/// `assistantLimitRefusal`.
 const uploadRefusals: ReadonlySet<string> = new Set([
-  "Assistant.Limit.DailyReached", "Assistant.Limit.MonthlyReached", "Assistant.Attachment.UploadBusy",
-  "Assistant.Attachment.UploadQueueFull", "Assistant.Attachment.UploadTimedOut", "Request.IdempotencyKeyReused",
+  "Assistant.Attachment.UploadBusy", "Assistant.Attachment.UploadQueueFull", "Assistant.Attachment.UploadTimedOut", "Request.IdempotencyKeyReused",
 ]);
 
 export function assistantUploadRefusal(error: unknown, t: TFunction): string | null {
   return error instanceof ApiError && !error.isNetworkError && error.code !== undefined && uploadRefusals.has(error.code) ? apiErrorMessage(error, t) : null;
+}
+
+/// La subida que el back frena sin cupo, del día o del mes: también va debajo de la caja, pero con la frase de
+/// `LimitReachedText` y no con el `detail` del 429, que no lleva números ni la zona (283). El del día trae su tope y su
+/// hora en el 429, más nuevos que los del estado si el cupo se gastó en otra pestaña.
+export type AssistantLimitRefusal = { limit: "daily"; dailyLimit: number | undefined; dailyResetAtUtc: string | undefined } | { limit: "monthly" };
+
+export function assistantLimitRefusal(error: unknown): AssistantLimitRefusal | null {
+  if (!(error instanceof ApiError) || error.isNetworkError) return null;
+  if (error.code === "Assistant.Limit.MonthlyReached") return { limit: "monthly" };
+  if (error.code !== "Assistant.Limit.DailyReached") return null;
+  const { dailyLimit, dailyResetAtUtc } = error.problem;
+  return { limit: "daily", dailyLimit: typeof dailyLimit === "number" ? dailyLimit : undefined, dailyResetAtUtc: typeof dailyResetAtUtc === "string" ? dailyResetAtUtc : undefined };
 }
 
 /// Una conversación que esta versión no puede leer (0064 §6): su GET responde 409 y se puede borrar.
