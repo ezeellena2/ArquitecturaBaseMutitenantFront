@@ -456,7 +456,7 @@
       "h": 1560,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · el papel «Filtro» · etapa 16",
+      "title": "Formularios · el papel «Filtro» · etapa 16 · para aprobar",
       "w": 1280,
       "x": 3040,
       "y": 12306
@@ -582,7 +582,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · copiar un formulario",
+      "title": "Formularios · copiar un formulario · para aprobar",
       "w": 1440,
       "x": 6080,
       "y": 15450
@@ -618,7 +618,7 @@
       "h": 1400,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · dar de baja",
+      "title": "Formularios · dar de baja · para aprobar",
       "w": 1440,
       "x": 3040,
       "y": 15450
@@ -627,7 +627,7 @@
       "h": 1000,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Administración · Datos de las personas · etapa 16",
+      "title": "Administración · Datos de las personas · etapa 16 · para aprobar",
       "w": 1440,
       "x": 0,
       "y": 12306
@@ -645,7 +645,7 @@
       "h": 1660,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · qué opciones ve cada persona · etapa 16",
+      "title": "Formularios · qué opciones ve cada persona · etapa 16 · para aprobar",
       "w": 1440,
       "x": 4560,
       "y": 12306
@@ -708,7 +708,7 @@
       "h": 1400,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · editor de un dado de baja",
+      "title": "Formularios · editor de un dado de baja · para aprobar",
       "w": 1440,
       "x": 1520,
       "y": 15450
@@ -852,7 +852,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · la lista · etapa 17",
+      "title": "Formularios · la lista · etapa 17 · para aprobar",
       "w": 1440,
       "x": 0,
       "y": 15450
@@ -949,7 +949,7 @@
       "h": 1400,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · publicar con avisos · etapa 16",
+      "title": "Formularios · publicar con avisos · etapa 16 · para aprobar",
       "w": 1440,
       "x": 6080,
       "y": 12306
@@ -994,7 +994,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · reactivar y borrar",
+      "title": "Formularios · reactivar y borrar · para aprobar",
       "w": 1440,
       "x": 4560,
       "y": 15450
@@ -1102,7 +1102,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · la subcolumna de un filtro · etapa 16",
+      "title": "Formularios · la subcolumna de un filtro · etapa 16 · para aprobar",
       "w": 1440,
       "x": 9120,
       "y": 12306
@@ -1228,7 +1228,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Administración · la ficha, con «Datos» · etapa 16",
+      "title": "Administración · la ficha, con «Datos» · etapa 16 · para aprobar",
       "w": 1440,
       "x": 1520,
       "y": 12306
@@ -1828,7 +1828,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "El papel «Filtro» · teléfono",
+      "title": "El papel «Filtro» · teléfono · para aprobar",
       "w": 390,
       "x": 940,
       "y": 14086
@@ -1927,7 +1927,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Datos de las personas · teléfono",
+      "title": "Datos de las personas · teléfono · para aprobar",
       "w": 390,
       "x": 0,
       "y": 14086
@@ -1945,7 +1945,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Qué opciones ve cada persona · teléfono",
+      "title": "Qué opciones ve cada persona · teléfono · para aprobar",
       "w": 390,
       "x": 1410,
       "y": 14086
@@ -1981,7 +1981,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · editor de un dado de baja · teléfono",
+      "title": "Formularios · editor de un dado de baja · teléfono · para aprobar",
       "w": 390,
       "x": 470,
       "y": 16970
@@ -2071,7 +2071,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · la lista · teléfono · etapa 17",
+      "title": "Formularios · la lista · teléfono · etapa 17 · para aprobar",
       "w": 390,
       "x": 0,
       "y": 16970
@@ -2250,7 +2250,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Respuestas · teléfono · etapa 16",
+      "title": "Respuestas · teléfono · etapa 16 · para aprobar",
       "w": 390,
       "x": 2350,
       "y": 14086
@@ -2349,7 +2349,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "La ficha, con «Datos» · teléfono",
+      "title": "La ficha, con «Datos» · teléfono · para aprobar",
       "w": 390,
       "x": 470,
       "y": 14086
@@ -2825,7 +2825,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Un formulario que no se puede mandar · teléfono",
+      "title": "Un formulario que no se puede mandar · teléfono · para aprobar",
       "w": 390,
       "x": 1880,
       "y": 14086
@@ -3725,7 +3725,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · un formulario que no se puede mandar · etapa 16",
+      "title": "WhatsApp · un formulario que no se puede mandar · etapa 16 · para aprobar",
       "w": 1440,
       "x": 7600,
       "y": 12306

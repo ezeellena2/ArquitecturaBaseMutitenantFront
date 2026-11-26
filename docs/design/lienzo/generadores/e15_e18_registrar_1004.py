@@ -39,8 +39,25 @@ ETAPAS = {
 }
 # El alto nuevo de los tableros que crecieron al redibujarlos (lo dicen los reportes de cada grupo).
 ALTOS = {}
-# Los tableros nuevos: su entrada entera en `canvas.json`.
-NUEVOS = {}
+# Los tableros nuevos: su entrada entera en `canvas.json`. La Configuración de Formularios (E18, 270) va en la página de Formularios,
+# al final de la fila de la E18 (la compu, y el teléfono debajo, como los demás de la etapa); la de Plataforma, al lado.
+NUEVOS = {
+    "FRM-Config-Org.dc.html": {"h": 900, "is_interactive": True, "page": "formularios", "w": 1440, "x": 13680, "y": 18334,
+                               "title": "Administración · Formularios · Configuración (nueva) · el tamaño máximo de un archivo"},
+    "FRM-Config-Plat.dc.html": {"h": 900, "is_interactive": True, "page": "formularios", "w": 1440, "x": 15200, "y": 18334,
+                                "title": "Plataforma · Administración · Formularios · Configuración (nueva) · el máximo de un archivo"},
+    "M-FRM-Config-Org.dc.html": {"h": 844, "is_interactive": True, "page": "formularios", "w": 390, "x": 2820, "y": 19854,
+                                 "title": "Formularios · Configuración · teléfono (nueva)"},
+}
+
+
+def solapa(c, clave):
+    """El tablero nuevo no pisa a otro de su página."""
+    b = c["boards"][clave]
+    for k, o in c["boards"].items():
+        if k != clave and o.get("page") == b.get("page") and o["x"] < b["x"] + b["w"] and b["x"] < o["x"] + o["w"]                 and o["y"] < b["y"] + b["h"] and b["y"] < o["y"] + o["h"]:
+            return k
+    return None
 
 
 def panel(etapa):
@@ -65,8 +82,9 @@ def registrar(etapa, ruta):
     for nombre in ETAPAS[etapa]:
         clave = f"{nombre}.dc.html"
         if clave in NUEVOS and clave not in c["boards"]:
-            c["boards"][clave] = NUEVOS[clave]
+            c["boards"][clave] = dict(NUEVOS[clave])
             c["order"].append(clave)
+            assert not solapa(c, clave), (clave, solapa(c, clave))
         if clave not in c["boards"]:
             continue
         b = c["boards"][clave]
