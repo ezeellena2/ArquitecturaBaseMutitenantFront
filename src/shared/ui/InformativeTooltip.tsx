@@ -12,7 +12,9 @@ type Side = "top" | "right" | "bottom" | "left";
 /// disparador es el control (un botón, la opción de un menú) o el envoltorio de uno que no puede serlo (una casilla o una
 /// opción de un grupo, que usan su propio `data-state`). Quien lo usa pone el motivo en la descripción accesible del
 /// control; el tooltip es lo que se ve.
-export function InformativeTooltip({ text, side = "top", children }: { text: ReactNode; side?: Side; children: ReactElement }) {
+/// `align="start"` lo abre desde el comienzo del control y no centrado: el motivo de una casilla al borde de una tabla
+/// (los permisos de un rol) se abre hacia adentro, como en el tablero Rol-Base2.
+export function InformativeTooltip({ text, side = "top", align = "center", children }: { text: ReactNode; side?: Side; align?: "start" | "center" | "end"; children: ReactElement }) {
   const [open, setOpen] = useState(false);
   const trigger = useRef<HTMLElement | null>(null);
   const setTrigger = useCallback((node: HTMLElement | null) => { trigger.current = node; }, []);
@@ -39,6 +41,7 @@ export function InformativeTooltip({ text, side = "top", children }: { text: Rea
         </TooltipTrigger>
         <TooltipContent
           side={side}
+          align={align}
           collisionPadding={8}
           // Tocar otra vez el control no lo cierra: para Radix es tocar afuera del tooltip.
           onPointerDownOutside={(event) => {

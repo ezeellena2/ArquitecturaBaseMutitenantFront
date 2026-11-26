@@ -73,6 +73,8 @@ describe("PermissionPicker", () => {
     await user.click(screen.getByText("Ver usuarios"));
     expect(onChange).not.toHaveBeenCalled();
     expect(await screen.findByRole("tooltip")).toHaveTextContent("Lo incluyen «Invitar usuarios» y «Administrar usuarios».");
+    // Rol-Base2: el globo se abre desde la casilla, hacia adentro de la tabla, y no centrado sobre ella.
+    expect(screen.getByRole("tooltip").closest("[data-slot=tooltip-content]")).toHaveAttribute("data-align", "start");
     await user.keyboard("{Escape}");
     await user.click(screen.getByRole("checkbox", { name: "Invitar usuarios" }));
     await user.click(screen.getByRole("checkbox", { name: "Administrar usuarios" }));

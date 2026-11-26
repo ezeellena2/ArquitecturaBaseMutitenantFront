@@ -143,7 +143,7 @@ function AreaCheckbox({ group, groups, picked, onChange }: Omit<AreaProps, "read
 
   return <span className={checkZone}>
     {off ? <>
-      <InformativeTooltip text={t("permissionPicker.areaNotHeld")}>
+      <InformativeTooltip align="start" text={t("permissionPicker.areaNotHeld")}>
         <span data-slot="disabled-reason" className="inline-flex cursor-not-allowed after:absolute after:inset-0">{checkbox}</span>
       </InformativeTooltip>
       <span id={reasonId} hidden>{t("permissionPicker.areaNotHeld")}</span>
@@ -170,7 +170,7 @@ function PermissionChoice({ permission, groups, picked, onChange }: { permission
   return <tr><td className="p-0">
     <div className={cn(permissionRow, reason && "text-[var(--t3)]")}>
       {reason
-        ? <InformativeTooltip text={reason}><span data-slot="disabled-reason" className="inline-flex cursor-not-allowed after:absolute after:inset-0">{checkbox}</span></InformativeTooltip>
+        ? <InformativeTooltip align="start" text={reason}><span data-slot="disabled-reason" className="inline-flex cursor-not-allowed after:absolute after:inset-0">{checkbox}</span></InformativeTooltip>
         : checkbox}
       <label htmlFor={id} className={cn("min-w-0 py-2 wrap-break-word", !reason && "cursor-pointer after:absolute after:inset-0")}>{permission.name}</label>
       <span id={`${id}-description`} hidden>{permission.description}</span>
