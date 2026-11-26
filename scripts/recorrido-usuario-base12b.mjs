@@ -507,7 +507,18 @@ export function base12bSteps(ctx) {
       await page.goto(url("/login/empresa"));
       await page.getByRole("textbox", { name: "Correo electrónico", exact: true }).fill(owner);
       const before = new Set(await env.files());
-      await page.getByRole("button", { name: "Enviar código", exact: true }).click();
+      // Como el resto del recorrido: si la Dueña pidió otro código hace poco, el servidor pide esperar (429 con
+      // `retryAfter`) y se vuelve a pedir después.
+      for (let attempt = 0; attempt < 4; attempt++) {
+        const [reply] = await Promise.all([
+          page.waitForResponse((response) => new URL(response.url()).pathname === "/api/auth/login-code" && response.request().method() === "POST"),
+          page.getByRole("button", { name: "Enviar código", exact: true }).click(),
+        ]);
+        if (reply.ok()) break;
+        const problem = await reply.json().catch(() => ({}));
+        assert.equal(reply.status(), 429, `El pedido del código respondió ${reply.status()} ${problem.code ?? ""}.`);
+        await new Promise((resolve) => { setTimeout(resolve, ((problem.retryAfter ?? 30) + 1) * 1000); });
+      }
       const deadline = Date.now() + 60_000;
       let mail;
       while (!mail && Date.now() < deadline) {
