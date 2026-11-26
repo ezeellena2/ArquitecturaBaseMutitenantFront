@@ -8,7 +8,8 @@ import { configureI18n } from "@/shared/i18n";
 import { beginSignOut, cancelSignOut } from "@/auth/signOutStatus";
 import { businessNavigation } from "./navigation/business";
 import { personalNavigation } from "./navigation/personal";
-import { platformNavigation } from "./navigation/platform";
+import { platformNavigation, platformNavigationWithHome } from "./navigation/platform";
+import { UsersIcon } from "@/shared/ui/icons";
 import { platformPermissions } from "@/auth/usePermissions";
 import { Page } from "@/shared/ui/Page";
 import { PrivateLayoutFrame } from "./PrivateLayoutFrame";
@@ -183,6 +184,39 @@ describe("PrivateLayoutFrame", () => {
     expect(screen.getByRole("heading", { name: "Cuentas" })).toHaveClass("text-[1.5rem]");
     expect(screen.getByText("Plataforma")).toBeVisible();
     expect(screen.queryByRole("link", { name: "Volver a Más" })).not.toBeInTheDocument();
+  });
+
+  // M-WA-Config-Base2 y M-Filas-Base2: la pantalla de un módulo dentro de Administración nombra los dos.
+  it("en el teléfono, la pantalla de un módulo dentro de Administración dice «Administración · WhatsApp» debajo del título", () => {
+    viewport.mobile = true;
+    const teams = { path: "/org/whatsapp/equipos", labelKey: "navigation.users", icon: UsersIcon, contributed: true };
+    const navigation = { ...businessNavigation, administration: { ...businessNavigation.administration!,
+      // El grupo que suma un módulo, como lo arma useNavigation (el núcleo no importa el módulo).
+      sections: [...(businessNavigation.administration?.sections ?? []), { labelKey: "whatsapp:title", icon: UsersIcon, links: [teams], moreGroup: true }] } };
+    render(<MemoryRouter initialEntries={["/org/whatsapp/equipos"]}><PrivateLayoutFrame navigation={navigation} scope="business">
+      <Page title="Equipos"><p>{"lista"}</p></Page>
+    </PrivateLayoutFrame></MemoryRouter>);
+    expect(screen.getByText("Administración · WhatsApp")).toBeVisible();
+  });
+
+  it("en el teléfono, Usuarios sigue diciendo solo «Administración»: su grupo no es de un módulo", () => {
+    viewport.mobile = true;
+    session.permissions = ["users.read"];
+    render(<MemoryRouter initialEntries={["/org/usuarios"]}><PrivateLayoutFrame navigation={businessNavigation} scope="business">
+      <Page title="Usuarios"><p>{"lista"}</p></Page>
+    </PrivateLayoutFrame></MemoryRouter>);
+    expect(screen.getByText("Administración", { exact: true })).toBeVisible();
+  });
+
+  // M-Filas-Base2 · Recuperaciones: con el Inicio de Plataforma, Recuperaciones se abre desde Más y nombra su panel.
+  it("en el teléfono, Recuperaciones abierta desde Más dice «Gestión» debajo del título", () => {
+    viewport.mobile = true;
+    session.platform = [...platformPermissions];
+    render(<MemoryRouter initialEntries={["/plataforma/recuperaciones"]}><PrivateLayoutFrame navigation={platformNavigationWithHome} scope="platform">
+      <Page title="Recuperaciones"><p>{"lista"}</p></Page>
+    </PrivateLayoutFrame></MemoryRouter>);
+    expect(screen.getByRole("link", { name: "Volver a Más" })).toHaveAttribute("href", "/plataforma/mas");
+    expect(screen.getByText("Gestión")).toBeVisible();
   });
 
   it("Administración de Plataforma vuelve a Más y muestra el grupo debajo del título", () => {

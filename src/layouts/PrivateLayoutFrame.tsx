@@ -103,7 +103,9 @@ export function PrivateLayoutFrame({ navigation, scope, children }: PrivateLayou
   const chrome = useMemo<AppChrome>(() => ({
     phone: isMobile,
     parent: isMobile && navigation.moreTo && !onHome && !onMore && !bottomSection ? { to: navigation.moreTo, label: t("layout.app.backToMore") } : null,
-    subtitle: routePanel && !bottomSection && !onMore ? t(routePanel.labelKey) : context?.title ?? null,
+    // La bajada nombra el panel; la pantalla de un módulo dentro de Administración suma el módulo: «Administración · WhatsApp».
+    subtitle: routePanel && !bottomSection && !onMore ? panelEntry?.section?.moreGroup
+      ? `${t(routePanel.labelKey)} · ${t(panelEntry.section.labelKey)}` : t(routePanel.labelKey) : context?.title ?? null,
     title: panelEntry && !onMore ? t(panelEntry.link.labelKey) : null,
     hideBottomNav,
     hideActiveSection,

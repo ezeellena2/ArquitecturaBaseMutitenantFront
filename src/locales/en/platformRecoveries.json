@@ -1,6 +1,5 @@
 {
   "title": "Recoveries",
-  "platform": "Platform",
   "summary": "{{requests}} · {{pending}}",
   "summaryEmpty": "No requests",
   "requests_one": "{{total}} request",

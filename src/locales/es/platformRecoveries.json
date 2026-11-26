@@ -1,6 +1,5 @@
 {
   "title": "Recuperaciones",
-  "platform": "Plataforma",
   "summary": "{{requests}} · {{pending}}",
   "summaryEmpty": "Sin pedidos",
   "requests_one": "{{total}} pedido",

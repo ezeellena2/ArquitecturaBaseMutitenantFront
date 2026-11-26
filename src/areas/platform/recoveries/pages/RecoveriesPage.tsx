@@ -62,7 +62,7 @@ export function RecoveriesPage() {
   }) : undefined;
   const filtered = Boolean(pagination.search || query.status);
   return <>
-    <Page title={t("platformRecoveries:title")} summary={summary} phoneSubtitle={t("platformRecoveries:platform")} phoneBody="flush">
+    <Page title={t("platformRecoveries:title")} summary={summary} phoneBody="flush">
       <div className="flex flex-col gap-3 md:gap-3.5">
         <FilterBar sort={{ columns: columns, value: pagination.sort, onChange: pagination.setSort }} phoneTools="filter" screen={t("platformRecoveries:title")} label={t(phone ? "platformRecoveries:filters.phone" : "platformRecoveries:filters.label")} searchLabel={t("platformRecoveries:filters.search")} searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch} clearLabel={t("common:actions.clear")} onClear={filters.clear}
           filters={[{ key: "status", label: t("platformRecoveries:filters.status"), menuLabel: t("platformRecoveries:filters.statusMenu"), value: query.status ?? "", active: query.status !== undefined,
