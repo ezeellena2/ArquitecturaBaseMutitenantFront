@@ -285,7 +285,10 @@ export async function runE8Journey({ page, platformPage, width, env, base, site,
     await step("12", async () => {
       const before = new Set(await env.files());
       await page.getByRole("button", { name: "Agregar correo o teléfono", exact: true }).click(); const dialog = page.getByRole("dialog");
-      await dialog.getByRole("button", { name: "Correo", exact: true }).click(); await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(backupEmail);
+      // La pieza para elegir (262): «Qué querés agregar» ya no es un segmentado; el correo se elige en ella si no lo está.
+      const kind = pickerButton(dialog, "Qué querés agregar");
+      if (!(await kind.innerText()).includes("Correo")) { await kind.click(); await page.getByRole("option", { name: "Correo", exact: true }).click(); }
+      await dialog.getByRole("textbox", { name: "Correo", exact: true }).fill(backupEmail);
       const method = (await (await click(page, dialog.getByRole("button", { name: "Enviar código", exact: true }), "/api/me/login-methods", 202)).json()).methodId;
       await fillOtp(dialog, await env.code(backupEmail, before));
       await click(page, dialog.getByRole("button", { name: "Verificar", exact: true }), `/api/me/login-methods/${method}/verify`, 204);
