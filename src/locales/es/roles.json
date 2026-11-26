@@ -20,6 +20,7 @@
   "viewPermissions": "Ver permisos",
   "confirmDeactivate": "¿Dar de baja el rol {{name}}?",
   "confirmDeactivateDescription": "Deja de aparecer para asignar. Nadie lo tiene, así que no le cambia nada a ningún usuario.",
+  "confirmDeactivateInUse": "Deja de aparecer para asignar.",
   "rowActions": "Acciones para {{name}}",
   "noDescription": "Sin descripción",
   "empty": "No hay roles que coincidan",
@@ -77,5 +78,8 @@
   "emptyFiltered": "Ningún rol coincide con los filtros",
   "inUse_one": "Lo tiene {{n}} usuario. Quitáselo primero.",
   "inUse_other": "Lo tienen {{n}} usuarios. Quitáselo primero.",
-  "deactivating": "Dando de baja…"
+  "deactivating": "Dando de baja…",
+  "proposal": {
+    "changedSince": "El rol {{name}} cambió desde la propuesta."
+  }
 }

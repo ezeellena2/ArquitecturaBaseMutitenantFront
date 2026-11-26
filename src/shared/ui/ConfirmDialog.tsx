@@ -13,6 +13,9 @@ interface ConfirmDialogProps {
   titleAside?: ReactNode;
   description?: string;
   confirmLabel: string;
+  /** Lo que la acción frena, dicho antes de tocarla: la confirmación queda apagada con su motivo (la baja de un rol que
+   * todavía tienen personas, abierta desde una propuesta del asistente; Confirmar-Propuesta). */
+  confirmDisabledReason?: string;
   /// Por defecto, "Cancelar". Cuando la confirmación es salir o quedarse, conviene nombrar lo que se conserva
   /// ("Seguir editando"): "Cancelar" frente a "Salir sin guardar" no dice si se cancela la salida o los cambios.
   cancelLabel?: string;
@@ -40,6 +43,7 @@ export function ConfirmDialog({
   titleAside,
   description,
   confirmLabel,
+  confirmDisabledReason,
   cancelLabel,
   destructive,
   onConfirm,
@@ -79,6 +83,7 @@ export function ConfirmDialog({
             variant={destructive ? "destructive" : "default"}
             pending={pending}
             pendingLabel={pendingLabel}
+            disabledReason={confirmDisabledReason}
             onClick={() => {
               onConfirm();
               if (!waits) onOpenChange(false);

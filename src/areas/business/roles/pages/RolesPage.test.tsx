@@ -290,3 +290,81 @@ describe("RolesPage", () => {
     }
   });
 });
+
+// Confirmar-Propuesta y su M- (ADR 0068 §9): la lista con `?proposal=<id>` de una baja que propone el asistente.
+describe("RolesPage con una propuesta del asistente", () => {
+  const proposalPath = "/api/organization/assistant/proposals/p-1";
+  const wholesale: RoleResponse = { ...companyReader, id: "role-wholesale", name: "Ventas mayoristas", scope: "Organization", companyId: null, companyName: null, userCount: 0, version: 3 };
+
+  function proposalApi(current: RoleResponse, overrides: Record<string, unknown> = {}) {
+    const writes = { deleted: [] as unknown[], applied: [] as unknown[] };
+    const read = { id: "p-1", conversationId: "c-1", kind: "action", action: "roles.remove", version: 1, state: "new", values: [],
+      target: { id: current.id, label: current.name, version: 3 }, baseVersion: 3, ...overrides };
+    server.use(
+      http.get("/api/companies/paged", () => HttpResponse.json(companies)),
+      http.get("/api/roles/paged", () => HttpResponse.json({ items: [owner, current], page: 1, pageSize: 10, totalCount: 2, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get(`/api/roles/${current.id}`, () => HttpResponse.json(current)),
+      http.delete(`/api/roles/${current.id}`, async ({ request }) => { writes.deleted.push(await request.json()); return new HttpResponse(null, { status: 204 }); }),
+      http.get(proposalPath, () => HttpResponse.json(read)),
+      http.post(`${proposalPath}/applied`, async ({ request }) => { writes.applied.push(await request.json()); return HttpResponse.json({ ...read, state: "applied" }); }),
+    );
+    return writes;
+  }
+
+  it("dar de baja abre la confirmación desde la tarjeta y, al confirmar, da de baja con la versión leída y marca la propuesta aplicada", async () => {
+    const user = userEvent.setup();
+    const writes = proposalApi(wholesale);
+    const { router } = renderRouteWithProviders("/org/roles?proposal=p-1", { as: "business-role-manager" });
+
+    const confirm = await screen.findByRole("dialog", { name: "¿Dar de baja el rol Ventas mayoristas?" });
+    expect(within(confirm).getByText("Propuesta del asistente")).toBeInTheDocument();
+    expect(confirm).toHaveTextContent("Deja de aparecer para asignar. Nadie lo tiene, así que no le cambia nada a ningún usuario.");
+    expect(await axe(confirm)).toHaveNoViolations();
+    await user.click(within(confirm).getByRole("button", { name: "Dar de baja" }));
+
+    await waitFor(() => expect(writes.deleted).toEqual([{ version: 3 }]));
+    await waitFor(() => expect(writes.applied).toEqual([{}]));
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: /¿Dar de baja el rol/ })).not.toBeInTheDocument());
+    expect(router.state.location.search).toBe("");
+  });
+
+  it("si alguien tiene el rol, la confirmación lo dice y «Dar de baja» queda apagado con su motivo", async () => {
+    const user = userEvent.setup();
+    const writes = proposalApi({ ...wholesale, userCount: 2 });
+    renderRouteWithProviders("/org/roles?proposal=p-1", { as: "business-role-manager" });
+
+    const confirm = await screen.findByRole("dialog", { name: "¿Dar de baja el rol Ventas mayoristas?" });
+    expect(confirm).toHaveTextContent("Deja de aparecer para asignar.");
+    expect(confirm).not.toHaveTextContent("Nadie lo tiene");
+    const remove = within(confirm).getByRole("button", { name: "Dar de baja" });
+    expect(remove).toHaveAttribute("aria-disabled", "true");
+    expect(remove).toHaveAccessibleDescription("Lo tienen 2 usuarios. Quitáselo primero.");
+    await user.click(remove);
+
+    expect(writes.deleted).toEqual([]);
+    expect(screen.getByRole("dialog", { name: "¿Dar de baja el rol Ventas mayoristas?" })).toBeVisible();
+  });
+
+  it("cerrar la confirmación no da de baja y deja la lista de siempre", async () => {
+    const user = userEvent.setup();
+    const writes = proposalApi(wholesale);
+    const { router } = renderRouteWithProviders("/org/roles?proposal=p-1", { as: "business-role-manager" });
+
+    const confirm = await screen.findByRole("dialog", { name: "¿Dar de baja el rol Ventas mayoristas?" });
+    await user.click(within(confirm).getByRole("button", { name: "Cancelar" }));
+
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: /¿Dar de baja el rol/ })).not.toBeInTheDocument());
+    expect(router.state.location.search).toBe("");
+    expect(writes.deleted).toEqual([]);
+    expect(writes.applied).toEqual([]);
+  });
+
+  it("una propuesta que ya no está disponible no abre la confirmación", async () => {
+    const writes = proposalApi(wholesale, { state: "unavailable", unavailableReason: "target" });
+    renderRouteWithProviders("/org/roles?proposal=p-1", { as: "business-role-manager" });
+
+    await screen.findByRole("cell", { name: "Ventas mayoristas" });
+    expect(screen.queryByRole("dialog", { name: /¿Dar de baja el rol/ })).not.toBeInTheDocument();
+    expect(writes.deleted).toEqual([]);
+  });
+});

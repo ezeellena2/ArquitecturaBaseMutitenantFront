@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Eye, Pencil, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { usePermissions } from "@/auth/usePermissions";
 import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
@@ -19,11 +19,14 @@ import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
 import { toast } from "sonner";
 import type { RoleResponse } from "@/shared/api/types";
+import { AssistantProposalMark, assistantProposalParam, useAssistantProposal } from "@/shared/assistant-actions";
 import {
   deleteRole,
+  fetchRole,
   fetchRoles,
   fetchRoleCounts,
   roleCountsQueryKey,
+  roleQueryKey,
   rolesQueryKey,
   rolesQueryKeyRoot,
   type RolesQuery,
@@ -34,6 +37,16 @@ import { countOf } from "@/shared/format/countOf";
 
 // «Vale en» (tablero Roles): toda la organización o una empresa por nombre, en un solo filtro.
 const roleFilterKeys = ["vale"] as const;
+
+/** Dar de baja no tiene campos: lo que se confirma es cuál, que es el rol que nombra la propuesta. */
+const toRemoveProposal = (): true => true;
+
+interface RemoveVariables {
+  readonly role: RoleResponse;
+  readonly version: number;
+  /** Con una propuesta del asistente: la tarjeta pasa a aplicada después de la baja. */
+  readonly markApplied?: () => Promise<void>;
+}
 
 export function RolesPage() {
   const { t } = useTranslation(["roles", "common"]);
@@ -59,9 +72,32 @@ export function RolesPage() {
   // no llevan cantidades (143).
   const counts = useQuery({ queryKey: roleCountsQueryKey(), queryFn: () => fetchRoleCounts(), meta: { silent: true } });
   const [roleToDelete, setRoleToDelete] = useState<RoleResponse | null>(null);
+  // Confirmar-Propuesta y su M- (ADR 0068 §9): con `?proposal=<id>`, la confirmación de dar de baja abre sobre el rol que
+  // nombra la propuesta, con «Propuesta del asistente» en el título, hasta que se cierra. Lo lee de nuevo para decir si
+  // alguien lo tiene, como siempre: con personas, «Dar de baja» queda apagado con su motivo.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const removeProposal = useAssistantProposal("roles.remove@1", toRemoveProposal);
+  const proposedRoleId = removeProposal.status === "ready" ? removeProposal.proposal.target?.id : undefined;
+  const proposedRole = useQuery({ queryKey: roleQueryKey(proposedRoleId ?? ""), queryFn: () => fetchRole(proposedRoleId!),
+    enabled: canManage && Boolean(proposedRoleId), meta: { silent: true } });
+  const [closedProposal, setClosedProposal] = useState<string | null>(null);
+  const removing = removeProposal.status === "ready" && canManage && proposedRole.data && proposedRole.data.id === proposedRoleId
+    && !proposedRole.data.isSystemRole && closedProposal !== removeProposal.proposalId && roleToDelete === null
+    ? { proposal: removeProposal, role: proposedRole.data } : undefined;
+  // Sin `?proposal` la lista vuelve a ser la de siempre: cerrar la confirmación no la vuelve a abrir.
+  function closeProposal(proposalId: string) {
+    setClosedProposal(proposalId);
+    if (!searchParams.has(assistantProposalParam)) return;
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current);
+      next.delete(assistantProposalParam);
+      return next;
+    }, { replace: true });
+  }
   const remove = useMutation({
-    mutationFn: (role: RoleResponse) => deleteRole(role.id, role.version),
-    onSuccess: async (_result, role) => {
+    mutationFn: ({ role, version }: RemoveVariables) => deleteRole(role.id, version),
+    onSuccess: async (_result, { role, markApplied }) => {
+      if (markApplied) void markApplied();
       setRoleToDelete(null);
       toast.success(t("roles:removed", { name: role.name }));
       await queryClient.invalidateQueries({ queryKey: rolesQueryKeyRoot });
@@ -69,6 +105,17 @@ export function RolesPage() {
     // La confirmación espera la respuesta y se cierra con ella, sea cual sea («Criterio · Diálogos»).
     onError: (error) => { setRoleToDelete(null); toastActionError(error, t); },
   });
+  const confirmRole = removing?.role ?? roleToDelete;
+  const confirmInUse = removing && removing.role.userCount > 0 ? removing.role.userCount : 0;
+  function confirmRemove() {
+    if (removing) {
+      // Manda la versión que leyó la propuesta al abrirse; la confirmación se cierra con la respuesta, junto con la propuesta.
+      const { proposal, role } = removing;
+      remove.mutate({ role, version: proposal.proposal.target?.version ?? role.version, markApplied: proposal.markApplied },
+        { onSettled: () => closeProposal(proposal.proposalId) });
+    }
+    else if (roleToDelete) remove.mutate({ role: roleToDelete, version: roleToDelete.version });
+  }
 
   const rowActions = (role: RoleResponse) => <RowActions
         label={t("roles:rowActions", { name: role.name })}
@@ -143,14 +190,21 @@ export function RolesPage() {
       </div>
     </Page>
     <ConfirmDialog
-      open={roleToDelete !== null}
-      onOpenChange={(open) => { if (!open) setRoleToDelete(null); }}
-      title={t("roles:confirmDeactivate", { name: roleToDelete?.name ?? "" })}
-      description={t("roles:confirmDeactivateDescription")}
+      open={confirmRole !== null}
+      onOpenChange={(open) => {
+        if (open) return;
+        setRoleToDelete(null);
+        if (removing) closeProposal(removing.proposal.proposalId);
+      }}
+      title={t("roles:confirmDeactivate", { name: confirmRole?.name ?? "" })}
+      titleAside={removing ? <AssistantProposalMark /> : undefined}
+      // Desde la propuesta puede abrir sobre un rol que alguien tiene: lo que la ruta frena lo dice la confirmación.
+      description={confirmInUse ? t("roles:confirmDeactivateInUse") : t("roles:confirmDeactivateDescription")}
+      confirmDisabledReason={confirmInUse ? t("roles:inUse", countOf(format, confirmInUse)) : undefined}
       confirmLabel={t("roles:deactivate")}
       destructive
       pending={remove.isPending} pendingLabel={t("roles:deactivating")}
-      onConfirm={() => { if (roleToDelete) remove.mutate(roleToDelete); }}
+      onConfirm={confirmRemove}
     />
   </>;
 }

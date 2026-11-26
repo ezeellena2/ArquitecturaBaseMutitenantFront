@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import type { CompanyResponse, RoleScope } from "@/shared/api/types";
+import type { AssistantProposalFieldReview } from "@/shared/assistant-actions";
 import { FormField } from "@/shared/ui/FormField";
 import { Picker } from "@/shared/ui/Picker";
 import type { RemoteOptions } from "@/shared/hooks/useResourceOptions";
@@ -16,6 +17,8 @@ interface RoleScopeFieldProps {
   readonly error?: string;
   readonly remote?: RemoteOptions;
   readonly knownCompanies?: readonly Pick<CompanyResponse, "id" | "name">[];
+  /** «Revisá» en dónde vale o en la empresa que propone el asistente con duda (Rol-Propuesta): la marca y el motivo debajo. */
+  readonly review?: AssistantProposalFieldReview;
 }
 
 const companyPrefix = "company:";
@@ -23,7 +26,7 @@ const companyPrefix = "company:";
 /// «Vale en» (tableros Rol y M-Rol): toda la organización o una empresa por nombre. «Cada empresa» no se ofrece al crear
 /// (queda para la API; enmienda de las ADR 0012 y 0034), pero un rol que ya vale en cada empresa lo dice. Sin asterisco,
 /// como el tablero: si falta, lo dice al tocar «Crear rol».
-export function RoleScopeField({ scope, companyId, companies, onChange, readOnly = false, error, remote, knownCompanies = companies }: RoleScopeFieldProps) {
+export function RoleScopeField({ scope, companyId, companies, onChange, readOnly = false, error, remote, knownCompanies = companies, review }: RoleScopeFieldProps) {
   const { t } = useTranslation("roles");
   const companyName = knownCompanies.find((company) => company.id === companyId)?.name;
   // Tableros Rol y M-Rol («Delta S.A. ⌄» apagado): el mismo desplegable, deshabilitado, con fondo y texto grises.
@@ -36,8 +39,8 @@ export function RoleScopeField({ scope, companyId, companies, onChange, readOnly
   }
 
   const value = scope === "Organization" ? scope : scope === "SpecificCompany" && companyId ? `${companyPrefix}${companyId}` : "";
-  return <FormField label={t("roles:fields.scope")} error={error}>
-    <Picker value={value || null} onChange={(next) => {
+  return <FormField label={t("roles:fields.scope")} error={error} warning={review?.warning}>
+    <Picker adornment={review?.adornment} className={review?.className} value={value || null} onChange={(next) => {
       if (next === value) return;
       onChange(next.startsWith(companyPrefix) ? { scope: "SpecificCompany", companyId: next.slice(companyPrefix.length) } : { scope: "Organization", companyId: "" });
     }} remote={remote} placeholder={t("roles:scope.choose")}

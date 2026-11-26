@@ -707,3 +707,167 @@ describe("RoleEditorPage", () => {
     expect(router.state.location.pathname).toBe("/org/roles/role-custom");
   });
 });
+
+// Rol-Propuesta y su M- (ADR 0068 §9): el editor con `?proposal=<id>` de una propuesta del asistente.
+describe("RoleEditorPage con una propuesta del asistente", () => {
+  const proposalPath = "/api/organization/assistant/proposals/p-1";
+  type Value = { field: string; value: unknown; label?: string; doubt?: string };
+  const similar = "Assistant.Action.Doubt.Similar";
+  // «Administrar usuarios» incluye «Ver usuarios» (260).
+  const groups = [
+    { area: "users", name: "Usuarios", permissions: [
+      { code: "users.read", name: "Ver usuarios", description: "La lista y la ficha.", includes: [], grantable: true },
+      { code: "users.manage", name: "Administrar usuarios", description: "Editar y quitar.", includes: ["users.read"], grantable: true },
+    ] },
+    ...permissionGroups,
+  ];
+  const proposal = (action: string, values: Value[], overrides: Record<string, unknown> = {}) =>
+    ({ id: "p-1", conversationId: "c-1", kind: "action", action, version: 1, state: "new", values, ...overrides });
+  const newRole: Value[] = [
+    { field: "name", value: "Coordinación" },
+    { field: "description", value: "Coordina a las personas de cada equipo." },
+    { field: "scope", value: "Organization", label: "Toda la organización" },
+    { field: "permissions", value: { op: "add", id: "users.manage" }, label: "Administrar usuarios" },
+    { field: "permissions", value: { op: "add", id: "roles.read" }, label: "Ver roles", doubt: similar },
+  ];
+  const editRole = (values: Value[], overrides: Record<string, unknown> = {}) =>
+    proposal("roles.edit", values, { target: { id: role.id, label: role.name, version: 4 }, baseVersion: 4, ...overrides });
+  // Suma «Ver usuarios», con duda, y quita «Ver roles».
+  const usersForRoles: Value[] = [
+    { field: "description", value: "Atiende a los clientes." },
+    { field: "permissions", value: { op: "add", id: "users.read" }, label: "Ver usuarios", doubt: similar },
+    { field: "permissions", value: { op: "remove", id: "roles.read" }, label: "Ver roles" },
+  ];
+
+  function proposalApi(read: Record<string, unknown>) {
+    const writes = { reads: 0, created: [] as Array<{ key: string | null; body: unknown }>, put: [] as unknown[], applied: [] as unknown[], companyReads: 0 };
+    server.use(
+      http.get("/api/permissions", () => HttpResponse.json(groups)),
+      http.get("/api/companies/paged", () => HttpResponse.json(companies)),
+      http.get("/api/companies/:id", () => { writes.companyReads += 1; return HttpResponse.json(companies.items[0]); }),
+      http.get(proposalPath, () => { writes.reads += 1; return HttpResponse.json(read); }),
+      http.post(`${proposalPath}/attempts`, () => HttpResponse.json({ idempotencyKey: "key-of-the-proposal" })),
+      http.post(`${proposalPath}/applied`, async ({ request }) => { writes.applied.push(await request.json()); return HttpResponse.json({ ...read, state: "applied" }); }),
+      http.post("/api/roles", async ({ request }) => {
+        writes.created.push({ key: request.headers.get("Idempotency-Key"), body: await request.json() });
+        return HttpResponse.json("role-created", { status: 201 });
+      }),
+      http.get("/api/roles/role-created", () => HttpResponse.json({ ...role, id: "role-created", name: "Coordinación" })),
+      http.get("/api/roles/role-custom", () => HttpResponse.json(role)),
+      http.put("/api/roles/role-custom", async ({ request }) => { writes.put.push(await request.json()); return HttpResponse.json({ version: 5 }); }),
+    );
+    return writes;
+  }
+
+  function changesTable() {
+    const table = screen.getByRole("table", { name: "Lo que cambia" });
+    return within(table).getAllByRole("row").map((row) => Array.from(row.children, (cell) => cell.textContent?.trim()));
+  }
+
+  it("crear carga lo propuesto sin guardar, con lo incluido apagado y «Revisá» en lo dudoso, y lo guarda con la clave de la propuesta", async () => {
+    const user = userEvent.setup();
+    const writes = proposalApi(proposal("roles.create", newRole));
+    const { container, router } = renderRouteWithProviders("/org/roles/nuevo?proposal=p-1", { as: "business-role-manager" });
+
+    const mark = await screen.findByText("Propuesta del asistente");
+    expect(screen.getByRole("heading", { level: 1, name: "Crear un rol" }).parentElement).toContainElement(mark);
+    await waitFor(() => expect(screen.getByRole("textbox", { name: "Nombre" })).toHaveValue("Coordinación"));
+    expect(screen.getByRole("textbox", { name: "Descripción" })).toHaveValue("Coordina a las personas de cada equipo.");
+    expect(screen.getByRole("button", { name: /^Vale en / })).toHaveTextContent("Toda la organización");
+    const included = screen.getByRole("checkbox", { name: "Ver usuarios" });
+    expect(included).toBeChecked();
+    expect(included).toHaveAttribute("aria-disabled", "true");
+    expect(included).toHaveAccessibleDescription("La lista y la ficha. Lo incluye «Administrar usuarios».");
+    expect(within(screen.getByRole("checkbox", { name: "Ver roles" }).closest("tr")!).getByText("Revisá")).toBeVisible();
+    expect(within(screen.getByRole("checkbox", { name: "Administrar usuarios" }).closest("tr")!).queryByText("Revisá")).not.toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
+
+    await user.click(screen.getAllByRole("button", { name: "Crear rol" })[0]);
+
+    await waitFor(() => expect(writes.created).toHaveLength(1));
+    expect(writes.created[0]).toEqual({ key: "key-of-the-proposal", body: { name: "Coordinación", description: "Coordina a las personas de cada equipo.",
+      scope: "Organization", companyId: null, permissions: ["roles.read", "users.manage", "users.read"] } });
+    await waitFor(() => expect(writes.applied).toEqual([{}]));
+    await waitFor(() => expect(router.state.location.pathname).toBe("/org/roles/role-created"));
+  }, 10_000);
+
+  it("la empresa propuesta va en «Vale en» con el nombre de la propuesta y su «Revisá», sin buscarla por id", async () => {
+    const writes = proposalApi(proposal("roles.create", [
+      { field: "name", value: "Ventas Norte" },
+      { field: "scope", value: "SpecificCompany", label: "Una empresa específica" },
+      { field: "company", value: "company-9", label: "Delta Norte S.A.", doubt: similar },
+      { field: "permissions", value: { op: "add", id: "company.members.read" }, label: "Ver miembros" },
+    ]));
+    renderRouteWithProviders("/org/roles/nuevo?proposal=p-1", { as: "business-e6-admin" });
+
+    const valeEn = await screen.findByRole("button", { name: /^Vale en / });
+    await waitFor(() => expect(valeEn).toHaveTextContent("Delta Norte S.A."));
+    expect(valeEn).toHaveTextContent("Revisá");
+    expect(valeEn).toHaveAccessibleDescription("Hay más de una opción parecida.");
+    expect(screen.getByRole("checkbox", { name: "Ver miembros" })).toBeChecked();
+    expect(writes.companyReads).toBe(0);
+  });
+
+  it("cambiar un rol muestra lo propuesto y «Lo que cambia», y «Guardar cambios» manda lo que se ve y marca la propuesta aplicada", async () => {
+    const user = userEvent.setup();
+    const writes = proposalApi(editRole(usersForRoles));
+    renderRouteWithProviders("/org/roles/role-custom?proposal=p-1", { as: "business-role-manager" });
+
+    const mark = await screen.findByText("Propuesta del asistente");
+    expect(screen.getByRole("heading", { level: 1, name: "Solo lectura" }).parentElement).toContainElement(mark);
+    expect(changesTable()).toEqual([["Se suma", "Se quita"], ["Ver usuariosRevisá", "Ver roles"]]);
+    expect(screen.getByRole("textbox", { name: "Descripción" })).toHaveValue("Atiende a los clientes.");
+    expect(screen.getByRole("checkbox", { name: "Ver usuarios" })).toBeChecked();
+    expect(screen.getByRole("checkbox", { name: "Ver roles" })).not.toBeChecked();
+    expect(screen.queryByText(/cambió desde la propuesta/)).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+
+    await waitFor(() => expect(writes.applied).toEqual([{ version: 5 }]));
+    expect(writes.put).toEqual([{ name: "Solo lectura", description: "Atiende a los clientes.", scope: "Organization", companyId: null, permissions: ["users.read"], version: 4 }]);
+    await waitFor(() => expect(screen.queryByText("Propuesta del asistente")).not.toBeInTheDocument());
+  });
+
+  it("si el rol cambió desde la propuesta, lo avisa arriba y «Lo que cambia» va sobre lo de ahora", async () => {
+    // La IA preparó la propuesta sobre la versión 3; ahora es la 4.
+    proposalApi(editRole(usersForRoles, { baseVersion: 3 }));
+    renderRouteWithProviders("/org/roles/role-custom?proposal=p-1", { as: "business-role-manager" });
+
+    expect(await screen.findByText("El rol Solo lectura cambió desde la propuesta.")).toBeVisible();
+    expect(changesTable()).toEqual([["Se suma", "Se quita"], ["Ver usuariosRevisá", "Ver roles"]]);
+  });
+
+  it("«Descartar cambios» vuelve a lo guardado y deja el editor de siempre", async () => {
+    const user = userEvent.setup();
+    proposalApi(editRole(usersForRoles));
+    const { router } = renderRouteWithProviders("/org/roles/role-custom?proposal=p-1", { as: "business-role-manager" });
+
+    await screen.findByText("Propuesta del asistente");
+    await user.click(screen.getByRole("button", { name: "Descartar cambios" }));
+
+    await waitFor(() => expect(screen.queryByText("Propuesta del asistente")).not.toBeInTheDocument());
+    expect(router.state.location.search).toBe("");
+    expect(screen.getByRole("textbox", { name: "Descripción" })).toHaveValue(role.description);
+    expect(screen.queryByRole("table", { name: "Lo que cambia" })).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ["un permiso de empresa en un rol de la organización", "/org/roles/nuevo?proposal=p-1",
+      proposal("roles.create", [...newRole.slice(0, 3), { field: "permissions", value: { op: "add", id: "company.members.read" }, label: "Ver miembros" }])],
+    ["«Cada empresa», que ya no se crea desde acá", "/org/roles/nuevo?proposal=p-1",
+      proposal("roles.create", [{ field: "name", value: "Coordinación" }, { field: "scope", value: "AnyCompany", label: "Cada empresa" }])],
+    ["una empresa sin «Una empresa específica»", "/org/roles/nuevo?proposal=p-1",
+      proposal("roles.create", [...newRole.slice(0, 3), { field: "company", value: "company-1", label: "Delta S.A." }])],
+    ["de otro rol", "/org/roles/role-custom?proposal=p-1", editRole(usersForRoles, { target: { id: "role-other", label: "Ventas", version: 2 } })],
+  ])("si un valor no entra (%s), el editor es el de siempre", async (_case, path, read) => {
+    const writes = proposalApi(read);
+    renderRouteWithProviders(path, { as: "business-role-manager" });
+
+    await screen.findByRole("textbox", { name: "Nombre" });
+    await waitFor(() => expect(writes.reads).toBeGreaterThan(0));
+    await screen.findByRole("table", { name: "Permisos" });
+    expect(screen.queryByText("Propuesta del asistente")).not.toBeInTheDocument();
+    expect(screen.queryByRole("table", { name: "Lo que cambia" })).not.toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: "Nombre" })).not.toHaveValue("Coordinación");
+  });
+});

@@ -4,7 +4,7 @@ import { validationConstraints } from "@/shared/api/generated/validation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useController, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useFormat } from "@/shared/format/useFormat";
@@ -17,6 +17,10 @@ import { apiErrorMessage, isNotFoundError, isRateLimitError } from "@/shared/api
 import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { CreateRoleRequest, PermissionGroupResponse, RoleResponse, RoleScope, UpdateRoleRequest } from "@/shared/api/types";
+import {
+  AssistantProposalChangesSection, AssistantProposalMark, AssistantProposalReviewMark, assistantProposalAlreadySaved, assistantProposalParam,
+  useAssistantProposal, useAssistantProposalFieldReview, type AssistantProposalChangeItem, type AssistantProposalOption, type AssistantProposalValues,
+} from "@/shared/assistant-actions";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { sameList } from "@/shared/lib/sameList";
@@ -45,6 +49,7 @@ import {
   rolesQueryKeyRoot,
   updateRole,
 } from "../api/roles";
+import { createdRolePath } from "../assistantActions";
 import { RoleScopeField } from "../components/RoleScopeField";
 import { roleErrorField } from "../errors";
 import { canonicalPermissions, groupsForScope } from "../lib/permissionPicker";
@@ -118,6 +123,41 @@ export function RoleEditorPage({ mode }: { mode: "create" | "edit" }) {
   return <RoleEditor key={role.data.id} role={role.data} groups={permissionGroups.data} reload={async () => (await role.refetch()).data} />;
 }
 
+/**
+ * Lo que propone el asistente para un rol (roles.create@1 y roles.edit@1), con la forma del editor: al crear, lo propuesto;
+ * al cambiar, aplicado sobre lo guardado (el nombre, la descripción y lo que el rol permite ahora). Cada permiso lleva el
+ * nombre de la propuesta, por si el catálogo no lo nombra.
+ */
+interface RoleProposal {
+  readonly name: string;
+  readonly description: string;
+  readonly scope: RoleScope | null;
+  readonly company?: { readonly id: string; readonly label: string };
+  readonly permissions: readonly AssistantProposalOption[];
+}
+
+/** Un texto propuesto: sin él, vacío; algo que no es texto no entra. */
+function proposedText(field: AssistantProposalValues["fields"][string] | undefined): string | undefined {
+  if (field === undefined || field.value === null) return "";
+  return typeof field.value === "string" ? field.value : undefined;
+}
+
+/**
+ * Lo que el editor no puede mostrar no abre la propuesta: «Cada empresa» (ya no se crea desde acá), una empresa sin «Una
+ * empresa específica» o al revés. Que cada permiso esté en el catálogo de su alcance lo mira el editor, que lo tiene.
+ */
+function toRoleProposal(values: AssistantProposalValues): RoleProposal | undefined {
+  const name = proposedText(values.fields.name);
+  const description = proposedText(values.fields.description);
+  const proposedScope = values.fields.scope?.value;
+  const scope: RoleScope | null = proposedScope === "Organization" || proposedScope === "SpecificCompany" ? proposedScope : null;
+  const company = values.fields.company;
+  const companyId = typeof company?.value === "string" ? company.value : "";
+  if (name === undefined || description === undefined || (proposedScope !== undefined && scope === null)) return undefined;
+  if ((scope === "SpecificCompany") !== (companyId !== "")) return undefined;
+  return { name, description, scope, company: companyId ? { id: companyId, label: company?.label ?? "" } : undefined, permissions: values.lists.permissions ?? [] };
+}
+
 /** Repetir el alta con lo mismo conserva la clave; cambiar cualquier dato es otra operación (R05). */
 function sameRoleRequest(previous: CreateRoleRequest, next: CreateRoleRequest) {
   return previous.name === next.name && previous.description === next.description && previous.scope === next.scope
@@ -131,7 +171,7 @@ function sameRoleRequest(previous: CreateRoleRequest, next: CreateRoleRequest) {
 function RoleEditor({ role, groups, reload }: { role?: RoleResponse; groups?: readonly PermissionGroupResponse[]; reload?: () => Promise<RoleResponse | undefined> }) {
   const { t } = useTranslation(["roles", "common"]);
   const format = useFormat();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { can } = usePermissions();
@@ -157,14 +197,66 @@ function RoleEditor({ role, groups, reload }: { role?: RoleResponse; groups?: re
   });
 
   const permissionGroups = useQuery({ ...permissionGroupsQuery, enabled: Boolean(role) || editable });
-  const companies = useResourceOptions(companyOptionResource, can("companies.read") && (!role || role.scope === "SpecificCompany"));
-  const selectedCompany = useQuery({ ...companyQuery(companyId), enabled: can("companies.read") && Boolean(companyId) && !role?.companyName && Boolean(companies.data) && !companies.knownItems.some((item) => item.id === companyId) });
-  const knownCompanies = [...companies.knownItems, ...(selectedCompany.data ? [selectedCompany.data] : []),
-    ...(role?.companyId && role.companyName ? [{ id: role.companyId, name: role.companyName }] : [])];
-  const companyOptions = companies.data?.items ?? [];
   const scopeGroups = useMemo(() => groupsForScope(permissionGroups.data ?? [], scope), [permissionGroups.data, scope]);
   // Lo guardado del rol: un área con algo guardado arranca abierta, aunque después se le quite todo.
   const savedPermissions = useMemo(() => role ? rolePermissions(role, groups) : [], [role, groups]);
+
+  // Rol-Propuesta y su M- (ADR 0068 §9): con `?proposal=<id>`, lo que propone el asistente, cargado y sin guardar. Al
+  // cambiar, sobre lo guardado; los permisos, con lo que incluyen (260), que el selector muestra marcado y apagado.
+  const catalog = permissionGroups.data;
+  const permissionLabel = (code: string) => catalog?.flatMap((group) => group.permissions).find((permission) => permission.code === code)?.name;
+  const proposalBase = useMemo<AssistantProposalValues | undefined>(() => role && {
+    fields: { name: { value: role.name }, description: { value: role.description ?? "" } },
+    lists: { permissions: savedPermissions.map((code) => ({ id: code, label: code })) },
+    rows: {},
+  }, [role, savedPermissions]);
+  const createProposal = useAssistantProposal("roles.create@1", toRoleProposal);
+  const editProposal = useAssistantProposal("roles.edit@1", toRoleProposal, proposalBase);
+  const review = useAssistantProposalFieldReview();
+  // Cada permiso propuesto tiene que estar en el catálogo de su alcance: si no, el editor no lo puede mostrar.
+  const fitsCatalog = (proposedScope: RoleScope | null, codes: readonly string[]) => {
+    if (!catalog) return false;
+    const offered = new Set(groupsForScope(catalog, proposedScope).flatMap((group) => group.permissions.map((permission) => permission.code)));
+    return codes.every((code) => offered.has(code));
+  };
+  const proposing = !editable ? undefined
+    : !role ? createProposal.status === "ready" && fitsCatalog(createProposal.formValues.scope, createProposal.formValues.permissions.map((permission) => permission.id))
+      ? createProposal : undefined
+      // Al cambiar, la propuesta es de este rol, y lo que suma está en el catálogo de dónde vale.
+      : editProposal.status === "ready" && editProposal.proposal.target?.id === role.id
+        && fitsCatalog(role.scope, editProposal.formValues.permissions.map((permission) => permission.id).filter((code) => !savedPermissions.includes(code)))
+        ? editProposal : undefined;
+  // Lo propuesto entra una vez en lo que se edita, sin guardar; desde ahí, la persona lo cambia como siempre.
+  const appliedProposal = useRef<string | null>(null);
+  useEffect(() => {
+    if (!proposing || !catalog || appliedProposal.current === proposing.proposalId) return;
+    appliedProposal.current = proposing.proposalId;
+    const proposed = proposing.formValues;
+    const dirty = { shouldDirty: true } as const;
+    form.setValue("name", proposed.name, dirty);
+    form.setValue("description", proposed.description, dirty);
+    if (!role) {
+      form.setValue("scope", proposed.scope, dirty);
+      form.setValue("companyId", proposed.company?.id ?? "", dirty);
+    }
+    form.setValue("permissions", allowedPermissions(catalog, proposed.permissions.map((permission) => permission.id)), dirty);
+  }, [proposing, catalog, form, role]);
+  // Sin `?proposal` el editor vuelve a ser el de siempre: descartar no la vuelve a cargar.
+  const dropProposal = () => setSearchParams((current) => {
+    const next = new URLSearchParams(current);
+    next.delete(assistantProposalParam);
+    return next;
+  }, { replace: true });
+
+  const companies = useResourceOptions(companyOptionResource, can("companies.read") && (!role || role.scope === "SpecificCompany"));
+  // La empresa propuesta, con el nombre de la propuesta: no se busca por id.
+  const proposedCompany = !role ? proposing?.formValues.company : undefined;
+  const selectedCompany = useQuery({ ...companyQuery(companyId), enabled: can("companies.read") && Boolean(companyId) && !role?.companyName && Boolean(companies.data)
+    && !companies.knownItems.some((item) => item.id === companyId) && proposedCompany?.id !== companyId });
+  const knownCompanies = [...companies.knownItems, ...(selectedCompany.data ? [selectedCompany.data] : []),
+    ...(proposedCompany ? [{ id: proposedCompany.id, name: proposedCompany.label }] : []),
+    ...(role?.companyId && role.companyName ? [{ id: role.companyId, name: role.companyName }] : [])];
+  const companyOptions = companies.data?.items ?? [];
 
   // P2 (E9): al llegar a un límite, el aviso va arriba del formulario, lo escrito queda y «Guardar» cuenta hasta poder
   // tocarse de nuevo, a mano.
@@ -184,6 +276,19 @@ function RoleEditor({ role, groups, reload }: { role?: RoleResponse; groups?: re
   const create = useIdempotentMutation(createAction.guarded((request, key: string) => createRole(request, key),
     (id, request) => { void created(id, request); }), { meta: { ...createAction.meta, handlesRateLimit: true }, sameOperation: sameRoleRequest });
   const update = useMutation({ meta: { handlesRateLimit: true }, mutationFn: ({ id, request }: { id: string; request: UpdateRoleRequest }) => updateRole(id, request) });
+  // Con la propuesta, la clave la da la propuesta (`attempts`) y, después del 2xx, la tarjeta pasa a aplicada. Si otra
+  // pestaña ya la guardó, «Ya se guardó» y lleva al rol creado.
+  const createSend = !role && proposing ? proposing.send : undefined;
+  const createProposed = useMutation({
+    meta: { handlesRateLimit: true },
+    mutationFn: ({ request, save }: { request: CreateRoleRequest; save: NonNullable<typeof createSend> }) => save((key) => createRole(request, key)),
+    onSuccess: (id, { request }) => { void created(id, request); },
+    onError: (error) => {
+      const saved = assistantProposalAlreadySaved(error);
+      if (saved) leaveToSaved(saved.location);
+      else rejected(error);
+    },
+  });
 
   async function created(id: string, request: CreateRoleRequest) {
     setFailure(undefined);
@@ -192,6 +297,22 @@ function RoleEditor({ role, groups, reload }: { role?: RoleResponse; groups?: re
     void navigate(`/org/roles/${encodeURIComponent(id)}`, { replace: true });
     await queryClient.invalidateQueries({ queryKey: rolesQueryKeyRoot });
   }
+
+  // «Ya se guardó» (otra pestaña guardó la propuesta): lleva a lo creado, una vez.
+  const leftToSaved = useRef(false);
+  function leaveToSaved(location: string | null | undefined) {
+    if (leftToSaved.current) return;
+    leftToSaved.current = true;
+    toast.success(t("common:assistantProposal.alreadySaved"));
+    edit.allowNextNavigation();
+    void navigate(createdRolePath(location), { replace: true });
+  }
+  // La propuesta cargada pasó a aplicada sin que este editor la guardara: la guardó otra pestaña.
+  useEffect(() => {
+    if (role || createProposal.status !== "applied" || appliedProposal.current !== createProposal.proposalId) return;
+    if (createProposed.isPending || createProposed.isSuccess) return;
+    leaveToSaved(createProposal.proposal.appliedLocation);
+  });
 
   // Al editar, la ficha queda limpia con lo guardado y la base es la versión que respondió el guardado (`useEditForm`).
   async function saved(id: string, values: RoleFormValues, write: { sent: number; saved: number }) {
@@ -214,11 +335,17 @@ function RoleEditor({ role, groups, reload }: { role?: RoleResponse; groups?: re
     // Con un rol, el editor arrancó con su lectura: `version` es la de esa lectura.
     if (role) {
       const sent = version!;
+      // Con la propuesta, la tarjeta pasa a aplicada con la versión que respondió el guardado.
+      const applied = proposing;
       update.mutate({ id: role.id, request: { ...request, version: sent } }, {
-        onSuccess: (result) => { void saved(role.id, values, { sent, saved: result.version }); },
+        onSuccess: (result) => {
+          if (applied) void applied.markApplied(result.version);
+          void saved(role.id, values, { sent, saved: result.version });
+        },
         onError: rejected,
       });
     }
+    else if (createSend) createProposed.mutate({ request, save: createSend });
     else create.mutate(request);
   });
 
@@ -229,11 +356,12 @@ function RoleEditor({ role, groups, reload }: { role?: RoleResponse; groups?: re
     scopeField.field.onChange(next.scope);
   }
 
-  // «Descartar cambios» vuelve a la última lectura de lo guardado, con su versión.
+  // «Descartar cambios» vuelve a la última lectura de lo guardado, con su versión; también descarta la propuesta.
   function discard() {
     if (role) resetTo(role);
     else form.reset();
     setFailure(undefined);
+    if (proposing) dropProposal();
   }
 
   const companyName = (id: string | null | undefined) => id ? knownCompanies.find((company) => company.id === id)?.name : undefined;
@@ -243,7 +371,21 @@ function RoleEditor({ role, groups, reload }: { role?: RoleResponse; groups?: re
     : t(current.scope === "Organization" ? "roles:scopeInSentence.organization" : "roles:scopeInSentence.company");
   const summary = role ? t("roles:scopeAndUsers", { scope: scopeInSentence(role), ...countOf(format, role.userCount) }) : undefined;
   const title = role ? role.name : t("roles:createTitle");
-  const saving = create.isPending || update.isPending;
+  const saving = create.isPending || update.isPending || createProposed.isPending;
+  // «Revisá» en lo que sigue como lo propuso el asistente con duda: dónde vale y la empresa, y cada permiso.
+  const scopeReview = proposing && !role && scope === proposing.formValues.scope && companyId === (proposing.formValues.company?.id ?? "")
+    ? review([proposing.doubtOf("scope"), proposing.doubtOf("company")]) : undefined;
+  const permissionAside = proposing
+    ? (code: string) => permissions.includes(code) && proposing.doubtOf("permissions", code) ? <AssistantProposalReviewMark /> : null : undefined;
+  // «Lo que cambia» (al cambiar un rol), sobre lo guardado y con lo que se va a mandar: lo propuesto y lo que la persona
+  // cambie después. Sin la columna «Dónde» (Rol-Propuesta).
+  const changeItem = (code: string): AssistantProposalChangeItem => ({ key: code,
+    label: permissionLabel(code) ?? proposing?.formValues.permissions.find((permission) => permission.id === code)?.label ?? code,
+    review: Boolean(proposing?.doubtOf("permissions", code)) });
+  const changeRows = proposing && role ? [{ key: "permissions",
+    added: permissions.filter((code) => !savedPermissions.includes(code)).map(changeItem),
+    removed: savedPermissions.filter((code) => !permissions.includes(code)).map(changeItem) }] : [];
+  const changedSinceProposal = proposing && role && proposing.proposal.baseVersion != null && proposing.proposal.baseVersion !== role.version;
   // P2: en la compu, arriba del formulario (Rol); en el teléfono, abajo, sobre los botones fijos (M-Rol).
   const limitNotice = limit.isRunning && isRateLimitError(failure) ? <Banner tone="warning" role="alert">{apiErrorMessage(failure, t)}</Banner> : null;
   // Tableros Rol-Base2 y M-Rol-Base2 (260): en la compu, la tabla «Permiso» sola, debajo de los datos; en el teléfono, con
@@ -258,13 +400,14 @@ function RoleEditor({ role, groups, reload }: { role?: RoleResponse; groups?: re
   </> : null;
   // El Dueño y todo rol de sistema que no se cambia se leen con tildes y con sus áreas cerradas; un rol que quien mira no
   // puede cambiar, con tildes y abiertas las áreas que tienen algo.
-  const permissionPicker = <PermissionPicker key={scope ?? ""} label={t("roles:permissionsTitle")} framed={!phone}
+  const permissionPicker = <PermissionPicker key={scope ?? ""} label={t("roles:permissionsTitle")} framed={!phone} permissionAside={permissionAside}
     groups={permissionsLoading ? [] : scopeGroups} picked={permissions} saved={savedPermissions} onChange={permissionsField.field.onChange}
     readOnly={!editable} openWhenRead={role?.isSystemRole !== true}>{permissionsNotice}</PermissionPicker>;
 
   return <>
     <Page banner={edit.banner}
       title={title}
+      titleAside={proposing ? <AssistantProposalMark /> : undefined}
       backTo={{ to: "/org/roles", label: t("roles:backToList") }}
       summary={summary}
       // Tablero Rol: «De sistema» antes de dónde vale; la banda nunca dice «Cambios sin guardar» (base de la 12).
@@ -285,6 +428,10 @@ function RoleEditor({ role, groups, reload }: { role?: RoleResponse; groups?: re
         {edit.formError}
         {phone ? null : limitNotice}
         {permissionGroups.isError ? <FormError message={apiErrorMessage(permissionGroups.error, t)} /> : null}
+        {/* Rol-Propuesta y su M-: si el rol cambió desde que el asistente preparó la propuesta, lo dice arriba; «Lo que
+            cambia» ya va sobre lo de ahora. */}
+        {changedSinceProposal ? <Banner tone="warning" className="max-md:mx-4 max-md:mt-4">{t("roles:proposal.changedSince", { name: role.name })}</Banner> : null}
+        {changeRows.length ? <AssistantProposalChangesSection rows={changeRows} /> : null}
         {/* Tablero Rol: nombre y «Vale en» en dos columnas a todo el ancho; la descripción ocupa las dos. En el teléfono
             (M-Rol), los datos van sueltos sobre blanco, sin título a la vista. */}
         <Section title={t("roles:dataTitle")} phone="untitled">
@@ -297,7 +444,7 @@ function RoleEditor({ role, groups, reload }: { role?: RoleResponse; groups?: re
                 : <ReadOnlyField label={t("roles:fields.name")}>{title}</ReadOnlyField>}
             </div>
             <div className="min-w-0">
-              <RoleScopeField scope={scope} companyId={companyId} companies={companyOptions} remote={companies.remote} knownCompanies={knownCompanies} onChange={changeScope} readOnly={Boolean(role)} error={errors.scope?.message} />
+              <RoleScopeField scope={scope} companyId={companyId} companies={companyOptions} remote={companies.remote} knownCompanies={knownCompanies} onChange={changeScope} readOnly={Boolean(role)} error={errors.scope?.message} review={scopeReview} />
             </div>
             <div data-slot="role-description" className="min-w-0 lg:col-span-2">
               {editable

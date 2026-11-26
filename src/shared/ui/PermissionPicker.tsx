@@ -40,6 +40,8 @@ interface PermissionPickerProps {
   readonly "aria-describedby"?: string;
   /** El alto del marco, si va adentro de un diálogo (Cuentas-Base2: 470 y se desplaza). */
   readonly className?: string;
+  /** Lo que va junto al nombre de un permiso: «Revisá» en el que propone el asistente con duda (Rol-Propuesta, .acc-rev). */
+  readonly permissionAside?: (code: string) => ReactNode;
 }
 
 /// El clic solo muestra el motivo: Radix saltea el cambio de la casilla después de un `preventDefault` (211).
@@ -71,7 +73,7 @@ const permissionRow = "relative flex min-h-9 items-center gap-2.5 border-t borde
 /// cerró la persona; lo elegido lo guarda la pantalla. Igual en los roles de la organización, en los de una empresa y en los
 /// permisos de un operador de Plataforma.
 export function PermissionPicker({ groups, picked, saved = [], onChange, readOnly = false, openWhenRead = false, label, framed = true, children, id,
-  "aria-describedby": describedBy, className }: PermissionPickerProps): ReactNode {
+  "aria-describedby": describedBy, className, permissionAside }: PermissionPickerProps): ReactNode {
   const { t } = useTranslation();
   // Las áreas que la persona abrió o cerró; las demás siguen a lo que tienen (`areaStartsOpen`).
   const [toggled, setToggled] = useState<Readonly<Record<string, boolean>>>({});
@@ -88,7 +90,7 @@ export function PermissionPicker({ groups, picked, saved = [], onChange, readOnl
         // El Dueño tiene todo: sus áreas empiezan cerradas, y cada una se abre para leer sus permisos.
         const open = toggled[group.area] ?? (readOnly ? openWhenRead : areaStartsOpen(group, saved, picked));
         return <PermissionArea key={group.area} group={group} groups={groups} picked={picked} readOnly={readOnly} open={open}
-          onToggle={() => setToggled((current) => ({ ...current, [group.area]: !open }))} onChange={onChange} />;
+          onToggle={() => setToggled((current) => ({ ...current, [group.area]: !open }))} onChange={onChange} aside={permissionAside} />;
       })}
     </table>
   </div>;
@@ -102,10 +104,11 @@ interface AreaProps {
   readonly open: boolean;
   readonly onToggle: () => void;
   readonly onChange?: (picked: string[]) => void;
+  readonly aside?: (code: string) => ReactNode;
 }
 
 /// Un área: su banda y, abierta, sus permisos; un grupo de filas nombrado por el área, para el lector de pantalla.
-function PermissionArea({ group, groups, picked, readOnly, open, onToggle, onChange }: AreaProps): ReactNode {
+function PermissionArea({ group, groups, picked, readOnly, open, onToggle, onChange, aside }: AreaProps): ReactNode {
   const { t } = useTranslation();
   const arrowId = useId();
   const nameId = useId();
@@ -125,13 +128,13 @@ function PermissionArea({ group, groups, picked, readOnly, open, onToggle, onCha
     </td></tr>
     {open ? permissions.map((permission) => readOnly
       ? <ReadPermission key={permission.code} permission={permission} />
-      : <PermissionChoice key={permission.code} permission={permission} groups={groups} picked={picked} onChange={onChange} />) : null}
+      : <PermissionChoice key={permission.code} permission={permission} groups={groups} picked={picked} onChange={onChange} aside={aside?.(permission.code)} />) : null}
   </tbody>;
 }
 
 /// La casilla del área: vacía, parcial o completa; elige o quita el área entera, con lo que incluye. Si el área tiene algo
 /// que quien edita no tiene, queda apagada con su motivo (269).
-function AreaCheckbox({ group, groups, picked, onChange }: Omit<AreaProps, "readOnly" | "open" | "onToggle">): ReactNode {
+function AreaCheckbox({ group, groups, picked, onChange }: Omit<AreaProps, "readOnly" | "open" | "onToggle" | "aside">): ReactNode {
   const { t } = useTranslation();
   const reasonId = useId();
   const state = areaState(group, picked);
@@ -153,7 +156,7 @@ function AreaCheckbox({ group, groups, picked, onChange }: Omit<AreaProps, "read
 
 /// Un permiso con su casilla y su nombre entero: tocar la fila lo marca. Lo incluido por otro marcado queda marcado y
 /// apagado, con el motivo que nombra a todos los que lo incluyen; lo que quien edita no tiene, apagado con el suyo.
-function PermissionChoice({ permission, groups, picked, onChange }: { permission: PermissionChoiceItem } & Omit<AreaProps, "group" | "readOnly" | "open" | "onToggle">): ReactNode {
+function PermissionChoice({ permission, groups, picked, onChange, aside }: { permission: PermissionChoiceItem; aside?: ReactNode } & Omit<AreaProps, "group" | "readOnly" | "open" | "onToggle" | "aside">): ReactNode {
   const { t } = useTranslation();
   const id = useId();
   const checked = picked.includes(permission.code);
@@ -173,6 +176,7 @@ function PermissionChoice({ permission, groups, picked, onChange }: { permission
         ? <InformativeTooltip align="start" text={reason}><span data-slot="disabled-reason" className="inline-flex cursor-not-allowed after:absolute after:inset-0">{checkbox}</span></InformativeTooltip>
         : checkbox}
       <label htmlFor={id} className={cn("min-w-0 py-2 wrap-break-word", !reason && "cursor-pointer after:absolute after:inset-0")}>{permission.name}</label>
+      {aside ? <span className="relative z-[1] flex shrink-0">{aside}</span> : null}
       <span id={`${id}-description`} hidden>{permission.description}</span>
       {reason ? <span id={`${id}-reason`} hidden>{reason}</span> : null}
     </div>
