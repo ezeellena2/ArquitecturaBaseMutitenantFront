@@ -127,7 +127,9 @@ export function base12bSteps(ctx) {
   const asOwner = async (route) => {
     await page.goto(url(route));
     const loginBox = page.getByRole("textbox", { name: "Correo electrónico", exact: true }).or(page.getByRole("link", { name: "Ingresá", exact: true }));
-    const inside = page.getByRole("button", { name: new RegExp(`, ${escapeRegExp(organization)}$`, "u") }).or(page.getByRole("navigation", { name: "Secciones", exact: true }));
+    // Adentro: la barra de la organización, o el aviso del asistente del Inicio, que es modal y la tapa la primera vez.
+    const inside = page.getByRole("button", { name: new RegExp(`, ${escapeRegExp(organization)}$`, "u") }).or(page.getByRole("navigation", { name: "Secciones", exact: true }))
+      .or(page.getByRole("dialog", { name: "Antes de tu primera consulta", exact: true }));
     await loginBox.or(inside).filter({ visible: true }).first().waitFor({ timeout: 30_000 });
     if (await loginBox.filter({ visible: true }).count()) {
       await ctx.login(owner, "business", page);
