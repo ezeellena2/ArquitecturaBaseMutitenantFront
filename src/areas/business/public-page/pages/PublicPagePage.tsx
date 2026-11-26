@@ -266,7 +266,7 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
               </label>
             </span>
           </div>
-          <SectionFields className="grid gap-4 md:grid-cols-2 max-md:gap-3.5">
+          <SectionFields className="grid grid-cols-1 gap-4 md:grid-cols-2 max-md:gap-3.5">
             <div className="flex flex-col gap-1.5">
               {/* El sufijo va sobre el borde derecho del campo: FormField ata el rótulo a su único hijo, el Input. */}
               <div className="relative">
@@ -284,7 +284,7 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
         </Section>
 
         <Section title={t("publicPage:contactTitle")}>
-          <SectionFields className="grid gap-4 md:grid-cols-2 max-md:gap-3.5">
+          <SectionFields className="grid grid-cols-1 gap-4 md:grid-cols-2 max-md:gap-3.5">
             <FormField label={t("publicPage:fields.email")} error={errors.contactEmail?.message}><Input type="email" {...form.register("contactEmail")} maxLength={validationConstraints.UpdatePublicPageHttpRequest.contactEmail.maxLength} /></FormField>
             <FormField label={t("publicPage:fields.phone")} error={errors.contactPhone?.message}><PhoneField value={phoneField.field.value} onChange={phoneField.field.onChange} /></FormField>
             <FormField label={t("publicPage:fields.address")} error={errors.address?.message}><Input {...form.register("address")} maxLength={validationConstraints.UpdatePublicPageHttpRequest.address.maxLength} /></FormField>

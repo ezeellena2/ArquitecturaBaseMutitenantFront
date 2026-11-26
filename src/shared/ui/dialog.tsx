@@ -97,7 +97,7 @@ function DialogContent({
         data-concealed={concealed || undefined}
         hidden={concealed || undefined}
         className={cn(
-          "fixed bottom-0 left-0 z-50 grid max-h-[calc(100dvh-1rem)] w-full gap-0 overflow-y-auto rounded-t-[1.25rem] border-0 bg-[var(--superficie)] p-0 text-[0.9375rem] outline-none md:text-[0.8125rem] data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[0.75rem] md:data-[state=closed]:fade-out-0 md:data-[state=open]:fade-in-0",
+          "fixed bottom-0 left-0 z-50 grid max-h-[calc(100dvh-1rem)] w-full grid-cols-1 gap-0 overflow-y-auto rounded-t-[1.25rem] border-0 bg-[var(--superficie)] p-0 text-[0.9375rem] outline-none md:text-[0.8125rem] data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[0.75rem] md:data-[state=closed]:fade-out-0 md:data-[state=open]:fade-in-0",
           size === "sm" ? "md:max-w-105" : size === "preview" ? "md:max-w-160" : "md:max-w-140",
           // Lienzo v106 («Criterio · Decisiones»): en el teléfono toda hoja sube desde abajo con el alto de lo que lleva;
           // ninguna ocupa la pantalla completa.

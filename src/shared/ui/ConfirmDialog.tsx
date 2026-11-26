@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import { Button } from "./button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./dialog";
+import { TextWithEmails } from "./format/EmailText";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -57,11 +58,12 @@ export function ConfirmDialog({
         size="sm"
       >
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+          {/* Un correo del título baja de renglón donde lo parten los tableros (174): no ensancha la hoja del teléfono. */}
+          <DialogTitle><TextWithEmails value={title} /></DialogTitle>
         </DialogHeader>
         {/* Tablero Avisos («¿Salir sin guardar?») y M-Avisos: el texto con la letra de los diálogos, con 20 de margen en la
             compu y 8/20/16 en la hoja del teléfono. */}
-        {description ? <DialogDescription className="p-5 max-md:pt-2 max-md:pb-4">{description}</DialogDescription> : null}
+        {description ? <DialogDescription className="p-5 max-md:pt-2 max-md:pb-4"><TextWithEmails value={description} /></DialogDescription> : null}
         <DialogFooter>
           <Button ref={cancel} type="button" variant="outline" disabled={pending} onClick={() => onOpenChange(false)}>
             {cancelLabel ?? t("actions.cancel")}

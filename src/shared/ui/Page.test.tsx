@@ -256,6 +256,16 @@ describe("Page", () => {
       expect(await screen.findByRole("tab", { name: `Miembros ${shown}` })).toBeVisible();
     });
 
+    // La galería a 320 (base de la 12, segunda parte): con dos columnas cada pestaña mide unos 160 px, y «Historial de
+    // seguridad» quedaba cortada. Una pestaña larga baja de renglón, centrada, dentro de su alto.
+    it("en el teléfono, con dos columnas, una pestaña larga baja de renglón en vez de cortarse", () => {
+      const tabs = groups(true);
+      renderPage({ ...tabs, phoneColumns: 2, items: [tabs.items[0], { ...tabs.items[1], label: "Historial de seguridad" }] } as ReturnType<typeof groups>, true);
+      const list = screen.getByRole("tablist", { name: "Partes de la empresa" });
+      expect(list.className).toContain("max-md:[&>*]:whitespace-normal");
+      expect(list.className).toContain("max-md:[&>*]:text-center");
+    });
+
     // Tableros M-* (.ap-bar .sub): en el teléfono, debajo del título, el «·» va como texto, « · », y no con los 6 de la compu.
     it("en el teléfono, el separador de la línea de abajo del título es « · »", () => {
       renderWithProviders(<AppChromeProvider value={{ phone: true, parent: null, subtitle: null, hideBottomNav: () => {} }}>

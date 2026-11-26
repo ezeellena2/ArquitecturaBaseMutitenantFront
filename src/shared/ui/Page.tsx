@@ -184,7 +184,8 @@ export function Page({
   const groups = tabs?.items.filter((group) => !group.hidden) ?? [];
   const tabbed = tabs && groups.length > 1 ? tabs : undefined;
   const openGroup = groups.some((group) => group.value === tabs?.value) ? tabs?.value : groups[0]?.value;
-  const tabList = tabbed ? <TabsList aria-label={tabbed.label} className={tabbed.phoneColumns === 2 ? "max-md:h-auto max-md:grid-flow-row max-md:auto-cols-auto max-md:grid-cols-2" : undefined}>
+  // Con dos columnas, a 320 cada pestaña mide unos 160 px: una larga («Historial de seguridad») baja de renglón, centrada.
+  const tabList = tabbed ? <TabsList aria-label={tabbed.label} className={tabbed.phoneColumns === 2 ? "max-md:h-auto max-md:grid-flow-row max-md:auto-cols-auto max-md:grid-cols-2 max-md:[&>*]:px-2 max-md:[&>*]:text-center max-md:[&>*]:leading-tight max-md:[&>*]:whitespace-normal" : undefined}>
     {groups.map((group) => <TabsTrigger key={group.value} value={group.value}>
       {group.label}{group.count === undefined ? null : <TabCount>{group.count}</TabCount>}
     </TabsTrigger>)}

@@ -198,7 +198,7 @@ function SettingsEditor({ settings, loadError, reload }: {
         {/* Tablero M-Configuracion: en el teléfono los datos van sueltos sobre blanco, sin título a la vista. */}
         <Section title={t("settings:dataTitle")} phone="untitled">
           <form id="settings-editor" noValidate aria-label={t("settings:title")} onSubmit={(event) => { void submit(event); }}>
-            <SectionFields className="grid gap-4 md:grid-cols-2 max-md:gap-3.5">
+            <SectionFields className="grid grid-cols-1 gap-4 md:grid-cols-2 max-md:gap-3.5">
               {/* «Criterio · Formularios», A11: sin permiso para cambiar, el mismo campo, apagado. */}
               {canManage ? <>
                 <FormField label={t("settings:fields.name")} required error={errors.name?.message}><Input {...form.register("name")} maxLength={validationConstraints.UpdateOrganizationSettingsHttpRequest.name.maxLength} /></FormField>

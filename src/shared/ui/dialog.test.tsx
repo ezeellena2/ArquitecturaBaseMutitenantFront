@@ -78,6 +78,13 @@ describe("Dialog: medidas (Criterio-Dialogos)", () => {
     expect(overlay?.className).not.toMatch(/backdrop-blur/);
   });
 
+  // La galería en el teléfono (base de la 12, segunda parte): la hoja de «Fuera de horario» medía 414 px en 390, porque su
+  // grilla sin columnas tomaba el ancho del texto de la zona horaria. La hoja tiene una columna que no pasa de su ancho.
+  it("la grilla de la hoja tiene una columna que no crece con su contenido", () => {
+    render(<Dialog open><DialogContent><DialogHeader><DialogTitle>{"Fuera de horario"}</DialogTitle></DialogHeader></DialogContent></Dialog>);
+    expect(document.querySelector("[data-slot='dialog-content']")).toHaveClass("grid", "grid-cols-1");
+  });
+
   // Tableros Cuenta-Baja, Cuenta-Verificar y Avisos (.p-dlg .tx): lo que aclara el título, adentro del cuerpo, va de
   // 13,5 con interlineado 1,55 en la compu y de 14,5 en el teléfono (.ap-txt-l), gris.
   it("el texto del diálogo va con la letra de los tableros", () => {

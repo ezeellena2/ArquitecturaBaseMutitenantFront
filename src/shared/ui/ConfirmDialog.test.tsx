@@ -34,6 +34,17 @@ describe("ConfirmDialog", () => {
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 
+  // La galería en el teléfono (base de la 12, segunda parte): «¿Reenviar la invitación a julieta.molina@arquitecturabase.
+  // ejemplo.com?» ensanchaba el diálogo a 450 px en 390. Un correo del título baja de renglón después de la @ y antes de un
+  // punto del dominio (174), nunca en cualquier letra.
+  it("parte un correo del título donde lo parten los tableros, para no ensanchar el diálogo", () => {
+    renderWithProviders(<ConfirmDialog open onOpenChange={() => {}} confirmLabel="Reenviar" onConfirm={() => {}}
+      title="¿Reenviar la invitación a julieta.molina@arquitecturabase.ejemplo.com?" />);
+    const title = screen.getByRole("heading", { name: "¿Reenviar la invitación a julieta.molina@arquitecturabase.ejemplo.com?" });
+    expect(title.innerHTML).toContain("julieta.molina@<wbr>arquitecturabase<wbr>.ejemplo<wbr>.com?");
+    expect(title.innerHTML).toContain("¿Reenviar la invitación a ");
+  });
+
   it("cancels without calling the action", async () => {
     const onConfirm = vi.fn();
     renderWithProviders(

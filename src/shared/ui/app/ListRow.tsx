@@ -56,6 +56,8 @@ export interface ListCardField {
 // Tableros M-Filas-Base2, M-Usuarios-Base2 y Criterio-Tablas-Base2 (.b2-tj, 263): en el teléfono, la fila de una lista es una
 // tarjeta con el nombre en 16 y cada dato con su nombre, de a dos, sin datos unidos con «·» debajo del nombre. Si son muchos,
 // lleva menos: los que se leen en la lista. El ⋮ va arriba a la derecha, con 44 para tocar; tocar la tarjeta abre su ficha.
+// Debajo de 360 (a 320 no hay tablero propio) los datos van de a uno: de a dos, cada uno tenía unos 91 px y una palabra
+// larga («Administrador») se partía al medio.
 export function ListCard({ leading, title, fields, trailing, to, onClick, className }: {
   leading?: ReactNode;
   title: ReactNode;
@@ -69,8 +71,8 @@ export function ListCard({ leading, title, fields, trailing, to, onClick, classN
     {leading ? <span className="shrink-0">{leading}</span> : null}
     <span className="flex min-w-0 flex-1 flex-col">
       <span className="text-base leading-[1.3] font-semibold text-[var(--t1)] [overflow-wrap:anywhere]">{title}</span>
-      {fields.length > 0 ? <dl className="m-0 mt-2 grid grid-cols-2 gap-x-3.5 gap-y-2">
-        {fields.map((field) => <div key={field.label} className={cn("min-w-0", field.wide && "col-span-2")}>
+      {fields.length > 0 ? <dl className="m-0 mt-2 grid grid-cols-2 gap-x-3.5 gap-y-2 max-[22.5rem]:grid-cols-1">
+        {fields.map((field) => <div key={field.label} className={cn("min-w-0", field.wide && "col-span-2 max-[22.5rem]:col-span-1")}>
           <dt className="text-[0.78125rem] leading-[1.3] text-[var(--t2)]">{field.label}</dt>
           <dd className="m-0 text-[0.90625rem] leading-[1.35] text-[var(--t1)] [overflow-wrap:anywhere]">{field.value}</dd>
         </div>)}

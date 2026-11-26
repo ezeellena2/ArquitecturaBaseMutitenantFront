@@ -9,7 +9,7 @@ import { AppNoticesProvider } from "./AppNotices";
 import { BottomNav } from "./BottomNav";
 import { Fab } from "./Fab";
 import { FixedActions } from "./FixedActions";
-import { ListRow, RowAvatar } from "./ListRow";
+import { ListCard, ListRow, RowAvatar } from "./ListRow";
 import { GroupTitle, SettingsGroup, SettingsItem } from "./SettingsGroup";
 
 // Tableros M-* (.ap-* del lienzo): las piezas del marco de app del teléfono.
@@ -90,6 +90,13 @@ describe("marco de app del teléfono", () => {
     render(<ul><ListRow leading={<span>{"L"}</span>} title="Lucía Fernández" meta="27/09/2026 09:50" lines={["lucia@delta.test", "Activa"]} /></ul>);
     for (const text of ["Lucía Fernández", "lucia@delta.test", "Activa"]) expect(screen.getByText(text)).not.toHaveClass("truncate");
     expect(screen.getByText("Lucía Fernández").parentElement).toHaveClass("max-[22.5rem]:flex-col");
+  });
+
+  // La galería a 320 (base de la 12, segunda parte): de a dos, cada dato tenía unos 91 px y «Administrador» se partía en
+  // «Administrad/or». Debajo de 360 los datos de una tarjeta van de a uno, enteros.
+  it("a 320, los datos de una tarjeta van de a uno para no partir una palabra", () => {
+    render(<ul><ListCard title="Tomás Acosta" fields={[{ label: "Rol en la empresa", value: "Administrador" }, { label: "Estado", value: "Activo" }]} /></ul>);
+    expect(screen.getByText("Administrador").closest("dl")).toHaveClass("grid-cols-2", "max-[22.5rem]:grid-cols-1");
   });
 
   it("el subtítulo de la barra de arriba va entero", () => {

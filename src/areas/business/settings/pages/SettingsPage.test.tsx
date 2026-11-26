@@ -126,6 +126,9 @@ describe("SettingsPage", () => {
 
       await screen.findByRole("textbox", { name: "Nombre de la organización" });
       expect(screen.getByRole("heading", { name: "Datos de la organización" })).toHaveClass("sr-only");
+      // La galería a 390 y 320 (base de la 12, segunda parte): sin columnas propias, la grilla tomaba el ancho de la zona
+      // horaria («Buenos Aires · hora de Argentina · GMT−3») y la pantalla se desplazaba de costado. Una columna que no crece.
+      expect(screen.getByRole("textbox", { name: "Nombre de la organización" }).closest(".grid")).toHaveClass("grid-cols-1", "md:grid-cols-2");
       const domains = screen.getByRole("region", { name: "Dominio de correo" });
       expect(within(domains).getByRole("button", { name: "Agregar dominio" })).toHaveClass("text-[var(--marca-tx)]");
       expect((await within(domains).findByText("delta.example.test")).closest("ul")!.parentElement).toHaveClass("rounded-[0.875rem]");
