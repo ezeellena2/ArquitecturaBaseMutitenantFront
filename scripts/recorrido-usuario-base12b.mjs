@@ -239,8 +239,11 @@ export function base12bSteps(ctx) {
   const asOwner = async (route) => {
     await page.goto(url(route));
     const loginBox = page.getByRole("textbox", { name: "Correo electrónico", exact: true }).or(page.getByRole("link", { name: "Ingresá", exact: true }));
-    // Adentro: la barra de la organización, o el aviso del asistente del Inicio, que es modal y la tapa la primera vez.
+    // Adentro: la barra de la organización, o el aviso del asistente del Inicio, que es modal y la tapa la primera vez. En el
+    // teléfono, una pantalla de crear (M-Rol, con guardar fijo abajo) no muestra la barra ni las secciones: su barra de arriba
+    // (`app-bar`, solo de las zonas privadas) dice que ya está adentro.
     const inside = page.getByRole("button", { name: new RegExp(`, ${escapeRegExp(organization)}$`, "u") }).or(page.getByRole("navigation", { name: "Secciones", exact: true }))
+      .or(page.locator('header[data-slot="app-bar"]'))
       .or(page.getByRole("dialog", { name: "Antes de tu primera consulta", exact: true }));
     await loginBox.or(inside).filter({ visible: true }).first().waitFor({ timeout: 30_000 });
     if (await loginBox.filter({ visible: true }).count()) {
