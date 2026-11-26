@@ -96,7 +96,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Avisos · la campana · etapa 14 · para aprobar",
+      "title": "Avisos · la campana · etapa 14",
       "w": 1440,
       "x": 16720,
       "y": 6138
@@ -438,7 +438,7 @@
       "h": 1510,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · catálogo escrito a mano · campos · a 1280 · etapa 13 · para aprobar",
+      "title": "Formularios · catálogo escrito a mano · campos · a 1280 · etapa 13",
       "w": 1280,
       "x": 0,
       "y": 3144
@@ -447,7 +447,7 @@
       "h": 1700,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · catálogo escrito a mano · lo usan · a 1280 · etapa 14 · para aprobar",
+      "title": "Formularios · catálogo escrito a mano · lo usan · a 1280 · etapa 14",
       "w": 1280,
       "x": 15200,
       "y": 6138
@@ -465,7 +465,7 @@
       "h": 1200,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · los campos de un catálogo · a 1280 · etapa 13 · para aprobar",
+      "title": "Formularios · los campos de un catálogo · a 1280 · etapa 13",
       "w": 1280,
       "x": 1520,
       "y": 3144
@@ -501,7 +501,7 @@
       "h": 1200,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · las opciones, con sus campos · a 1280 · etapa 13 · para aprobar",
+      "title": "Formularios · las opciones, con sus campos · a 1280 · etapa 13",
       "w": 1280,
       "x": 3040,
       "y": 3144
@@ -519,7 +519,7 @@
       "h": 1510,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · ordenar por un campo · a 1280 · etapa 13 · para aprobar",
+      "title": "Formularios · ordenar por un campo · a 1280 · etapa 13",
       "w": 1280,
       "x": 4400,
       "y": 3144
@@ -555,7 +555,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · Catálogos · etapa 14 · para aprobar",
+      "title": "Formularios · Catálogos · etapa 14",
       "w": 1440,
       "x": 13680,
       "y": 6138
@@ -816,7 +816,7 @@
       "h": 1400,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · editor · para aprobar",
+      "title": "Formularios · editor",
       "w": 1440,
       "x": 1520,
       "y": 6138
@@ -897,7 +897,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · la lista · para aprobar",
+      "title": "Formularios · la lista",
       "w": 1440,
       "x": 0,
       "y": 6138
@@ -940,7 +940,7 @@
       "h": 1400,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · cómo termina una publicación · para aprobar",
+      "title": "Formularios · cómo termina una publicación",
       "w": 1440,
       "x": 4560,
       "y": 6138
@@ -985,7 +985,7 @@
       "h": 1400,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · publicar en WhatsApp · para aprobar",
+      "title": "Formularios · publicar en WhatsApp",
       "w": 1440,
       "x": 3040,
       "y": 6138
@@ -1237,7 +1237,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · la vista oficial · etapa 14 · para aprobar",
+      "title": "Formularios · la vista oficial · etapa 14",
       "w": 1440,
       "x": 6080,
       "y": 6138
@@ -1810,7 +1810,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Catálogo escrito a mano · campos · teléfono · etapa 13 · para aprobar",
+      "title": "Catálogo escrito a mano · campos · teléfono · etapa 13",
       "w": 390,
       "x": 0,
       "y": 4774
@@ -1819,7 +1819,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Catálogo escrito a mano · lo usan · teléfono · etapa 14 · para aprobar",
+      "title": "Catálogo escrito a mano · lo usan · teléfono · etapa 14",
       "w": 390,
       "x": 3760,
       "y": 7958
@@ -1837,7 +1837,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Los campos de un catálogo · teléfono · etapa 13 · para aprobar",
+      "title": "Los campos de un catálogo · teléfono · etapa 13",
       "w": 390,
       "x": 470,
       "y": 4774
@@ -1864,7 +1864,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Las opciones, con sus campos · teléfono · etapa 13 · para aprobar",
+      "title": "Las opciones, con sus campos · teléfono · etapa 13",
       "w": 390,
       "x": 940,
       "y": 4774
@@ -1882,7 +1882,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Ordenar por un campo · teléfono · etapa 13 · para aprobar",
+      "title": "Ordenar por un campo · teléfono · etapa 13",
       "w": 390,
       "x": 1410,
       "y": 4774
@@ -1909,7 +1909,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Catálogos · teléfono · etapa 14 · para aprobar",
+      "title": "Catálogos · teléfono · etapa 14",
       "w": 390,
       "x": 3290,
       "y": 7958
@@ -2044,7 +2044,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Editor del formulario · teléfono · para aprobar",
+      "title": "Editor del formulario · teléfono",
       "w": 390,
       "x": 470,
       "y": 7958
@@ -2107,7 +2107,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · la lista · teléfono · para aprobar",
+      "title": "Formularios · la lista · teléfono",
       "w": 390,
       "x": 0,
       "y": 7958
@@ -2843,7 +2843,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · Clientes · enviar un formulario · teléfono · para aprobar",
+      "title": "WhatsApp · Clientes · enviar un formulario · teléfono",
       "w": 390,
       "x": 2350,
       "y": 7958
@@ -2852,7 +2852,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · Internos · enviar un formulario · teléfono · para aprobar",
+      "title": "WhatsApp · Internos · enviar un formulario · teléfono",
       "w": 390,
       "x": 1410,
       "y": 7958
@@ -2987,7 +2987,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · Internos · respuesta del formulario · teléfono · para aprobar",
+      "title": "WhatsApp · Internos · respuesta del formulario · teléfono",
       "w": 390,
       "x": 1880,
       "y": 7958
@@ -3743,7 +3743,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · Clientes · enviar un formulario · para aprobar",
+      "title": "WhatsApp · Clientes · enviar un formulario",
       "w": 1440,
       "x": 10640,
       "y": 6138
@@ -3752,7 +3752,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · Internos · enviar un formulario · para aprobar",
+      "title": "WhatsApp · Internos · enviar un formulario",
       "w": 1440,
       "x": 7600,
       "y": 6138
@@ -3812,7 +3812,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · Internos · respuesta del formulario · para aprobar",
+      "title": "WhatsApp · Internos · respuesta del formulario",
       "w": 1440,
       "x": 9120,
       "y": 6138
@@ -4297,7 +4297,7 @@
       "h": 1820,
       "is_interactive": true,
       "page": "propuesta-base2",
-      "title": "Configuración de la plataforma · nombre y correos, privacidad y retención, y WhatsApp · para aprobar",
+      "title": "Configuración de la plataforma · nombre y correos, privacidad y retención, y WhatsApp",
       "w": 1440,
       "x": 700,
       "y": 8940
@@ -4306,7 +4306,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-base2",
-      "title": "Configuración de la plataforma · teléfono · para aprobar",
+      "title": "Configuración de la plataforma · teléfono",
       "w": 390,
       "x": 2240,
       "y": 8940
@@ -4315,7 +4315,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "propuesta-base2",
-      "title": "Administración · WhatsApp · Configuración (nueva) · el plazo de los chats y el tiempo para contestar un formulario · para aprobar",
+      "title": "Administración · WhatsApp · Configuración (nueva) · el plazo de los chats y el tiempo para contestar un formulario",
       "w": 1440,
       "x": 2730,
       "y": 8940
@@ -4324,7 +4324,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "propuesta-base2",
-      "title": "Configuración de WhatsApp · teléfono · para aprobar",
+      "title": "Configuración de WhatsApp · teléfono",
       "w": 390,
       "x": 4270,
       "y": 8940
