@@ -87,6 +87,12 @@ export const validationConstraints = {
       "maximum": 2147483647
     }
   },
+  "AssistantMessageProposalResponse": {
+    "version": {
+      "minimum": 0,
+      "maximum": 4294967295
+    }
+  },
   "AssistantMessageResponse": {
     "version": {
       "minimum": 0,
@@ -143,6 +149,27 @@ export const validationConstraints = {
     }
   },
   "AssistantPolicyResponse": {
+    "version": {
+      "minimum": 0,
+      "maximum": 4294967295
+    }
+  },
+  "AssistantProposalAppliedHttpRequest": {
+    "version": {
+      "minimum": 0,
+      "maximum": 4294967295
+    }
+  },
+  "AssistantProposalResponse": {
+    "version": {
+      "minimum": 0,
+      "maximum": 4294967295
+    },
+    "values": {
+      "maxItems": 40
+    }
+  },
+  "AssistantProposalTargetResponse": {
     "version": {
       "minimum": 0,
       "maximum": 4294967295
@@ -2160,6 +2187,24 @@ export const schemaEnums = {
   "AssistantMode": [
     "PlatformKey",
     "OwnKey"
+  ],
+  "AssistantProposalKind": [
+    "action"
+  ],
+  "AssistantProposalState": [
+    "new",
+    "replaced",
+    "applied",
+    "unconfirmed",
+    "unavailable"
+  ],
+  "AssistantProposalUnavailableReason": [
+    "permission",
+    "module",
+    "version",
+    "target",
+    "subject",
+    null
   ],
   "AssistantProvider": [
     "Anthropic"

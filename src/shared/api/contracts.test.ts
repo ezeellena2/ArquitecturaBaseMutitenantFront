@@ -63,6 +63,30 @@ describe("OpenAPI contracts", () => {
     expect(run(checker, source, target).status).toBe(0);
   }, 20_000);
 
+  // ADR 0068: el back publica las acciones del asistente junto al OpenAPI, y el front las genera como dato tipado para
+  // el registro de adaptadores y su cobertura (F5).
+  it("generates the assistant actions next to the schema and checks them", () => {
+    const { source, target } = fixture();
+    const actions = path.join(path.dirname(source), "assistant-actions.json");
+    const generatedActions = path.join(path.dirname(target), "assistant-actions.ts");
+    const contract = { actions: [{ id: "users.invite", version: 1, kind: "create", requirement: { kind: "organization", permission: "users.invite" },
+      saveRoute: "POST api/users/invitations", confirmation: "dialog", screen: "inviteUser", effect: "sendsMessage", fieldsFromTarget: false,
+      fields: [{ name: "email", type: "email", required: true, maxLength: 254 }, { name: "roles", type: "choices", required: false }] }] };
+    writeFileSync(actions, JSON.stringify(contract));
+
+    expect(run(generated, source, target).status).toBe(0);
+    const first = readFileSync(generatedActions, "utf8");
+    expect(first).toContain('"users.invite"');
+    expect(first).toContain("assistantActionKeys");
+    expect(first).toContain('"users.invite@1"');
+    expect(run(checker, source, target).status).toBe(0);
+
+    writeFileSync(actions, JSON.stringify({ actions: [{ ...contract.actions[0], version: 2 }] }));
+    const stale = run(checker, source, target);
+    expect(stale.status).not.toBe(0);
+    expect(stale.stdout + stale.stderr).toMatch(/assistant-actions\.ts is stale/);
+  }, 20_000);
+
   it("requires the backend checkout locally and warns when CI lacks it", () => {
     const { source, target } = fixture();
     const missing = path.join(path.dirname(source), "missing-repo/docs/contracts/openapi.json");

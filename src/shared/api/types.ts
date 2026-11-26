@@ -10,6 +10,11 @@ export type UpdateMeRequest = ApiSchemas["UpdateMeHttpRequest"];
 /** Lo que responde un guardado con versión: la versión que quedó, la base del próximo guardado (concurrencia.md). */
 export type VersionResponse = ApiSchemas["VersionResponse"];
 export type LoginMethodsResponse = ApiSchemas["LoginMethodsResponse"];
+/** La propuesta de una acción del asistente (ADR 0068): la leen las pantallas de las áreas por `shared/assistant-actions`. */
+export type AssistantProposalResponse = ApiSchemas["AssistantProposalResponse"];
+export type AssistantProposalValueResponse = ApiSchemas["AssistantProposalValueResponse"];
+export type AssistantProposalAttemptResponse = ApiSchemas["AssistantProposalAttemptResponse"];
+export type AssistantProposalAppliedRequest = ApiSchemas["AssistantProposalAppliedHttpRequest"];
 export type LoginChannelAvailability = ApiSchemas["LoginChannelAvailability"];
 export type PhoneInputRequest = ApiSchemas["PhoneInputHttpRequest"];
 export type PhoneDraft = Required<{ [Key in keyof PhoneInputRequest]: NonNullable<PhoneInputRequest[Key]> }>;

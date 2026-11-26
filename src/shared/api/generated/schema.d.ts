@@ -9910,6 +9910,356 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/organization/assistant/proposals/{proposalId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * La propuesta de quien pide, con su estado calculado al leer (ADR 0068 §9). 501 hasta la B5.
+         * @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Propuesta de una acción (ADR 0068), solo de quien pide: la de otra persona u organización es 404 Assistant.Proposal.NotFound. 501 General.Contract.NotImplemented hasta la B5. state (new, replaced, applied, unconfirmed o unavailable, con unavailableReason) y los nombres se calculan en cada lectura, con los permisos de ese momento y en la empresa de la acción; el destino y cada registro se vuelven a resolver con la fuente.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    proposalId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantProposalResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Proposal.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/assistant/proposals/{proposalId}/attempts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * La clave del intento de guardar (ADR 0068 §10). Sin `[Idempotent]`: es idempotente por naturaleza, porque repetirlo
+         *     devuelve la misma clave mientras ese intento no termine en 4xx, y responde 200 sin crear nada. 501 hasta la B5.
+         * @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Propuesta de una acción (ADR 0068), solo de quien pide: la de otra persona u organización es 404 Assistant.Proposal.NotFound. 501 General.Contract.NotImplemented hasta la B5. Devuelve la clave del intento de guardar ({idempotencyKey}) para el encabezado Idempotency-Key de la ruta que guarda; la misma mientras ese intento no termine en 4xx. Sin Idempotency-Key propia: repetirlo devuelve la misma clave. Con una clave de la propuesta que ya terminó en 2xx la marca aplicada y responde 409 Assistant.Proposal.AlreadyApplied con location; reemplazada, no disponible o sin confirmar, 409 Assistant.Proposal.Unavailable con su motivo.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    proposalId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AssistantProposalAttemptHttpRequest"];
+                    "text/json": components["schemas"]["AssistantProposalAttemptHttpRequest"];
+                    "application/*+json": components["schemas"]["AssistantProposalAttemptHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantProposalAttemptResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Proposal.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Assistant.Proposal.Unavailable; Assistant.Proposal.AlreadyApplied */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/assistant/proposals/{proposalId}/applied": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * La pantalla guardó: el servidor lo comprueba y la marca aplicada (ADR 0068 §10). Al editar, la versión del cuerpo es la
+         *     nueva del registro, la que devuelve `target.version`. 501 hasta la B5.
+         * @description Asistente privado con consultas fijas, turnos durables por SSE, archivos privados y exportación. Identidad, acceso y organización se derivan del contexto firmado. JSON estricto; UTC con Z; versiones uint/xmin. Propuesta de una acción (ADR 0068), solo de quien pide: la de otra persona u organización es 404 Assistant.Proposal.NotFound. 501 General.Contract.NotImplemented hasta la B5. La pantalla guardó: el servidor lo comprueba (al crear, una clave de la propuesta terminó en 2xx para esa persona y esa ruta; al quitar o dar de baja, el destino ya no se resuelve; al editar, version es la de ahora y distinta de la propuesta) y responde la propuesta aplicada. Sin poder comprobarlo, 409 Assistant.Proposal.NotApplied; reemplazada, no disponible o sin confirmar, 409 Assistant.Proposal.Unavailable.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    proposalId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["AssistantProposalAppliedHttpRequest"];
+                    "text/json": components["schemas"]["AssistantProposalAppliedHttpRequest"];
+                    "application/*+json": components["schemas"]["AssistantProposalAppliedHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AssistantProposalResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Assistant.Proposal.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Assistant.Proposal.Unavailable; Assistant.Proposal.NotApplied */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/organization/assistant": {
         parameters: {
             query?: never;
@@ -29345,6 +29695,17 @@ export interface components {
             isVerified: boolean;
             isUsable: boolean;
         };
+        /** @description Lo que el mensaje del historial y del SSE dice de su propuesta; lo demás lo trae el GET de la propuesta. */
+        AssistantMessageProposalResponse: {
+            /** Format: uuid */
+            id: string;
+            kind: components["schemas"]["AssistantProposalKind"];
+            action: string;
+            /** Format: int32 */
+            version: number;
+            state: components["schemas"]["AssistantProposalState"];
+        };
+        /** @description Un mensaje del historial y del SSE; `Proposal` es la propuesta del turno, si la hay (ADR 0068 §8). */
         AssistantMessageResponse: {
             /** Format: uuid */
             id: string;
@@ -29358,6 +29719,7 @@ export interface components {
             attachments: components["schemas"]["AssistantAttachmentSummaryResponse"][];
             links: components["schemas"]["AssistantLinkResponse"][];
             rating?: null | components["schemas"]["AssistantRating"];
+            proposal?: null | components["schemas"]["AssistantMessageProposalResponse"];
         };
         /** @enum {string} */
         AssistantMessageRole: "user" | "assistant";
@@ -29458,6 +29820,57 @@ export interface components {
             allowOwnKey: boolean;
             /** Format: uint32 */
             version: number;
+        };
+        /** @description El aviso de que la pantalla guardó una propuesta: al editar, la versión nueva del registro; si no, sin cuerpo útil. */
+        AssistantProposalAppliedHttpRequest: {
+            /** Format: uint32 */
+            version?: null | number;
+        };
+        /** @description El cuerpo vacío (`{}`) del pedido de la clave de un intento de guardar desde una propuesta. */
+        AssistantProposalAttemptHttpRequest: Record<string, never>;
+        /** @description La clave del intento de guardar desde una propuesta, para el encabezado Idempotency-Key de la ruta que guarda. */
+        AssistantProposalAttemptResponse: {
+            idempotencyKey: string;
+        };
+        /** @enum {string} */
+        AssistantProposalKind: "action";
+        /**
+         * @description La propuesta de un turno (ADR 0068 §8 y §9), leída por id desde la pantalla que la confirma. El estado y los nombres se
+         *     calculan en cada lectura, con los permisos de ese momento y en la empresa de la acción; nunca se guardan.
+         */
+        AssistantProposalResponse: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            conversationId: string;
+            kind: components["schemas"]["AssistantProposalKind"];
+            action: string;
+            /** Format: int32 */
+            version: number;
+            state: components["schemas"]["AssistantProposalState"];
+            unavailableReason?: null | components["schemas"]["AssistantProposalUnavailableReason"];
+            values: components["schemas"]["AssistantProposalValueResponse"][];
+            target?: null | components["schemas"]["AssistantProposalTargetResponse"];
+            appliedLocation?: null | string;
+        };
+        /** @enum {string} */
+        AssistantProposalState: "new" | "replaced" | "applied" | "unconfirmed" | "unavailable";
+        /** @description El registro al que se refiere una propuesta que edita o elimina, como está ahora. */
+        AssistantProposalTargetResponse: {
+            /** Format: uuid */
+            id: string;
+            label: string;
+            /** Format: uint32 */
+            version: number;
+        };
+        /** @enum {null|string} */
+        AssistantProposalUnavailableReason: "permission" | "module" | "version" | "target" | "subject" | null;
+        /** @description Un valor propuesto: el campo, el valor resuelto, su nombre leído del servidor y la clave de texto de la duda («Revisá»). */
+        AssistantProposalValueResponse: {
+            field: string;
+            value: components["schemas"]["JsonElement"];
+            label?: null | string;
+            doubt?: null | string;
         };
         /** @enum {string} */
         AssistantProvider: "Anthropic";
@@ -30205,6 +30618,7 @@ export interface components {
             email?: null | string;
             permissions?: null | string[];
         };
+        JsonElement: unknown;
         /**
          * @description Identifica el documento y la versión exacta que una persona acepta. El servicio los compara con la versión
          *     vigente antes de guardar la prueba de aceptación.
