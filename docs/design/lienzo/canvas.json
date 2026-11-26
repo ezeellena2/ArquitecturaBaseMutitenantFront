@@ -384,7 +384,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Nueva respuesta · fotos y documentos · etapa 20",
+      "title": "Nueva respuesta · fotos y documentos · etapa 20 · para aprobar",
       "w": 1440,
       "x": 6080,
       "y": 24542
@@ -393,7 +393,7 @@
       "h": 1000,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Nueva respuesta · enviada · etapa 20",
+      "title": "Nueva respuesta · enviada · etapa 20 · para aprobar",
       "w": 1440,
       "x": 7600,
       "y": 24542
@@ -402,7 +402,7 @@
       "h": 1100,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Nueva respuesta · las listas · etapa 20",
+      "title": "Nueva respuesta · las listas · etapa 20 · para aprobar",
       "w": 1440,
       "x": 4560,
       "y": 24542
@@ -411,7 +411,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Nueva respuesta · el panel · etapa 20",
+      "title": "Nueva respuesta · el panel · etapa 20 · para aprobar",
       "w": 1440,
       "x": 3040,
       "y": 24542
@@ -429,7 +429,7 @@
       "h": 1200,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Nueva respuesta · la página · etapa 20",
+      "title": "Nueva respuesta · la página · etapa 20 · para aprobar",
       "w": 1440,
       "x": 1520,
       "y": 24542
@@ -663,7 +663,7 @@
       "h": 1500,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · «Dónde se completa» · etapa 20",
+      "title": "Formularios · «Dónde se completa» · etapa 20 · para aprobar",
       "w": 1440,
       "x": 19760,
       "y": 24542
@@ -717,7 +717,7 @@
       "h": 1500,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · la pregunta Cálculo · etapa 19",
+      "title": "Formularios · la pregunta Cálculo · etapa 19 · para aprobar",
       "w": 1440,
       "x": 1520,
       "y": 21218
@@ -726,7 +726,7 @@
       "h": 1500,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · mostrar si · etapa 19",
+      "title": "Formularios · mostrar si · etapa 19 · para aprobar",
       "w": 1440,
       "x": 0,
       "y": 21218
@@ -744,7 +744,7 @@
       "h": 1840,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · el bloque · etapa 19",
+      "title": "Formularios · el bloque · etapa 19 · para aprobar",
       "w": 1440,
       "x": 3040,
       "y": 21218
@@ -753,7 +753,7 @@
       "h": 1600,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · según otra respuesta · etapa 20",
+      "title": "Formularios · según otra respuesta · etapa 20 · para aprobar",
       "w": 1440,
       "x": 13680,
       "y": 24542
@@ -807,7 +807,7 @@
       "h": 1400,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · la pregunta «Ubicación» · etapa 20",
+      "title": "Formularios · la pregunta «Ubicación» · etapa 20 · para aprobar",
       "w": 1440,
       "x": 18240,
       "y": 24542
@@ -861,7 +861,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · la lista con «Cargar» · etapa 20",
+      "title": "Formularios · la lista con «Cargar» · etapa 20 · para aprobar",
       "w": 1440,
       "x": 0,
       "y": 24542
@@ -967,7 +967,7 @@
       "h": 1200,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · publicar · etapa 19",
+      "title": "Formularios · publicar · etapa 19 · para aprobar",
       "w": 1440,
       "x": 4560,
       "y": 21218
@@ -976,7 +976,7 @@
       "h": 1000,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · publicar solo para la app · etapa 20",
+      "title": "Formularios · publicar solo para la app · etapa 20 · para aprobar",
       "w": 1440,
       "x": 15200,
       "y": 24542
@@ -1009,19 +1009,19 @@
       "y": 18334
     },
     "FRM-Respuesta-19.dc.html": {
-      "h": 900,
+      "h": 1000,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · una respuesta · etapa 19",
+      "title": "Formularios · una respuesta · etapa 19 · para aprobar",
       "w": 1440,
       "x": 7600,
       "y": 21218
     },
     "FRM-Respuesta-20.dc.html": {
-      "h": 900,
+      "h": 1100,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · una respuesta de la app · etapa 20",
+      "title": "Formularios · una respuesta de la app · etapa 20 · para aprobar",
       "w": 1440,
       "x": 10640,
       "y": 24542
@@ -1120,7 +1120,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · la planilla · etapa 19",
+      "title": "Formularios · la planilla · etapa 19 · para aprobar",
       "w": 1440,
       "x": 6080,
       "y": 21218
@@ -1129,7 +1129,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · la planilla con «App» · etapa 20",
+      "title": "Formularios · la planilla con «App» · etapa 20 · para aprobar",
       "w": 1440,
       "x": 9120,
       "y": 24542
@@ -1147,7 +1147,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · exportar con «Filas» · etapa 19",
+      "title": "Formularios · exportar con «Filas» · etapa 19 · para aprobar",
       "w": 1440,
       "x": 12160,
       "y": 21218
@@ -1183,7 +1183,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · lo propio · etapa 20",
+      "title": "Formularios · lo propio · etapa 20 · para aprobar",
       "w": 1440,
       "x": 12160,
       "y": 24542
@@ -1201,7 +1201,7 @@
       "h": 1500,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · el tablero con un monto · etapa 19",
+      "title": "Formularios · el tablero con un monto · etapa 19 · para aprobar",
       "w": 1440,
       "x": 10640,
       "y": 21218
@@ -1765,7 +1765,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Fotos y documentos · teléfono · etapa 20",
+      "title": "Fotos y documentos · teléfono · etapa 20 · para aprobar",
       "w": 390,
       "x": 1410,
       "y": 26262
@@ -1774,7 +1774,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Enviada · teléfono · etapa 20",
+      "title": "Enviada · teléfono · etapa 20 · para aprobar",
       "w": 390,
       "x": 1880,
       "y": 26262
@@ -1783,7 +1783,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Las listas · teléfono · etapa 20",
+      "title": "Las listas · teléfono · etapa 20 · para aprobar",
       "w": 390,
       "x": 940,
       "y": 26262
@@ -1801,7 +1801,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Nueva respuesta · teléfono · etapa 20",
+      "title": "Nueva respuesta · teléfono · etapa 20 · para aprobar",
       "w": 390,
       "x": 470,
       "y": 26262
@@ -1963,7 +1963,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "«Dónde se completa» · teléfono · etapa 20",
+      "title": "«Dónde se completa» · teléfono · etapa 20 · para aprobar",
       "w": 390,
       "x": 5640,
       "y": 26262
@@ -1990,7 +1990,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "La pregunta Cálculo · teléfono · etapa 19",
+      "title": "La pregunta Cálculo · teléfono · etapa 19 · para aprobar",
       "w": 390,
       "x": 470,
       "y": 23178
@@ -1999,7 +1999,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Mostrar si · teléfono · etapa 19",
+      "title": "Mostrar si · teléfono · etapa 19 · para aprobar",
       "w": 390,
       "x": 0,
       "y": 23178
@@ -2017,7 +2017,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "El bloque · teléfono · etapa 19",
+      "title": "El bloque · teléfono · etapa 19 · para aprobar",
       "w": 390,
       "x": 940,
       "y": 23178
@@ -2026,7 +2026,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Según otra respuesta · teléfono · etapa 20",
+      "title": "Según otra respuesta · teléfono · etapa 20 · para aprobar",
       "w": 390,
       "x": 3760,
       "y": 26262
@@ -2035,7 +2035,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "La pregunta «Ubicación» · teléfono · etapa 20",
+      "title": "La pregunta «Ubicación» · teléfono · etapa 20 · para aprobar",
       "w": 390,
       "x": 5170,
       "y": 26262
@@ -2080,7 +2080,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Formularios · teléfono · etapa 20",
+      "title": "Formularios · teléfono · etapa 20 · para aprobar",
       "w": 390,
       "x": 0,
       "y": 26262
@@ -2133,7 +2133,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Publicar · teléfono · etapa 20",
+      "title": "Publicar · teléfono · etapa 20 · para aprobar",
       "w": 390,
       "x": 4230,
       "y": 26262
@@ -2187,7 +2187,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Una respuesta · teléfono · etapa 19",
+      "title": "Una respuesta · teléfono · etapa 19 · para aprobar",
       "w": 390,
       "x": 1880,
       "y": 23178
@@ -2196,7 +2196,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Una respuesta · teléfono · etapa 20",
+      "title": "Una respuesta · teléfono · etapa 20 · para aprobar",
       "w": 390,
       "x": 2820,
       "y": 26262
@@ -2268,7 +2268,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "La planilla · teléfono · etapa 19",
+      "title": "La planilla · teléfono · etapa 19 · para aprobar",
       "w": 390,
       "x": 1410,
       "y": 23178
@@ -2277,7 +2277,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "La planilla · teléfono · etapa 20",
+      "title": "La planilla · teléfono · etapa 20 · para aprobar",
       "w": 390,
       "x": 2350,
       "y": 26262
@@ -2304,7 +2304,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Lo propio · teléfono · etapa 20",
+      "title": "Lo propio · teléfono · etapa 20 · para aprobar",
       "w": 390,
       "x": 3290,
       "y": 26262
@@ -2322,7 +2322,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "El tablero con un monto · teléfono · etapa 19",
+      "title": "El tablero con un monto · teléfono · etapa 19 · para aprobar",
       "w": 390,
       "x": 2820,
       "y": 23178
@@ -2834,7 +2834,7 @@
       "h": 844,
       "is_interactive": true,
       "page": "formularios",
-      "title": "Un formulario solo para la app · teléfono · etapa 20",
+      "title": "Un formulario solo para la app · teléfono · etapa 20 · para aprobar",
       "w": 390,
       "x": 4700,
       "y": 26262
@@ -3734,7 +3734,7 @@
       "h": 900,
       "is_interactive": true,
       "page": "formularios",
-      "title": "WhatsApp · un formulario solo para la app · etapa 20",
+      "title": "WhatsApp · un formulario solo para la app · etapa 20 · para aprobar",
       "w": 1440,
       "x": 16720,
       "y": 24542
