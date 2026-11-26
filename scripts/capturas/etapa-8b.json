@@ -43965,7 +43965,7 @@
             }
           }
         ],
-        "readyText": "La salida máxima no puede superar el contexto."
+        "readyText": "No puede superar el contexto."
       }
     },
     {
@@ -47273,7 +47273,7 @@
             }
           }
         ],
-        "readyText": "La salida máxima no puede superar el contexto."
+        "readyText": "No puede superar el contexto."
       }
     },
     {

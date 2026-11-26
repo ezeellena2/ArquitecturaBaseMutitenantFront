@@ -348,11 +348,11 @@ it.each(["Plat-Asistente-Config", "M-Plat-Asistente-Config"].flatMap((board) =>
         expect(dialog.queryByRole("alert")).not.toBeInTheDocument();
       } else {
         const cache = within(dialog.getByRole("group", { name: "Caché · por millón de tokens" }));
-        expect(cache.getByRole("textbox", { name: "Escritura de 5 minutos" })).toHaveValue("2,500000");
+        expect(cache.getByRole("textbox", { name: "Escritura de 5 minutos" })).toHaveValue("2,50");
         const output = dialog.getByRole("textbox", { name: "Salida máxima (tokens)" });
         expect(output).toHaveValue("1.280.000");
         expect(output).toHaveAttribute("aria-invalid", "true");
-        expect(output).toHaveAccessibleDescription("La salida máxima no puede superar el contexto.");
+        expect(output).toHaveAccessibleDescription("No puede superar el contexto.");
       }
       expect(mounted.calls).toContain("GET /api/platform/assistant/models");
       expect(mounted.calls.some((call) => /^(POST|PUT) /.test(call))).toBe(false);

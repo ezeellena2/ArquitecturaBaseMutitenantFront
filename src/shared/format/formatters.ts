@@ -133,6 +133,8 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
   const fixedClock = now === undefined ? null : new Date(now);
   if (fixedClock && Number.isNaN(fixedClock.getTime())) throw new Error("El instante actual no es válido.");
   const clock = () => fixedClock ?? new Date(serverNow());
+  // Las tarifas técnicas guardan hasta seis decimales (ADR 0051, numeric(18,6)).
+  const tariffDigits = 6;
   const number = (value: number, minimum: number, maximum: number) =>
     formatNumber(value, minimum, maximum, profile.decimalSeparator, profile.groupSeparator, culture);
   const date = (value: string, pattern: string) =>
@@ -191,16 +193,29 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
     return profile.percentPattern.replace("{number}", number(shiftDecimal(value, 2), 0, 2));
   }
 
-  function formatMoney(value: MoneyValue): string {
+  function formatMoney(value: MoneyValue): string { return money(value, false); }
+  /** Una tarifa técnica (ADR 0051, hasta seis decimales): el símbolo de la moneda y los decimales que hagan falta, de sus
+   *  unidades menores a seis, sin redondear: «US$ 0,01», «US$ 0,125», «US$ 0,000375». */
+  function formatTariff(value: MoneyValue): string { return money(value, true); }
+  /** El importe de una tarifa técnica, sin la moneda, como lo muestra su campo: «0,10», «0,125». */
+  function formatTariffAmount(value: MoneyValue): string {
     const currency = findRow(referenceData.currencies, value.currency, (item) => item.code);
     if (currency.minorUnits === null) throw new Error(`La moneda ${value.currency} no declara unidades menores.`);
-    const amount = number(Math.abs(value.amount), currency.minorUnits, currency.minorUnits);
+    return number(value.amount, Math.min(currency.minorUnits, tariffDigits), tariffDigits);
+  }
+
+  function money(value: MoneyValue, tariff: boolean): string {
+    const currency = findRow(referenceData.currencies, value.currency, (item) => item.code);
+    if (currency.minorUnits === null) throw new Error(`La moneda ${value.currency} no declara unidades menores.`);
+    const minimum = tariff ? Math.min(currency.minorUnits, tariffDigits) : currency.minorUnits;
+    const maximum = tariff ? tariffDigits : currency.minorUnits;
+    const amount = number(Math.abs(value.amount), minimum, maximum);
     const symbol = currency.displaySymbol;
     const pattern = /\p{L}$/u.test(symbol) && profile.currencyPattern.includes("{symbol}{number}")
       ? profile.currencyPattern.replace("{symbol}{number}", "{symbol} {number}")
       : profile.currencyPattern;
     const positive = pattern.replace("{symbol}", symbol).replace("{number}", amount);
-    return value.amount < 0 && roundedForDisplay(Math.abs(value.amount), currency.minorUnits) !== 0
+    return value.amount < 0 && roundedForDisplay(Math.abs(value.amount), maximum) !== 0
       ? `-${positive}` : positive;
   }
 
@@ -328,7 +343,7 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
   return {
     formatMonth, getMonthOptions, getAdjacentMonthYear, getCurrentMonth,
     formatDate, formatDateTime, formatTime, formatDateRange,
-    formatInteger, formatDecimal, formatQuantity, formatPercent, formatMoney, formatCompact,
+    formatInteger, formatDecimal, formatQuantity, formatPercent, formatMoney, formatTariff, formatTariffAmount, formatCompact,
     formatFileSize, formatDuration, formatPhone, formatTimeZone, formatTimeZoneOffset, formatCulture, formatTaxId,
     formatEmail, formatEnum, formatBoolean, formatEmpty, formatText,
   };

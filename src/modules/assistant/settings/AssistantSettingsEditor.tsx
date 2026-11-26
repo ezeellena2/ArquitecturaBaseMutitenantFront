@@ -2,6 +2,7 @@ import { useQueryUpdate } from "@/shared/hooks/useQueryUpdate";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
+import { Plus } from "lucide-react";
 import { Controller, useWatch } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
 import { useNavigation, useSearchParams } from "react-router";
@@ -261,14 +262,15 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
       <Controller control={form.control} name="retentionDays" render={({ field }) => <FormField label={t("assistant:settings.retentionDays")} required error={errors.retentionDays?.message}><NumberField key={formEpoch} value={field.value} onChange={(value) => { changed("retentionDays"); field.onChange(value); }} /></FormField>} />
     </SectionFields></Section> : null}
   </form>;
-  const actions = tab === "general" ? <><Button type="button" variant="outline" onClick={discard}>{t("assistant:settings.discard")}</Button><Button type="submit" form="assistant-settings" disabled={!form.formState.isDirty} pending={pending} pendingLabel={t("assistant:settings.saving")}>{t("assistant:settings.save")}</Button></> : <Button onClick={(event) => setModelDialog({ trigger: event.currentTarget })}>{t("assistant:settings.addModel")}</Button>;
+  const actions = tab === "general" ? <><Button type="button" variant="outline" onClick={discard}>{t("assistant:settings.discard")}</Button><Button type="submit" form="assistant-settings" disabled={!form.formState.isDirty} pending={pending} pendingLabel={t("assistant:settings.saving")}>{t("assistant:settings.save")}</Button></> : phone ? undefined
+    : <Button onClick={(event) => setModelDialog({ trigger: event.currentTarget })}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("assistant:settings.addModel")}</Button>;
   return <>
     <Page title={t("assistant:settings.title")} summary={(platform && !savedHasKey) || (band && !phone) ? <span className="inline-flex flex-wrap items-center gap-x-3 gap-y-1">
       {platform && !savedHasKey ? <span className="font-medium text-[var(--alerta)]">{t("assistant:settings.unconfigured")}</span> : null}{phone ? null : band}</span> : null} phoneSubtitle={t("assistant:title")} backTo={phone ? { to: platform ? "/plataforma/mas" : "/mas", label: t("assistant:settings.back") } : undefined}
       banner={edit.banner} actions={actions} phoneBody={tab === "catalog" ? "flush" : "padded"}
       tabs={platform ? { label: t("assistant:settings.title"), value: tab, onValueChange: (value) => updateQuery({ tab: value }), items: [
         { value: "general", label: t("assistant:settings.general"), content: general },
-        { value: "catalog", label: t("assistant:settings.catalog"), count: catalog.data ? <NumberText value={catalog.data.length} /> : undefined, content: <ModelCatalog scope={scope} onEdit={(model, trigger) => setModelDialog({ model, trigger })} /> },
+        { value: "catalog", label: t("assistant:settings.catalog"), count: catalog.data ? <NumberText value={catalog.data.length} /> : undefined, content: <ModelCatalog scope={scope} onEdit={(model, trigger) => setModelDialog({ model, trigger })} onAdd={(trigger) => setModelDialog({ trigger })} /> },
       ] } : undefined}>{general}</Page>
     {edit.leaveDialog}
     {addEmailOpen ? <AddLoginMethodDialog open onOpenChange={setAddEmailOpen} onComplete={() => { void client.invalidateQueries({ queryKey: settingsKey }); }} /> : null}

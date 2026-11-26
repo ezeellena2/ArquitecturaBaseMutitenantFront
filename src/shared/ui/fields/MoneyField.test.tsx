@@ -37,7 +37,8 @@ describe("NumberField y MoneyField", () => {
     render(<AppProviders><Tariff /></AppProviders>);
     const input = await screen.findByRole("textbox", { name: "Tarifa" });
     await waitFor(() => expect(input).toBeEnabled());
-    expect(input).toHaveValue("0,125000");
+    // Una tarifa muestra los decimales que hagan falta, hasta seis (Plat-Asistente-Config).
+    expect(input).toHaveValue("0,125");
     fireEvent.change(input, { target: { value: "0,123456" } });
     fireEvent.blur(input);
     expect(input).toHaveValue("0,123456");

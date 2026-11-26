@@ -43,6 +43,8 @@ const unavailableFormatters: Formatters = {
   formatQuantity: emptyText,
   formatPercent: emptyText,
   formatMoney: emptyText,
+  formatTariff: emptyText,
+  formatTariffAmount: emptyText,
   formatCompact: emptyText,
   formatFileSize: emptyText,
   formatDuration: emptyText,

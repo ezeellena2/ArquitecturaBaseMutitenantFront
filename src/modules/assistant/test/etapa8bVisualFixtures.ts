@@ -162,7 +162,7 @@ function galleryAdvancedModelScenario(board: string, state: string): GalleryApp 
   if (invalid) {
     app.actions.push(...(phone ? [click("Datos técnicos")] : []), click("Cambiar datos técnicos"), ...(phone ? [click("Siguiente")] : []),
       fill("Salida máxima (tokens)", "1.280.000"), click(phone ? "Siguiente" : "Guardar cambios"));
-    app.readyText = "La salida máxima no puede superar el contexto.";
+    app.readyText = "No puede superar el contexto.";
   }
   return app;
 }

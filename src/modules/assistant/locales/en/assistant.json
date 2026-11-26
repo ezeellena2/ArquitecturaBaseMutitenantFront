@@ -288,7 +288,7 @@
   "validation": {
     "technicalPrice": "Enter a rate greater than zero in USD.",
     "efforts": "Select at least one effort.",
-    "outputTokens": "Maximum output cannot exceed the context.",
+    "outputTokens": "Cannot exceed the context.",
     "longContextThreshold": "Enter a threshold below the context.",
     "money": "Enter a valid amount in the service currency.",
     "model": "Choose an allowed active model.",

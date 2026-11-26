@@ -46,7 +46,8 @@ export function MoneyField({ value, onChange, onValidityChange, id, name, disabl
     : format.referenceData.currencies.find((row) => row.code === currency);
   const displayed = !format.isLoading && value !== null && currencyRow?.minorUnits !== null
     && currencyRow?.minorUnits !== undefined
-    ? format.formatDecimal(value.amount, precision === "technical-tariff" ? 6 : currencyRow.minorUnits) : "";
+    // Una tarifa técnica muestra los decimales que hagan falta, hasta seis («0,10», «0,125»); la escritura acepta los seis.
+    ? precision === "technical-tariff" ? format.formatTariffAmount(value) : format.formatDecimal(value.amount, currencyRow.minorUnits) : "";
   const inputValue = draft ?? displayed;
 
   function change(input: string, selected: string) {

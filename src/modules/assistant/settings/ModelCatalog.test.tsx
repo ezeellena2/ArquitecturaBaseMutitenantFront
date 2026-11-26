@@ -28,6 +28,9 @@ describe("catálogo y configuración de plataforma", () => {
     expect(screen.queryByRole("button", { name: "Estado" })).not.toBeInTheDocument();
     for (const name of ["Modelo", "Proveedor", "ID", "Entrada por millón", "Salida por millón", "Estado", "Acciones"]) expect(screen.getByRole("columnheader", { name })).toBeVisible();
     expect(screen.getByText("De baja")).toBeVisible();
+    // Plat-Asistente-Config: el estado lleva su punto (verde activo, gris de baja) y «Agregar modelo», su «+».
+    expect(screen.getByText("De baja").parentElement?.querySelector("[data-slot='status-dot']")).toHaveClass("bg-[var(--punto-apagado)]");
+    expect(screen.getByRole("button", { name: "Agregar modelo" }).querySelector("svg")).toHaveAttribute("aria-hidden", "true");
     expect(queries.every((url) => !url.searchParams.has("active") && !url.searchParams.has("search"))).toBe(true);
   });
   // Cuatro escrituras y tres GET retenidos forman una sola carrera de versiones; no se divide el recorrido.
@@ -188,7 +191,7 @@ describe("catálogo y configuración de plataforma", () => {
     const input = within(dialog).getByRole("textbox", { name: "Precio de entrada por millón" });
     const output = within(dialog).getByRole("textbox", { name: "Precio de salida por millón" });
     await waitFor(() => expect(input).toBeEnabled());
-    fireEvent.change(input, { target: { value: "0,125" } }); fireEvent.blur(input); expect(input).toHaveValue("0,125000");
+    fireEvent.change(input, { target: { value: "0,125" } }); fireEvent.blur(input); expect(input).toHaveValue("0,125");
     fireEvent.change(output, { target: { value: "0,1234567" } }); fireEvent.blur(output);
     await app.user.click(within(dialog).getByRole("button", { name: "Siguiente" }));
     expect(screen.getByRole("dialog", { name: "Agregar modelo" })).toBe(dialog); expect(wire).toHaveLength(0);
@@ -222,7 +225,7 @@ describe("catálogo y configuración de plataforma", () => {
     (await screen.findByRole("button", { name: `Acciones de ${firstModel.name}` })).focus(); await app.user.keyboard("{Enter}");
     await app.user.click(await screen.findByRole("menuitem", { name: `Editar ${firstModel.name}` }));
     const dialog = await screen.findByRole("dialog", { name: "Editar modelo" });
-    const price = within(dialog).getByRole("textbox", { name: "Precio de entrada por millón" }); expect(price).toHaveValue("0,125000");
+    const price = within(dialog).getByRole("textbox", { name: "Precio de entrada por millón" }); expect(price).toHaveValue("0,125");
     fireEvent.change(within(dialog).getByRole("textbox", { name: "Nombre" }), { target: { value: "Editado" } });
     await app.user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
     await waitFor(() => expect(wire).toHaveLength(1)); expect(wire[0].version).toBe(firstModel.version);
@@ -311,7 +314,10 @@ describe("catálogo y configuración de plataforma", () => {
     asPhone(); let body: CreateAssistantModelRequest | undefined;
     server.use(http.post("/api/platform/assistant/models", async ({ request }) => { body = await request.json() as CreateAssistantModelRequest; return HttpResponse.json({ id: "new", version: 1 }); }));
     const app = mountSettings(platformManager, catalogPath);
-    await app.user.click(await screen.findByRole("button", { name: "Agregar modelo" }));
+    // M-Plat-Asistente-Config: «+ Agregar modelo» con borde, debajo de la lista; no es el botón lleno de abajo de la pantalla.
+    const add = await screen.findByRole("button", { name: "Agregar modelo" });
+    expect(add).toHaveClass("w-full"); expect(add.closest("[data-slot='fixed-actions']")).toBeNull();
+    await app.user.click(add);
     const dialog = await screen.findByRole("dialog", { name: "Agregar modelo" });
     expect(within(dialog).getByText("Paso 1 de 4")).toBeVisible();
     await app.user.click(within(dialog).getByRole("button", { name: "Siguiente" }));

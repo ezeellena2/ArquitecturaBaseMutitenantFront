@@ -217,6 +217,21 @@ describe.skipIf(!backendPresent)("reloj del formateador", () => {
     const formatter = createFormatters({ referenceData, culture: "es-AR", timeZone: "UTC", translate: translator("es-AR") });
     expect(() => formatter.formatDate("2026-10-03")).toThrow();
   });
+
+  // ADR 0051 y Plat-Asistente-Config: una tarifa técnica guarda hasta seis decimales y se lee con el símbolo y los
+  // decimales que hagan falta, desde los de la moneda, sin redondear: «US$ 0,01», «US$ 0,125».
+  it("una tarifa técnica se lee con su símbolo y los decimales que hagan falta, hasta seis", () => {
+    const formatter = createFormatters({
+      referenceData: sourceCatalog("es-AR"), culture: "es-AR", timeZone: "America/Argentina/Buenos_Aires",
+      now: "2026-10-03T18:00:00Z", translate: translator("es-AR"),
+    });
+    expect(formatter.formatTariff({ amount: 0.01, currency: "USD" })).toBe("US$ 0,01");
+    expect(formatter.formatTariff({ amount: 0.125, currency: "USD" })).toBe("US$ 0,125");
+    expect(formatter.formatTariff({ amount: 0.000375, currency: "USD" })).toBe("US$ 0,000375");
+    expect(formatter.formatTariff({ amount: 3, currency: "USD" })).toBe("US$ 3,00");
+    expect(formatter.formatTariffAmount({ amount: 0.1, currency: "USD" })).toBe("0,10");
+    expect(formatter.formatTariffAmount({ amount: 0.123456, currency: "USD" })).toBe("0,123456");
+  });
 });
 
 describe.skipIf(!backendPresent)("referencias históricas", () => {

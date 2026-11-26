@@ -51,7 +51,7 @@ describe("metadatos editables del catálogo", () => {
     const reading = phone ? dialog : within(dialog).getByRole("group", { name: "Datos técnicos" });
     expect(reading).toHaveTextContent("Texto, Herramientas, Imágenes en los adjuntos, PDF en los adjuntos y Pensamiento adaptativo");
     expect(reading).toHaveTextContent("Bajo, Medio y Alto");
-    expect(reading).toHaveTextContent("200.000"); expect(reading).toHaveTextContent("USD 0,010000");
+    expect(reading).toHaveTextContent("200.000"); expect(reading).toHaveTextContent(/USD 0,01(?!\d)/u); expect(reading).not.toHaveTextContent("0,010000");
     if (phone) expect(screen.getByRole("dialog", { name: "Datos técnicos" })).toBe(dialog);
     await app.user.click(within(dialog).getByRole("button", { name: "Cambiar datos técnicos" }));
     for (const name of ["Texto", "Herramientas", "Imágenes en los adjuntos", "PDF en los adjuntos", "Pensamiento adaptativo", "Bajo", "Medio", "Alto"])
@@ -63,9 +63,9 @@ describe("metadatos editables del catálogo", () => {
     expect(within(dialog).getByRole("textbox", { name: "Contexto (tokens)" })).toHaveValue("200.000");
     expect(within(dialog).getByRole("textbox", { name: "Salida máxima (tokens)" })).toHaveValue("4.096");
     const cache = within(dialog).getByRole("group", { name: "Caché · por millón de tokens" });
-    expect(within(cache).getByRole("textbox", { name: "Lectura de caché" })).toHaveValue("0,010000");
-    expect(within(cache).getByRole("textbox", { name: "Escritura de 5 minutos" })).toHaveValue("0,150000");
-    expect(within(cache).getByRole("textbox", { name: "Escritura de 1 hora" })).toHaveValue("0,250000");
+    expect(within(cache).getByRole("textbox", { name: "Lectura de caché" })).toHaveValue("0,01");
+    expect(within(cache).getByRole("textbox", { name: "Escritura de 5 minutos" })).toHaveValue("0,15");
+    expect(within(cache).getByRole("textbox", { name: "Escritura de 1 hora" })).toHaveValue("0,25");
     expect(await axe(dialog)).toHaveNoViolations();
     if (phone) await app.user.click(within(dialog).getByRole("button", { name: "Siguiente" }));
     await app.user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
@@ -96,7 +96,7 @@ describe("metadatos editables del catálogo", () => {
     await changeTechnical(app, dialog);
     write(dialog, "Salida máxima (tokens)", "2147483647");
     await app.user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
-    expect(await within(dialog).findByText("La salida máxima no puede superar el contexto.")).toBeVisible();
+    expect(await within(dialog).findByText("No puede superar el contexto.")).toBeVisible();
     expect(writes).toBe(0);
     write(dialog, "Salida máxima (tokens)", "2048");
     const tier = within(dialog).getByRole("group", { name: "Contexto largo Opcional" });
@@ -143,7 +143,7 @@ describe("metadatos editables del catálogo", () => {
     await changeTechnical(app, dialog);
     const tier = within(dialog).getByRole("group", { name: "Contexto largo Opcional" });
     expect(within(tier).getByRole("textbox", { name: "Desde (tokens)" })).toHaveValue("100.000");
-    expect(within(tier).getByRole("textbox", { name: "Lectura de caché" })).toHaveValue("0,100000");
+    expect(within(tier).getByRole("textbox", { name: "Lectura de caché" })).toHaveValue("0,10");
     for (const name of ["Desde (tokens)", "Entrada por millón", "Salida por millón", "Lectura de caché", "Escritura de 5 minutos", "Escritura de 1 hora"]) write(tier, name, "");
     await app.user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
     await waitFor(() => expect(body?.technical.longContext).toBeNull()); expect(body?.version).toBe(firstModel.version);

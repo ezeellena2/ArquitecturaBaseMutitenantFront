@@ -180,8 +180,8 @@ function ModelTechnicalReading({ technical, phone }: { technical: ModelFormValue
   const { t } = useTranslation(["assistant", "enums"]); const format = useFormat();
   const empty = format.formatEmpty();
   const tokens = (value: number | null) => value === null ? empty : format.formatInteger(value);
-  // La tarifa como la muestra su campo (MoneyField técnico): la moneda adelante y seis decimales.
-  const money = (value: { amount: number; currency: string } | null) => value === null ? empty : `${value.currency} ${format.formatDecimal(value.amount, 6)}`;
+  // La tarifa con el símbolo y los decimales que hagan falta, hasta seis (Plat-Asistente-Config: «US$ 0,01», «US$ 0,125»).
+  const money = (value: { amount: number; currency: string } | null) => value === null ? empty : format.formatTariff(value);
   const list = (items: readonly string[]) => items.length === 0 ? empty : items.length === 1 ? items[0]!
     : t("assistant:settings.technical.list", { items: items.slice(0, -1).join(", "), last: items.at(-1) });
   const capabilities = (["supportsText", "supportsTools", "supportsImages", "supportsPdf", "supportsAdaptiveThinking"] as const).filter((name) => technical[name]).map((name) => t(`assistant:settings.technical.${name}`));
