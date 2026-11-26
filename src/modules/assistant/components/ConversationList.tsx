@@ -36,7 +36,7 @@ function Group({ saved, query, ...props }: ConversationListProps & { saved: bool
   const format = useFormat();
   return <section className="flex flex-col gap-1">
     <h2 className="flex items-center gap-1.5 px-2.5 pt-3.5 pb-1.5 text-[0.78125rem] font-semibold text-[var(--t3)]">{t(saved ? "history.saved" : "history.recent")}
-      {!saved ? <InfoButton label={t("history.retention", { days: format.formatInteger(props.retentionDays) })} onClick={props.onRetentionInfo} /> : null}
+      {!saved ? <InfoButton tone="inherit" label={t("history.retention", { days: format.formatInteger(props.retentionDays) })} onClick={props.onRetentionInfo} /> : null}
     </h2>
     <ThreadListPrimitive.Items>{({ threadListItem }) => {
       const conversation = query.items.find((item) => item.id === threadListItem.id);

@@ -213,7 +213,7 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
             onChange={(mode) => { if (mode === values.mode) return; changed("mode"); form.setValue("mode", mode as SettingsValues["mode"], { shouldDirty: true }); }} />
         </FormField>
         {ownKey && (!settings.hasAlertRecipient || errors.mode?.type === "alertRecipient") ? <>{!errors.mode ? <p role="alert" className="mt-1 text-[0.8125rem] text-[var(--peligro)]">{t("assistant:settings.recipientRequired", { organization: activeOrganization(me)?.name })}</p> : null}<Button type="button" variant="link" onClick={() => setAddEmailOpen(true)}>{t("assistant:settings.addEmail")}</Button></> : null}
-      </div> : <ReadOnlyField label={t("assistant:settings.mode")}><span className="inline-flex items-center gap-1.5">{t("assistant:settings.modeLabels.PlatformKey")}<InfoButton label={t("assistant:settings.ownKeyUnavailable", { organization: activeOrganization(me)?.name })} onClick={() => setInfo("ownKey")} /></span></ReadOnlyField> : null}
+      </div> : <ReadOnlyField label={t("assistant:settings.mode")}><span className="inline-flex items-center gap-1.5">{t("assistant:settings.modeLabels.PlatformKey")}<InfoButton tone="inherit" label={t("assistant:settings.ownKeyUnavailable", { organization: activeOrganization(me)?.name })} onClick={() => setInfo("ownKey")} /></span></ReadOnlyField> : null}
       {paused ? <FormField label={t("assistant:settings.provider")}><Picker value={provider || null} placeholder={t("assistant:settings.selectProvider")}
         options={[{ value: "Anthropic", label: t("enums:AssistantProvider.Anthropic") }]} onChange={(value) => { if (value === provider) return; changed(); setProvider(value); }} />
       </FormField> : <ReadOnlyField label={t("assistant:settings.provider")}>{t("enums:AssistantProvider.Anthropic")}</ReadOnlyField>}
@@ -250,8 +250,8 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
         <Controller control={form.control} name="monthlyBudget" render={({ field }) => <FormField label={t(platform ? "assistant:settings.organizationBudget" : "assistant:settings.monthlyBudget")} error={errors.monthlyBudget?.message}><MoneyField fixedCurrency key={formEpoch} currencyCode={billingCurrency} value={field.value} onValidityChange={(valid) => { budgetValid.current = valid; }} onChange={(value) => { changed("monthlyBudget"); field.onChange(value); }} /></FormField>} />
       </> : <>
         {/* A11 (Asistente-Config-Org): los topes que fija la plataforma, apagados y con su ⓘ en el rótulo. */}
-        <ReadOnlyField label={t("assistant:settings.dailyLimit")} info={<InfoButton label={t("assistant:settings.platformLimits")} onClick={() => setInfo("limits")} />}><NumberText value={settings.dailyMessageLimit} /></ReadOnlyField>
-        <ReadOnlyField label={t("assistant:settings.monthlyBudget")} prefix={budget?.currency} muted={!budget} info={<InfoButton label={t("assistant:settings.platformBudget")} onClick={() => setInfo("budget")} />}>
+        <ReadOnlyField label={t("assistant:settings.dailyLimit")} info={<InfoButton tone="inherit" label={t("assistant:settings.platformLimits")} onClick={() => setInfo("limits")} />}><NumberText value={settings.dailyMessageLimit} /></ReadOnlyField>
+        <ReadOnlyField label={t("assistant:settings.monthlyBudget")} prefix={budget?.currency} muted={!budget} info={<InfoButton tone="inherit" label={t("assistant:settings.platformBudget")} onClick={() => setInfo("budget")} />}>
           {budget ? format.formatDecimal(budget.amount, budgetDigits) : format.formatEmpty()}
         </ReadOnlyField>
       </>}

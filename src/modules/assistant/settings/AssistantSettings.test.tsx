@@ -46,6 +46,9 @@ describe("configuración real de gestión", () => {
     const budget = screen.getByRole("group", { name: "Tope del mes" });
     expect(budget.querySelector("[data-slot=read-only-field]")).toHaveTextContent(/^USD100,00$/u);
     expect(within(budget).getByRole("button", { name: "Lo fija la plataforma." })).toBeVisible();
+    // Asistente-Config-Org: las (i) de lo que fija la plataforma son grises, como su rótulo; el rojo es de un problema.
+    for (const info of [within(mode).getByRole("button", { name: /no habilitó una clave propia/u }), within(daily).getByRole("button", { name: "Los fija la plataforma." }),
+      within(budget).getByRole("button", { name: "Lo fija la plataforma." })]) expect(info.className).not.toContain("--peligro");
     expect(screen.queryByRole("textbox", { name: "Tope del mes" })).not.toBeInTheDocument();
     expect(await axe(app.container)).toHaveNoViolations();
   });

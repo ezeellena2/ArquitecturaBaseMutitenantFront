@@ -25,6 +25,16 @@ describe("LimitReached", () => {
     expect(await screen.findByRole("tooltip")).toHaveTextContent("Cada organización tiene su cupo: en otra podés seguir consultando.");
     expect(await axe(container)).toHaveNoViolations();
   });
+  // 210 y Asistente-*-Base2: el aviso del tope es el cartel de atención, blanco, con el filo y el triángulo en ámbar, y la
+  // (i) al final de su misma frase (la galería mostraba una caja amarilla llena, sin el triángulo, con la (i) abajo).
+  it("es el cartel de atención, blanco con el filo ámbar y el triángulo, con la (i) en la misma frase", async () => {
+    renderWithProviders(<LimitReached monthly={false} state={inMadrid} organizationName="Grupo Delta" inOrganization />);
+    const notice = await screen.findByRole("status");
+    expect(notice.className).toContain("border-l-[var(--alerta)]");
+    expect(notice.className).not.toContain("bg-[var(--alerta-t)]");
+    expect(notice.querySelector("svg.text-\\[var\\(--alerta\\)\\]")).not.toBeNull();
+    expect(screen.getByRole("button", { name: /Consultas de hoy/u }).closest("p")).toHaveTextContent(/^Usaste tus 50 consultas de hoy en Grupo Delta/u);
+  });
   it("fuera de una organización es el cupo de la persona, sin la (i)", async () => {
     renderWithProviders(<LimitReached monthly={false} state={state} />);
     expect(await screen.findByRole("status")).toHaveTextContent("Usaste tus 50 consultas de hoy. Vuelven el 24/11/2026, a las 00:00, hora de tu perfil.");

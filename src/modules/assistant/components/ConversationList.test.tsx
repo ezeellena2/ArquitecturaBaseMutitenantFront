@@ -45,6 +45,14 @@ it("el SDK conserva selección y carga la tanda siguiente con el cursor opaco de
   expect(requests.filter((request) => request.saved === "true")).toEqual([{ saved: "true", cursor: null }]);
   expect(screen.queryByRole("button", { name: "Cargar más" })).not.toBeInTheDocument();
 });
+it("la (i) de «Recientes» es la del título, en su gris, y no la roja de un problema (Asistente-*-Base2)", async () => {
+  server.use(http.get("/api/organization/assistant/conversations", ({ request }) => HttpResponse.json({
+    items: new URL(request.url).searchParams.get("saved") === "true" ? [] : [row("newer", "Consulta reciente")], hasMore: false })));
+  renderWithProviders(<MemoryRouter><OwnedList enabled onSelect={() => {}} /></MemoryRouter>);
+  const info = await screen.findByRole("button", { name: "Se borran solas a los 30 días sin actividad. Las guardadas no vencen." });
+  expect(info.className).not.toContain("--peligro");
+  expect(info.className).toContain("text-inherit");
+});
 it("deshabilitado no consulta el historial", async () => {
   let requests = 0;
   server.use(http.get("/api/organization/assistant/conversations", () => { requests++; return HttpResponse.json({ items: [], hasMore: false }); }));
