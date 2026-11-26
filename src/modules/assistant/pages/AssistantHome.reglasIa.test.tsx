@@ -61,6 +61,26 @@ describe("las reglas de toda la IA en el Inicio", () => {
     await waitFor(() => expect(screen.queryByText("No pudimos abrir esta conversación. Podés borrarla.")).not.toBeInTheDocument());
   }, 15_000);
 
+  // Asistente-Org-Acciones: con una propuesta en el hilo el campo invita a pedir un cambio; sin ella, o en el teléfono, el de siempre.
+  it.each([false, true])("con una propuesta en el hilo, el campo dice «Pedí un cambio o hacé otra consulta…»; teléfono %s", async (phone) => {
+    const proposed = chat();
+    proposed.messages.items = [
+      { id: "m-1", role: "user", text: "Invitá a Ana", status: "Complete", version: 1, createdAtUtc: "2026-10-10T12:00:00Z", attachments: [], links: [] },
+      { id: "m-2", role: "assistant", text: "Te preparé la invitación.", status: "Complete", version: 1, createdAtUtc: "2026-10-10T12:00:00Z", attachments: [], links: [],
+        proposal: { id: "p-1", kind: "action", action: "users.invite", version: 1, state: "new" } },
+    ];
+    const app = setup(phone, [chat().conversation]);
+    server.use(http.get("/api/organization/assistant/conversations/chat", () => HttpResponse.json(proposed)),
+      http.get("/api/organization/assistant/proposals/p-1", () => HttpResponse.json({ id: "p-1", conversationId: "chat", kind: "action", action: "users.invite", version: 1,
+        state: "new", values: [{ field: "email", value: "ana@delta.ejemplo.com" }] })));
+    const box = await screen.findByRole("textbox", { name: "Tu consulta" });
+    expect(box).toHaveAttribute("placeholder", phone ? "Preguntá algo" : "Preguntá lo que quieras sobre Grupo Delta");
+    if (phone) await app.user.click(await screen.findByRole("button", { name: "Conversaciones" }));
+    await app.user.click(await screen.findByRole("button", { name: "Mi consulta" }));
+    await screen.findByText("Te preparé la invitación.");
+    await waitFor(() => expect(screen.getByRole("textbox", { name: "Tu consulta" })).toHaveAttribute("placeholder", phone ? "Preguntá algo" : "Pedí un cambio o hacé otra consulta…"));
+  });
+
   it("borrar una conversación que se puede leer también avisa que se van sus archivos", async () => {
     const app = setup(false, [chat().conversation]);
     (await screen.findByRole("button", { name: "Acciones de Mi consulta" })).focus(); await app.user.keyboard("{Enter}");

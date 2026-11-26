@@ -105,6 +105,7 @@
     "label": "Your query",
     "stop": "Stop",
     "send": "Send",
+    "proposalPlaceholder": "Ask for a change or something else…",
     "phonePlaceholder": "Ask something",
     "businessPlaceholder": "Ask anything about {{organization}}",
     "consumerPlaceholder": "Ask about your account and your organizations",

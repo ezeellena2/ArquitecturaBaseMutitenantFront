@@ -50,7 +50,11 @@ export function AssistantWorkspace({ props, session, state }: { props: Assistant
   const history = <ConversationList scope={scope} lifetime={operations.lifetime} enabled={operations.active && state.noticeAccepted && code !== "Assistant.Notice.AcceptanceRequired"} selectedId={selectedId} retentionDays={state.retentionDays} onNew={() => select(null)} onSelect={select} actions={actions}
     onRetentionInfo={() => { setHistoryOpen(false); setRetentionOpen(true); }}
     onActions={phone ? (conversation) => { setHistoryOpen(false); setPhoneActions({ title: assistantConversationTitle(conversation, t), items: actions(conversation) }); } : undefined} />;
-  const composer = <><AttachmentComposer key={generation} limits={state} files={files} errorId={hasAttachmentError ? fileErrorId : undefined} placeholder={phone ? t("composer.phonePlaceholder") : t(`composer.${scope.access}Placeholder`, { organization: props.organizationName ?? t("composer.organization") })} unavailable={!configured || limited || notice || !!selectedId && !runtime.canSend && !runtime.isPending} sendBlocked={limit.isRunning} pending={busy} canStop={runtime.canStop} uploadingId={uploadingId}
+  // Con una propuesta en el hilo (Asistente-Org-Acciones), el campo invita a pedir un cambio; en el teléfono sigue corto.
+  const proposing = !!selectedId && (runtime.detail.data?.messages.items.some((message) => message.proposal?.kind === "action") ?? false);
+  const placeholder = phone ? t("composer.phonePlaceholder") : proposing ? t("composer.proposalPlaceholder")
+    : t(`composer.${scope.access}Placeholder`, { organization: props.organizationName ?? t("composer.organization") });
+  const composer = <><AttachmentComposer key={generation} limits={state} files={files} errorId={hasAttachmentError ? fileErrorId : undefined} placeholder={placeholder} unavailable={!configured || limited || notice || !!selectedId && !runtime.canSend && !runtime.isPending} sendBlocked={limit.isRunning} pending={busy} canStop={runtime.canStop} uploadingId={uploadingId}
     onFiles={(chosen) => {
       const issue = validateAssistantFiles(chosen, files.length, state);
       // El exceso permitido queda local para corregirlo; no admite un MIME

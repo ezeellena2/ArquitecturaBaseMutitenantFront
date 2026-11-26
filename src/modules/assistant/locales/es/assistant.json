@@ -105,6 +105,7 @@
     "label": "Tu consulta",
     "stop": "Detener",
     "send": "Enviar",
+    "proposalPlaceholder": "Pedí un cambio o hacé otra consulta…",
     "phonePlaceholder": "Preguntá algo",
     "businessPlaceholder": "Preguntá lo que quieras sobre {{organization}}",
     "consumerPlaceholder": "Preguntá sobre tu cuenta y tus organizaciones",
