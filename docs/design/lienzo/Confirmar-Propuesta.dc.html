@@ -1457,6 +1457,11 @@ textarea.in2 { height: auto; min-height: 84px; }
 </style>
 <style data-b0="org">
 .tt-h .ord { margin-left: 2.9px/*4px*/; font-size: 10.5px/*10px*/; color: var(--t2); }
+/* El orden de una tabla (264): la flecha en el color de la marca después del título; «Ordenar por» al final de la barra. */
+.b2-fl { margin-left: 3.6px/*5px*/; color: var(--marca-tx); font-weight: 700; }
+.b2-sep { align-self: stretch; width: 1px; margin: 3px 2px; background: var(--borde); }
+.b2-ordenar { margin-left: auto; white-space: nowrap; }
+.b2-ordenar > button { white-space: nowrap; }
 .tt-f > .c2b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--t2); }
 </style>
 <style data-t10="nucleo">
@@ -1770,12 +1775,10 @@ button.in2 .acc-rev { margin-left: auto; margin-right: 5.8px/*8px*/; }
             <button type="button" class="pill-sel " aria-haspopup="listbox" aria-expanded="false">Vale en: todos <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></button>
             
           </span>
-
-          
-        </div>
+        <span class="b2-sep" aria-hidden="true"></span><span class="envoltura b2-ordenar"><button type="button" class="pill-sel" aria-haspopup="listbox" aria-expanded="false">Ordenar por: Rol, de la A a la Z <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></button></span></div>
 
         <div class="tarjeta">
-          <div class="tt-h" style="grid-template-columns: minmax(0px, 1.3fr) 140px minmax(0px, 1.2fr) 100px 100px 28px;"><span aria-sort="ascending">Rol<span class="ord" aria-hidden="true">▲</span></span><span>Tipo</span><span>Vale en</span><span class="num">Usuarios</span><span class="num">Permisos</span><span class="sr">Acciones</span></div>
+          <div class="tt-h" style="grid-template-columns: minmax(0px, 1.3fr) 140px minmax(0px, 1.2fr) 100px 100px 28px;"><span aria-sort="ascending">Rol<span class="b2-fl" aria-hidden="true">↑</span></span><span>Tipo</span><span>Vale en</span><span class="num">Usuarios</span><span class="num">Permisos</span><span class="sr">Acciones</span></div>
           
             <div class="tt-f" style="grid-template-columns: minmax(0px, 1.3fr) 140px minmax(0px, 1.2fr) 100px 100px 28px;"><a class="c1" href="Rol.dc.html">Dueño</a><span class="c1 n">De sistema</span><span class="c1 n">Toda la organización</span><span class="num">1</span><span class="num">12</span><span class="der envoltura">
                 <button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de Dueño"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="12" cy="18.5" r="1.6"></circle></svg></button>
@@ -1915,12 +1918,10 @@ button.in2 .acc-rev { margin-left: auto; margin-right: 5.8px/*8px*/; }
             <button type="button" class="pill-sel " aria-haspopup="listbox" aria-expanded="false">Vale en: todos <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></button>
             
           </span>
-
-          
-        </div>
+        <span class="b2-sep" aria-hidden="true"></span><span class="envoltura b2-ordenar"><button type="button" class="pill-sel" aria-haspopup="listbox" aria-expanded="false">Ordenar por: Rol, de la A a la Z <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></button></span></div>
 
         <div class="tarjeta">
-          <div class="tt-h" style="grid-template-columns: minmax(0px, 1.3fr) 140px minmax(0px, 1.2fr) 100px 100px 28px;"><span aria-sort="ascending">Rol<span class="ord" aria-hidden="true">▲</span></span><span>Tipo</span><span>Vale en</span><span class="num">Usuarios</span><span class="num">Permisos</span><span class="sr">Acciones</span></div>
+          <div class="tt-h" style="grid-template-columns: minmax(0px, 1.3fr) 140px minmax(0px, 1.2fr) 100px 100px 28px;"><span aria-sort="ascending">Rol<span class="b2-fl" aria-hidden="true">↑</span></span><span>Tipo</span><span>Vale en</span><span class="num">Usuarios</span><span class="num">Permisos</span><span class="sr">Acciones</span></div>
           
             <div class="tt-f" style="grid-template-columns: minmax(0px, 1.3fr) 140px minmax(0px, 1.2fr) 100px 100px 28px;"><a class="c1" href="Rol.dc.html">Dueño</a><span class="c1 n">De sistema</span><span class="c1 n">Toda la organización</span><span class="num">1</span><span class="num">12</span><span class="der envoltura">
                 <button type="button" class="kebab" aria-haspopup="menu" aria-expanded="false" aria-label="Acciones de Dueño"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5.5" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="12" cy="18.5" r="1.6"></circle></svg></button>
