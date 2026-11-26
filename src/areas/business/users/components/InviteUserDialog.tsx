@@ -7,10 +7,11 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
 import { ApiError } from "@/shared/api/ApiError";
-import { actionErrorMessage } from "@/shared/api/errorMessage";
+import { rateLimitedActionMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { InviteOrganizationUserRequest } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
+import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
 import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { sameList } from "@/shared/lib/sameList";
 import { useFormat } from "@/shared/format/useFormat";
@@ -53,7 +54,9 @@ function sameInvitation(previous: InviteOrganizationUserRequest, next: InviteOrg
 
 /// «Invitar usuario» (tableros Usuarios-Invitar y M-Usuarios-Invitar): todo es opcional salvo el correo, y se invita a
 /// una sola empresa con sus roles (decisión 4 del usuario; desde la ficha se suman más). Se monta solo mientras está
-/// abierto: lo escrito, el error y la clave del alta se van al cerrarlo. «Invitar» no se apaga («Criterio · Botones»).
+/// abierto: lo escrito, el error y la clave del alta se van al cerrarlo. «Invitar» no se apaga («Criterio · Botones»),
+/// salvo mientras cuenta la espera de un 429, como Mi cuenta: el tope del correo (0063 §7) dice su texto en la franja y
+/// «Reintentá en 22 h 53 min» en el botón, sin el aviso de abajo.
 export function InviteUserDialog({ onClose, onInvited }: {
   onClose: () => void;
   /** Después de invitar: la pantalla vuelve a leer la lista. */
@@ -73,8 +76,10 @@ export function InviteUserDialog({ onClose, onInvited }: {
   const organizationRoles = orgOptions.items;
   const companyRoles = companyOptionsQuery.items.filter((role) => role.scope === "AnyCompany" || role.companyId === company.field.value);
   const [failure, setFailure] = useState<unknown>();
+  const limit = useRetryAfterCountdown();
 
   function rejected(error: unknown) {
+    limit.startFromError(error);
     if (error instanceof ApiError && applyApiErrorToForm(error, form.setError, serverFields)) return;
     setFailure(error);
   }
@@ -86,7 +91,7 @@ export function InviteUserDialog({ onClose, onInvited }: {
     toast.success(t("users:messages.invited", { email: request.email, date: format.formatDate(issued.expiresAtUtc) }));
     onClose();
     void onInvited();
-  }), { meta: action.meta, sameOperation: sameInvitation });
+  }), { meta: { ...action.meta, handlesRateLimit: true }, sameOperation: sameInvitation });
 
   const submit = form.handleSubmit((values) => {
     setFailure(undefined);
@@ -128,11 +133,11 @@ export function InviteUserDialog({ onClose, onInvited }: {
             </FormField>
           </div>
           {/* «Criterio · Diálogos»: el error general, en la franja arriba de los botones. */}
-          <FormError message={actionErrorMessage(failure, t)} />
+          <FormError message={rateLimitedActionMessage(failure, t)} />
         </DialogBody>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onClose}>{t("common:actions.cancel")}</Button>
-          <Button type="submit" pending={invite.isPending} pendingLabel={t("users:invite.sending")}>{t("users:invite.send")}</Button>
+          <Button type="submit" disabled={limit.isRunning} pending={invite.isPending} pendingLabel={t("users:invite.sending")}>{limit.label ?? t("users:invite.send")}</Button>
         </DialogFooter>
       </form>
     </DialogContent>

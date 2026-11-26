@@ -8,10 +8,11 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { ApiError } from "@/shared/api/ApiError";
-import { actionErrorMessage } from "@/shared/api/errorMessage";
+import { rateLimitedActionMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { CreatePlatformTenantRequest } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
+import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
 import { maskEmail } from "@/shared/format/personalData";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import { Button } from "@/shared/ui/button";
@@ -50,10 +51,15 @@ export function CreateOrganizationDialog({ onClose, onCreated }: { onClose: () =
   const culture = useController({ control: form.control, name: "culture" });
   const zone = useController({ control: form.control, name: "timeZoneId" });
   const [failure, setFailure] = useState<unknown>();
+  // La invitación al Dueño sale por correo: un 429 (su tope, 0063 §7) dice su texto en la franja y cuenta la espera en el
+  // botón, como Mi cuenta.
+  const limit = useRetryAfterCountdown();
   const create = useIdempotentMutation((request: CreatePlatformTenantRequest, key) => createTenant(request, key), {
+    meta: { handlesRateLimit: true },
     sameOperation: (previous, next) => previous.name === next.name && previous.firstCompanyName === next.firstCompanyName && previous.ownerEmail === next.ownerEmail && previous.culture === next.culture && previous.timeZoneId === next.timeZoneId,
   });
   function rejected(error: unknown) {
+    limit.startFromError(error);
     if (error instanceof ApiError) {
       if (applyApiErrorToForm(error, form.setError, serverFields)) return;
       const field = tenantCreateErrorField(error);
@@ -93,11 +99,11 @@ export function CreateOrganizationDialog({ onClose, onCreated }: { onClose: () =
               <CultureSelect value={culture.field.value} onChange={(value) => { culture.field.onChange(value); clearFailure(); }} placeholder={t("platformTenants:create.culture")} />
             </FormField>
           </div>
-          <FormError message={actionErrorMessage(failure, t)} />
+          <FormError message={rateLimitedActionMessage(failure, t)} />
         </DialogBody>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onClose}>{t("common:actions.cancel")}</Button>
-          <Button type="submit" pending={create.isPending} pendingLabel={t("platformTenants:create.pending")}>{t("platformTenants:create.submit")}</Button>
+          <Button type="submit" disabled={limit.isRunning} pending={create.isPending} pendingLabel={t("platformTenants:create.pending")}>{limit.label ?? t("platformTenants:create.submit")}</Button>
         </DialogFooter>
       </form>
     </DialogContent>

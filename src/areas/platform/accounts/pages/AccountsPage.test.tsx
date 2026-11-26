@@ -226,6 +226,19 @@ describe("Cuentas de Plataforma", () => {
     code = "Platform.Operator.PermissionsRequired"; await user.click(screen.getByRole("button", { name: "Invitar" })); expect(await screen.findByText("Elegí al menos un permiso de plataforma.")).toBeVisible(); expect(screen.getByRole("table", { name: "Permisos de plataforma" })).toHaveAccessibleDescription("Elegí al menos un permiso de plataforma.");
     expect(requests).toEqual(Array.from({ length: 3 }, () => ({ email: "nuevo@example.com", permissions: [] })));
   });
+  // ADR 0063 §7, como Mi cuenta: el tope del correo dice su texto en la franja y la espera en horas y minutos en «Invitar»,
+  // que se apaga mientras cuenta, sin el aviso de abajo y sin invitar.
+  it("invitar con el tope del correo dice su texto y la espera en horas en el botón, sin invitar", async () => {
+    const user = userEvent.setup(); let posts = 0;
+    const detail = "Por ahora no se pueden mandar más correos, y no se guardó nada. Probá de nuevo más tarde.";
+    server.use(http.post("/api/platform/operators/invitations", () => { posts++; return HttpResponse.json({ status: 429, code: "Messaging.Email.DailyLimit", detail, retryAfter: 82345 }, { status: 429, headers: { "Retry-After": "82345" } }); }));
+    renderRouteWithProviders("/plataforma/cuentas", { as: "platform-operator" }); await user.click(await screen.findByRole("button", { name: "Invitar operador" }));
+    const dialog = screen.getByRole("dialog");
+    await user.type(within(dialog).getByRole("textbox", { name: "Correo" }), "new@example.com"); await user.click(within(dialog).getByRole("button", { name: "Invitar" }));
+    expect(await within(dialog).findByRole("alert")).toHaveTextContent(detail);
+    expect(within(dialog).getByRole("button", { name: "Reintentá en 22 h 53 min" })).toBeDisabled();
+    expect(document.querySelector("[data-sonner-toast]")).toBeNull(); expect(posts).toBe(1);
+  });
   // Cuentas-Base2 (260): los permisos en áreas plegables, todas cerradas al empezar; qué permite cada uno es su descripción.
   it("invitar tiene los catorce permisos en áreas, con su descripción, y reintenta red con igual clave y aviso", async () => {
     const user = userEvent.setup(); const keys: (string | null)[] = []; const bodies: unknown[] = [];

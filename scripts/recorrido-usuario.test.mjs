@@ -13,8 +13,8 @@ import { base12Definitions, base12ManualChecks, bellLabel, importedPhoneOf, invi
   workingButtonProblems, workingButtonState } from "./recorrido-usuario-base12.mjs";
 import { base12bDefinitions, base12bManualChecks, base12bPlatformCaptures, chatDeliveryOrder, chatPhones, dailyEmailLimitProblems, dailyEmailLimitText,
   dailyLimitProblems, decodeMimeWords, deliveryWords, emailDeliveryReasons, emptiesLast, invitationDeliveryOrder, invitationQuotaOrders, isJoinedPercent,
-  isMonthRange, isReviewedLine, keyUnreadableText, resendUncertainText, runBase12bJourney, senderNameOf, uncertainChatReason, waitInHours }
-  from "./recorrido-usuario-base12b.mjs";
+  isMonthRange, isReviewedLine, keyUnreadableText, resendUncertainText, runBase12bJourney, screenWaitProblems, senderNameOf, uncertainChatReason,
+  waitInHours } from "./recorrido-usuario-base12b.mjs";
 import { readFileSync } from "node:fs";
 
 test("la selección de ancho conserva el recorrido completo por defecto y permite sólo un ancho vigente", () => {
@@ -602,7 +602,7 @@ test("B12B-14: la clave ilegible dice el texto de la configuración del asistent
   assert.equal(settings.replaceKey, "Reemplazar clave");
 });
 
-test("B12B-15: el tope de invitaciones responde 429 con la espera en horas y el aviso del correo", () => {
+test("B12B-15: el tope de invitaciones responde 429 con la espera en horas, y la pantalla la dice en horas en el botón", () => {
   assert.deepEqual(invitationQuotaOrders("e2e-recorrido@example.test"), { fill: { kind: "fill", email: "e2e-recorrido@example.test", remaining: 1 },
     release: { kind: "release", email: "e2e-recorrido@example.test" } });
   assert.throws(() => invitationQuotaOrders("e2e-recorrido@example.test", 11));
@@ -619,6 +619,16 @@ test("B12B-15: el tope de invitaciones responde 429 con la espera en horas y el 
   assert.deepEqual(dailyEmailLimitProblems(429, problem, "60"), ["Retry-After no dice la misma espera"]);
   assert.deepEqual(dailyEmailLimitProblems(429, { ...problem, code: "Security.RateLimit.Exceeded", detail: "Hiciste muchos pedidos seguidos." }, "83000"),
     ["el código es Security.RateLimit.Exceeded", "el aviso no es el del tope del correo"]);
+  // La pantalla, como Mi cuenta: «Reintentá en …» (`errors:retryIn`) en horas y minutos, que corre mientras se mira.
+  const errors = locale("locales/es/errors.json");
+  assert.equal(errors.retryIn.replace("{{time}}", waitInHours(82345)), "Reintentá en 22 h 53 min");
+  assert.deepEqual(screenWaitProblems("Reintentá en 22 h 53 min", 82345), []);
+  assert.deepEqual(screenWaitProblems(" Reintentá en\n22 h 52 min ", 82345), []);
+  assert.deepEqual(screenWaitProblems("Reintentá en 23 h", 82800), []);
+  assert.deepEqual(screenWaitProblems("Reintentá en 22 h 50 min", 82345), ["el botón dice 1370 min y el 429 1373 min"]);
+  assert.deepEqual(screenWaitProblems("Reintentá en 23 h", 82345), ["el botón dice 1380 min y el 429 1373 min"]);
+  assert.deepEqual(screenWaitProblems("Reintentá en 59:59", 3599), ["el botón dice «Reintentá en 59:59» y no la espera en horas"]);
+  assert.deepEqual(screenWaitProblems("Invitar", 82345), ["el botón dice «Invitar» y no la espera en horas"]);
 });
 
 test("la segunda parte corre sus quince pasos en orden y captura en la pestaña del operador los que terminan ahí", async () => {

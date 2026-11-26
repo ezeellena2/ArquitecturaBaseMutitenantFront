@@ -7,10 +7,11 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
 import { ApiError } from "@/shared/api/ApiError";
-import { actionErrorMessage } from "@/shared/api/errorMessage";
+import { rateLimitedActionMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { RoleResponse } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
+import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
 import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { sameList } from "@/shared/lib/sameList";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
@@ -65,9 +66,12 @@ export function AddMemberDialog({ companyId, companyName, roles, onClose }: {
   const candidateQuery = useResourceOptions(companyCandidateOptions(companyId));
   const roleQuery = useResourceOptions(companyRoleOptions(companyId, true));
   const candidates = candidateQuery.data?.items ?? [];
+  // Un 429 (el tope del correo, 0063 §7) dice su texto en la franja y cuenta la espera en el botón, como Mi cuenta.
+  const limit = useRetryAfterCountdown();
 
   // Lo que el back rechaza de la persona o de los roles va debajo de ese campo (`errors.ts`); lo demás, en la franja.
   function rejected(error: unknown) {
+    limit.startFromError(error);
     if (error instanceof ApiError && applyApiErrorToForm(error, form.setError, serverFields)) return;
     const field = memberErrorField(error);
     if (field && error instanceof ApiError) form.setError(field, { type: "server", message: error.detail ?? "" });
@@ -81,7 +85,7 @@ export function AddMemberDialog({ companyId, companyName, roles, onClose }: {
     toast.success(t("companies:messages.memberAdded", { name: operation.name }));
     onClose();
     void Promise.all([queryClient.invalidateQueries({ queryKey: companiesQueryRoot }), queryClient.invalidateQueries({ queryKey: companyCandidateOptions(companyId).queryKeyRoot })]);
-  }), { meta: action.meta, sameOperation: (previous, next) => previous.memberId === next.memberId && sameList(previous.roleIds, next.roleIds) });
+  }), { meta: { ...action.meta, handlesRateLimit: true }, sameOperation: (previous, next) => previous.memberId === next.memberId && sameList(previous.roleIds, next.roleIds) });
 
   // «Criterio · Botones»: «Agregar miembro» no se apaga; sin usuario, el campo dice qué falta (tablero Empresa) hasta que
   // elige uno.
@@ -106,11 +110,11 @@ export function AddMemberDialog({ companyId, companyName, roles, onClose }: {
             <Picker multiple remote={roleQuery.remote} selectedOptions={[...roles, ...roleQuery.knownItems].map((role) => ({ value: role.id, label: role.name }))} options={roleQuery.items.map((role) => ({ value: role.id, label: role.name, description: role.description ?? undefined, disabledReason: role.grantable === false ? t("common:roleChoice.notGrantableIn", { company: companyName }) : undefined }))} value={roleIds.field.value} onChange={(next) => { roleIds.field.onChange(next); clear(); }} placeholder={t("companies:addMember.noRoles")} />
           </FormField>
           {/* «Criterio · Diálogos»: el error general, también el 409, en la franja arriba de los botones. */}
-          <FormError message={actionErrorMessage(failure, t)} />
+          <FormError message={rateLimitedActionMessage(failure, t)} />
         </DialogBody>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={close}>{t("common:actions.cancel")}</Button>
-          <Button type="submit" pending={addMember.isPending} pendingLabel={t("companies:actions.addingMember")}>{t("companies:actions.addMember")}</Button>
+          <Button type="submit" disabled={limit.isRunning} pending={addMember.isPending} pendingLabel={t("companies:actions.addingMember")}>{limit.label ?? t("companies:actions.addMember")}</Button>
         </DialogFooter>
       </form>
     </DialogContent>

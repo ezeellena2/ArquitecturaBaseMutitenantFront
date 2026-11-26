@@ -7,10 +7,11 @@ import { useTranslation } from "react-i18next";
 import { usePlatformPermissionGroups } from "../lib/permissionCatalog";
 import { toast } from "sonner";
 import { z } from "zod";
-import { actionErrorMessage } from "@/shared/api/errorMessage";
+import { rateLimitedActionMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { InvitePlatformOperatorRequest } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
+import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { Button } from "@/shared/ui/button";
@@ -46,9 +47,12 @@ export function InviteOperatorDialog({ onClose, onInvited }: { onClose: () => vo
     return sameInvitation(request, { email: current.email.trim().toLowerCase(), permissions: current.permissions });
   };
   const [failure, setFailure] = useState<unknown>();
+  // Un 429 (el tope del correo, 0063 §7) dice su texto en la franja y cuenta la espera en el botón, como Mi cuenta.
+  const limit = useRetryAfterCountdown();
   const action = useResourceAction<InvitePlatformOperatorRequest>({
     isCurrent: matchesDraft,
     onError: (error) => {
+    limit.startFromError(error);
     if (applyApiErrorToForm(error, setError, serverFields)) return;
     const rejected = operatorInvitationError(error, t);
     if (rejected) setError(rejected.field, { type: "server", message: rejected.message }); else setFailure(error);
@@ -56,7 +60,7 @@ export function InviteOperatorDialog({ onClose, onInvited }: { onClose: () => vo
   });
   const invite = useIdempotentMutation(action.guarded((request, key: string) => inviteOperator(request, key),
     (_response, request) => { toast.success(t("platformAccounts:messages.invited", { email: request.email })); onClose(); void onInvited(); }),
-    { meta: action.meta, sameOperation: sameInvitation });
+    { meta: { ...action.meta, handlesRateLimit: true }, sameOperation: sameInvitation });
   const busy = action.isPending;
   const clear = (field: keyof InviteForm) => { form.clearErrors(field); setFailure(undefined); };
   const submit = form.handleSubmit((values) => { setFailure(undefined); invite.mutate(values); });
@@ -76,9 +80,9 @@ export function InviteOperatorDialog({ onClose, onInvited }: { onClose: () => vo
             {permissionGroups.isPending ? <p role="status" className="p-4 text-[0.8125rem] text-[var(--t2)]">{t("common:states.loading")}</p> : null}
           </PermissionPicker>
         </FormField>
-        <FormError message={actionErrorMessage(failure, t)} />
+        <FormError message={rateLimitedActionMessage(failure, t)} />
       </DialogBody>
-      <DialogFooter><Button type="button" variant="outline" onClick={onClose}>{t("common:actions.cancel")}</Button><Button type="submit" pending={busy} pendingLabel={t("platformAccounts:invite.sending")}>{t("platformAccounts:invite.send")}</Button></DialogFooter>
+      <DialogFooter><Button type="button" variant="outline" onClick={onClose}>{t("common:actions.cancel")}</Button><Button type="submit" disabled={limit.isRunning} pending={busy} pendingLabel={t("platformAccounts:invite.sending")}>{limit.label ?? t("platformAccounts:invite.send")}</Button></DialogFooter>
     </form>
   </DialogContent></Dialog>;
 }

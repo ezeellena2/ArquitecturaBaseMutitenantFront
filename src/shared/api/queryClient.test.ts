@@ -153,7 +153,7 @@ describe("bloqueo de la vista por un 403", () => {
 
 // F2: las mutaciones avisan red, 5xx y 429 en un solo lugar, salvo las que lo muestran en su pantalla.
 describe("avisos de las mutaciones", () => {
-  function observe<T>(mutationFn: () => Promise<T>, meta?: { handlesError?: boolean }) {
+  function observe<T>(mutationFn: () => Promise<T>, meta?: { handlesError?: boolean; handlesRateLimit?: boolean }) {
     return new MutationObserver(createQueryClient(), { mutationFn, meta });
   }
 
@@ -195,16 +195,33 @@ describe("avisos de las mutaciones", () => {
     expect(toastError).toHaveBeenCalledWith("Hiciste muchos pedidos seguidos. Probá de nuevo en unos segundos.", expect.anything());
   });
 
-  // 0063: el tope diario del correo no es «muchos pedidos seguidos». Una invitación o su reenvío lo avisan abajo con el
-  // texto del back, sin reintentar solo.
-  it("el tope diario del correo avisa con su texto", async () => {
+  // 0063: el tope diario del correo no es «muchos pedidos seguidos». El reenvío de una invitación, que no tiene un botón
+  // que cuente, lo avisa abajo con el texto del back y la espera en horas y minutos (§7), sin reintentar solo.
+  it("el tope diario del correo avisa con su texto y la espera", async () => {
     const toastError = vi.spyOn(toast, "error");
     const detail = "Por ahora no se pueden mandar más correos, y no se guardó nada. Probá de nuevo más tarde.";
     const sent = vi.fn().mockRejectedValue(new ApiError(429, { code: "Messaging.Email.DailyLimit", detail, retryAfter: 82345 }));
     await observe(sent).mutate().catch(() => undefined);
 
     expect(sent).toHaveBeenCalledTimes(1);
+    expect(toastError).toHaveBeenCalledWith(`${detail} Reintentá en 22 h 53 min`, expect.anything());
+  });
+
+  it("el tope diario del correo sin espera dice solo su texto", async () => {
+    const toastError = vi.spyOn(toast, "error");
+    const detail = "Por ahora no se pueden mandar más correos, y no se guardó nada. Probá de nuevo más tarde.";
+    await observe(() => Promise.reject(new ApiError(429, { code: "Messaging.Email.DailyLimit", detail }))).mutate().catch(() => undefined);
+
     expect(toastError).toHaveBeenCalledWith(detail, expect.anything());
+  });
+
+  // Mi cuenta (P2): la pantalla que dice el límite en el lugar de la acción, con su cuenta, no repite el aviso abajo.
+  it("el tope diario del correo de una pantalla que lo dice en su lugar no avisa abajo", async () => {
+    const toastError = vi.spyOn(toast, "error");
+    const error = new ApiError(429, { code: "Messaging.Email.DailyLimit", detail: "Por ahora no se pueden mandar más correos.", retryAfter: 82345 });
+    await observe(() => Promise.reject(error), { handlesRateLimit: true }).mutate().catch(() => undefined);
+
+    expect(toastError).not.toHaveBeenCalled();
   });
 
   // 0061: un 403 nuevo de quien da lo que no tiene es de negocio. Va en la pantalla de la acción, con el texto del back:

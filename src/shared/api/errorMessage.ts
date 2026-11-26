@@ -1,5 +1,6 @@
 import type { TFunction } from "i18next";
 import { toastError } from "@/shared/ui/sonner";
+import { formatWait } from "@/shared/format/countdown";
 import { ApiError } from "./ApiError";
 import { isReauthenticationCancelled } from "./recentAuthentication";
 
@@ -16,12 +17,15 @@ export function isRateLimitError(error: unknown): error is ApiError {
 }
 
 /// Los topes de negocio que no son «muchos pedidos seguidos» y dicen su texto, el que ya tradujo el back, también en el
-/// aviso de abajo: el diario del correo (0063), que frena una invitación o su reenvío hasta un día.
+/// aviso de abajo: el diario del correo (0063), que frena el reenvío de una invitación hasta un día.
 const quotasWithText: ReadonlySet<string> = new Set(["Messaging.Email.DailyLimit"]);
 
-/// El texto de un 429 en el aviso de abajo (`queryClient`): el de su tope, si lo tiene; si no, el común.
+/// El texto de un 429 en el aviso de abajo (`queryClient`): el de su tope, si lo tiene, con la espera («Reintentá en
+/// 22 h 53 min», 0063 §7) cuando la trae, porque el aviso no tiene un botón que la cuente; si no, el común.
 export function rateLimitMessage(error: ApiError, t: TFunction): string {
-  return error.code && quotasWithText.has(error.code) && error.detail ? error.detail : t("errors:rateLimited");
+  if (!error.code || !quotasWithText.has(error.code) || !error.detail) return t("errors:rateLimited");
+  const wait = error.retryAfterSeconds;
+  return wait === undefined ? error.detail : `${error.detail} ${t("errors:retryIn", { time: formatWait(wait, t) })}`;
 }
 
 /// Lo que pidió la pantalla no existe para quien mira (404, también un id de otra organización o de otro acceso): la
@@ -50,6 +54,13 @@ export function apiErrorMessage(error: unknown, t: TFunction): string {
 /// el MutationCache, con «Reintentar» o «Copiar código». El mismo error nunca va en dos lugares.
 export function actionErrorMessage(error: unknown, t: TFunction): string | null {
   return error == null || isGenericApiError(error) || isReauthenticationCancelled(error) ? null : apiErrorMessage(error, t);
+}
+
+/// La franja de un formulario que dice su límite de uso en el lugar de la acción (`meta.handlesRateLimit`, como Mi cuenta):
+/// el 429 con el texto que tradujo el back, mientras el botón cuenta la espera (`useRetryAfterCountdown`); lo demás, como
+/// `actionErrorMessage`.
+export function rateLimitedActionMessage(error: unknown, t: TFunction): string | null {
+  return isRateLimitError(error) ? apiErrorMessage(error, t) : actionErrorMessage(error, t);
 }
 
 /// Una acción directa que falló (un ⋮, un botón, una confirmación) se avisa abajo, en rojo y sin irse sola; los

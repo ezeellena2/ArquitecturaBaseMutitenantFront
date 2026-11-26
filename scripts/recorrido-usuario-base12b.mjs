@@ -28,7 +28,7 @@ export const base12bDefinitions = [
   definition("12", "Una invitación en cada estado de entrega", "Cuatro invitaciones por correo: una en la cola («Pendiente»), una que salió («Enviada»), una que el servidor de correo no confirmó («Sin confirmar») y una que no salió («No se pudo enviar»), cada una salvo la enviada con su (i). «Reenviar invitación» de la «Sin confirmar» pide revisar con la persona antes y la reenvía, que queda «Enviada»."),
   definition("13", "Un mensaje «Sin confirmar» revisado", "El último mensaje que salió de un chat de la organización y el de una consulta de Plataforma quedan «Sin confirmar», con su (i) y «Marcar como revisado»; revisado, dicen quién y cuándo («Lo revisó …»), y queda al recargar."),
   definition("14", "La clave ilegible en las dos configuraciones", "Con la clave guardada ilegible, la configuración del asistente de la organización y la de Plataforma dicen «No pudimos leer la clave guardada: reemplazala.» con «Reemplazar clave»."),
-  definition("15", "Invitar hasta el tope", "A la Dueña le queda una invitación por correo de su tope del día: esa sale; la siguiente responde 429 con la espera en horas y el aviso dice que no se pueden mandar más correos y que no se guardó nada; Usuarios no la tiene."),
+  definition("15", "Invitar hasta el tope", "A la Dueña le queda una invitación por correo de su tope del día: esa sale; la siguiente responde 429 con la espera en horas, y el diálogo dice que no se pueden mandar más correos y que no se guardó nada, con «Reintentá en …» en horas y minutos en el botón, apagado; Usuarios no la tiene."),
 ];
 
 // B-2 y B-3 de la puerta de la base 2 ya son pasos (12 a 15): no queda nada de esta parte para probar a mano.
@@ -100,6 +100,20 @@ export function waitInHours(seconds) {
   const minutes = Math.ceil(Math.ceil(seconds) / 60);
   const rest = minutes % 60;
   return rest === 0 ? `${Math.floor(minutes / 60)} h` : `${Math.floor(minutes / 60)} h ${rest} min`;
+}
+
+/**
+ * Lo que falta en la espera que dice la pantalla (ADR 0063 §7, como Mi cuenta): el botón dice «Reintentá en 22 h 53 min», en
+ * horas y minutos, y no más que la espera del 429 ni más de dos minutos menos, porque la cuenta corre mientras se mira.
+ * Devuelve lo que falta, o nada.
+ */
+export function screenWaitProblems(label, retryAfter) {
+  const text = String(label ?? "").replace(/\s+/gu, " ").trim();
+  const match = text.match(/^Reintentá en (\d+) h(?: (\d+) min)?$/u);
+  if (!match) return [`el botón dice «${text}» y no la espera en horas`];
+  const shown = Number(match[1]) * 60 + Number(match[2] ?? 0);
+  const longest = Math.ceil(Math.ceil(retryAfter) / 60);
+  return shown <= longest && shown >= longest - 2 ? [] : [`el botón dice ${shown} min y el 429 ${longest} min`];
 }
 
 /**
@@ -793,7 +807,17 @@ export function base12bSteps(ctx) {
         const problem = await reply.json().catch(() => ({}));
         const problems = dailyEmailLimitProblems(reply.status(), problem, reply.headers()["retry-after"]);
         assert.deepEqual(problems, [], `El tope ${problems.join(", ")}.`);
-        await page.locator('[data-sonner-toast][data-type="error"]').filter({ hasText: dailyEmailLimitText }).first().waitFor();
+        // La pantalla, como Mi cuenta (0063 §7): el aviso en la franja del diálogo y la espera en horas en el botón, apagado
+        // mientras cuenta; sin el aviso de abajo.
+        await dialog.getByRole("alert").filter({ hasText: dailyEmailLimitText }).first().waitFor();
+        const waiting = dialog.getByRole("button", { name: /^Reintentá en /u });
+        await waiting.waitFor();
+        const shown = (await waiting.innerText()).replace(/\s+/gu, " ").trim();
+        const waitProblems = screenWaitProblems(shown, problem.retryAfter);
+        assert.deepEqual(waitProblems, [], `La espera en pantalla: ${waitProblems.join(", ")}.`);
+        assert.ok(await waiting.isDisabled(), "El botón se apaga mientras cuenta la espera.");
+        assert.equal(await page.locator('[data-sonner-toast][data-type="error"]').filter({ hasText: dailyEmailLimitText }).count(), 0,
+          "El tope se dice en el diálogo, no también abajo.");
         await dialog.getByRole("button", { name: "Cancelar", exact: true }).click();
         await dialog.waitFor({ state: "hidden" });
         // No se guardó: Usuarios no la encuentra.
@@ -804,7 +828,7 @@ export function base12bSteps(ctx) {
         ]);
         assert.equal((await listed.json()).items.length, 0, "La invitación pasada del tope no quedó en Usuarios.");
         await ctx.signOut(page, organization);
-        return `La última del tope salió; la siguiente respondió 429 ${problem.code} con la espera de ${waitInHours(problem.retryAfter)} y el aviso «${dailyEmailLimitText}», y no quedó en Usuarios.`;
+        return `La última del tope salió; la siguiente respondió 429 ${problem.code} con la espera de ${waitInHours(problem.retryAfter)}, el diálogo dijo «${dailyEmailLimitText}» y «${shown}» en el botón, apagado, y no quedó en Usuarios.`;
       }, () => env.command("invitation-quota", orders.release));
     },
   };

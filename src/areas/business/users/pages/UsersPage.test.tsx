@@ -19,6 +19,9 @@ const member = {
   invitationIssuedAtUtc: null, invitationExpiresAtUtc: null, version: 2, createdAtUtc: "2026-09-27T12:00:00Z",
 };
 
+/** El aviso del tope del correo, el `detail` que traduce el back (`Messaging.Email.DailyLimit`). */
+const dailyEmailLimit = "Por ahora no se pueden mandar más correos, y no se guardó nada. Probá de nuevo más tarde.";
+
 beforeEach(async () => {
   await configureI18n(referenceDataFixture().cultures);
   await changeCulture("es-AR");
@@ -506,6 +509,54 @@ describe("UsersPage", () => {
     expect(following(within(dialog).getByRole("button", { name: /^Empresa( |$)/ }), alert)).toBe(true);
     expect(following(alert, within(dialog).getByRole("button", { name: "Cancelar" }))).toBe(true);
   }, 10_000);
+
+  // ADR 0063 §7, como Mi cuenta: el tope del correo dice su texto en la franja del diálogo y la espera en horas y minutos
+  // en el botón, que se apaga mientras cuenta; sin el aviso de abajo, sin guardar y sin releer la lista.
+  it("el tope del correo al invitar dice su texto y la espera en horas en «Invitar», sin guardar", async () => {
+    let reads = 0; let posts = 0;
+    server.use(
+      http.get("/api/users/paged", () => { reads++; return HttpResponse.json({ items: [member], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false }); }),
+      http.get("/api/users/filter-counts", () => HttpResponse.json({ all: 1, active: 1, pendingDeletion: 0, invited: 0, expired: 0, inactive: 0 })),
+      http.get("/api/roles/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.post("/api/users/invitations", () => { posts++; return HttpResponse.json({ status: 429, code: "Messaging.Email.DailyLimit", detail: dailyEmailLimit, retryAfter: 82345 },
+        { status: 429, headers: { "Retry-After": "82345" } }); }),
+    );
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
+    await user.click(await screen.findByRole("button", { name: "Invitar usuario" }));
+    const dialog = await screen.findByRole("dialog", { name: "Invitar usuario" });
+    await user.type(within(dialog).getByRole("textbox", { name: "Correo" }), "marcos@example.com");
+    const readsBefore = reads;
+    await user.click(within(dialog).getByRole("button", { name: "Invitar" }));
+
+    expect(await within(dialog).findByRole("alert")).toHaveTextContent(dailyEmailLimit);
+    expect(within(dialog).getByRole("button", { name: "Reintentá en 22 h 53 min" })).toBeDisabled();
+    expect(document.querySelector("[data-sonner-toast]")).toBeNull();
+    expect(posts).toBe(1);
+    expect(reads).toBe(readsBefore);
+  }, 10_000);
+
+  // ADR 0063 §7: reenviar desde el ⋮ no tiene un botón que cuente la espera; el aviso de abajo dice el texto del tope y la
+  // espera en horas y minutos.
+  it("reenviar con el tope del correo avisa abajo la espera en horas y minutos", async () => {
+    const invitation = { ...member, memberId: "member-2", userId: null, displayName: "Sofía Herrera", email: "sofia@example.com", roles: [], state: "Invited" as const,
+      invitationId: "inv-2", invitationIssuedAtUtc: "2026-09-25T12:00:00Z", invitationExpiresAtUtc: "2027-10-02T12:00:00Z", invitationDelivery: "Sent" };
+    server.use(
+      http.get("/api/users/paged", () => HttpResponse.json({ items: [invitation], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/users/filter-counts", () => HttpResponse.json({ all: 1, active: 0, pendingDeletion: 0, invited: 1, expired: 0, inactive: 0 })),
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.post("/api/users/invitations/:invitationId/resend", () => HttpResponse.json({ status: 429, code: "Messaging.Email.DailyLimit", detail: dailyEmailLimit, retryAfter: 82345 },
+        { status: 429, headers: { "Retry-After": "82345" } })),
+    );
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
+    const trigger = await screen.findByRole("button", { name: "Acciones de Sofía Herrera" });
+    trigger.focus(); await user.keyboard("{Enter}");
+    await user.click(await screen.findByRole("menuitem", { name: "Reenviar invitación" }));
+
+    expect(await screen.findByText(`${dailyEmailLimit} Reintentá en 22 h 53 min`)).toBeVisible();
+  });
 
   // «Criterio · Botones»: «Invitar» no se apaga; sin correo, el campo dice qué corregir (no el aviso del navegador) y no se
   // manda nada. formularios.md (Diálogo): se monta al abrirse, así que al cerrarlo lo escrito se va con él.

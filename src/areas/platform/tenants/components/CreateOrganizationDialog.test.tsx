@@ -66,6 +66,18 @@ describe("Crear organización", () => {
     const user = userEvent.setup(); server.use(http.post("/api/platform/tenants", () => HttpResponse.json({ code: "Platform.Creation.Failed", detail: "No se pudo crear la organización." }, { status: 409 })));
     renderRouteWithProviders("/plataforma", { as: "platform-operator" }); await open(user); await fill(user); await user.click(screen.getByRole("button", { name: "Crear organización" })); expect(await screen.findByText("No se pudo crear la organización.")).toBeVisible(); expect(screen.getByRole("button", { name: "Crear organización" })).toBeEnabled();
   });
+  // ADR 0063 §7, como Mi cuenta: la invitación al Dueño sale por correo; su tope dice su texto en la franja y la espera en
+  // horas y minutos en el botón, que se apaga mientras cuenta, sin el aviso de abajo y sin crear ni releer.
+  it("el tope del correo dice su texto en la franja y la espera en horas en el botón, sin crear", async () => {
+    const user = userEvent.setup(); let reads = 0;
+    const detail = "Por ahora no se pueden mandar más correos, y no se guardó nada. Probá de nuevo más tarde.";
+    server.use(http.get("/api/platform/tenants/paged", () => { reads++; return HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false }); }),
+      http.post("/api/platform/tenants", () => HttpResponse.json({ status: 429, code: "Messaging.Email.DailyLimit", detail, retryAfter: 82345 }, { status: 429, headers: { "Retry-After": "82345" } })));
+    renderRouteWithProviders("/plataforma", { as: "platform-operator" }); const dialog = await open(user); await fill(user); await user.click(within(dialog).getByRole("button", { name: "Crear organización" }));
+    expect(await within(dialog).findByRole("alert")).toHaveTextContent(detail);
+    expect(within(dialog).getByRole("button", { name: "Reintentá en 22 h 53 min" })).toBeDisabled();
+    expect(document.querySelector("[data-sonner-toast]")).toBeNull(); expect(reads).toBe(1);
+  });
   it("el reintento global conserva cuerpo y clave y ejecuta cierre, aviso e invalidación", async () => {
     const user = userEvent.setup(); const keys: (string | null)[] = []; const bodies: unknown[] = []; let reads = 0;
     server.use(http.get("/api/platform/tenants/paged", () => { reads++; return HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false }); }), http.post("/api/platform/tenants", async ({ request }) => { keys.push(request.headers.get("Idempotency-Key")); bodies.push(await request.json()); return keys.length === 1 ? HttpResponse.error() : HttpResponse.json(created, { status: 201 }); }));

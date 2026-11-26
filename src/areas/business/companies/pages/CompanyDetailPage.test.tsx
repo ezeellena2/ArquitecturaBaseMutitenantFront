@@ -624,6 +624,36 @@ describe("CompanyDetailPage", () => {
     expect(member).not.toHaveAttribute("aria-invalid");
   });
 
+  // ADR 0063 §7, como Mi cuenta: el tope del correo dice su texto en la franja y la espera en horas y minutos en «Agregar
+  // miembro», que se apaga mientras cuenta, sin el aviso de abajo y sin agregar.
+  it("agregar miembro con el tope del correo dice su texto y la espera en horas en el botón, sin agregar", async () => {
+    let posts = 0;
+    const detail = "Por ahora no se pueden mandar más correos, y no se guardó nada. Probá de nuevo más tarde.";
+    server.use(
+      http.get("/api/companies/company-1", () => HttpResponse.json(company)),
+      http.get("/api/companies/company-1/members/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/company-1/members/filter-counts", () => HttpResponse.json({ all: 0, active: 0, pendingDeletion: 0, inactive: 0, invited: 0 })),
+      http.get("/api/companies/company-1/roles/paged", () => HttpResponse.json({ items: [companyAdmin], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/companies/company-1/candidates/paged", () => HttpResponse.json({ items: [{ memberId: "member-2", displayName: "Tomás Acosta",
+        maskedEmailAddress: "to•••@example.com" }], page: 1, pageSize: 100, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.post("/api/companies/company-1/members", () => { posts += 1; return HttpResponse.json({ status: 429, code: "Messaging.Email.DailyLimit", detail, retryAfter: 82345 },
+        { status: 429, headers: { "Retry-After": "82345" } }); }),
+    );
+
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/empresas/company-1", { as: "business-e6-admin" });
+    await user.click(await screen.findByRole("button", { name: "Agregar miembro" }));
+    const dialog = await screen.findByRole("dialog", { name: "Agregar miembro" });
+    await user.click(within(dialog).getByRole("button", { name: /^Usuario( |$)/ }));
+    await user.click(await screen.findByRole("option", { name: /Tomás Acosta/ }));
+    await user.click(within(dialog).getByRole("button", { name: "Agregar miembro" }));
+
+    expect(await within(dialog).findByRole("alert")).toHaveTextContent(detail);
+    expect(within(dialog).getByRole("button", { name: "Reintentá en 22 h 53 min" })).toBeDisabled();
+    expect(document.querySelector("[data-sonner-toast]")).toBeNull();
+    expect(posts).toBe(1);
+  });
+
   // R05 (datos-y-api): si la respuesta se pierde, repetir lo mismo conserva la clave y corregir un dato es otra operación
   // con otra clave; el aviso es el del intento que salió bien.
   it("agregar miembro: respuesta perdida, reintento idéntico con la misma clave y corrección con otra", async () => {
