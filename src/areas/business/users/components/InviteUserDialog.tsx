@@ -224,8 +224,9 @@ export function InviteUserDialog({ onClose, onInvited }: {
   </Dialog>;
 }
 
-/** El diálogo de una propuesta del asistente (users.invite@1), sobre el Inicio: después de invitar se vuelve a leer Usuarios. */
-export function InviteUserProposalDialog({ onClose }: { onClose: () => void }) {
+/** El diálogo de una propuesta del asistente (users.invite@1), sobre el Inicio: después de invitar se vuelve a leer Usuarios
+ * y lo que muestra la pantalla de abajo (`onSaved`: el conteo de usuarios del Inicio, que cuenta las invitaciones). */
+export function InviteUserProposalDialog({ onClose, onSaved }: { onClose: () => void; onSaved?: () => Promise<unknown> }) {
   const client = useQueryClient();
-  return <InviteUserDialog onClose={onClose} onInvited={() => client.invalidateQueries({ queryKey: usersQueryRoot })} />;
+  return <InviteUserDialog onClose={onClose} onInvited={() => Promise.all([client.invalidateQueries({ queryKey: usersQueryRoot }), onSaved?.()])} />;
 }

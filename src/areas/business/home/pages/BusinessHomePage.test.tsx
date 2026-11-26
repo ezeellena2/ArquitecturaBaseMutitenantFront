@@ -1,8 +1,9 @@
 import { act, screen, waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
-import type { HomeResponse } from "@/shared/api/types";
+import type { AssistantProposalResponse, HomeResponse } from "@/shared/api/types";
 import { changeCulture, configureI18n } from "@/shared/i18n";
 import { referenceDataFixture } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
@@ -188,6 +189,36 @@ describe("BusinessHomePage", () => {
     expect(within(toResolve).getByText("Nada para resolver")).toBeVisible();
     expect(within(toResolve).getByText("0")).toBeVisible();
     expect(within(toResolve).queryByRole("table")).not.toBeInTheDocument();
+  });
+
+  it("invitar desde la propuesta del asistente, sobre el Inicio, vuelve a leer el conteo de Usuarios", async () => {
+    const user = userEvent.setup();
+    let invited = 0;
+    const proposal: AssistantProposalResponse = { id: "p-1", conversationId: "c-1", kind: "action", action: "users.invite", version: 1, state: "new",
+      values: [{ field: "email", value: "ana.lopez@delta.ejemplo.com" }] };
+    const emptyPage = { items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 1, hasPrevious: false, hasNext: false };
+    server.use(
+      // El total de Usuarios cuenta las invitaciones: después de invitar es uno más.
+      http.get("/api/home", () => HttpResponse.json({ organization: { ...organization, users: { total: 11 + invited } }, companies: [], pending: [] })),
+      http.get("/api/organization/assistant/proposals/p-1", () => HttpResponse.json(proposal)),
+      http.post("/api/organization/assistant/proposals/p-1/attempts", () => HttpResponse.json({ idempotencyKey: "key-of-the-proposal" })),
+      http.post("/api/organization/assistant/proposals/p-1/applied", () => HttpResponse.json({ ...proposal, state: "applied" })),
+      http.get("/api/roles/paged", () => HttpResponse.json(emptyPage)),
+      http.get("/api/companies/paged", () => HttpResponse.json(emptyPage)),
+      http.post("/api/users/invitations", () => { invited += 1; return HttpResponse.json({ invitationId: "invitation-1", expiresAtUtc: "2026-10-10T15:00:00Z" }, { status: 201 }); }),
+    );
+    renderRouteWithProviders("/org?proposal=p-1", { as: "visual-owner" });
+    // Con el diálogo abierto, el Inicio queda debajo, fuera del árbol accesible.
+    const usersCard = async () => within(await screen.findByRole("navigation", { name: "Áreas de la organización", hidden: true }))
+      .getByRole("link", { name: /^Usuarios/, hidden: true });
+    expect(await usersCard()).toHaveTextContent("11 usuarios");
+
+    const dialog = await screen.findByRole("dialog", { name: "Invitar usuario" });
+    await user.click(within(dialog).getByRole("button", { name: "Invitar" }));
+
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Invitar usuario" })).not.toBeInTheDocument());
+    expect(invited).toBe(1);
+    await waitFor(async () => expect(await usersCard()).toHaveTextContent("12 usuarios"));
   });
 
   it("tablero Inicio-Miembro: «Tus empresas» y, si no puede resolver nada, sin tabla", async () => {

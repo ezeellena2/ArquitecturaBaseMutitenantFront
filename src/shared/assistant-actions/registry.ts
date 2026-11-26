@@ -16,8 +16,10 @@ export interface AssistantActionAdapter {
   /**
    * Solo si la acción se confirma en un diálogo: el diálogo, que lee la propuesta de la dirección. La tarjeta lo abre donde
    * está, sobre el Inicio (o el asistente del teléfono), con `?proposal=<id>` (`AssistantProposalDialog`), y no usa `href`.
+   * Después de guardar, además de lo suyo, espera `onSaved`: lo que vuelve a leer la pantalla de abajo (los conteos del
+   * Inicio).
    */
-  readonly Dialog?: ComponentType<{ readonly onClose: () => void }>;
+  readonly Dialog?: ComponentType<{ readonly onClose: () => void; readonly onSaved?: () => Promise<unknown> }>;
   /** El enlace de la tarjeta aplicada a lo hecho («Ver el rol»), si se puede ver; sin él, la tarjeta no lleva enlace. */
   readonly appliedHref?: (proposal: { readonly target?: { readonly id: string } | null; readonly appliedLocation?: string | null }) => string | undefined;
   /** Solo al crear: el listado donde se revisa una propuesta «Sin confirmar» («Revisar en Usuarios»). */

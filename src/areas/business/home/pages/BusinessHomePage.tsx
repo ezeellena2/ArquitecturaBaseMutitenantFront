@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { useFormat } from "@/shared/format/useFormat";
@@ -17,7 +17,8 @@ import { AssistantProposalDialog } from "@/shared/assistant-actions";
 /**
  * Inicio de la organización (ADR 0040). La API decide qué ve cada persona: con permisos de la organización, las
  * tarjetas de sus áreas (Inicio-Org); si no, «Tus empresas» (Inicio-Miembro). Debajo, «Para resolver». Encima, el diálogo
- * de la propuesta del asistente que se confirma en un diálogo (ADR 0068 §9).
+ * de la propuesta del asistente que se confirma en un diálogo (ADR 0068 §9): lo que guarda vuelve a leer el Inicio, que
+ * cuenta lo que cambió.
  */
 export function BusinessHomePage() {
   const { t } = useTranslation(["home", "common"]);
@@ -25,6 +26,8 @@ export function BusinessHomePage() {
   const { data: currentUser } = useCurrentUser();
   const phone = useMediaQuery("(max-width: 767px)");
   const home = useQuery({ queryKey: homeQueryKey, queryFn: ({ signal }) => fetchHome(signal), meta: { blocksView: true } });
+  const client = useQueryClient();
+  const proposalDialog = <AssistantProposalDialog onSaved={() => client.invalidateQueries({ queryKey: homeQueryKey })} />;
   const organizationName = activeOrganization(currentUser)?.name ?? "";
   const modules = useModuleBusinessHome();
   const groups = describePendingGroups(home.data, t, format.formatDate, modules);
@@ -38,7 +41,7 @@ export function BusinessHomePage() {
   // Tableros M-Inicio-Org y M-Inicio-Miembro: en el teléfono, los dos inicios son la billetera.
   if (phone && home.data) {
     return <><PhoneHome organization={organization ?? null} moduleCards={moduleCards} companies={home.data.companies} groups={groups} organizationName={organizationName}
-      firstName={currentUser?.displayName?.trim().split(/\s+/)[0] ?? ""} /><AssistantProposalDialog /></>;
+      firstName={currentUser?.displayName?.trim().split(/\s+/)[0] ?? ""} />{proposalDialog}</>;
   }
   // Tableros Inicio-Org e Inicio-Miembro (.ini): los bloques del inicio van a 20 uno del otro.
   const content = <>
@@ -54,5 +57,5 @@ export function BusinessHomePage() {
   </>;
   const original = <Page title={t("common:home.title")} summary={organizationName}>{content}</Page>;
   const moduleContent = organization ? <div className="flex flex-col gap-5"><ToResolve groups={groups} /><AreaCards organization={organization} moduleCards={moduleCards} /></div> : content;
-  return <>{phone ? original : <ModuleHome access="business" fallback={original}>{moduleContent}</ModuleHome>}<AssistantProposalDialog /></>;
+  return <>{phone ? original : <ModuleHome access="business" fallback={original}>{moduleContent}</ModuleHome>}{proposalDialog}</>;
 }
