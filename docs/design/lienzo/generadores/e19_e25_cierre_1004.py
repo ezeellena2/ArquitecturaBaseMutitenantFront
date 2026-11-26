@@ -3,7 +3,7 @@ de la hoja de ruta de formularios), con la opción recomendada en cada pregunta.
 
 Los tableros de la E19 a la E25 y los de la base 2 que tocó la 3B (`ETAPAS` de `e19_e25_registrar_1004.py`) pierden « · para
 aprobar» en su `<title>` y en `canvas.json`. Lo demás que decidió la 287 lo dibujan `orden_filas_1004.py` (las filas debajo de una
-flecha de orden, ordenadas de verdad) y `v189_alinear_1004.py` (lo que quedó para alinear).
+flecha de orden, ordenadas de verdad) y `v189_formularios_1004.py`, `v189_version4_1004.py` y `v189_whatsapp_1004.py` (lo que quedó para alinear).
 
 `--canvas <ruta>` escribe en otro `canvas.json` (el publicado, traído al scratchpad). Se puede volver a correr: lo ya cambiado no
 cambia.
