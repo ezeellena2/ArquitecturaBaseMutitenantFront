@@ -150,8 +150,10 @@ export async function runE11Journey({ page, platformPage, width, env, base, reco
       const dialog = page.getByRole("dialog", { name: "Crear equipo", exact: true });
       await dialog.getByRole("textbox", { name: "Nombre", exact: true }).fill(name);
       await pickerButton(dialog, "Bandeja").click(); await page.getByRole("option", { name: "Clientes", exact: true }).click();
+      // «Personas» es la pieza múltiple (262): en el teléfono «Listo (N)» aplica lo marcado, y Escape lo descarta.
       await pickerButton(dialog, "Personas").click();
-      await page.getByRole("option").first().click(); await closeMenu();
+      await page.getByRole("option").first().click();
+      if (width === 390) await page.getByRole("button", { name: /^Listo \(\d+\)$/u }).click(); else await closeMenu();
       await pickerButton(dialog, "Aviso por correo si nadie lo toma").click();
       await page.getByRole("option", { name: "No avisar", exact: true }).click();
       const created = await act(page, () => dialog.getByRole("button", { name: "Crear equipo", exact: true }).click(), `${organizationApi}/teams`);
