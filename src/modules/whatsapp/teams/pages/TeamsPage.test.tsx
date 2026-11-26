@@ -112,7 +112,7 @@ describe("Equipos de la organización", () => {
     asPhone();
     const { container } = mountWhatsApp(whatsappOwner, "/org/whatsapp/equipos");
     const card = (await screen.findByText("Ventas")).closest("li")!;
-    expect(cardData(card)).toEqual([["Bandeja", "Bandeja Clientes"], ["Aviso por correo", "A los 10 minutos"], ["Personas", "Lucía Fernández, Carolina Vega"]]);
+    expect(cardData(card)).toEqual([["Bandeja", "Clientes"], ["Aviso", "A los 10 min"], ["Personas", "Lucía Fernández, Carolina Vega"]]);
     expect(card.textContent).not.toContain("·");
     expect(screen.getByRole("button", { name: "Crear equipo" })).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();

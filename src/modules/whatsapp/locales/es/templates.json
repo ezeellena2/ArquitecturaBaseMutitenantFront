@@ -14,6 +14,11 @@
   "delete": "Borrar",
   "confirmDelete": "¿Borrar «{{name}}»?",
   "whyRejected": "Por qué la rechazó Meta",
+  "phone": {
+    "status": "Estado",
+    "languages": "Idioma",
+    "updated": "Fecha"
+  },
   "columns": {
     "name": "Plantilla",
     "category": "Tipo",

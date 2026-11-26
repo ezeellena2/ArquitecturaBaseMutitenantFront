@@ -151,6 +151,9 @@ describe("Plantillas de la organización", () => {
     const { container } = mountWhatsApp(whatsappOwner, "/org/whatsapp/plantillas");
     expect(await screen.findByText("Pedido listo")).toBeVisible();
     expect(screen.getAllByText("Utilidad")).not.toHaveLength(0);
+    // M-Filas-Base2: los nombres cortos de cada dato, «Estado», «Tipo», «Idioma» y «Fecha».
+    const card = screen.getByText("Pedido listo").closest("li")!;
+    expect([...card.querySelectorAll("dt")].map((term) => term.textContent)).toEqual(["Estado", "Tipo", "Idioma", "Fecha"]);
     expect(screen.getByRole("button", { name: "Nueva plantilla" })).toBeVisible();
     expect(await axe(container)).toHaveNoViolations();
   });

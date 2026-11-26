@@ -10,6 +10,9 @@
   "edit": "Edit",
   "delete": "Delete",
   "confirmDelete": "Delete “{{name}}”?",
+  "phone": {
+    "notice": "Alert"
+  },
   "columns": {
     "name": "Team",
     "members": "People",
@@ -29,6 +32,7 @@
   },
   "notice": {
     "after": "After {{minutes}} minutes",
+    "afterShort": "After {{minutes}} min",
     "none": "Don't alert",
     "off": "No alert"
   },

@@ -149459,7 +149459,7 @@
             }
           }
         ],
-        "readyText": "La salida máxima no puede superar el contexto."
+        "readyText": "No puede superar el contexto."
       }
     },
     {
@@ -161510,7 +161510,7 @@
             }
           }
         ],
-        "readyText": "La salida máxima no puede superar el contexto."
+        "readyText": "No puede superar el contexto."
       }
     },
     {
@@ -162076,7 +162076,7 @@
             }
           }
         ],
-        "readyText": "La salida máxima no puede superar el contexto."
+        "readyText": "No puede superar el contexto."
       }
     },
     {
@@ -185495,7 +185495,7 @@
         "now": "2026-10-13T14:00:00Z",
         "actions": [],
         "readySelector": "main",
-        "readyText": "Bandeja Internos",
+        "readyText": "Internos",
         "responses": [
           {
             "method": "GET",
@@ -185835,7 +185835,7 @@
         "now": "2026-10-13T14:00:00Z",
         "actions": [],
         "readySelector": "main",
-        "readyText": "Bandeja Internos",
+        "readyText": "Internos",
         "responses": [
           {
             "method": "GET",

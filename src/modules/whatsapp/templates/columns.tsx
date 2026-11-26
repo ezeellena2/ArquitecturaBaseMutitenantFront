@@ -25,12 +25,12 @@ export function createTemplateColumns(t: TFunction, onWhyRejected: (template: Wh
 }
 
 /// M-Filas-Base2 (M-WA-Plantillas, 263) y M-Plat-WA-Plantillas: una tarjeta con el estado en Meta, el tipo, los idiomas y la
-/// última modificación, cada dato con su nombre, como las columnas de la compu.
+/// última modificación, cada dato con su nombre corto: «Estado», «Tipo», «Idioma» y «Fecha».
 export function templatePhoneRow(template: WhatsAppTemplateResponse, t: TFunction, onWhyRejected: (template: WhatsAppTemplateResponse) => void, trailing: ReactNode): ReactNode {
   return <ListCard key={template.id} title={templateTitle(template)} fields={[
-    { label: t("whatsapp:templates.columns.status"), value: <TemplateStatus template={template} t={t} onWhyRejected={onWhyRejected} /> },
+    { label: t("whatsapp:templates.phone.status"), value: <TemplateStatus template={template} t={t} onWhyRejected={onWhyRejected} /> },
     { label: t("whatsapp:templates.columns.category"), value: <EnumText enum="WhatsAppTemplateCategory" value={template.category} /> },
-    { label: t("whatsapp:templates.columns.languages"), value: <TemplateLanguages languages={template.languages} /> },
-    { label: t("whatsapp:templates.columns.updated"), value: <DateText value={template.updatedAtUtc} kind="date" /> },
+    { label: t("whatsapp:templates.phone.languages"), value: <TemplateLanguages languages={template.languages} /> },
+    { label: t("whatsapp:templates.phone.updated"), value: <DateText value={template.updatedAtUtc} kind="date" /> },
   ]} trailing={trailing} />;
 }

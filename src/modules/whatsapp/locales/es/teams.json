@@ -10,6 +10,9 @@
   "edit": "Editar",
   "delete": "Borrar",
   "confirmDelete": "¿Borrar «{{name}}»?",
+  "phone": {
+    "notice": "Aviso"
+  },
   "columns": {
     "name": "Equipo",
     "members": "Personas",
@@ -29,6 +32,7 @@
   },
   "notice": {
     "after": "A los {{minutes}} minutos",
+    "afterShort": "A los {{minutes}} min",
     "none": "No avisar",
     "off": "Sin aviso"
   },

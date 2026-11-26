@@ -35204,7 +35204,7 @@
         "now": "2026-10-13T14:00:00Z",
         "actions": [],
         "readySelector": "main",
-        "readyText": "Bandeja Internos",
+        "readyText": "Internos",
         "responses": [
           {
             "method": "GET",
