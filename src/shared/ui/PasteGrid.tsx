@@ -76,7 +76,7 @@ export function PasteGrid({ label, columns, rows, describedBy, invalid = false, 
               aria-invalid={invalid || undefined} aria-describedby={describedBy}
               onPaste={(event) => { event.preventDefault(); take(event.clipboardData.getData("text/plain")); }}
               onChange={(event) => { if (event.target.value.trim()) take(event.target.value); }}
-              className={cn("block h-6.5 w-max min-w-36 resize-none overflow-hidden rounded-[0.25rem] border-2 border-[var(--marca)] bg-transparent px-2 py-0.5 text-[0.8125rem] outline-none placeholder:text-[var(--t3)] disabled:cursor-not-allowed disabled:border-[var(--borde2)]",
+              className={cn("block h-6.5 w-max min-w-36 resize-none overflow-hidden rounded-[0.25rem] border-2 border-[var(--marca)] bg-transparent px-2 py-0.5 text-[0.8125rem] outline-none placeholder:text-[var(--t3)] focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)] disabled:cursor-not-allowed disabled:border-[var(--borde2)]",
                 invalid && "border-[var(--peligro)]")} /> : null}
           </TableCell>)}
         </TableRow>}
