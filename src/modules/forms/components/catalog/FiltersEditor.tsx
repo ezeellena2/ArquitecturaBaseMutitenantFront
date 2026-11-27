@@ -2,12 +2,15 @@ import { Pencil, Plus } from "lucide-react";
 import { useState, type JSX } from "react";
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
+import { useRetryAfterOf } from "@/shared/api/useRetryAfterCountdown";
+import { useFormat } from "@/shared/format/useFormat";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
 import { cn } from "@/shared/lib/utils";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { Button } from "@/shared/ui/button";
 import { Checkbox } from "@/shared/ui/checkbox";
-import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
+import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormField } from "@/shared/ui/FormField";
 import { IconButton } from "@/shared/ui/IconButton";
 import { CloseIcon, TrashIcon } from "@/shared/ui/icons";
@@ -32,6 +35,31 @@ function definitionOf(filters: CatalogFilters, column: string): FormCatalogSourc
   return filters.columns.find((candidate) => candidate.key === column);
 }
 
+/** Otra columna para una condición: su primera comparación y, en un sí o no, «Sí»; los valores elegidos no sirven en otra. */
+type ColumnChange = Pick<ConditionDraft, "column" | "operator" | "values">;
+
+/** Lo que se pierde al cambiar la columna: los valores que eligió la persona («Sí» de un sí o no viene solo). */
+function lostValues(filters: CatalogFilters, condition: ConditionDraft): number {
+  const type = definitionOf(filters, condition.column)?.type;
+  return type === "Boolean" ? 0 : condition.values.filter((value) => value.trim() !== "").length;
+}
+
+/** «¿Cambiar a Empresa?» con lo que se va (162): ninguna elección se descarta en silencio. */
+function useColumnQuestion(filters: CatalogFilters, condition: ConditionDraft, apply: (change: ColumnChange) => void) {
+  const { t } = useTranslation("forms");
+  const format = useFormat();
+  const [pending, setPending] = useState<ColumnChange | null>(null);
+  const lost = lostValues(filters, condition);
+  return {
+    pending,
+    ask: (change: ColumnChange) => { if (lost > 0) setPending(change); else apply(change); },
+    title: pending ? t("forms:catalog.filters.changeColumn.title", { column: columnLabel(t, pending.column) }) : "",
+    description: t("forms:catalog.filters.changeColumn.values", { count: lost, n: format.formatInteger(lost) }),
+    confirm: () => { if (pending) apply(pending); setPending(null); },
+    cancel: () => setPending(null),
+  };
+}
+
 /** Lo que dice una condición cerrada: «tiene alguno de» y «Supervisor, Jefe de obra». */
 function conditionValuesText(filters: CatalogFilters, condition: ConditionDraft, t: T): string {
   const type = definitionOf(filters, condition.column)?.type ?? (condition.column === "active" ? "Boolean" : undefined);
@@ -54,7 +82,10 @@ export function FiltersEditor({ filters, editable }: { filters: CatalogFilters; 
   const { phone } = useAppChrome();
   const [editing, setEditing] = useState<{ condition: ConditionDraft; isNew: boolean } | null>(null);
   const title = t(`forms:catalog.filters.title.${filters.source}`);
-  const maxReason = filters.canAddCondition || !editable || filters.columns.length === 0 ? undefined : t("forms:catalog.filters.conditionsMax");
+  const columnsError = filters.columnsLoad.error !== undefined;
+  const maxReason = columnsError ? t("forms:catalog.filters.columnsError")
+    : filters.canAddCondition || !editable || filters.columns.length === 0 ? undefined : t("forms:catalog.filters.conditionsMax");
+  const columnsFailure = columnsError && editable ? <ColumnsError filters={filters} /> : null;
 
   const conditions = filters.draft.conditions.map((condition, index) => phone
     ? <ConditionCard key={condition.key} filters={filters} condition={condition} editable={editable}
@@ -69,6 +100,7 @@ export function FiltersEditor({ filters, editable }: { filters: CatalogFilters; 
         label: t("forms:catalog.filters.addCondition"), disabledReason: maxReason,
         onClick: () => { const condition = filters.newCondition(); if (condition) setEditing({ condition, isNew: true }); },
       } : undefined}>
+        {columnsFailure ? <div className="px-4 py-3">{columnsFailure}</div> : null}
         <div className="flex flex-col divide-y divide-[var(--borde)]">{conditions}</div>
       </Section>
       <Section title={t("forms:catalog.filters.otherOptions")}>{settings}</Section>
@@ -85,6 +117,7 @@ export function FiltersEditor({ filters, editable }: { filters: CatalogFilters; 
     <SectionFields className="grid gap-3.5">
       {settings}
       {conditions.length || editable ? <div className="flex flex-col gap-2.5">
+        {columnsFailure}
         {conditions}
         {editable ? <Button type="button" variant="outline" className="self-start" disabled={!filters.canAddCondition} disabledReason={maxReason}
           onClick={filters.addCondition}><Plus aria-hidden="true" className="size-4" />{t("forms:catalog.filters.addCondition")}</Button> : null}
@@ -109,7 +142,8 @@ function SettingsFields({ filters, editable, phone }: { filters: CatalogFilters;
   const trigger = phone ? "row" as const : "field" as const;
   const disabled = !editable;
   const fields: { label: string; picker: JSX.Element }[] = [
-    { label: t("forms:catalog.filters.optionText"), picker: <Picker trigger={trigger} label={phone ? t("forms:catalog.filters.optionText") : undefined} disabled={disabled}
+    // Siempre el nombre: no se elige, así que va apagado, como todo lo que no se edita (A11).
+    { label: t("forms:catalog.filters.optionText"), picker: <Picker trigger={trigger} label={phone ? t("forms:catalog.filters.optionText") : undefined} disabled
       value="name" options={[{ value: "name", label: detailLabel(t, "name") }]} onChange={() => undefined} /> },
     { label: t("forms:catalog.filters.detail"), picker: <Picker trigger={trigger} label={phone ? t("forms:catalog.filters.detail") : undefined} disabled={disabled}
       value={draft.detail ?? ""} first={{ value: "", label: t("forms:catalog.filters.noDetail") }} options={detailOptions}
@@ -124,7 +158,8 @@ function SettingsFields({ filters, editable, phone }: { filters: CatalogFilters;
       {filters.source === "Members" ? <div className="px-4 py-3"><ExcludeRecipient filters={filters} editable={editable} /></div> : null}
     </div>;
   }
-  return <div className="grid gap-3.5 sm:grid-cols-3">
+  // Esta rama es solo de la compu y la tablet (desde md): tres en fila, sin otro corte (responsive).
+  return <div className="grid grid-cols-3 gap-3.5">
     {fields.map((field) => <FormField key={field.label} label={field.label}>{field.picker}</FormField>)}
   </div>;
 }
@@ -146,16 +181,29 @@ function ExcludeRecipient({ filters, editable }: { filters: CatalogFilters; edit
 function ConditionRow({ filters, condition, index, editable }: { filters: CatalogFilters; condition: ConditionDraft; index: number; editable: boolean }) {
   const { t } = useTranslation("forms");
   const error = conditionError(filters, condition, t);
+  const question = useColumnQuestion(filters, condition, (change) => filters.updateCondition(condition.key, change));
   return <div className="flex flex-col gap-1">
     <div className="grid grid-cols-[2rem_repeat(3,minmax(0,1fr))_2rem] items-center gap-2">
       <span className="text-[0.8125rem] text-[var(--t3)]">{index === 0 ? t("forms:catalog.filters.if") : t("forms:catalog.filters.and")}</span>
       <ConditionFields filters={filters} condition={condition} editable={editable} invalid={Boolean(error)}
-        onChange={(patch) => filters.updateCondition(condition.key, patch)} />
+        onChange={(patch) => filters.updateCondition(condition.key, patch)} onColumnChange={question.ask} />
       {editable ? <IconButton label={t("forms:catalog.filters.removeCondition")} className="size-8 border border-[var(--borde)]"
         onClick={() => filters.removeCondition(condition.key)}><CloseIcon className="size-4" /></IconButton> : <span />}
     </div>
     {error ? <p role="alert" className="pl-10 text-[0.78125rem] text-[var(--peligro)]">{error}</p> : null}
+    <ConfirmDialog open={question.pending !== null} onOpenChange={(open) => { if (!open) question.cancel(); }} title={question.title}
+      description={question.description} confirmLabel={t("forms:catalog.filters.changeColumn.confirm")} onConfirm={question.confirm} />
   </div>;
+}
+
+/** Las columnas de «Miembros» no se pudieron leer: lo dice en su lugar, con «Reintentar» (que espera la cuenta de un 429). */
+function ColumnsError({ filters }: { filters: CatalogFilters }) {
+  const { t } = useTranslation(["forms", "common"]);
+  const limit = useRetryAfterOf(filters.columnsLoad.error);
+  return <p role="alert" className="flex flex-wrap items-center gap-x-2 text-[0.8125rem] text-[var(--peligro)]">
+    {t("forms:catalog.filters.columnsError")}
+    <Button type="button" size="sm" variant="link" disabled={limit.isRunning} onClick={filters.columnsLoad.retry}>{limit.label ?? t("common:actions.retry")}</Button>
+  </p>;
 }
 
 function conditionError(filters: CatalogFilters, condition: ConditionDraft, t: T): string | undefined {
@@ -193,25 +241,36 @@ function EditConditionDialog({ filters, initial, onClose, onDone }: {
 }) {
   const { t } = useTranslation(["forms", "common"]);
   const [condition, setCondition] = useState(initial);
-  return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
-    <DialogContent aria-describedby={undefined}>
+  const change = (patch: Partial<Omit<ConditionDraft, "key">>) => setCondition((current) => ({ ...current, ...patch }));
+  const question = useColumnQuestion(filters, condition, change);
+  // La pregunta va en el mismo diálogo, nunca un diálogo sobre otro (formularios).
+  return <Dialog open onOpenChange={(open) => { if (open) return; if (question.pending) question.cancel(); else onClose(); }}>
+    {question.pending ? <DialogContent size="sm" role="alertdialog">
+      <DialogHeader><DialogTitle>{question.title}</DialogTitle></DialogHeader>
+      <DialogBody><DialogDescription>{question.description}</DialogDescription></DialogBody>
+      <DialogFooter>
+        <Button type="button" variant="outline" autoFocus onClick={question.cancel}>{t("common:actions.cancel")}</Button>
+        <Button type="button" onClick={question.confirm}>{t("forms:catalog.filters.changeColumn.confirm")}</Button>
+      </DialogFooter>
+    </DialogContent> : <DialogContent aria-describedby={undefined}>
       <DialogHeader><DialogTitle>{t("forms:catalog.filters.editTitle")}</DialogTitle></DialogHeader>
       <DialogBody className="grid gap-3.5">
-        <ConditionFields filters={filters} condition={condition} editable labeled invalid={false}
-          onChange={(patch) => setCondition((current) => ({ ...current, ...patch }))} />
+        <ConditionFields filters={filters} condition={condition} editable labeled invalid={false} onChange={change} onColumnChange={question.ask} />
       </DialogBody>
       <DialogFooter>
         <Button type="button" variant="outline" onClick={onClose}>{t("common:actions.cancel")}</Button>
         <Button type="button" onClick={() => onDone(condition)}>{t("forms:catalog.filters.done")}</Button>
       </DialogFooter>
-    </DialogContent>
+    </DialogContent>}
   </Dialog>;
 }
 
 /** La columna, la comparación y los valores de una condición, en la pieza (262); con `labeled`, cada uno con su rótulo. */
-function ConditionFields({ filters, condition, editable, invalid, labeled = false, onChange }: {
+function ConditionFields({ filters, condition, editable, invalid, labeled = false, onChange, onColumnChange }: {
   filters: CatalogFilters; condition: ConditionDraft; editable: boolean; invalid: boolean; labeled?: boolean;
   onChange: (patch: Partial<Omit<ConditionDraft, "key">>) => void;
+  /** Otra columna: quien la usa pregunta antes si se pierden valores elegidos. */
+  onColumnChange: (change: ColumnChange) => void;
 }) {
   const { t } = useTranslation("forms");
   const column = definitionOf(filters, condition.column);
@@ -223,7 +282,7 @@ function ConditionFields({ filters, condition, editable, invalid, labeled = fals
     onChange={(key) => {
       if (key === condition.column) return;
       const next = definitionOf(filters, key);
-      if (next) onChange({ column: key, operator: next.operators[0] ?? "", values: next.type === "Boolean" ? ["true"] : [] });
+      if (next) onColumnChange({ column: key, operator: next.operators[0] ?? "", values: next.type === "Boolean" ? ["true"] : [] });
     }} />;
   const operatorPicker = <Picker label={labeled ? undefined : t("forms:catalog.filters.operator")} disabled={!editable} value={condition.operator} options={operatorOptions}
     onChange={(operator) => onChange({ operator })} />;

@@ -190,6 +190,15 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
     setDeletes((current) => new Set([...current, ...draft.deletes]));
   }
 
+  /** Quita las opciones del borrador (otro origen o tipo en un catálogo nuevo, después de preguntar), sin tocar el nombre. */
+  function clearItems() {
+    setEdits(emptyEdits);
+    setAdded([]);
+    setDeletes(new Set());
+    setSelected(new Set());
+    setServerErrors({});
+  }
+
   /** Vuelve a lo guardado: las opciones, el nombre, la descripción y los errores. */
   function reset() {
     setEdits(emptyEdits);
@@ -302,7 +311,7 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
     changedFields: (key: string): (keyof ItemDraft)[] => changedFieldsOf(state, key),
     generateMissingCodes, generateCode,
     takeSnapshot, restoreSnapshot, errorRound,
-    attempt, buildRequest, createItems, applyServerErrors, itemInput, reset,
+    attempt, buildRequest, createItems, applyServerErrors, itemInput, reset, clearItems,
     positionOf: (row: FormCatalogItemRow) => positionOf(state, row),
   };
 }

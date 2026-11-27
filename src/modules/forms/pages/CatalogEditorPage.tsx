@@ -213,10 +213,28 @@ function NewCatalogEditor() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { phone } = useAppChrome();
+  const format = useFormat();
   const [origin, setOrigin] = useState<CatalogOrigin>({ source: "Manual", valueType: "Text" });
+  const [pendingOrigin, setPendingOrigin] = useState<CatalogOrigin | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const editor = useCatalogEditor(undefined, { newValueType: origin.valueType });
   const filters = useCatalogFilters({ source: origin.source, canManage: true, error: editor.saveError, sampleRequiredMessage: t("forms:catalog.errors.sampleRequired") });
+  // Ninguna elección se descarta en silencio (162): otro origen o tipo pregunta antes, con lo que se va.
+  const lostBy = (next: CatalogOrigin) => ({
+    options: origin.source === "Manual" && (next.source !== "Manual" || next.valueType !== origin.valueType) ? editor.rows.length : 0,
+    conditions: origin.source !== "Manual" && next.source !== origin.source ? filters.draft.conditions.length : 0,
+  });
+  const applyOrigin = (next: CatalogOrigin) => {
+    if (lostBy(next).options) editor.clearItems();
+    setOrigin(next);
+    setPendingOrigin(null);
+  };
+  const changeOrigin = (next: CatalogOrigin) => {
+    const lost = lostBy(next);
+    if (lost.options || lost.conditions) setPendingOrigin(next);
+    else applyOrigin(next);
+  };
+  const pendingLost = pendingOrigin ? lostBy(pendingOrigin) : null;
   // Una sola clave por intento: un reintento del mismo pedido no crea otro catálogo (idempotencia).
   const idempotencyKey = useRef<string | null>(null);
   const create = useMutation({ mutationFn: (request: CreateFormCatalogRequest) => createCatalog(request, idempotencyKey.current ??= crypto.randomUUID()) });
@@ -262,7 +280,7 @@ function NewCatalogEditor() {
       <CatalogColumns phone={phone} editor={editor} filters={filters} editable>
         <Section title={t("forms:catalog.section")} phone="untitled">
           <SectionFields className="grid gap-3.5">
-            <CatalogOriginFields value={origin} onChange={setOrigin} />
+            <CatalogOriginFields value={origin} onChange={changeOrigin} />
             <FormField label={t("forms:catalog.fields.newName")} required error={editor.nameError}>
               <Input value={editor.name} maxLength={catalogLimits.name} onChange={(event) => editor.setName(event.target.value)} autoComplete="off" />
             </FormField>
@@ -276,5 +294,13 @@ function NewCatalogEditor() {
     </Page>
     {edit.leaveDialog}
     {phone ? <PhonePreviewDialog editor={editor} filters={filters} open={previewOpen} onOpenChange={setPreviewOpen} /> : null}
+    <ConfirmDialog open={pendingOrigin !== null} onOpenChange={(open) => { if (!open) setPendingOrigin(null); }}
+      title={pendingOrigin ? t("forms:catalog.originChange.title", { to: pendingOrigin.source !== origin.source
+        ? format.formatEnum("FormCatalogSource", pendingOrigin.source) : format.formatEnum("FormCatalogValueType", pendingOrigin.valueType) }) : ""}
+      // Se pierden las opciones (desde «A mano») o las condiciones (desde un origen con filtros), nunca las dos.
+      description={!pendingLost ? "" : pendingLost.options
+        ? t("forms:catalog.originChange.options", { count: pendingLost.options, n: format.formatInteger(pendingLost.options) })
+        : t("forms:catalog.originChange.conditions", { count: pendingLost.conditions, n: format.formatInteger(pendingLost.conditions) })}
+      confirmLabel={t("forms:catalog.originChange.confirm")} onConfirm={() => { if (pendingOrigin) applyOrigin(pendingOrigin); }} />
   </>;
 }

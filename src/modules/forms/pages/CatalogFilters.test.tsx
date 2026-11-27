@@ -181,6 +181,61 @@ describe("Catálogo con filtros (FRM-Catalogo-Filtros y FRM-Catalogo-Contactos)"
     expect(previews.every((request) => (request.filters?.conditions ?? []).length === 0)).toBe(true);
   });
 
+  it("cambiar la columna de una condición con valores pregunta con lo que se va (162): «Cancelar» los conserva y «Cambiar» los quita", async () => {
+    const { user } = mountForms(formsOwner, "/org/formularios/catalogos/c-sup");
+    expect(await screen.findByRole("button", { name: pickerName("Roles") })).toHaveAccessibleName(/Supervisor, Jefe de obra/);
+    await choose(user, "Columna Rol", "Empresa");
+    let dialog = await screen.findByRole("dialog", { name: "¿Cambiar a Empresa?" });
+    expect(dialog).toHaveTextContent("Se quitan los 2 valores elegidos.");
+    await user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+    expect(screen.getByRole("button", { name: pickerName("Roles") })).toHaveAccessibleName(/Supervisor, Jefe de obra/);
+    await choose(user, "Columna Rol", "Empresa");
+    dialog = await screen.findByRole("dialog", { name: "¿Cambiar a Empresa?" });
+    await user.click(within(dialog).getByRole("button", { name: "Cambiar" }));
+    expect(await screen.findByRole("button", { name: pickerName("Empresas") })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: pickerName("Roles") })).not.toBeInTheDocument();
+    // Un sí o no no tiene valores elegidos que perder: cambia sin preguntar.
+    await choose(user, "Columna Activo", "Nombre");
+    expect(screen.queryByRole("dialog", { name: /¿Cambiar a/ })).not.toBeInTheDocument();
+  });
+
+  it("si la vista previa o las columnas no se pueden leer, lo dicen en su lugar, con «Reintentar»", async () => {
+    let previewsFailing = true, sourceFailing = true;
+    server.use(
+      http.post(`${base}/previews`, () => previewsFailing ? HttpResponse.json({ status: 500, title: "Error" }, { status: 500 }) : HttpResponse.json(three)),
+      http.get(`${base}/sources/members`, () => sourceFailing ? HttpResponse.json({ status: 500, title: "Error" }, { status: 500 }) : HttpResponse.json(membersSource)),
+    );
+    const { user } = mountForms(formsOwner, "/org/formularios/catalogos/c-sup");
+    const columnsError = "No pudimos leer las columnas para filtrar.";
+    expect((await screen.findAllByRole("alert")).some((alert) => alert.textContent?.startsWith(columnsError))).toBe(true);
+    expect(screen.getByRole("button", { name: "Agregar condición" })).toHaveAccessibleDescription(columnsError);
+    sourceFailing = false;
+    await user.click(screen.getAllByRole("button", { name: "Reintentar" })[0]);
+    await waitFor(() => expect(screen.queryAllByText(columnsError)).toHaveLength(0));
+    expect(await within(phone()).findByText("No pudimos actualizar la vista previa.")).toBeVisible();
+    previewsFailing = false;
+    await user.click(within(phone()).getByRole("button", { name: "Reintentar" }));
+    expect(await within(phone()).findByText("Martín Paz")).toBeInTheDocument();
+  });
+
+  it("cambiar el origen de un catálogo nuevo con condiciones pregunta antes, con lo que se va (162)", async () => {
+    const { user } = mountForms(formsOwner, "/org/formularios/catalogos/nuevo");
+    await choose(user, "De dónde salen las opciones", /De los miembros/);
+    await user.click(await screen.findByRole("button", { name: "Agregar condición" }));
+    await choose(user, "Roles", "Supervisor");
+    await user.keyboard("{Escape}");
+    await choose(user, "De dónde salen las opciones", /De los contactos/);
+    let dialog = await screen.findByRole("dialog", { name: "¿Cambiar a De los contactos de WhatsApp?" });
+    expect(dialog).toHaveTextContent("Se quita la condición.");
+    await user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+    expect(screen.getByRole("button", { name: pickerName("Roles") })).toHaveAccessibleName(/Supervisor/);
+    await choose(user, "De dónde salen las opciones", /De los contactos/);
+    dialog = await screen.findByRole("dialog", { name: "¿Cambiar a De los contactos de WhatsApp?" });
+    await user.click(within(dialog).getByRole("button", { name: "Cambiar" }));
+    expect(await screen.findByRole("heading", { name: "Qué contactos entran" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: pickerName("Roles") })).not.toBeInTheDocument();
+  });
+
   it("de los contactos: el cliente puede quedar «Sin cliente», y la condición elige etiquetas por su nombre", async () => {
     serve({ detail: supervisores({ id: "c-cli", name: "Clientes", source: "Contacts", roles: null, companies: null, sample: null,
       filters: { sourceVersion: 1, excludeRecipient: false, detail: "tags", sort: { column: "name", descending: false }, conditions: [{ column: "tags", operator: "hasAny", values: ["Mayorista"] }] } }) });

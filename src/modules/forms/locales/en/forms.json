@@ -201,7 +201,8 @@
       "updating": "Updating the preview",
       "more_one": "and {{n}} more option",
       "more_other": "and {{n}} more options",
-      "moreHelp": "With these filters there are {{total}} options, and WhatsApp shows up to {{max}}."
+      "moreHelp": "With these filters there are {{total}} options, and WhatsApp shows up to {{max}}.",
+      "error": "We couldn't update the preview."
     },
     "optionsDialog": {
       "title": "Options of “{{name}}”",
@@ -229,6 +230,14 @@
         "detail": "It shows below the text in WhatsApp.",
         "status": "A deactivated option is no longer offered, and what was already answered doesn't change."
       }
+    },
+    "originChange": {
+      "title": "Change to {{to}}?",
+      "options_one": "The loaded option will be removed.",
+      "options_other": "The {{n}} loaded options will be removed.",
+      "conditions_one": "The condition will be removed.",
+      "conditions_other": "The {{n}} conditions will be removed.",
+      "confirm": "Change"
     },
     "conflict": {
       "title": "Someone else saved the catalog",
@@ -378,6 +387,13 @@
       "missingError": {
         "role": "That role no longer exists. Choose another one.",
         "company": "That company no longer exists. Choose another one."
+      },
+      "columnsError": "We couldn't read the columns to filter by.",
+      "changeColumn": {
+        "title": "Change to {{column}}?",
+        "values_one": "The chosen value will be removed.",
+        "values_other": "The {{n}} chosen values will be removed.",
+        "confirm": "Change"
       },
       "addCondition": "Add condition",
       "removeCondition": "Remove condition",

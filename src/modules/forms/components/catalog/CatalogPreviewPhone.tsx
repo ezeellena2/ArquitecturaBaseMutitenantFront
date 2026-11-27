@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useRetryAfterOf } from "@/shared/api/useRetryAfterCountdown";
 import { useFormat } from "@/shared/format/useFormat";
+import { Button } from "@/shared/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { InfoTip } from "@/shared/ui/InfoTip";
 import { SegmentedControl } from "@/shared/ui/SegmentedControl";
@@ -65,18 +67,24 @@ export function CatalogPreviewPhone({ options, withSwitch = true }: { options: r
  * La vista previa de un catálogo de los miembros o de los contactos (FRM-Catalogo-Filtros y FRM-Catalogo-Contactos): el
  * teléfono con la lista abierta, como la dibuja WhatsApp, sin «Una opción | Varias». Mientras se actualiza, un esqueleto
  * («Actualizando»); sin opciones, «Ninguna opción»; con más de las que entran, «y N opciones más» con su ⓘ. Sin respuesta
- * (falta la persona de ejemplo), la lista queda vacía.
+ * (falta la persona de ejemplo), la lista queda vacía. Si no se pudo pedir, lo dice en su lugar, con «Reintentar».
  */
-export function CatalogListPhone({ preview, updating }: { preview: FormCatalogPreviewResponse | undefined; updating: boolean }) {
-  const { t } = useTranslation("forms");
+export function CatalogListPhone({ preview, updating, error, onRetry }: {
+  preview: FormCatalogPreviewResponse | undefined; updating: boolean; error?: unknown; onRetry?: () => void;
+}) {
+  const { t } = useTranslation(["forms", "common"]);
   const format = useFormat();
+  const limit = useRetryAfterOf(error);
   const more = preview ? preview.total - preview.options.length : 0;
   const moreText = t("forms:catalog.preview.more", { count: more, n: format.formatInteger(more) });
   return <div role="group" aria-label={t("forms:catalog.preview.title")} aria-busy={updating}
     className="mx-auto w-full max-w-[17rem] overflow-hidden rounded-[1.5rem] border-[0.375rem] border-[var(--t1)] bg-[var(--superficie)] text-[0.78125rem]">
     <p className="flex items-center gap-2 border-b border-[var(--borde)] px-3 py-2.5 font-semibold"><span aria-hidden="true">{"‹"}</span>{t("forms:catalog.preview.question")}</p>
     <div className="min-h-[18rem]">
-      {updating ? <div className="flex flex-col gap-3 p-3.5" aria-label={t("forms:catalog.preview.updating")} role="status">
+      {error !== undefined && !updating ? <div role="alert" className="flex flex-col items-center gap-2 px-3 py-6 text-center text-[var(--peligro)]">
+        {t("forms:catalog.preview.error")}
+        {onRetry ? <Button type="button" size="sm" variant="outline" disabled={limit.isRunning} onClick={onRetry}>{limit.label ?? t("common:actions.retry")}</Button> : null}
+      </div> : updating ? <div className="flex flex-col gap-3 p-3.5" aria-label={t("forms:catalog.preview.updating")} role="status">
         {["80%", "60%", "70%"].map((width) => <Skeleton key={width} className="h-2.5 rounded-full" style={{ width }} />)}
       </div> : preview ? <>
         {preview.options.length === 0 ? <p className="px-3 py-6 text-center text-[var(--t3)]">{t("forms:catalog.preview.none")}</p> : <ul className="flex flex-col">

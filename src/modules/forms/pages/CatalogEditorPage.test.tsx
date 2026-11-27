@@ -3,7 +3,7 @@ import { http, HttpResponse } from "msw";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { server } from "@/test/mocks/server";
-import { choose } from "@/test/picker";
+import { choose, pickerName } from "@/test/picker";
 import type { FormCatalogItemRow, FormCatalogResponse, UpdateFormCatalogRequest } from "../api/types";
 import { formsOwner, formsReader, mountForms } from "../test/support";
 
@@ -248,6 +248,28 @@ describe("CatalogEditorPage (FRM-Catalogo)", () => {
     expect(screen.queryByRole("button", { name: "Agregar opción" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Exportar" })).toBeInTheDocument();
     expect(screen.getByText("De baja")).toBeInTheDocument();
+  });
+});
+
+describe("CatalogEditorPage: un catálogo nuevo", () => {
+  it("cambiar el tipo o el origen con opciones cargadas pregunta antes, con lo que se va (162), y «Cambiar» las quita", async () => {
+    const { user } = mountForms(formsOwner, "/org/formularios/catalogos/nuevo");
+    await user.click(await screen.findByRole("button", { name: "Agregar opción" }));
+    const options = await screen.findByRole("dialog", { name: "Opciones nuevas" });
+    await user.type(within(options).getByRole("textbox", { name: "Texto" }), "Garantía");
+    await user.click(within(options).getByRole("button", { name: "Listo" }));
+    expect(screen.getByRole("textbox", { name: "Texto de Garantía" })).toBeInTheDocument();
+    await choose(user, "Tipo de valor", "Número entero");
+    let dialog = await screen.findByRole("dialog", { name: "¿Cambiar a Número entero?" });
+    expect(dialog).toHaveTextContent("Se quita la opción cargada.");
+    await user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+    expect(screen.getByRole("button", { name: pickerName("Tipo de valor") })).toHaveAccessibleName(/Texto/);
+    expect(screen.getByRole("textbox", { name: "Texto de Garantía" })).toBeInTheDocument();
+    await choose(user, "De dónde salen las opciones", /De los miembros/);
+    dialog = await screen.findByRole("dialog", { name: "¿Cambiar a De los miembros?" });
+    await user.click(within(dialog).getByRole("button", { name: "Cambiar" }));
+    await choose(user, "De dónde salen las opciones", /Escritas a mano/);
+    expect(screen.queryByRole("textbox", { name: "Texto de Garantía" })).not.toBeInTheDocument();
   });
 });
 

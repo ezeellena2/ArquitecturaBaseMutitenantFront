@@ -13,6 +13,6 @@ export function FiltersPreview({ filters, bare = false }: { filters: CatalogFilt
   return <section aria-label={t("forms:catalog.preview.title")}
     className={cn("flex flex-col gap-3", !bare && "self-start rounded-lg border border-[var(--borde)] bg-[var(--superficie)] p-4")}>
     <SamplePicker filters={filters} />
-    <CatalogListPhone preview={filters.preview.data} updating={filters.preview.updating} />
+    <CatalogListPhone preview={filters.preview.data} updating={filters.preview.updating} error={filters.preview.error} onRetry={filters.preview.retry} />
   </section>;
 }

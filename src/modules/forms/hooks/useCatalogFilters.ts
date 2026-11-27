@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { catalogPreviewQueryKey, fetchMembersSource, membersSourceQueryKey, previewCatalog } from "../api/catalogs";
 import type {
+  FormCatalogFilters as SavedFilters,
   FormCatalogFilterSortInput,
   FormCatalogFiltersInput,
   FormCatalogPreviewRequest,
@@ -84,14 +85,20 @@ function signature(draft: FiltersDraft, sampleId: string | null | undefined): st
 
 const hasValues = (condition: ConditionDraft) => condition.values.some((value) => value.trim() !== "");
 
-function toInput(draft: FiltersDraft, conditions: readonly ConditionDraft[], version: number): FormCatalogFiltersInput {
+/** Los filtros como se guardan: los mismos datos que el pedido y que la respuesta, con todos sus campos. */
+function toSaved(draft: FiltersDraft, conditions: readonly ConditionDraft[], version: number): SavedFilters {
   return {
     sourceVersion: version,
     conditions: conditions.map(({ column, operator, values }) => ({ column, operator, values: [...values] })),
     excludeRecipient: draft.excludeRecipient,
     detail: draft.detail,
-    sort: draft.sort as FormCatalogFilterSortInput | null,
+    sort: draft.sort,
   };
+}
+
+function toInput(draft: FiltersDraft, conditions: readonly ConditionDraft[], version: number): FormCatalogFiltersInput {
+  const saved = toSaved(draft, conditions, version);
+  return { ...saved, sort: saved.sort as FormCatalogFilterSortInput | null };
 }
 
 /** Una condición nueva: la primera lista de la fuente (roles o etiquetas), con su primer operador. */
@@ -190,6 +197,8 @@ export function useCatalogFilters({ source, saved, canManage, error, sampleRequi
     names,
     isDirty,
     canAddCondition: columns.length > 0 && draft.conditions.length < conditionsMax,
+    /** Las columnas de «Miembros» no se pudieron leer: lo dice su lugar, con «Reintentar». */
+    columnsLoad: { error: source === "Members" && members.isError ? members.error : undefined, retry: () => { void members.refetch(); } },
     conditionErrors,
     sampleError,
     missingValues,
@@ -239,7 +248,7 @@ export function useCatalogFilters({ source, saved, canManage, error, sampleRequi
       if (!filtered || version === undefined) return {};
       const used = (column: string) => [...new Set(draft.conditions.filter((condition) => condition.column === column).flatMap((condition) => condition.values))]
         .filter((id) => Object.hasOwn(names, id)).map((id) => ({ id, name: names[id]! }));
-      return { filters: toInput(draft, draft.conditions, version) as FormCatalogResponse["filters"], roles: used("role"), companies: used("company"), sample };
+      return { filters: toSaved(draft, draft.conditions, version), roles: used("role"), companies: used("company"), sample };
     },
     /** «Descartar» vuelve a lo guardado; «Ver lo nuevo», a lo que se acaba de leer. */
     reset(fresh: FormCatalogResponse | undefined = saved) {
@@ -251,6 +260,9 @@ export function useCatalogFilters({ source, saved, canManage, error, sampleRequi
       data: debounced && request ? preview.data : undefined,
       updating: request !== null && (preview.isFetching || requestText !== debouncedText),
       waitingForSample,
+      /** La vista previa no se pudo pedir: lo dice el teléfono, con «Reintentar». */
+      error: debounced && request && preview.isError ? preview.error : undefined,
+      retry: () => { void preview.refetch(); },
     },
   };
 }

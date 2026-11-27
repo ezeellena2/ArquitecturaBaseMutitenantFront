@@ -201,7 +201,8 @@
       "updating": "Actualizando la vista previa",
       "more_one": "y {{n}} opción más",
       "more_other": "y {{n}} opciones más",
-      "moreHelp": "Con estos filtros hay {{total}} opciones, y WhatsApp muestra hasta {{max}}."
+      "moreHelp": "Con estos filtros hay {{total}} opciones, y WhatsApp muestra hasta {{max}}.",
+      "error": "No pudimos actualizar la vista previa."
     },
     "optionsDialog": {
       "title": "Opciones de «{{name}}»",
@@ -229,6 +230,14 @@
         "detail": "Se ve debajo del texto en WhatsApp.",
         "status": "De baja no se ofrece más, y lo ya respondido no cambia."
       }
+    },
+    "originChange": {
+      "title": "¿Cambiar a {{to}}?",
+      "options_one": "Se quita la opción cargada.",
+      "options_other": "Se quitan las {{n}} opciones cargadas.",
+      "conditions_one": "Se quita la condición.",
+      "conditions_other": "Se quitan las {{n}} condiciones.",
+      "confirm": "Cambiar"
     },
     "conflict": {
       "title": "Otra persona guardó el catálogo",
@@ -378,6 +387,13 @@
       "missingError": {
         "role": "Ese rol ya no existe. Elegí otro.",
         "company": "Esa empresa ya no existe. Elegí otra."
+      },
+      "columnsError": "No pudimos leer las columnas para filtrar.",
+      "changeColumn": {
+        "title": "¿Cambiar a {{column}}?",
+        "values_one": "Se quita el valor elegido.",
+        "values_other": "Se quitan los {{n}} valores elegidos.",
+        "confirm": "Cambiar"
       },
       "addCondition": "Agregar condición",
       "removeCondition": "Quitar condición",
