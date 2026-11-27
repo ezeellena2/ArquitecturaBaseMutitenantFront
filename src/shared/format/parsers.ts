@@ -29,7 +29,8 @@ function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-function numericParts(input: string, culture: CultureReference): { value: number; fractionDigits: number } | null {
+/** Lee el texto con la cultura: la forma, los miles y lo ambiguo (207). Devuelve el número con punto, sin pasar por `Number`. */
+function numberText(input: string, culture: CultureReference): { canonical: string; fraction: string | undefined } | null {
   const trimmed = input.trim();
   if (trimmed === "") return null;
   if (culture.groupSeparator === culture.decimalSeparator) {
@@ -50,6 +51,13 @@ function numericParts(input: string, culture: CultureReference): { value: number
   const canonical = trimmed
     .replaceAll(culture.groupSeparator, "")
     .replace(culture.decimalSeparator, ".");
+  return { canonical, fraction };
+}
+
+function numericParts(input: string, culture: CultureReference): { value: number; fractionDigits: number } | null {
+  const text = numberText(input, culture);
+  if (!text) return null;
+  const { canonical, fraction } = text;
   const digits = canonical.replace(/^[+-]/, "").replace(".", "").replace(/^0+/, "");
   if (digits.length > 15) throw new Error("El número excede la precisión admitida.");
   const value = Number(canonical);
@@ -67,6 +75,20 @@ function numericParts(input: string, culture: CultureReference): { value: number
 /** Interpreta texto visible y devuelve el decimal del contrato, o null si está vacío. */
 export function parseDecimal(input: string, culture: CultureReference): number | null {
   return numericParts(input, culture)?.value ?? null;
+}
+
+/**
+ * Como `parseDecimal`, con el mismo `NumberAmbiguousError`, pero devuelve el texto canónico con punto («1234.5», «-7»), sin
+ * pasar por `Number`: conserva todos los dígitos de un valor que pasa los 15 de `parseDecimal` (C6 de la E12, el valor de
+ * una opción de un catálogo tipado, que guarda el servidor). Sin el `+`, los ceros de adelante ni el signo de un cero.
+ */
+export function parseDecimalText(input: string, culture: CultureReference): string | null {
+  const text = numberText(input, culture);
+  if (!text) return null;
+  const [integer, fraction] = text.canonical.replace(/^[+-]/, "").split(".");
+  const whole = integer.replace(/^0+(?=\d)/, "");
+  const canonical = fraction === undefined ? whole : `${whole}.${fraction}`;
+  return text.canonical.startsWith("-") && /[1-9]/.test(canonical) ? `-${canonical}` : canonical;
 }
 
 /** Una entrada nueva exige moneda habilitada y precisión declarada por Currencies. */

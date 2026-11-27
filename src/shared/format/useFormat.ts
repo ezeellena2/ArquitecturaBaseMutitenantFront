@@ -7,7 +7,7 @@ import { useCurrentUser } from "@/auth/useCurrentUser";
 import type { MeResponse } from "@/shared/api/types";
 import { getDefaultCultureProfile } from "./cultureProfiles";
 import { createFormatters } from "./formatters";
-import { parseDate, parseDateTime, parseDecimal, parseMoney, parseMonth, parsePercent, parseTime } from "./parsers";
+import { parseDate, parseDateTime, parseDecimal, parseDecimalText, parseMoney, parseMonth, parsePercent, parseTime } from "./parsers";
 import type { MoneyValue } from "./formatters";
 
 export type { DateRangeValue, MoneyValue } from "./formatters";
@@ -16,6 +16,8 @@ type Formatters = ReturnType<typeof createFormatters>;
 type BoundParsers = {
   parseMonth: (input: string) => string | null;
   parseDecimal: (input: string) => number | null;
+  /** El número como texto canónico con punto, con todos sus dígitos (C6 de la E12). */
+  parseDecimalText: (input: string) => string | null;
   parseMoney: (input: string, currency?: string, precision?: "currency" | "technical-tariff") => MoneyValue | null;
   parsePercent: (input: string) => number | null;
   parseDate: (input: string) => string | null;
@@ -69,6 +71,7 @@ const loadingState: FormatState = {
   ...unavailableFormatters,
   parseMonth,
   parseDecimal: () => null,
+  parseDecimalText: () => null,
   parseMoney: () => null,
   parsePercent: () => null,
   parseDate: () => null,
@@ -128,6 +131,7 @@ export function FormatProvider({ children }: { children: ReactNode }) {
         translate: (key, options) => t(key, options),
       }),
       parseDecimal: (input) => parseDecimal(input, profile),
+      parseDecimalText: (input) => parseDecimalText(input, profile),
       parseMonth,
       parseMoney: (input, selectedCurrency = currency ?? "", precision) => parseMoney(input, selectedCurrency, profile, data, precision),
       parsePercent: (input) => parsePercent(input, profile),

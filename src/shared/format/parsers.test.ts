@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { referenceDataFixture } from "@/test/mocks/handlers";
-import { NumberAmbiguousError, parseDate, parseDateTime, parseDecimal, parseMoney, parsePercent, parseTime } from "./parsers";
+import { NumberAmbiguousError, parseDate, parseDateTime, parseDecimal, parseDecimalText, parseMoney, parsePercent, parseTime } from "./parsers";
 
 const referenceData = referenceDataFixture();
 const spanish = referenceData.cultures[0];
@@ -136,5 +136,30 @@ describe("entrada según Cultures", () => {
     expect(parsePercent("12,5 %", spanish)).toBe(0.125);
     expect(parsePercent("12.5%", english)).toBe(0.125);
     expect(() => parsePercent("%", spanish)).toThrow();
+  });
+});
+
+describe("parseDecimalText (C6 de la E12)", () => {
+  it("lee como parseDecimal y devuelve el texto canónico con punto", () => {
+    expect(parseDecimalText("", spanish)).toBeNull();
+    expect(parseDecimalText("4.800,50", spanish)).toBe("4800.50");
+    expect(parseDecimalText("1500", spanish)).toBe("1500");
+    expect(parseDecimalText("+007,5", spanish)).toBe("7.5");
+    expect(parseDecimalText("-0", spanish)).toBe("0");
+    expect(parseDecimalText("-1,25", spanish)).toBe("-1.25");
+    expect(parseDecimalText("1,234.5", english)).toBe("1234.5");
+  });
+
+  it("«1.500» en español es el mismo NumberAmbiguousError, y lo que no es un número, un error", () => {
+    expect(() => parseDecimalText("1.500", spanish)).toThrow(NumberAmbiguousError);
+    expect(() => parseDecimalText("1,500", english)).toThrow(NumberAmbiguousError);
+    expect(() => parseDecimalText("mil", spanish)).toThrow(Error);
+    expect(() => parseDecimalText("1.5", spanish)).toThrow(Error);
+  });
+
+  it("uno de 18 dígitos llega entero, sin pasar por Number", () => {
+    expect(parseDecimalText("123456789012345678", spanish)).toBe("123456789012345678");
+    expect(parseDecimalText("123.456.789.012.345.678,0123456789", spanish)).toBe("123456789012345678.0123456789");
+    expect(() => parseDecimal("123456789012345678", spanish)).toThrow(Error);
   });
 });
