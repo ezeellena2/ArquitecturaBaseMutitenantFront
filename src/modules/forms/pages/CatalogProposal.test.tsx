@@ -105,7 +105,7 @@ describe("la propuesta del asistente en el editor de un catálogo (FRM-Catalogo-
     await waitFor(() => expect(applied).toEqual([{ version: 8 }]));
     expect(puts).toHaveLength(1);
     expect(puts[0]).toEqual({
-      version: 7, name: "Motivos de visita", description: "Por qué se visita a un cliente.",
+      version: 7, isActive: true, name: "Motivos de visita", description: "Por qué se visita a un cliente.",
       items: [
         { itemId: "i-ven", code: "VEN", text: "Venta nueva", detail: "Primera visita a un cliente nuevo", value: null, isActive: true },
         { localId: "proposal-GAR", code: "GAR", text: "Garantía", detail: "Revisar un equipo en garantía", value: null, isActive: true },
