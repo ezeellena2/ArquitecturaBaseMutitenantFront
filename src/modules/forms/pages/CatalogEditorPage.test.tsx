@@ -158,6 +158,33 @@ describe("CatalogEditorPage (FRM-Catalogo)", () => {
     scrollTo.mockRestore();
   });
 
+  it("lo cambiado en otra página viaja al guardar, y su rechazo se ve en esa opción, aunque se guarde desde otra página", async () => {
+    const many = Array.from({ length: 12 }, (_, index) => item(`i-${index + 1}`, index + 1, `Opción ${index + 1}`, `O${index + 1}`));
+    serve({
+      items: (url) => { const page = Number(url.searchParams.get("page") ?? "1"); return paged(many.slice((page - 1) * 10, page * 10), page, many.length); },
+      put: () => puts.length === 1
+        ? HttpResponse.json({ code: "Forms.Catalog.DuplicateCode", status: 409, title: "Conflict", errors: { "items.1.code": ["Ya hay otra opción con ese código."] } }, { status: 409 })
+        : HttpResponse.json({ version: 8, itemIdentityMap: [] }),
+    });
+    const { user } = mountForms(formsOwner, path);
+    const first = await screen.findByRole("textbox", { name: "Código de Opción 1" });
+    await user.clear(first);
+    await user.paste("O99");
+    await user.click(screen.getByRole("button", { name: /Página siguiente|Siguiente/ }));
+    const field = await screen.findByRole("textbox", { name: "Texto de Opción 11" });
+    await user.clear(field);
+    await user.paste("Opción once");
+    await user.click(saveButton());
+    await waitFor(() => expect(puts).toHaveLength(1));
+    // La de la página a la vista va primero; la de la página 1, después.
+    expect(puts[0].items?.map((input) => input.itemId)).toEqual(["i-11", "i-1"]);
+    expect(puts[0].items?.[1]).toMatchObject({ itemId: "i-1", code: "O99", text: "Opción 1" });
+    // El rechazo de la de la página 1 se ve en ella: el modal de opciones se abre en la que tiene el problema (117).
+    const dialog = await screen.findByRole("dialog", { name: "Opciones de «Motivos de visita»" });
+    expect(within(dialog).getByText("11–12 de 12")).toBeInTheDocument();
+    expect(within(dialog).getByText("Ya hay otra opción con ese código.")).toBeInTheDocument();
+  });
+
   it("si algo usa la opción que se borra, se dice qué: con dos motivos de `uses`, se ve el primero", async () => {
     serve({ put: () => HttpResponse.json({
       code: "Forms.Catalog.ItemInUse", status: 409, title: "Conflict", errors: { "deleteItems[0]": ["No se puede borrar porque se usa. Podés darla de baja."] },

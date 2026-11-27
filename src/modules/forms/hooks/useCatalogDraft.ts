@@ -57,6 +57,9 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
   const [sort, setSort] = useState<FormCatalogItemSortInput | null>(null);
   const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
   const [serverErrors, setServerErrors] = useState<Readonly<Record<string, RowError>>>({});
+  // Las guardadas que el borrador cambió o borra, como se leyeron: desde otra página o con otra búsqueda siguen a la vista,
+  // viajan al guardar y muestran su rechazo, como las de una propuesta.
+  const [touched, setTouched] = useState<Readonly<Record<string, FormCatalogItemRow>>>({});
   const [nameError, setNameError] = useState<string | undefined>(undefined);
   // Antes de intentar guardar, nada va en rojo, tampoco una fila recién agregada (formularios, 2026-10-24).
   const [attempted, setAttempted] = useState(false);
@@ -66,9 +69,11 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
   const sent = useRef<{ items: string[]; deleteItems: string[] }>({ items: [], deleteItems: [] });
 
   const state: CatalogDraftState = { edits, added, deletes, moves, positions, sort, serverErrors };
-  const rows = catalogRows({ pageRows, extraRows, state, valueType, showErrors: attempted, format, t });
+  const otherRows = [...extraRows, ...Object.values(touched).filter((row) => !extraRows.some((item) => item.id === row.id))];
+  const rows = catalogRows({ pageRows, extraRows: otherRows, state, valueType, showErrors: attempted, format, t });
   const byPosition = new Map(pageRows.map((row) => [positionOf(state, row), row]));
-  const savedRow = (key: string | undefined) => savedRowOf({ pageRows, extraRows }, key);
+  const savedRow = (key: string | undefined) => savedRowOf({ pageRows, extraRows: otherRows }, key);
+  const remember = (row: FormCatalogItemRow) => setTouched((current) => current[row.id] === row ? current : { ...current, [row.id]: row });
 
   const currentName = name ?? saved?.name ?? "";
   const currentDescription = description ?? saved?.description ?? "";
@@ -88,6 +93,7 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
     }
     const row = savedRow(key);
     if (!row) return;
+    remember(row);
     setEdits((current) => {
       const clean = cleanEdits({ ...current[key], ...patch }, savedDraft(row, valueType, format));
       const rest = { ...current };
@@ -105,8 +111,13 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
   /** 🗑: una nueva se quita sin preguntar; una guardada queda por borrar hasta guardar, y se puede restaurar (129). */
   function remove(key: string) {
     setSelected((current) => { const next = new Set(current); next.delete(key); return next; });
-    if (added.some((item) => item.localId === key)) setAdded((current) => current.filter((item) => item.localId !== key));
-    else setDeletes((current) => new Set(current).add(key));
+    if (added.some((item) => item.localId === key)) {
+      setAdded((current) => current.filter((item) => item.localId !== key));
+      return;
+    }
+    const row = savedRow(key);
+    if (row) remember(row);
+    setDeletes((current) => new Set(current).add(key));
   }
 
   function restore(key: string) {
@@ -192,6 +203,7 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
 
   /** Quita las opciones del borrador (otro origen o tipo en un catálogo nuevo, después de preguntar), sin tocar el nombre. */
   function clearItems() {
+    setTouched({});
     setEdits(emptyEdits);
     setAdded([]);
     setDeletes(new Set());
@@ -201,6 +213,7 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
 
   /** Vuelve a lo guardado: las opciones, el nombre, la descripción y los errores. */
   function reset() {
+    setTouched({});
     setEdits(emptyEdits);
     setAdded([]);
     setDeletes(new Set());

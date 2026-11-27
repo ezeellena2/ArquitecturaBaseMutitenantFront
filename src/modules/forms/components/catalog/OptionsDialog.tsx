@@ -93,11 +93,12 @@ export function OptionsDialog({ editor, opening, onClose }: { editor: CatalogEdi
     : t(adding ? "forms:catalog.optionsDialog.listNew" : "forms:catalog.optionsDialog.list");
   const listTitle = t(adding ? "forms:catalog.optionsDialog.listNew" : "forms:catalog.optionsDialog.list");
   const pageData = editor.items.data;
-  const savedCount = list.filter((row) => !row.isNew).length;
+  // El rango es el de la página; las de otras páginas que el borrador toca se suman a la lista, no al rango.
+  const pageCount = pageData?.items.length ?? 0;
   const firstNumber = pageData ? (pageData.page - 1) * pageData.pageSize + 1 : 1;
-  const listCount = adding || !pageData || savedCount === 0
+  const listCount = adding || !pageData || pageCount === 0
     ? format.formatInteger(list.length)
-    : t("forms:catalog.optionsDialog.range", { from: format.formatInteger(firstNumber), to: format.formatInteger(firstNumber + savedCount - 1), total: format.formatInteger(pageData.totalCount) });
+    : t("forms:catalog.optionsDialog.range", { from: format.formatInteger(firstNumber), to: format.formatInteger(firstNumber + pageCount - 1), total: format.formatInteger(pageData.totalCount) });
   const removeReason = selected && !selected.isNew && (editor.moves.length || editor.sort) ? t("forms:catalog.reasons.orderPending") : undefined;
 
   function select(key: string) {
