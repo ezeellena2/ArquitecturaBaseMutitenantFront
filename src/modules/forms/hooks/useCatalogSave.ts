@@ -31,19 +31,20 @@ export function useCatalogSave(id: string | undefined, data: CatalogData, draft:
   const { saved, itemsQuery } = data;
   const [version, setVersion] = useState<number | undefined>(undefined);
   const [saveError, setSaveError] = useState<unknown>(undefined);
-  // La revisión abierta: cada 409 lee de nuevo lo guardado ahora.
-  const [conflictRound, setConflictRound] = useState<number | null>(null);
+  // La revisión de un 409: abierta o no, y su vuelta, que sube con cada 409 así cada uno lee de nuevo lo guardado ahora.
+  const [conflictRound, setConflictRound] = useState(0);
+  const [conflictOpen, setConflictOpen] = useState(false);
 
   // La versión con la que se guarda es la de la lectura con la que arrancó el editor; una relectura no la cambia (concurrencia).
   if (saved && version === undefined) setVersion(saved.version);
 
   const conflictQuery = useQuery({
-    queryKey: catalogConflictQueryKey(id ?? "", conflictRound ?? 0, itemsQuery),
+    queryKey: catalogConflictQueryKey(id ?? "", conflictRound, itemsQuery),
     queryFn: async ({ signal }): Promise<CatalogConflict> => {
       const [fresh, freshItems] = await Promise.all([fetchCatalog(id!, signal), fetchCatalogItems(id!, itemsQuery, signal)]);
       return { fresh, freshItems: freshItems.items };
     },
-    enabled: Boolean(id) && conflictRound !== null,
+    enabled: Boolean(id) && conflictOpen,
     staleTime: Infinity,
     gcTime: 0,
     // Si no se puede leer, lo dice el cartel del 409 (`conflictUnreadable`), no un aviso aparte.
@@ -93,7 +94,10 @@ export function useCatalogSave(id: string | undefined, data: CatalogData, draft:
       onError: (error) => {
         setSaveError(error);
         draft.applyServerErrors(error);
-        if (isCatalogConflict(error)) setConflictRound((round) => (round ?? 0) + 1);
+        if (isCatalogConflict(error)) {
+          setConflictRound((round) => round + 1);
+          setConflictOpen(true);
+        }
       },
     });
   }
@@ -112,7 +116,7 @@ export function useCatalogSave(id: string | undefined, data: CatalogData, draft:
   /** «Ver lo nuevo»: relee el catálogo y su página y suelta lo escrito, con la versión nueva; devuelve lo leído. */
   async function seeNew(): Promise<FormCatalogResponse | undefined> {
     if (!id) return undefined;
-    setConflictRound(null);
+    setConflictOpen(false);
     await queryClient.invalidateQueries({ queryKey: catalogQueryKey(id) });
     const fresh = await queryClient.fetchQuery({ queryKey: catalogQueryKey(id), queryFn: ({ signal }) => fetchCatalog(id, signal) });
     setVersion(fresh.version);
@@ -136,12 +140,12 @@ export function useCatalogSave(id: string | undefined, data: CatalogData, draft:
     saveError,
     rejected,
     discard,
-    conflict: conflictRound !== null ? conflictQuery.data ?? null : null,
+    conflict: conflictOpen ? conflictQuery.data ?? null : null,
     /** Lo guardado ahora no se pudo leer: el 409 va en el cartel de siempre, con «Ver lo nuevo» y «Seguir editando». */
-    conflictUnreadable: conflictRound !== null && conflictQuery.isError,
+    conflictUnreadable: conflictOpen && conflictQuery.isError,
     seeNew,
     /** «Seguir editando»: cierra la revisión y conserva lo escrito y la versión de la que partió. */
-    continueEditing: () => setConflictRound(null),
+    continueEditing: () => setConflictOpen(false),
     setCatalogActive,
   };
 }

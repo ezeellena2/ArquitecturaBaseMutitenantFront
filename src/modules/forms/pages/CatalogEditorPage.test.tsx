@@ -226,6 +226,11 @@ describe("CatalogEditorPage (FRM-Catalogo)", () => {
     ]);
     await user.click(within(dialog).getByRole("button", { name: "Seguir editando" }));
     expect(field).toHaveValue("Seguimiento programado");
+    // Otro 409 vuelve a leer lo guardado ahora: la revisión no muestra la lectura anterior.
+    const reads = calls;
+    await user.click(saveButton());
+    expect(await screen.findByRole("dialog", { name: "Otra persona guardó el catálogo" })).toBeVisible();
+    await waitFor(() => expect(calls).toBe(reads + 1));
   });
 
   it("«Dar de baja», en el ⋮ de la banda, pregunta y manda el PUT con la versión y isActive", async () => {
