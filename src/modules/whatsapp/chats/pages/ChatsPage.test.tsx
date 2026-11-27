@@ -244,6 +244,19 @@ describe("Chats de la organización", () => {
     expect(hola.compareDocumentPosition(bot) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
+  // Decisión 2 de los arreglos de la revisión: lo que la organización mandó desde la app del celular, en coexistencia, dice
+  // «Enviado desde el celular» donde va el autor, en escritorio y en el teléfono; no pasa por respuesta del bot.
+  it.each([["en escritorio", false], ["en el teléfono", true]] as const)("lo mandado desde el celular dice «Enviado desde el celular», no «Respuesta automática»: %s", async (_where, onPhone) => {
+    if (onPhone) asPhone();
+    inbox(row(), [message(), message({ id: "m-cel", direction: "Outbound", text: "Sí, te las preparo.", status: "Delivered", sentFromPhone: true,
+      createdAtUtc: "2026-10-12T13:43:00Z" })]);
+    const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/chats");
+    if (onPhone) await user.click(await screen.findByRole("link", { name: /Martina López/ }));
+    const log = await screen.findByRole("log", { name: "Mensajes con Martina López" });
+    expect(await within(log).findByText(/^Enviado desde el celular · /)).toBeVisible();
+    expect(within(log).queryByText(/Respuesta automática/)).not.toBeInTheDocument();
+  });
+
   // WA-Chats-Base2 (0066 §3): «No se pudo mandar» lleva debajo su motivo, en su propio renglón, con el texto que manda el back.
   it.each(sendFailures)("«No se pudo mandar» lleva debajo su motivo: %s", async (_code, reason) => {
     inbox(row(), [message(), message({ id: "m-2", direction: "Outbound", author: "Lucía Fernández", text: "Sí, hasta las 18. ¿Te las preparo?",

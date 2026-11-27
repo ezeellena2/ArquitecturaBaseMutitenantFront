@@ -86,11 +86,11 @@ function ThreadItem({ message, perspective, phone, review }: {
   </div>;
 
   // Del lado de quien mira: el equipo manda lo saliente; la persona, lo entrante (lo que ella le escribió a la organización).
-  // Un saliente sin autor es del bot (CC15).
+  // Un saliente sin autor es del bot (CC15), salvo el que la organización mandó desde la app del celular, en coexistencia.
   const own = perspective.kind === "team" ? message.direction === "Outbound" : message.direction === "Inbound";
   const sender = perspective.kind === "person"
     ? own ? null : perspective.organizationName
-    : own ? message.author ?? t("chats.thread.automaticReply") : null;
+    : own ? message.author ?? t(message.sentFromPhone ? "chats.thread.sentFromPhone" : "chats.thread.automaticReply") : null;
   const failed = message.status === "Failed";
   // «Sin confirmar» (WA-Chats-Base2 y Plat-WA-Chats-Base2, 0066): lo que salió sin que WhatsApp confirmara el envío lo ve el
   // equipo que atiende, con su (i) y «Marcar como revisado»; revisado, quién y cuándo en gris. Revisar no lo reenvía.

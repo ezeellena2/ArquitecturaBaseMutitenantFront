@@ -36,6 +36,7 @@
     "label": "Mensajes con {{name}}",
     "loadEarlier": "Ver mensajes anteriores",
     "automaticReply": "Respuesta automática",
+    "sentFromPhone": "Enviado desde el celular",
     "note": "Nota interna",
     "pending": "En cola",
     "failed": "No se pudo mandar",
