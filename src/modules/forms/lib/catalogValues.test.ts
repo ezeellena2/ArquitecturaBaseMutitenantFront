@@ -1,8 +1,14 @@
 import { describe, expect, it } from "vitest";
+import { createFormatters } from "@/shared/format/formatters";
 import type { FormatState } from "@/shared/format/useFormat";
+import { referenceDataFixture } from "@/test/mocks/handlers";
 import { codeFromText, displayValue, editableValue, sameText, uniqueCode } from "./catalogValues";
 
-const esAR = { culture: "es-AR", referenceData: { cultures: [{ code: "es-AR", groupSeparator: ".", decimalSeparator: "," }] }, formatDate: (value: string) => `fecha ${value}` } as unknown as FormatState;
+// Los números los formatea shared/format, el de verdad; la fecha, una marca para ver que pasa por formatDate.
+const esAR = {
+  ...createFormatters({ referenceData: referenceDataFixture("es-AR"), culture: "es-AR", timeZone: "UTC", translate: (key: string) => key }),
+  isLoading: false, formatDate: (value: string) => `fecha ${value}`,
+} as unknown as FormatState;
 
 describe("los valores y los códigos de un catálogo", () => {
   it("el código sale del texto: las iniciales con tres palabras o más, si no, las tres primeras letras, sin acentos", () => {

@@ -41,6 +41,7 @@ const unavailableFormatters: Formatters = {
   formatTime: emptyText,
   formatDateRange: emptyText,
   formatInteger: emptyText,
+  formatDecimalText: emptyText,
   formatDecimal: emptyText,
   formatQuantity: emptyText,
   formatPercent: emptyText,

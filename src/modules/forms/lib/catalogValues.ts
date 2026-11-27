@@ -2,17 +2,15 @@ import { NumberAmbiguousError } from "@/shared/format/parsers";
 import type { FormatState } from "@/shared/format/useFormat";
 import type { FormCatalogValueType } from "../api/types";
 
-/** El canónico «2500.5» como se ve en la región del idioma («2.500,5»), sin pasar por `Number`, que perdería dígitos (C6). */
+/**
+ * El canónico «2500.5» como se ve en la región del idioma («2.500,5»), sin perder dígitos (C6): lo formatea shared/format.
+ * Mientras cargan los formatos, tal cual.
+ */
 export function displayValue(value: string | null | undefined, valueType: FormCatalogValueType, format: FormatState): string {
   if (value == null || value === "") return "";
   if (valueType === "Date") return format.formatDate(value) || value;
-  if (valueType === "Text") return value;
-  const culture = format.referenceData?.cultures.find((item) => item.code === format.culture);
-  if (!culture) return value;
-  const negative = value.startsWith("-");
-  const [integer, fraction] = value.replace(/^[+-]/, "").split(".");
-  const grouped = integer.replace(/\B(?=(\d{3})+(?!\d))/g, culture.groupSeparator);
-  return `${negative ? "-" : ""}${grouped}${fraction === undefined ? "" : `${culture.decimalSeparator}${fraction}`}`;
+  if (valueType === "Text" || format.isLoading) return value;
+  return format.formatDecimalText(value);
 }
 
 /**
@@ -20,9 +18,8 @@ export function displayValue(value: string | null | undefined, valueType: FormCa
  * separador de miles. Lo usa lo que propone el asistente, que llega canónico.
  */
 export function editableValue(value: string | null, valueType: FormCatalogValueType, format: FormatState): string {
-  if (value == null || valueType === "Text" || valueType === "Date") return displayValue(value, valueType, format);
-  const culture = format.referenceData?.cultures.find((item) => item.code === format.culture);
-  return culture ? value.replace(".", culture.decimalSeparator) : value;
+  if (value == null || valueType === "Text" || valueType === "Date" || format.isLoading) return displayValue(value, valueType, format);
+  return format.formatDecimalText(value, false);
 }
 
 export type ValueRead = { canonical: string | null; error?: string };

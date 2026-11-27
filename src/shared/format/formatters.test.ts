@@ -280,6 +280,20 @@ describe("designadores horarios del catálogo", () => {
   });
 });
 
+describe("decimal canónico como texto (C6 de la E12)", () => {
+  it("agrupa la parte entera con los separadores de la cultura, sin perder dígitos ni tocar la fracción", () => {
+    const esAR = createFormatters({ referenceData: referenceDataFixture("es-AR"), culture: "es-AR", timeZone: "UTC", translate: translator("es-AR") });
+    const enUS = createFormatters({ referenceData: referenceDataFixture("en-US"), culture: "en-US", timeZone: "UTC", translate: translator("en-US") });
+    expect(esAR.formatDecimalText("2500.5")).toBe("2.500,5");
+    expect(enUS.formatDecimalText("2500.5")).toBe("2,500.5");
+    expect(esAR.formatDecimalText("-123456789012345678")).toBe("-123.456.789.012.345.678");
+    expect(esAR.formatDecimalText("0.000375")).toBe("0,000375");
+    // Para escribirlo en un campo: sin miles, así se vuelve a leer igual.
+    expect(esAR.formatDecimalText("2500.5", false)).toBe("2500,5");
+    expect(esAR.formatDecimalText("no es un número")).toBe("no es un número");
+  });
+});
+
 describe.skipIf(!backendPresent)("redondeo antes de signo y unidad", () => {
   for (const [culture, money, compact, fileSize] of [
     ["es-AR", "$ 0,00", "1 M", "1 MB"],

@@ -1,9 +1,14 @@
 import { describe, expect, it } from "vitest";
+import { createFormatters } from "@/shared/format/formatters";
 import type { FormatState } from "@/shared/format/useFormat";
+import { referenceDataFixture } from "@/test/mocks/handlers";
 import type { FormCatalogItemRow } from "../api/types";
 import { catalogRows, cleanEdits, type CatalogDraftState } from "./catalogDraft";
 
-const format = { culture: "es-AR", referenceData: { cultures: [{ code: "es-AR", groupSeparator: ".", decimalSeparator: "," }] }, parseDecimalText: (input: string) => input.replace(",", ".") } as unknown as FormatState;
+const format = {
+  ...createFormatters({ referenceData: referenceDataFixture("es-AR"), culture: "es-AR", timeZone: "UTC", translate: (key: string) => key }),
+  isLoading: false, parseDecimalText: (input: string) => input.replace(",", "."),
+} as unknown as FormatState;
 const t = (key: string, options?: Record<string, unknown>) => options?.n !== undefined ? `${key}:${String(options.n)}` : key;
 const saved = (id: string, position: number, text: string, code: string): FormCatalogItemRow =>
   ({ id, position, text, code, detail: null, value: "1", isActive: true, textRepeated: false });

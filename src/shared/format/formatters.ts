@@ -187,6 +187,18 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
   }
 
   function formatInteger(value: number): string { return number(value, 0, 0); }
+  /**
+   * Un decimal canónico del contrato («-2500.5», hasta 18 dígitos) con los separadores de la cultura, sin pasar por `Number`,
+   * que perdería dígitos (C6 de la E12): la fracción queda como llega. `grouped: false`, sin miles, para escribirlo en un campo
+   * y volver a leerlo igual. Lo que no es canónico se ve tal cual.
+   */
+  function formatDecimalText(value: string, grouped = true): string {
+    const match = /^([+-]?)(\d+)(?:\.(\d+))?$/.exec(value);
+    if (!match) return value;
+    const [, sign, integer, fraction] = match;
+    const digits = grouped ? integer.replace(/\B(?=(\d{3})+(?!\d))/g, profile.groupSeparator) : integer;
+    return `${sign === "-" ? "-" : ""}${digits}${fraction === undefined ? "" : profile.decimalSeparator + fraction}`;
+  }
   function formatDecimal(value: number, digits: number): string { return number(value, digits, digits); }
   function formatQuantity(value: number): string { return number(value, 0, 3); }
   function formatPercent(value: number): string {
@@ -343,7 +355,7 @@ export function createFormatters({ referenceData, culture, timeZone, now, transl
   return {
     formatMonth, getMonthOptions, getAdjacentMonthYear, getCurrentMonth,
     formatDate, formatDateTime, formatTime, formatDateRange,
-    formatInteger, formatDecimal, formatQuantity, formatPercent, formatMoney, formatTariff, formatTariffAmount, formatCompact,
+    formatInteger, formatDecimalText, formatDecimal, formatQuantity, formatPercent, formatMoney, formatTariff, formatTariffAmount, formatCompact,
     formatFileSize, formatDuration, formatPhone, formatTimeZone, formatTimeZoneOffset, formatCulture, formatTaxId,
     formatEmail, formatEnum, formatBoolean, formatEmpty, formatText,
   };
