@@ -6,48 +6,48 @@ import {
   assistantActionKey, assistantProposalParam, useAssistantProposal, useAssistantProposalFieldReview, useAssistantProposalQuery,
   useDropAssistantProposal, useLoadAssistantProposalOnce, type AssistantProposalChangeItem, type AssistantProposalChangeRow,
 } from "@/shared/assistant-actions";
-import { fetchCatalogItems, formsQueryRoot } from "../api/catalogs";
-import type { FormCatalogItemRow } from "../api/types";
+import { catalogProposalTargetsQueryKey, fetchCatalogItems } from "../api/catalogs";
 import {
   catalogProposalAction, catalogProposalBase, catalogProposalDraft, catalogProposalFields, catalogProposalTargets, proposalKeyOf,
   toCatalogProposalRows,
 } from "../lib/proposal";
+import { findProposalTargets } from "../lib/proposalTargets";
+import { catalogQueryOptions } from "./useCatalogData";
 import type { CatalogEditor, CatalogRowView } from "./useCatalogEditor";
 
 /**
- * Las opciones guardadas que toca la propuesta, por su id: se buscan por el texto de ahora que leyó el servidor, una vez
- * por texto. Las 10.000 de un catálogo no se leen enteras.
+ * La propuesta del asistente que es para este catálogo (catalogoptions.edit@1, con `?proposal=<id>`), y las opciones
+ * guardadas que toca, leídas por su consulta: el editor las recibe como `extraRows` y las muestra aunque no estén en la
+ * página. Va antes del editor: solo lee la ficha (la misma consulta que el editor) y la propuesta.
  */
-async function fetchProposalTargets(catalogId: string, targets: readonly { itemId: string; label: string }[], signal: AbortSignal): Promise<FormCatalogItemRow[]> {
-  const ids = new Set(targets.map((target) => target.itemId));
-  const labels = [...new Set(targets.map((target) => target.label))];
-  const pages = await Promise.all(labels.map((label) => fetchCatalogItems(catalogId, { page: 1, pageSize: 100, search: label || undefined, status: "All" }, signal)));
-  const found = new Map(pages.flatMap((page) => page.items).filter((row) => ids.has(row.id)).map((row) => [row.id, row]));
-  return [...found.values()];
-}
-
-/**
- * La propuesta del asistente en el editor de un catálogo a mano (catalogoptions.edit@1, FRM-Catalogo-Opciones-Propuesta y
- * su M-): con `?proposal=<id>`, lo propuesto entra una vez en el borrador, sin guardar, sobre las opciones guardadas que
- * toca. Da «Lo que cambia», con lo que se va a mandar; «Revisá» en cada opción dudosa, y si el catálogo cambió desde la
- * propuesta. Si una opción propuesta no se puede dibujar, el editor sigue como siempre.
- */
-export function useCatalogProposal(editor: CatalogEditor, editable: boolean) {
-  const { t } = useTranslation(["forms", "common"]);
-  const { saved, valueType } = editor;
+export function useCatalogProposalTargets(id: string) {
+  const saved = useQuery(catalogQueryOptions(id)).data;
   const [params] = useSearchParams();
   const proposalId = params.get(assistantProposalParam);
-  const data = useAssistantProposalQuery(proposalId).data;
-  const forThisCatalog = Boolean(saved && editable && saved.source === "Manual" && data && data.kind === "action" && data.state === "new"
-    && assistantActionKey(data.action, data.version) === catalogProposalAction && data.target?.id === saved.id);
-  const targets = useMemo(() => forThisCatalog && data ? catalogProposalTargets(data.values) : [], [forThisCatalog, data]);
-  const touchedQuery = useQuery({
-    queryKey: [...formsQueryRoot, "proposalTargets", saved?.id ?? "", proposalId ?? ""],
-    queryFn: ({ signal }) => fetchProposalTargets(saved!.id, targets, signal),
+  const proposal = useAssistantProposalQuery(proposalId).data;
+  const forThisCatalog = Boolean(saved?.canManage && saved.isActive && saved.source === "Manual" && proposal && proposal.kind === "action"
+    && proposal.state === "new" && assistantActionKey(proposal.action, proposal.version) === catalogProposalAction && proposal.target?.id === saved.id);
+  const targets = useMemo(() => forThisCatalog && proposal ? catalogProposalTargets(proposal.values) : [], [forThisCatalog, proposal]);
+  const touched = useQuery({
+    queryKey: catalogProposalTargetsQueryKey(id, proposalId ?? ""),
+    queryFn: ({ signal }) => findProposalTargets(targets, saved?.itemCounts.total ?? 0, (query) => fetchCatalogItems(id, query, signal)),
     enabled: forThisCatalog,
     staleTime: Infinity,
   });
-  const touched = touchedQuery.data;
+  return { forThisCatalog, targets, rows: forThisCatalog ? touched.data : undefined };
+}
+
+export type CatalogProposalTargets = ReturnType<typeof useCatalogProposalTargets>;
+
+/**
+ * La propuesta del asistente en el editor de un catálogo a mano (catalogoptions.edit@1, FRM-Catalogo-Opciones-Propuesta y
+ * su M-): lo propuesto entra una vez en el borrador, sin guardar, sobre las opciones guardadas que toca. Da «Lo que
+ * cambia», con lo que se va a mandar; «Revisá» en cada opción dudosa, y si el catálogo cambió desde la propuesta. Si una
+ * opción propuesta no se puede dibujar, el editor sigue como siempre.
+ */
+export function useCatalogProposal(editor: CatalogEditor, { forThisCatalog, targets, rows: touched }: CatalogProposalTargets) {
+  const { t } = useTranslation(["forms", "common"]);
+  const { saved, valueType } = editor;
   // Cada opción que cambia o se quita tiene que estar a la vista; si no se encontró, la propuesta no se abre.
   const found = touched !== undefined && targets.every((target) => touched.some((row) => row.id === target.itemId));
   const base = useMemo(() => found && touched ? catalogProposalBase(touched) : undefined, [found, touched]);
@@ -55,9 +55,9 @@ export function useCatalogProposal(editor: CatalogEditor, editable: boolean) {
   const proposal = useAssistantProposal(catalogProposalAction, toCatalogProposalRows, base, fields);
   const draft = useMemo(() => proposal.status === "ready" && touched ? catalogProposalDraft(proposal.formValues, touched, valueType) : undefined,
     [proposal, touched, valueType]);
-  const proposing = forThisCatalog && proposal.status === "ready" && draft && touched ? { ...proposal, draft, touched } : undefined;
+  const proposing = forThisCatalog && proposal.status === "ready" && draft ? { ...proposal, draft } : undefined;
 
-  useLoadAssistantProposalOnce(proposing, (ready) => editor.propose(ready.touched, ready.draft));
+  useLoadAssistantProposalOnce(proposing, (ready) => editor.propose(ready.draft));
   const drop = useDropAssistantProposal();
   const review = useAssistantProposalFieldReview();
 
@@ -69,8 +69,7 @@ export function useCatalogProposal(editor: CatalogEditor, editable: boolean) {
   const rowReview = proposing ? (row: CatalogRowView) => review([doubtOf(row)]) : undefined;
 
   // «Cambia»: «Detalle de Venta nueva», con lo que cambió y el texto guardado de la opción.
-  const savedText = (row: CatalogRowView) => touched?.find((item) => item.id === row.itemId)?.text
-    ?? editor.items.data?.items.find((item) => item.id === row.itemId)?.text ?? row.draft.text;
+  const savedText = (row: CatalogRowView) => editor.savedRow(row.itemId)?.text ?? row.draft.text;
   const changedLabel = (row: CatalogRowView) => {
     const sentence = t("forms:catalog.proposal.changed", {
       fields: editor.changedFields(row.key).map((field) => t(`forms:catalog.proposal.fields.${field}`)), option: savedText(row),

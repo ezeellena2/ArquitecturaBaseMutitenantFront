@@ -202,14 +202,15 @@ describe("arnés de reglas", () => {
   });
 
   // pantallas-y-ui.md (regla del usuario del 2026-10-13): las pestañas son solo para los grupos de datos de una ficha
-  // y las arma `Page` con sus `tabs`. Dos vistas de lo mismo van con `SegmentedControl`; las secciones, en un panel.
+  // y las arma `Page` con sus `tabs`. Dos vistas de lo mismo van con `SegmentedControl`; las secciones, en un panel. La única
+  // excepción, escrita en la ficha: las cuatro listas de la revisión de importar opciones (E12, FRM-Catalogo-Importar).
   it("solo Page importa las pestañas", () => {
     const importers = allFiles(src)
       .filter((file) => /\.tsx?$/.test(file) && !/\.test\.tsx?$/.test(file))
       .map((file) => path.relative(root, file).replaceAll("\\", "/"))
       .filter((file) => file !== "src/shared/ui/tabs.tsx")
       .filter((file) => /from\s+["'](?:@\/shared\/ui\/tabs|\.\/tabs)["']/.test(readFileSync(path.join(root, file), "utf8")));
-    expect(importers).toEqual(["src/shared/ui/Page.tsx"]);
+    expect(importers).toEqual(["src/modules/forms/components/catalog/ImportReview.tsx", "src/shared/ui/Page.tsx"]);
   });
 
   // Revisión de la alineación al lienzo, Paquete 6: las capturas se comparan siempre con el lienzo vigente

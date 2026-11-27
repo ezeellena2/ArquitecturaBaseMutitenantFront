@@ -12,7 +12,8 @@ import { InfoTip } from "@/shared/ui/InfoTip";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { Picker } from "@/shared/ui/Picker";
-import { itemTextMax, rowHasErrors, type CatalogDraftSnapshot, type CatalogEditor, type CatalogRowView } from "../../hooks/useCatalogEditor";
+import { rowHasErrors, type CatalogDraftSnapshot, type CatalogEditor, type CatalogRowView } from "../../hooks/useCatalogEditor";
+import { catalogLimits } from "../../lib/catalogLimits";
 
 /** Cómo se abre el modal de opciones (117). */
 export interface OptionsDialogOpening {
@@ -170,7 +171,9 @@ export function OptionsDialog({ editor, opening, onClose }: { editor: CatalogEdi
         <span className="flex min-w-0 items-center gap-1.5">{itemText(row)}{rowHasErrors(row) ? triangle : null}</span>
         <span className={cn("text-[0.78125rem] leading-[1.3]", row.pendingDelete ? "text-[var(--peligro)]" : "text-[var(--t2)]")}>
           {row.pendingDelete ? t("forms:catalog.deleteOnSave")
-            : row.isNew ? <span className="rounded-[0.375rem] bg-[var(--alerta-t)] px-1.5 text-[0.71875rem] font-semibold text-[var(--alerta-tx)]">{t("forms:catalog.optionsDialog.newBadge")}</span> : null}
+            : row.isNew ? <span className="rounded-[0.375rem] bg-[var(--alerta-t)] px-1.5 text-[0.71875rem] font-semibold text-[var(--alerta-tx)]">{t("forms:catalog.optionsDialog.newBadge")}</span>
+              // Una de baja no se dice solo con el gris de su texto (accesibilidad): lo dice su estado.
+              : row.draft.isActive ? null : t("forms:catalog.status.inactive")}
         </span>
         <span className={cn("text-[0.78125rem] break-all", row.draft.code.trim() ? "font-mono text-[var(--t2)]" : "text-[var(--t3)]")}>
           {row.draft.code.trim() ? row.draft.code : t("forms:catalog.noCode")}
@@ -218,16 +221,16 @@ export function OptionsDialog({ editor, opening, onClose }: { editor: CatalogEdi
       <OptionField label={t("forms:catalog.columns.text")} required help={t("forms:catalog.optionsDialog.help.text")} error={row.errors.text}
         warning={row.textRepeated ? t("forms:catalog.warnings.textRepeated") : undefined}>
         {(control) => <div className="relative">
-          <Input {...control} data-option-text="" value={row.draft.text} placeholder={t("forms:catalog.columns.text")} autoComplete="off" className="pr-14"
+          <Input {...control} data-option-text="" value={row.draft.text} autoComplete="off" className="pr-14"
             onChange={(event) => set({ text: event.target.value })} />
-          <small className={cn("pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[0.71875rem] tabular-nums", row.draft.text.length > itemTextMax ? "text-[var(--peligro)]" : "text-[var(--t3)]")}>
-            {`${row.draft.text.length}/${itemTextMax}`}
+          <small className={cn("pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[0.71875rem] tabular-nums", row.draft.text.length > catalogLimits.itemText ? "text-[var(--peligro)]" : "text-[var(--t3)]")}>
+            {`${row.draft.text.length}/${catalogLimits.itemText}`}
           </small>
         </div>}
       </OptionField>
       <OptionField label={t("forms:catalog.columns.code")} required help={t("forms:catalog.optionsDialog.help.code")} error={row.errors.code}>
         {(control) => <div className="flex items-center gap-3">
-          <Input {...control} value={row.draft.code} placeholder={t("forms:catalog.columns.code")} autoComplete="off" className="min-w-0 flex-1 font-mono"
+          <Input {...control} value={row.draft.code} autoComplete="off" className="min-w-0 flex-1 font-mono"
             onChange={(event) => set({ code: event.target.value })} />
           <Button type="button" size="sm" variant="link" disabledReason={textOf(row) ? undefined : t("forms:catalog.optionsDialog.writeTextFirst")}
             onClick={() => editor.generateCode(row.key)}>{t("forms:catalog.optionsDialog.generateCode")}</Button>
@@ -238,7 +241,7 @@ export function OptionsDialog({ editor, opening, onClose }: { editor: CatalogEdi
           className={editor.valueType === "Date" ? undefined : "text-right tabular-nums"} onChange={(event) => set({ value: event.target.value })} />}
       </OptionField> : null}
       <OptionField label={t("forms:catalog.columns.detail")} help={t("forms:catalog.optionsDialog.help.detail")} error={row.errors.detail}>
-        {(control) => <Input {...control} value={row.draft.detail} placeholder={t("forms:catalog.optional")} autoComplete="off"
+        {(control) => <Input {...control} value={row.draft.detail} autoComplete="off"
           onChange={(event) => set({ detail: event.target.value })} />}
       </OptionField>
       {row.isNew ? null : <OptionField label={t("forms:catalog.columns.status")} help={t("forms:catalog.optionsDialog.help.status")}>
@@ -296,7 +299,7 @@ export function OptionsDialog({ editor, opening, onClose }: { editor: CatalogEdi
       </button>
       <div className="flex min-w-0 flex-1 flex-col">
         <DialogTitle className="text-[1.25rem] leading-[1.15] font-bold tracking-[-0.02em] text-[var(--t1)]">{shown ? position(shown) : listTitle}</DialogTitle>
-        {name ? <span className="truncate text-[0.8125rem] text-[var(--t2)]">{name}</span> : null}
+        {name ? <span className="break-words text-[0.8125rem] text-[var(--t2)]">{name}</span> : null}
       </div>
     </header>
     <div className="min-h-0 flex-1 overflow-y-auto pb-5">

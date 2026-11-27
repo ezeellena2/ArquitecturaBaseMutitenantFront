@@ -213,6 +213,19 @@ describe("ImportDialog (FRM-Catalogo-Importar)", () => {
     expect(within(dialog).queryByRole("alert")).not.toBeInTheDocument();
   });
 
+  it("«Revisar de nuevo» con el catálogo que ya no está: el 404 va solo en la franja del diálogo, no también abajo", async () => {
+    serve({ apply: () => problem(409, "General.ConcurrencyConflict", "Otra persona cambió el catálogo.") });
+    const mounted = await openImport();
+    const { user, dialog } = mounted;
+    await reviewFile(mounted);
+    await user.click(within(dialog).getByRole("button", { name: "Aplicar sin las 12 filas con errores" }));
+    await within(dialog).findByRole("alert");
+    server.use(http.get(`${base}/c-prov`, () => problem(404, "Forms.Catalog.NotFound", "Ese catálogo ya no está.")));
+    await user.click(within(dialog).getByRole("button", { name: "Revisar de nuevo" }));
+    expect(await within(dialog).findByText("Ese catálogo ya no está.")).toBeVisible();
+    expect(screen.getAllByText("Ese catálogo ya no está.")).toHaveLength(1);
+  });
+
   it("otra importación en curso (Busy): la franja con su texto y solo «Cerrar»", async () => {
     serve({ apply: () => problem(409, "Forms.CatalogImport.Busy", "Ya tenés una importación o una exportación en curso. Probá en un momento.") });
     const mounted = await openImport();

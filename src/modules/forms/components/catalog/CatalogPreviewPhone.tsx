@@ -6,6 +6,7 @@ import { InfoTip } from "@/shared/ui/InfoTip";
 import { SegmentedControl } from "@/shared/ui/SegmentedControl";
 import { Skeleton } from "@/shared/ui/skeleton";
 import type { FormCatalogPreviewResponse } from "../../api/types";
+import { catalogLimits } from "../../lib/catalogLimits";
 
 export interface PreviewOption { readonly key: string; readonly text: string; readonly detail?: string | null }
 
@@ -60,9 +61,6 @@ export function CatalogPreviewPhone({ options, withSwitch = true }: { options: r
   </div>;
 }
 
-/** Hasta cuántas opciones muestra WhatsApp en una lista: con más, la vista previa termina en «y N opciones más» (12 y 22). */
-export const previewOptionsMax = 200;
-
 /**
  * La vista previa de un catálogo de los miembros o de los contactos (FRM-Catalogo-Filtros y FRM-Catalogo-Contactos): el
  * teléfono con la lista abierta, como la dibuja WhatsApp, sin «Una opción | Varias». Mientras se actualiza, un esqueleto
@@ -91,7 +89,7 @@ export function CatalogListPhone({ preview, updating }: { preview: FormCatalogPr
           </li>)}
         </ul>}
         {more > 0 ? <p className="flex items-center gap-1 px-3 py-2.5 text-[var(--t2)]">{moreText}
-          <InfoTip text={t("forms:catalog.preview.moreHelp", { total: format.formatInteger(preview.total), max: format.formatInteger(previewOptionsMax) })} title={moreText} />
+          <InfoTip text={t("forms:catalog.preview.moreHelp", { total: format.formatInteger(preview.total), max: format.formatInteger(catalogLimits.previewOptions) })} title={moreText} />
         </p> : null}
       </> : null}
     </div>

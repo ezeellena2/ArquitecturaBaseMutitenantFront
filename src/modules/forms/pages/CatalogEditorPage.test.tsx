@@ -189,11 +189,15 @@ describe("CatalogEditorPage (FRM-Catalogo)", () => {
     expect(value).toHaveValue("2.500,00");
     await user.clear(value);
     await user.type(value, "1.500");
-    expect(await screen.findByText("Se puede leer de dos maneras: escribilo sin separador de miles, como 1500 o 1500,5.")).toBeInTheDocument();
+    // Antes de intentar guardar, nada va en rojo (formularios, decisión del 2026-10-24).
+    const ambiguous = "Se puede leer de dos maneras: escribilo sin separador de miles, como 1500 o 1500,5.";
+    expect(screen.queryByText(ambiguous)).not.toBeInTheDocument();
+    expect(value).not.toHaveAttribute("aria-invalid");
     await user.click(saveButton());
     expect(puts).toHaveLength(0);
-    // El modal de opciones se abre en la que tiene el problema (117), y ahí se corrige.
+    // El modal de opciones se abre en la que tiene el problema (117), con su error, y ahí se corrige.
     const dialog = await screen.findByRole("dialog", { name: "Opciones de «Recargo por zona»" });
+    expect(within(dialog).getByText(ambiguous)).toBeInTheDocument();
     const modalValue = within(dialog).getByRole("textbox", { name: "Valor (decimal)" });
     expect(modalValue).toHaveValue("1.500");
     await user.clear(modalValue);
@@ -215,8 +219,12 @@ describe("CatalogEditorPage (FRM-Catalogo)", () => {
     await user.click(saveButton());
     const dialog = await screen.findByRole("dialog", { name: "Otra persona guardó el catálogo" });
     expect(within(dialog).getByText("Laura Ríos lo guardó mientras lo editabas. Tus cambios se conservan hasta que elijas.")).toBeInTheDocument();
-    expect(within(dialog).getByRole("region", { name: "Tus cambios" })).toHaveTextContent("Seguimiento programado");
-    expect(within(dialog).getByRole("region", { name: "Lo guardado ahora" })).toHaveTextContent("5 · 4 activas");
+    // O15: «Qué cambió», el dato una vez y cada versión en su columna, solo lo distinto: la opción que cambió y las cantidades.
+    const changes = within(dialog).getAllByRole("listitem").map((row) => row.textContent);
+    expect(changes).toEqual([
+      "Opción 1 · TextoTus cambios: Seguimiento programadoLo guardado ahora: Seguimiento",
+      "OpcionesTus cambios: 4 · 3 activasLo guardado ahora: 5 · 4 activas",
+    ]);
     await user.click(within(dialog).getByRole("button", { name: "Seguir editando" }));
     expect(field).toHaveValue("Seguimiento programado");
   });
@@ -240,5 +248,75 @@ describe("CatalogEditorPage (FRM-Catalogo)", () => {
     expect(screen.queryByRole("button", { name: "Agregar opción" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Exportar" })).toBeInTheDocument();
     expect(screen.getByText("De baja")).toBeInTheDocument();
+  });
+});
+
+describe("CatalogEditorPage: los errores (errores.md)", () => {
+  it("si se corta la red al guardar, «Reintentar» del aviso termina el guardado: «Guardamos el catálogo.» y el siguiente va con la versión nueva", async () => {
+    serve({ put: () => puts.length === 1 ? HttpResponse.error() : HttpResponse.json({ version: puts.length === 2 ? 8 : 9, itemIdentityMap: [] }) });
+    const { user } = await openEditor();
+    const field = textbox("Texto de Seguimiento");
+    await user.clear(field);
+    await user.type(field, "Seguimiento programado");
+    await user.click(saveButton());
+    expect(await screen.findByText("No pudimos conectarnos. Revisá tu conexión.")).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Reintentar" }));
+    expect(await screen.findByText("Guardamos el catálogo.")).toBeVisible();
+    // El borrador queda limpio.
+    await waitFor(() => expect(saveButton()).toBeDisabled());
+    const again = textbox("Texto de Seguimiento");
+    await user.clear(again);
+    await user.type(again, "Seguimiento mensual");
+    await user.click(saveButton());
+    await waitFor(() => expect(puts).toHaveLength(3));
+    expect(puts.map((put) => put.version)).toEqual([7, 7, 8]);
+  });
+
+  it("si después de un 409 lo guardado ahora no se puede leer, el 409 se ve en su cartel, con «Ver lo nuevo»", async () => {
+    let reads = 0;
+    serve({ put: () => HttpResponse.json({ code: "General.ConcurrencyConflict", status: 409, title: "Conflict" }, { status: 409 }) });
+    server.use(http.get(`${base}/c-motivos`, () => reads++ === 0 ? HttpResponse.json(catalog()) : HttpResponse.error()));
+    const { user } = await openEditor();
+    const field = textbox("Texto de Seguimiento");
+    await user.clear(field);
+    await user.type(field, "Seguimiento programado");
+    await user.click(saveButton());
+    expect(await screen.findByText("Otra persona cambió esto mientras lo editabas.")).toBeVisible();
+    expect(screen.getByRole("button", { name: "Ver lo nuevo" })).toBeVisible();
+    expect(screen.queryByRole("dialog", { name: "Otra persona guardó el catálogo" })).not.toBeInTheDocument();
+  });
+
+  it("sin permiso, la ficha es la pantalla de permiso: su consulta bloquea la vista", async () => {
+    server.use(http.get(`${base}/c-motivos`, () => HttpResponse.json({ code: "Auth.Forbidden", status: 403, title: "Forbidden" }, { status: 403 })));
+    mountForms(formsOwner, path);
+    expect(await screen.findByText("No tenés permiso para ver esta página")).toBeVisible();
+  });
+
+  it("un catálogo que no existe es la pantalla de no encontrado, sin otro aviso abajo", async () => {
+    server.use(http.get(`${base}/c-motivos`, () => HttpResponse.json({ code: "Forms.Catalog.NotFound", status: 404, title: "Not Found", detail: "No existe ese catálogo." }, { status: 404 })));
+    mountForms(formsOwner, path);
+    expect(await screen.findByText("No encontramos esta página")).toBeVisible();
+    expect(screen.queryByText("No existe ese catálogo.")).not.toBeInTheDocument();
+  });
+
+  it("las opciones que no cargan se dicen una vez, en su lugar, con «Reintentar»", async () => {
+    let reads = 0;
+    server.use(http.get(`${base}/c-motivos/items`, () => reads++ === 0
+      ? HttpResponse.json({ status: 500, title: "Server Error" }, { status: 500 }) : HttpResponse.json(paged(motivos))));
+    const { user } = mountForms(formsOwner, path);
+    expect(await screen.findByText("No pudimos cargar las opciones.")).toBeVisible();
+    expect(screen.getAllByText("Algo salió mal. Probá de nuevo en un rato.")).toHaveLength(1);
+    expect(screen.queryByText("Todavía no hay opciones.")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Reintentar" }));
+    expect(await screen.findByRole("textbox", { name: "Texto de Seguimiento" })).toHaveValue("Seguimiento");
+  });
+
+  it("«Descartar» queda habilitado sin cambios y el nombre y la descripción llevan el tope del contrato", async () => {
+    await openEditor();
+    expect(screen.getByRole("button", { name: "Descartar" })).toBeEnabled();
+    expect(saveButton()).toBeDisabled();
+    expect(screen.getByRole("textbox", { name: /^Nombre/ })).toHaveAttribute("maxLength", "60");
+    expect(screen.getByRole("textbox", { name: /^Descripción/ })).toHaveAttribute("maxLength", "300");
+    expect(screen.getByRole("textbox", { name: /^Descripción/ })).not.toHaveAttribute("placeholder");
   });
 });

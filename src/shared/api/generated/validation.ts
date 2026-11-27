@@ -554,6 +554,17 @@ export const validationConstraints = {
       "maximum": 2147483647
     }
   },
+  "FormCatalogItemHttpInput": {
+    "code": {
+      "maxLength": 40
+    },
+    "text": {
+      "maxLength": 30
+    },
+    "detail": {
+      "maxLength": 300
+    }
+  },
   "FormCatalogItemRow": {
     "position": {
       "minimum": -2147483648,

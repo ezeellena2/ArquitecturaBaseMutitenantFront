@@ -1,7 +1,7 @@
 import type { AssistantProposalValueResponse } from "@/shared/api/types";
 import type { AssistantActionContractField, AssistantActionFieldType, AssistantProposalValues } from "@/shared/assistant-actions";
 import type { FormCatalogItemRow, FormCatalogValueType } from "../api/types";
-import { itemDetailMax, itemTextMax } from "../hooks/useCatalogEditor";
+import { catalogLimits } from "./catalogLimits";
 
 // «Cambiar las opciones de un catálogo» (catalogoptions.edit@1, §17 de la spec y B10): lo armado como dato. El contrato no
 // publica sus campos: salen del catálogo destino, que el editor ya leyó. Las opciones se suman, se cambian y se quitan como
@@ -9,19 +9,20 @@ import { itemDetailMax, itemTextMax } from "../hooks/useCatalogEditor";
 
 export const catalogProposalAction = "catalogoptions.edit@1" as const;
 const optionsField = "options";
-/** El tope del código de una opción, el mismo que valida el servidor (269). */
-const itemCodeMax = 40;
 
 const typedValues: Readonly<Record<Exclude<FormCatalogValueType, "Text">, AssistantActionFieldType>> = {
   WholeNumber: "integer", DecimalNumber: "decimal", Date: "date",
 };
 
-/** Los campos del catálogo destino, como los da el servidor (`ReadTargetFieldsAsync`): el valor, solo en uno tipado. */
+/**
+ * Los campos del catálogo destino, como los da el servidor (`ReadTargetFieldsAsync`): el valor, solo en uno tipado. Los topes
+ * salen del contrato, los mismos que valida el `PUT` (O13).
+ */
 export function catalogProposalFields(valueType: FormCatalogValueType): readonly AssistantActionContractField[] {
-  return [{ name: optionsField, type: "items", required: false, maxItems: 500, itemKey: "code", itemFields: [
-    { name: "code", type: "text", required: true, maxLength: itemCodeMax },
-    { name: "text", type: "text", required: true, maxLength: itemTextMax },
-    { name: "detail", type: "longText", required: false, maxLength: itemDetailMax },
+  return [{ name: optionsField, type: "items", required: false, maxItems: catalogLimits.deleteItems, itemKey: "code", itemFields: [
+    { name: "code", type: "text", required: true, maxLength: catalogLimits.itemCode },
+    { name: "text", type: "text", required: true, maxLength: catalogLimits.itemText },
+    { name: "detail", type: "longText", required: false, maxLength: catalogLimits.itemDetail },
     { name: "active", type: "boolean", required: false },
     ...(valueType === "Text" ? [] : [{ name: "value", type: typedValues[valueType], required: true }]),
   ] }];

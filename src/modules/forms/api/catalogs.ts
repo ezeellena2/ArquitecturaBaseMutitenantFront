@@ -41,6 +41,10 @@ export const catalogQueryKey = (id: string) => [...catalogsQueryRoot, "detail", 
 export const catalogItemsQueryKey = (id: string, query: CatalogItemsQuery) => [...catalogsQueryRoot, "detail", id, "items", query] as const;
 export const membersSourceQueryKey = [...catalogsQueryRoot, "sources", "members"] as const;
 export const catalogPreviewQueryKey = (request: FormCatalogPreviewRequest) => [...catalogsQueryRoot, "preview", request] as const;
+/** Lo guardado ahora cuando guardar dio un 409: una lectura por cada revisión (`round`), aparte de la ficha que se edita. */
+export const catalogConflictQueryKey = (id: string, round: number, query: CatalogItemsQuery) => [...catalogsQueryRoot, "conflict", id, round, query] as const;
+/** Las opciones guardadas que toca una propuesta del asistente, por la propuesta. */
+export const catalogProposalTargetsQueryKey = (id: string, proposalId: string) => [...catalogsQueryRoot, "proposal-targets", id, proposalId] as const;
 
 const paged = ({ page, pageSize, sort, search }: PagedRequest) => ({ page, pageSize, sort, search });
 const catalogPath = (id: string) => `${base}/${encodeURIComponent(id)}`;

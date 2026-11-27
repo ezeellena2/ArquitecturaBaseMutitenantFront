@@ -100,8 +100,10 @@ describe("OptionsDialog (FRM-Catalogo-Opciones)", () => {
     const dialog = await screen.findByRole("dialog", { name: "Opciones de «Motivos de visita»" });
     const cobranza = optionsOf(dialog)[3];
     expect(cobranza).toHaveAttribute("aria-current", "true");
-    // El número, el texto, «Nueva» o «Se borra al guardar» y el código, cada uno en su columna, ninguno debajo de otro.
-    expect([...cobranza.children].map((cell) => cell.textContent)).toEqual(["4", "Cobranza", "", "COB"]);
+    // El número, el texto, «Nueva», «Se borra al guardar» o «De baja» y el código, cada uno en su columna, ninguno debajo de
+    // otro. Una de baja lo dice con su palabra, no solo con el gris del texto (accesibilidad).
+    expect([...cobranza.children].map((cell) => cell.textContent)).toEqual(["4", "Cobranza", "De baja", "COB"]);
+    expect(optionsOf(dialog)[0].children[2]).toHaveTextContent(/^$/);
     expect(within(dialog).getByRole("button", { name: /^Estado/ })).toHaveTextContent("De baja");
     await choose(user, "Estado", "Activa");
     await user.click(within(dialog).getByRole("button", { name: "Listo" }));

@@ -13,6 +13,7 @@ import { Banner } from "@/shared/ui/Banner";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { Dialog, DialogBody, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { FormField } from "@/shared/ui/FormField";
 import { InfoTip } from "@/shared/ui/InfoTip";
 import { Input } from "@/shared/ui/input";
@@ -36,7 +37,8 @@ import { OptionsSection } from "../components/catalog/OptionsSection";
 import { catalogFieldErrors, isCatalogConflict } from "../errors";
 import { useCatalogEditor, type CatalogEditor } from "../hooks/useCatalogEditor";
 import { useCatalogFilters, type CatalogFilters } from "../hooks/useCatalogFilters";
-import { useCatalogProposal } from "../hooks/useCatalogProposal";
+import { useCatalogProposal, useCatalogProposalTargets } from "../hooks/useCatalogProposal";
+import { catalogLimits } from "../lib/catalogLimits";
 import { catalogStatus } from "../lib/catalogStatus";
 import { catalogsPath } from "../registration";
 
@@ -92,7 +94,9 @@ function SavedCatalogEditor({ id }: { id: string }) {
   const { t } = useTranslation(["forms", "common", "errors"]);
   const format = useFormat();
   const { phone } = useAppChrome();
-  const editor = useCatalogEditor(id);
+  // La propuesta del asistente va antes del editor: las opciones guardadas que toca llegan al borrador por su consulta.
+  const targets = useCatalogProposalTargets(id);
+  const editor = useCatalogEditor(id, { extraRows: targets.rows });
   const [confirmDeactivate, setConfirmDeactivate] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [importing, setImporting] = useState(false);
@@ -100,15 +104,16 @@ function SavedCatalogEditor({ id }: { id: string }) {
   const filters = useCatalogFilters({ source: saved?.source ?? "Manual", saved, canManage: saved?.canManage ?? false, error: editor.saveError,
     sampleRequiredMessage: t("forms:catalog.errors.sampleRequired") });
   const editableNow = Boolean(saved?.canManage && saved.isActive);
-  const proposal = useCatalogProposal(editor, editableNow);
+  const proposal = useCatalogProposal(editor, targets);
   const isDirty = editor.isDirty || (editableNow && filters.isDirty);
-  const conflictError = isCatalogConflict(editor.saveError);
+  // El 409 se lee en la revisión lado a lado; si lo guardado ahora no se pudo leer, en el cartel de siempre.
+  const conflictInDialog = isCatalogConflict(editor.saveError) && !editor.conflictUnreadable;
   const seeNew = async () => { const fresh = await editor.seeNew(); filters.reset(fresh); };
   // «Descartar» vuelve a lo guardado; también descarta la propuesta.
   const discard = () => { editor.discard(); filters.reset(); proposal.drop?.(); };
   const edit = useEditPage({
     isDirty,
-    error: conflictError ? undefined : editor.saveError ?? editor.setCatalogActive.error,
+    error: conflictInDialog ? undefined : editor.saveError ?? editor.setCatalogActive.error,
     onSeeNew: () => { void seeNew(); },
     onContinueEditing: editor.continueEditing,
     // Un error de un campo va debajo de lo que lo causó; el resto, en la franja.
@@ -116,7 +121,8 @@ function SavedCatalogEditor({ id }: { id: string }) {
   });
 
   if (editor.catalog.isPending) return <PageLoading />;
-  if (editor.catalog.isError || !saved) {
+  // Solo sin nada que mostrar: si falla una relectura, la ficha sigue a la vista (errores).
+  if (!saved) {
     return isNotFoundError(editor.catalog.error)
       ? <NotFoundPage homePath={homeOf("business")} screen={t("forms:catalog.screen")} back={back(t)} />
       : <LoadErrorPage onRetry={() => { void editor.catalog.refetch(); }} screen={t("forms:catalog.screen")} back={back(t)} />;
@@ -127,17 +133,18 @@ function SavedCatalogEditor({ id }: { id: string }) {
   const manual = saved.source === "Manual";
   const statusText = format.formatEnum("FormCatalogStatus", status);
   const unusable = status === "Unusable" && saved.unusableReason ? format.formatEnum("FormCatalogUnusableReason", saved.unusableReason) : undefined;
-  const save = async () => {
+  const save = () => {
     // Los filtros viajan solo si cambiaron: cambiar el nombre no vuelve a validarlos. Sin persona de ejemplo no se guarda.
     const withFilters = filters.isDirty ? filters.request() : null;
     if (withFilters && !filters.checkSample()) return;
     // Con la propuesta, la tarjeta pasa a aplicada con la versión que respondió el guardado.
     const markApplied = proposal.markApplied;
-    // Guardar conserva el lugar (F7 del traspaso 15, 160): ni la página ni la búsqueda ni el desplazamiento cambian.
-    const version = await editor.save(withFilters ? { request: withFilters, view: filters.savedView() } : undefined);
-    if (version === undefined) return;
-    toast.success(t("forms:catalog.saved"));
-    if (markApplied) void markApplied(version);
+    // Guardar conserva el lugar (F7 del traspaso 15, 160): ni la página ni la búsqueda ni el desplazamiento cambian. Lo que
+    // sigue al guardado va en su `onSuccess`, así «Reintentar» del aviso termina igual (errores).
+    editor.save(withFilters ? { request: withFilters, view: filters.savedView() } : undefined, (version) => {
+      toast.success(t("forms:catalog.saved"));
+      if (markApplied) void markApplied(version);
+    });
   };
   const activeCount = saved.itemCounts.active
     + editor.rows.filter((row) => row.isNew && row.draft.isActive).length
@@ -151,8 +158,8 @@ function SavedCatalogEditor({ id }: { id: string }) {
       status={<span className="inline-flex items-center gap-1">{statusText}{unusable ? <InfoTip text={unusable} title={statusText} /> : null}</span>}
       barAction={phone ? { label: t("forms:catalog.preview.title"), onClick: () => setPreviewOpen(true) } : undefined}
       actions={editable ? <>
-        <Button type="button" variant="outline" disabled={!isDirty || editor.saving} onClick={discard}>{t("forms:catalog.discard")}</Button>
-        <Button type="button" disabled={!isDirty} pending={editor.saving} pendingLabel={t("common:states.saving")} onClick={() => { void save(); }}>{t("forms:catalog.save")}</Button>
+        <Button type="button" variant="outline" onClick={discard}>{t("forms:catalog.discard")}</Button>
+        <Button type="button" disabled={!isDirty} pending={editor.saving} pendingLabel={t("common:states.saving")} onClick={save}>{t("forms:catalog.save")}</Button>
       </> : undefined}
       moreActions={saved.canManage ? { label: t("forms:catalog.actions.catalogMore", { name: saved.name }), pending: editor.setCatalogActive.isPending, items: [
         saved.isActive
@@ -172,14 +179,14 @@ function SavedCatalogEditor({ id }: { id: string }) {
             <p className="text-[0.8125rem] text-[var(--t2)]">{manual ? `${format.formatEnum("FormCatalogSource", saved.source)} · ${format.formatEnum("FormCatalogValueType", saved.valueType)}` : format.formatEnum("FormCatalogSource", saved.source)}</p>
             {editable ? <>
               <FormField label={t("forms:catalog.fields.name")} required error={editor.nameError}>
-                <Input value={editor.name} onChange={(event) => editor.setName(event.target.value)} autoComplete="off" />
+                <Input value={editor.name} maxLength={catalogLimits.name} onChange={(event) => editor.setName(event.target.value)} autoComplete="off" />
               </FormField>
               <FormField label={t("forms:catalog.fields.description")}>
-                <Textarea value={editor.description} placeholder={t("forms:catalog.optional")} onChange={(event) => editor.setDescription(event.target.value)} />
+                <Textarea value={editor.description} maxLength={catalogLimits.description} onChange={(event) => editor.setDescription(event.target.value)} />
               </FormField>
             </> : <>
               <ReadOnlyField label={t("forms:catalog.fields.name")}>{saved.name}</ReadOnlyField>
-              <ReadOnlyField long label={t("forms:catalog.fields.description")} muted={!saved.description}>{saved.description || t("forms:catalog.optional")}</ReadOnlyField>
+              <ReadOnlyField long label={t("forms:catalog.fields.description")} muted={!saved.description}>{saved.description || <EmptyValue />}</ReadOnlyField>
             </>}
           </SectionFields>
         </Section>
@@ -190,7 +197,7 @@ function SavedCatalogEditor({ id }: { id: string }) {
     {phone ? <PhonePreviewDialog editor={editor} filters={filters} open={previewOpen} onOpenChange={setPreviewOpen} /> : null}
     {importing ? <ImportDialog catalog={saved} onClose={() => setImporting(false)} onCatalogChanged={() => { void editor.seeNew(); }} /> : null}
     <CatalogConflictDialog conflict={editor.conflict} name={editor.name} rows={editor.rows} total={editor.total} active={activeCount}
-      onContinue={editor.continueEditing} onSeeNew={() => { void seeNew(); }} />
+      valueType={editor.valueType} savedRow={editor.savedRow} onContinue={editor.continueEditing} onSeeNew={() => { void seeNew(); }} />
     <ConfirmDialog open={confirmDeactivate} onOpenChange={setConfirmDeactivate}
       title={t("forms:catalog.deactivateDialog.title", { name: saved.name })} description={t("forms:catalog.deactivateDialog.description")}
       confirmLabel={t("forms:catalog.actions.deactivate")} pending={editor.setCatalogActive.isPending} pendingLabel={t("forms:catalog.deactivating")}
@@ -208,7 +215,7 @@ function NewCatalogEditor() {
   const { phone } = useAppChrome();
   const [origin, setOrigin] = useState<CatalogOrigin>({ source: "Manual", valueType: "Text" });
   const [previewOpen, setPreviewOpen] = useState(false);
-  const editor = useCatalogEditor(undefined, origin.valueType);
+  const editor = useCatalogEditor(undefined, { newValueType: origin.valueType });
   const filters = useCatalogFilters({ source: origin.source, canManage: true, error: editor.saveError, sampleRequiredMessage: t("forms:catalog.errors.sampleRequired") });
   // Una sola clave por intento: un reintento del mismo pedido no crea otro catálogo (idempotencia).
   const idempotencyKey = useRef<string | null>(null);
@@ -257,10 +264,10 @@ function NewCatalogEditor() {
           <SectionFields className="grid gap-3.5">
             <CatalogOriginFields value={origin} onChange={setOrigin} />
             <FormField label={t("forms:catalog.fields.newName")} required error={editor.nameError}>
-              <Input value={editor.name} onChange={(event) => editor.setName(event.target.value)} autoComplete="off" />
+              <Input value={editor.name} maxLength={catalogLimits.name} onChange={(event) => editor.setName(event.target.value)} autoComplete="off" />
             </FormField>
             <FormField label={t("forms:catalog.fields.description")}>
-              <Textarea value={editor.description} placeholder={t("forms:catalog.optional")} onChange={(event) => editor.setDescription(event.target.value)} />
+              <Textarea value={editor.description} maxLength={catalogLimits.description} onChange={(event) => editor.setDescription(event.target.value)} />
             </FormField>
           </SectionFields>
         </Section>

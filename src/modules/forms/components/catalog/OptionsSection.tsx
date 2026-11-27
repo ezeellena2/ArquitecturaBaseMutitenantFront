@@ -1,6 +1,8 @@
 import { ArrowDown, ArrowUp, ArrowUpDown, Download, Plus, RotateCcw, Search, Wand2 } from "lucide-react";
 import { useId, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
+import { apiErrorMessage } from "@/shared/api/errorMessage";
+import { useRetryAfterOf } from "@/shared/api/useRetryAfterCountdown";
 import { useFormat } from "@/shared/format/useFormat";
 import type { AssistantProposalFieldReview } from "@/shared/assistant-actions";
 import { saveBlobAs } from "@/shared/lib/saveFile";
@@ -11,13 +13,16 @@ import { Button } from "@/shared/ui/button";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { EditableTable, type EditableColumn } from "@/shared/ui/EditableTable";
+import { EmptyState } from "@/shared/ui/EmptyState";
+import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { IconButton } from "@/shared/ui/IconButton";
 import { PencilIcon, TrashIcon } from "@/shared/ui/icons";
 import { Input } from "@/shared/ui/input";
 import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions, type RowAction } from "@/shared/ui/RowActions";
 import { exportCatalog, fetchCatalogTemplate } from "../../api/catalogs";
-import { itemTextMax, rowHasErrors, type CatalogEditor, type CatalogRowView, type ItemField } from "../../hooks/useCatalogEditor";
+import { rowHasErrors, type CatalogEditor, type CatalogRowView, type ItemField } from "../../hooks/useCatalogEditor";
+import { catalogLimits } from "../../lib/catalogLimits";
 import { OptionsDialog, type OptionsDialogOpening } from "./OptionsDialog";
 import { SortDialog } from "./SortDialog";
 
@@ -53,6 +58,7 @@ export function OptionsSection({ editor, editable, isNew, onImport, rowReview }:
   const [dialog, setDialog] = useState<OptionsDialogOpening | null>(null);
   const [errorRound, setErrorRound] = useState(editor.errorRound);
   const { saved, valueType, rows } = editor;
+  const retryLimit = useRetryAfterOf(editor.items.error);
   const typed = valueType !== "Text";
 
   // Guardar encontró un error en las opciones: el modal se abre en la primera con problemas, y la lista las marca (117).
@@ -127,7 +133,7 @@ export function OptionsSection({ editor, editable, isNew, onImport, rowReview }:
   const cellInput = (row: CatalogRowView, field: Exclude<ItemField, never>, extra?: ReactNode, inputClassName?: string) => <div className="min-w-0 py-1.5">
     <div className="flex items-center gap-1.5">
       <Input value={row.draft[field]} aria-label={t(`forms:catalog.cells.${field}`, { option: label(row) })} aria-invalid={Boolean(row.errors[field]) || undefined}
-        disabled={row.pendingDelete} placeholder={field === "detail" ? t("forms:catalog.optional") : undefined}
+        disabled={row.pendingDelete}
         className={cn(field === "code" && "font-mono", field === "value" && "text-right tabular-nums", inputClassName)}
         onChange={(event) => editor.edit(row.key, { [field]: event.target.value })} />
       {extra}
@@ -176,7 +182,7 @@ export function OptionsSection({ editor, editable, isNew, onImport, rowReview }:
         return <div>
           {cellInput(row, "text", <>
             {doubt?.adornment}
-            <small className={cn("shrink-0 tabular-nums text-[var(--t3)]", row.draft.text.length > itemTextMax && "text-[var(--peligro)]")}>{`${row.draft.text.length}/${itemTextMax}`}</small>
+            <small className={cn("shrink-0 tabular-nums text-[var(--t3)]", row.draft.text.length > catalogLimits.itemText && "text-[var(--peligro)]")}>{`${row.draft.text.length}/${catalogLimits.itemText}`}</small>
           </>, doubt?.className)}
           {doubt?.warning ? <span role="status" className="-mt-1 mb-1 block text-[0.75rem] text-[var(--alerta)]">{doubt.warning}</span> : null}
           {row.textRepeated && !row.errors.text ? <span className="-mt-1 mb-1 block text-[0.75rem] text-[var(--alerta)]">{t("forms:catalog.warnings.textRepeated")}</span> : null}
@@ -195,7 +201,7 @@ export function OptionsSection({ editor, editable, isNew, onImport, rowReview }:
     { id: "text", minWidth: "12rem", header: t("forms:catalog.columns.text"), cell: (row) => <span className="break-words">{row.draft.text}</span> },
     { id: "code", minWidth: "6rem", header: t("forms:catalog.columns.code"), cell: (row) => <span className="font-mono">{row.draft.code}</span> },
     ...(typed ? [{ id: "value", minWidth: "8rem", header: t("forms:catalog.columns.value"), type: valueType === "Date" ? undefined : "number" as const, cell: (row: CatalogRowView) => row.draft.value }] : []),
-    { id: "detail", minWidth: "12rem", header: t("forms:catalog.columns.detail"), cell: (row) => <span className="break-words">{row.draft.detail}</span> },
+    { id: "detail", minWidth: "12rem", header: t("forms:catalog.columns.detail"), cell: (row) => row.draft.detail.trim() ? <span className="break-words">{row.draft.detail}</span> : <EmptyValue /> },
     { id: "status", width: "6.5rem", header: t("forms:catalog.columns.status"), cell: (row) => t(row.draft.isActive ? "forms:catalog.status.active" : "forms:catalog.status.inactive") },
   ];
 
@@ -219,16 +225,20 @@ export function OptionsSection({ editor, editable, isNew, onImport, rowReview }:
 
   const empty = rows.length === 0;
   const pageData = editor.items.data;
+  // Las opciones que no cargaron se dicen una vez, en su lugar, con «Reintentar» (que espera la cuenta de un 429).
+  const loadError = editor.items.isError
+    ? <EmptyState framed={false} title={t("forms:catalog.itemsLoadError")} description={apiErrorMessage(editor.items.error, t)}
+      action={<Button type="button" variant="outline" disabled={retryLimit.isRunning} onClick={() => { void editor.items.refetch(); }}>{retryLimit.label ?? t("common:actions.retry")}</Button>} />
+    : null;
   return <section aria-labelledby={titleId} className="overflow-hidden rounded-lg border border-[var(--borde)] bg-[var(--superficie)] max-md:rounded-none max-md:border-x-0">
     {header}
     {pending}
     {selection}
     {searchBox}
-    {editor.items.isError ? <Banner tone="danger" className="mx-4 mb-3">{t("forms:catalog.itemsLoadError")}</Banner> : null}
-    {empty && !editor.items.isPending
+    {loadError ?? (empty && !editor.items.isPending
       ? <p className="px-4 py-6 text-center text-[0.8125rem] text-[var(--t3)]">{editor.searching ? t("forms:catalog.noMatches") : t("forms:catalog.noOptions")}</p>
       : phone ? phoneList
-        : <EditableTable columns={editable ? editableColumns : readColumns} rows={rows} rowKey={(row) => row.key} />}
+        : <EditableTable columns={editable ? editableColumns : readColumns} rows={rows} rowKey={(row) => row.key} />)}
     {pageData && pageData.totalCount > 0 ? <Pagination page={pageData.page} pageSize={pageData.pageSize} totalCount={pageData.totalCount} totalPages={pageData.totalPages ?? 1}
       hasPrevious={pageData.hasPrevious ?? false} hasNext={pageData.hasNext ?? false} onPageChange={editor.setPage} onPageSizeChange={editor.setPageSize} /> : null}
     {dialog ? <OptionsDialog editor={editor} opening={dialog} onClose={() => setDialog(null)} /> : null}
