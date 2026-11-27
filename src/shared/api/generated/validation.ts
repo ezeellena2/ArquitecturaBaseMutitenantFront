@@ -386,6 +386,11 @@ export const validationConstraints = {
       "maxLength": 120
     }
   },
+  "CreateFormCatalogHttpRequest": {
+    "items": {
+      "maxItems": 10000
+    }
+  },
   "CreatePlatformTenantHttpRequest": {
     "name": {
       "maxLength": 120
@@ -456,6 +461,153 @@ export const validationConstraints = {
     "sortOrder": {
       "minimum": -2147483648,
       "maximum": 2147483647
+    }
+  },
+  "FormCatalogCondition": {
+    "values": {
+      "maxItems": 50
+    }
+  },
+  "FormCatalogConditionHttpInput": {
+    "values": {
+      "maxItems": 50
+    }
+  },
+  "FormCatalogCreatedResponse": {
+    "itemIdentityMap": {
+      "maxItems": 10000
+    }
+  },
+  "FormCatalogFilterCountsResponse": {
+    "all": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "active": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "FormCatalogFilters": {
+    "sourceVersion": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "conditions": {
+      "maxItems": 10
+    }
+  },
+  "FormCatalogFiltersHttpInput": {
+    "sourceVersion": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "conditions": {
+      "maxItems": 10
+    }
+  },
+  "FormCatalogImportAddedRow": {
+    "row": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "FormCatalogImportChangedRow": {
+    "row": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "FormCatalogImportErrorRow": {
+    "row": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "otherRow": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "FormCatalogImportPreviewResponse": {
+    "rowsRead": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "unchanged": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "FormCatalogItemCounts": {
+    "total": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "active": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "FormCatalogItemRow": {
+    "position": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "FormCatalogPreviewResponse": {
+    "options": {
+      "maxItems": 200
+    },
+    "total": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "FormCatalogResponse": {
+    "roles": {
+      "maxItems": 500
+    },
+    "companies": {
+      "maxItems": 500
+    }
+  },
+  "FormCatalogRow": {
+    "optionsCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "FormCatalogSampleMemberRow": {
+    "companies": {
+      "maxItems": 50
+    },
+    "roles": {
+      "maxItems": 50
+    }
+  },
+  "FormCatalogSourceColumn": {
+    "operators": {
+      "maxItems": 8
+    }
+  },
+  "FormCatalogSourceResponse": {
+    "version": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "columns": {
+      "maxItems": 16
+    }
+  },
+  "FormCatalogTagRow": {
+    "contacts": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "FormCatalogUpdatedResponse": {
+    "itemIdentityMap": {
+      "maxItems": 10000
     }
   },
   "HomeCompanyCard": {
@@ -710,6 +862,186 @@ export const validationConstraints = {
     }
   },
   "PagedResultOfDirectoryEntryRow": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfFormCatalogImportAddedRow": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfFormCatalogImportChangedRow": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfFormCatalogImportDeactivatedRow": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfFormCatalogImportErrorRow": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfFormCatalogItemRow": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfFormCatalogReference": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfFormCatalogRow": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfFormCatalogSampleContactRow": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfFormCatalogSampleMemberRow": {
+    "page": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "pageSize": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "totalPages": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "PagedResultOfFormCatalogTagRow": {
     "page": {
       "minimum": -2147483648,
       "maximum": 2147483647
@@ -1545,6 +1877,17 @@ export const validationConstraints = {
       "maxLength": 120
     }
   },
+  "UpdateFormCatalogHttpRequest": {
+    "items": {
+      "maxItems": 10000
+    },
+    "moves": {
+      "maxItems": 500
+    },
+    "deleteItems": {
+      "maxItems": 500
+    }
+  },
   "UpdateMeHttpRequest": {
     "firstName": {
       "maxLength": 100
@@ -2277,6 +2620,58 @@ export const schemaEnums = {
     "Thursday",
     "Friday",
     "Saturday"
+  ],
+  "FormCatalogColumnType": [
+    "Text",
+    "List",
+    "Boolean"
+  ],
+  "FormCatalogImportMode": [
+    "Append",
+    "Replace",
+    null
+  ],
+  "FormCatalogItemSortColumn": [
+    "Text",
+    "Code",
+    null
+  ],
+  "FormCatalogMoveDirection": [
+    "Up",
+    "Down",
+    null
+  ],
+  "FormCatalogSource": [
+    "Manual",
+    "Members",
+    "Contacts"
+  ],
+  "FormCatalogSourceFilter": [
+    "All",
+    "Manual",
+    "Members",
+    "Contacts",
+    null
+  ],
+  "FormCatalogStatusFilter": [
+    "All",
+    "Active",
+    "Inactive",
+    null
+  ],
+  "FormCatalogUnusableReason": [
+    "NoActiveOptions",
+    "SourceOutdated",
+    "ChannelUnavailable",
+    "RoleMissing",
+    "CompanyMissing",
+    null
+  ],
+  "FormCatalogValueType": [
+    "Text",
+    "WholeNumber",
+    "DecimalNumber",
+    "Date"
   ],
   "HomePublicPageState": [
     "Published",

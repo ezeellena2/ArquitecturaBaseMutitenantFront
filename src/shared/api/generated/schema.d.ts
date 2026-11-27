@@ -9910,6 +9910,1837 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/organization/forms/catalogs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Listado paginado (10 por defecto; 20, 50 o 100) con search, source (all, manual, members o contacts), status (all, active o inactive) y sort por name, source, valueType, optionsCount o status, con - delante el otro sentido (264); optionsCount nulo va al final en los dos sentidos y source, valueType y status ordenan por su orden. */
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    PageSize?: 10 | 20 | 50 | 100;
+                    Sort?: string;
+                    Search?: string;
+                    Source?: components["schemas"]["FormCatalogSourceFilter"];
+                    Status?: components["schemas"]["FormCatalogStatusFilter"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PagedResultOfFormCatalogRow"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Alta con Location: sin tipo, Text; Members con condiciones exige sampleMemberId. Devuelve el detalle y el mapa de ids de las opciones nuevas. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["CreateFormCatalogHttpRequest"];
+                    "text/json": components["schemas"]["CreateFormCatalogHttpRequest"];
+                    "application/*+json": components["schemas"]["CreateFormCatalogHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FormCatalogCreatedResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Forms.Catalog.SampleRequired; Forms.Catalog.FiltersInvalid; Forms.Catalog.SampleMemberNotFound; Forms.Catalog.SampleContactNotFound; Forms.Catalog.DuplicateCode; Forms.Catalog.ValueRequired; Forms.Catalog.ValueInvalid; Forms.Catalog.ItemTextTooLong; Forms.Catalog.ItemDetailTooLong */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Request.InProgress; Forms.Catalog.WrongSource; Forms.Catalog.TooManyItems */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity; Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/forms/catalogs/filter-counts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Solo {all, active}: lo que dice el resumen del listado (262). */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FormCatalogFilterCountsResponse"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/forms/catalogs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Detalle con los nombres de los roles y las empresas del filtro, la persona o el cliente de ejemplo, canManage, itemCounts y quién lo guardó por última vez. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FormCatalogResponse"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Forms.Catalog.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Guarda todo junto con su versión (C3): items solo con lo nuevo o cambiado, moves, sort o deleteItems (hasta 500), que no se combinan entre sí. Devuelve la versión y el mapa de ids. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateFormCatalogHttpRequest"];
+                    "text/json": components["schemas"]["UpdateFormCatalogHttpRequest"];
+                    "application/*+json": components["schemas"]["UpdateFormCatalogHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FormCatalogUpdatedResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Forms.Catalog.SampleRequired; Forms.Catalog.FiltersInvalid; Forms.Catalog.SampleMemberNotFound; Forms.Catalog.SampleContactNotFound; Forms.Catalog.DuplicateCode; Forms.Catalog.ValueRequired; Forms.Catalog.ValueInvalid; Forms.Catalog.ItemTextTooLong; Forms.Catalog.ItemDetailTooLong */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Forms.Catalog.NotFound; Forms.Catalog.ItemNotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; General.ConcurrencyConflict; Forms.Catalog.WrongSource; Forms.Catalog.TooManyItems; Forms.Catalog.ItemInUse; Forms.Catalog.MoveOutOfRange; Forms.Catalog.Inactive */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/forms/catalogs/{id}/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Opciones por posición, paginadas, con search y status (active, inactive o all). */
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    PageSize?: 10 | 20 | 50 | 100;
+                    Search?: string;
+                    Status?: components["schemas"]["FormCatalogStatusFilter"];
+                };
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PagedResultOfFormCatalogItemRow"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Forms.Catalog.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/forms/catalogs/{id}/imports/previews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Revisa el archivo o lo pegado (mode append al pegar, replace con un archivo) sin escribir: versión leída, SHA-256 y las cuatro listas paginadas con el page y el pageSize del pedido. De a una por persona (Busy) y con lugar en la organización y la instalación (429 TooManyAtOnce, con Retry-After). */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        File?: components["schemas"]["IFormFile"];
+                        Mode?: components["schemas"]["FormCatalogImportMode"];
+                        /** Format: uint32 */
+                        Version?: number;
+                        /** Format: int32 */
+                        Page?: number;
+                        /** Format: int32 */
+                        PageSize?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FormCatalogImportPreviewResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Forms.CatalogImport.FileInvalid */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Forms.Catalog.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; General.ConcurrencyConflict; Forms.CatalogImport.Busy; Forms.Catalog.Inactive; Forms.Catalog.WrongSource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Payload Too Large */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests; Forms.CatalogImport.TooManyAtOnce; Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/forms/catalogs/{id}/imports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Aplica lo revisado en una UoW: el mismo archivo (409 FileChanged si el SHA-256 difiere), la versión de la revisión, skipErrorRows y confirmedDeactivations con la cantidad exacta. Más del 25 % de bajas o del 10 % de filas con error sin confirmar es 400 ConfirmationRequired. */
+        post: {
+            parameters: {
+                query?: never;
+                header: {
+                    /** @description UUID por operación. Reusar la misma key y cuerpo para reintentar; otra key representa otra operación. */
+                    "Idempotency-Key": string;
+                };
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        File?: components["schemas"]["IFormFile"];
+                        Mode?: components["schemas"]["FormCatalogImportMode"];
+                        Sha256?: string;
+                        /** Format: uint32 */
+                        Version?: number;
+                        SkipErrorRows?: boolean;
+                        /** Format: int32 */
+                        ConfirmedDeactivations?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["VersionResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Forms.CatalogImport.FileInvalid; Forms.CatalogImport.ConfirmationRequired */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Forms.Catalog.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Request.InProgress; General.ConcurrencyConflict; Forms.CatalogImport.Busy; Forms.Catalog.Inactive; Forms.Catalog.WrongSource; Forms.CatalogImport.FileChanged; Forms.Catalog.TooManyItems */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Payload Too Large */
+                413: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity; Request.IdempotencyKeyReused */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests; Forms.CatalogImport.TooManyAtOnce; Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/forms/catalogs/{id}/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. XLSX con todas las opciones, activas y dadas de baja, con las columnas de la plantilla (C10). De a una por persona. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound; Forms.Catalog.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict; Forms.CatalogImport.Busy; Forms.Catalog.WrongSource */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests; Forms.CatalogImport.TooManyAtOnce; Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/forms/catalogs/template": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. XLSX de la plantilla para el valueType pedido, sin barrera (C11). */
+        get: {
+            parameters: {
+                query?: {
+                    ValueType?: components["schemas"]["FormCatalogValueType"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/forms/catalogs/sources/members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. La fuente «Miembros»: su versión y el catálogo cerrado de columnas y operadores (§4). */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FormCatalogSourceResponse"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/forms/catalogs/sources/members/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Lista paginada con search y orden por name, para editar los filtros. */
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    PageSize?: 10 | 20 | 50 | 100;
+                    Search?: string;
+                    Sort?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PagedResultOfFormCatalogReference"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/forms/catalogs/sources/members/companies": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Lista paginada con search y orden por name, para editar los filtros. */
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    PageSize?: 10 | 20 | 50 | 100;
+                    Search?: string;
+                    Sort?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PagedResultOfFormCatalogReference"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/forms/catalogs/sources/contacts/tags": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Lista paginada con search y orden por name, para editar los filtros. */
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    PageSize?: 10 | 20 | 50 | 100;
+                    Search?: string;
+                    Sort?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PagedResultOfFormCatalogTagRow"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/forms/catalogs/sample-members": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Personas de ejemplo de la organización, sin correo, con los nombres de sus empresas y sus roles. */
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    PageSize?: 10 | 20 | 50 | 100;
+                    Search?: string;
+                    Sort?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PagedResultOfFormCatalogSampleMemberRow"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/forms/catalogs/sample-contacts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Clientes de ejemplo de Clientes, sin teléfono (C12). */
+        get: {
+            parameters: {
+                query?: {
+                    Page?: number;
+                    PageSize?: 10 | 20 | 50 | 100;
+                    Search?: string;
+                    Sort?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PagedResultOfFormCatalogSampleContactRow"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/organization/forms/catalogs/previews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Vista previa de unos filtros sin guardar con la persona o el cliente de ejemplo como destinatario; no escribe. Hasta 200 opciones, total exacto y exceedsLimit. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["FormCatalogPreviewHttpRequest"];
+                    "text/json": components["schemas"]["FormCatalogPreviewHttpRequest"];
+                    "application/*+json": components["schemas"]["FormCatalogPreviewHttpRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FormCatalogPreviewResponse"];
+                    };
+                };
+                /** @description Bad Request; Validation.Failed; Forms.Catalog.SampleRequired; Forms.Catalog.FiltersInvalid; Forms.Catalog.SampleMemberNotFound; Forms.Catalog.SampleContactNotFound */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unauthorized; Http.Unauthorized */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Forbidden; Http.Forbidden; Legal.AcceptanceRequired */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Found; Http.NotFound */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Security.RateLimit.Exceeded */
+                429: {
+                    headers: {
+                        /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
+                        "Retry-After"?: number;
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Internal Server Error; General.Unexpected */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Not Implemented; General.Contract.NotImplemented */
+                501: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/organization/assistant/proposals/{proposalId}": {
         parameters: {
             query?: never;
@@ -30366,6 +32197,22 @@ export interface components {
             /** Format: uuid */
             invitationId: string;
         };
+        /**
+         * @description El alta. Sin tipo, Text. Un catálogo a mano lleva sus opciones, con un id local cada una; uno de miembros o de contactos, sus
+         *     filtros y la persona (`sampleMemberId`) o el cliente (`sampleContactId`) de ejemplo, que se guarda en los filtros.
+         */
+        CreateFormCatalogHttpRequest: {
+            name?: null | string;
+            description?: null | string;
+            source?: null | components["schemas"]["FormCatalogSource"];
+            valueType?: null | components["schemas"]["FormCatalogValueType"];
+            items?: null | components["schemas"]["FormCatalogItemHttpInput"][];
+            filters?: null | components["schemas"]["FormCatalogFiltersHttpInput"];
+            /** Format: uuid */
+            sampleMemberId?: null | string;
+            /** Format: uuid */
+            sampleContactId?: null | string;
+        };
         CreatePlatformTenantHttpRequest: {
             name?: null | string;
             firstCompanyName?: null | string;
@@ -30488,6 +32335,301 @@ export interface components {
         };
         /** @description Correo normalizado para comparar y enviar; el dominio IDN se guarda en ASCII. */
         Email: null | string;
+        /**
+         * @description El tipo de una columna de la fuente: texto, lista o sí/no (§4).
+         * @enum {string}
+         */
+        FormCatalogColumnType: "Text" | "List" | "Boolean";
+        /** @description Una condición `{column, operator, values[]}`, con columna y operador de la fuente (§4 y §4b). */
+        FormCatalogCondition: {
+            column: string;
+            operator: string;
+            values: string[];
+        };
+        FormCatalogConditionHttpInput: {
+            column?: null | string;
+            operator?: null | string;
+            values?: null | string[];
+        };
+        /** @description El alta: el detalle y el mapa de ids de las opciones nuevas. */
+        FormCatalogCreatedResponse: {
+            catalog: components["schemas"]["FormCatalogResponse"];
+            itemIdentityMap: components["schemas"]["FormCatalogItemIdentity"][];
+        };
+        /** @description Solo lo que dice el resumen del listado («7 catálogos · 6 activos», 262). */
+        FormCatalogFilterCountsResponse: {
+            /** Format: int32 */
+            all: number;
+            /** Format: int32 */
+            active: number;
+        };
+        /** @description Los filtros de un catálogo de miembros o de contactos (C5): condiciones unidas con «y». */
+        FormCatalogFilters: {
+            /** Format: int32 */
+            sourceVersion: number;
+            conditions: components["schemas"]["FormCatalogCondition"][];
+            excludeRecipient: boolean;
+            detail?: null | string;
+            sort?: null | components["schemas"]["FormCatalogFilterSort"];
+        };
+        /** @description Los filtros de un catálogo de miembros o de contactos (C5), con la versión de la fuente que se leyó. */
+        FormCatalogFiltersHttpInput: {
+            /** Format: int32 */
+            sourceVersion?: null | number;
+            conditions?: null | components["schemas"]["FormCatalogConditionHttpInput"][];
+            excludeRecipient?: null | boolean;
+            detail?: null | string;
+            sort?: null | components["schemas"]["FormCatalogFilterSortHttpInput"];
+        };
+        FormCatalogFilterSort: {
+            column: string;
+            descending: boolean;
+        };
+        FormCatalogFilterSortHttpInput: {
+            column?: null | string;
+            descending?: null | boolean;
+        };
+        FormCatalogImportAddedRow: {
+            /** Format: int32 */
+            row: number;
+            code: string;
+            text: string;
+        };
+        FormCatalogImportChangedRow: {
+            /** Format: int32 */
+            row: number;
+            code: string;
+            column: string;
+            before?: null | string;
+            after?: null | string;
+        };
+        FormCatalogImportDeactivatedRow: {
+            code: string;
+            text: string;
+        };
+        FormCatalogImportErrorRow: {
+            /** Format: int32 */
+            row: number;
+            column?: null | string;
+            code: string;
+            value?: null | string;
+            /** Format: int32 */
+            otherRow?: null | number;
+        };
+        /** @enum {null|string} */
+        FormCatalogImportMode: "Append" | "Replace" | null;
+        /**
+         * @description La revisión de pegar o importar (C7), sin escribir: la versión leída, el SHA-256 de lo revisado y las cuatro listas paginadas
+         *     con el page y el pageSize del pedido. Las proporciones son fracciones.
+         */
+        FormCatalogImportPreviewResponse: {
+            /** Format: uint32 */
+            version: number;
+            sha256: string;
+            sheetName?: null | string;
+            /** Format: int32 */
+            rowsRead: number;
+            /** Format: int32 */
+            unchanged: number;
+            /** Format: double */
+            deactivationShare: number;
+            /** Format: double */
+            errorShare: number;
+            confirmDeactivations: boolean;
+            confirmErrors: boolean;
+            errors: components["schemas"]["PagedResultOfFormCatalogImportErrorRow"];
+            added: components["schemas"]["PagedResultOfFormCatalogImportAddedRow"];
+            changed: components["schemas"]["PagedResultOfFormCatalogImportChangedRow"];
+            deactivated: components["schemas"]["PagedResultOfFormCatalogImportDeactivatedRow"];
+        };
+        FormCatalogItemCounts: {
+            /** Format: int32 */
+            total: number;
+            /** Format: int32 */
+            active: number;
+        };
+        /** @description Una opción nueva (con `localId`) o cambiada (con `itemId`); el valor va como texto canónico (C6). */
+        FormCatalogItemHttpInput: {
+            /** Format: uuid */
+            itemId?: null | string;
+            localId?: null | string;
+            code?: null | string;
+            text?: null | string;
+            detail?: null | string;
+            value?: null | string;
+            isActive?: null | boolean;
+        };
+        /** @description El id del servidor de cada opción nueva, por el id local con que la mandó la pantalla. */
+        FormCatalogItemIdentity: {
+            localId: string;
+            /** Format: uuid */
+            itemId: string;
+        };
+        /**
+         * @description Una opción de un catálogo a mano, por posición. string? FormCatalogItemRow.Value es el texto canónico del valor en un catálogo tipado (C6),
+         *     y bool FormCatalogItemRow.TextRepeated avisa que otra opción tiene el mismo texto, sin distinguir mayúsculas.
+         */
+        FormCatalogItemRow: {
+            /** Format: uuid */
+            id: string;
+            code: string;
+            text: string;
+            detail?: null | string;
+            value?: null | string;
+            /** Format: int32 */
+            position: number;
+            isActive: boolean;
+            textRepeated: boolean;
+        };
+        /** @enum {null|string} */
+        FormCatalogItemSortColumn: "Text" | "Code" | null;
+        FormCatalogItemSortHttpInput: {
+            column?: null | components["schemas"]["FormCatalogItemSortColumn"];
+            descending?: null | boolean;
+        };
+        /** @enum {null|string} */
+        FormCatalogMoveDirection: "Up" | "Down" | null;
+        FormCatalogMoveHttpInput: {
+            /** Format: uuid */
+            itemId?: null | string;
+            direction?: null | components["schemas"]["FormCatalogMoveDirection"];
+        };
+        /** @description La vista previa de unos filtros sin guardar: la persona de ejemplo con Members y el cliente de ejemplo con Contacts. */
+        FormCatalogPreviewHttpRequest: {
+            source?: null | components["schemas"]["FormCatalogSource"];
+            filters?: null | components["schemas"]["FormCatalogFiltersHttpInput"];
+            /** Format: uuid */
+            sampleMemberId?: null | string;
+            /** Format: uuid */
+            sampleContactId?: null | string;
+        };
+        FormCatalogPreviewOption: {
+            text: string;
+            detail?: null | string;
+        };
+        /**
+         * @description La vista previa de unos filtros sin guardar, con la persona o el cliente de ejemplo como destinatario. Trae hasta 200 opciones;
+         *     int FormCatalogPreviewResponse.Total es la cantidad exacta y bool FormCatalogPreviewResponse.ExceedsLimit avisa que pasan el tope.
+         */
+        FormCatalogPreviewResponse: {
+            options: components["schemas"]["FormCatalogPreviewOption"][];
+            /** Format: int32 */
+            total: number;
+            exceedsLimit: boolean;
+        };
+        /** @description Un id con su nombre: un rol o una empresa del filtro, o una fila de esas listas. */
+        FormCatalogReference: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+        };
+        /**
+         * @description El detalle de un catálogo. IReadOnlyList&lt;FormCatalogReference&gt;? FormCatalogResponse.Roles y IReadOnlyList&lt;FormCatalogReference&gt;? FormCatalogResponse.Companies traen el nombre de cada id que usa el filtro, así
+         *     quien solo lo ve lo lee sin pedir esas listas; un id que ya no existe no viene. FormCatalogSample? FormCatalogResponse.Sample es la persona o el
+         *     cliente de ejemplo guardado en los filtros.
+         */
+        FormCatalogResponse: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            description?: null | string;
+            source: components["schemas"]["FormCatalogSource"];
+            valueType: components["schemas"]["FormCatalogValueType"];
+            filters?: null | components["schemas"]["FormCatalogFilters"];
+            roles?: null | components["schemas"]["FormCatalogReference"][];
+            companies?: null | components["schemas"]["FormCatalogReference"][];
+            sample?: null | components["schemas"]["FormCatalogSample"];
+            isActive: boolean;
+            usable: boolean;
+            unusableReason?: null | components["schemas"]["FormCatalogUnusableReason"];
+            canManage: boolean;
+            itemCounts: components["schemas"]["FormCatalogItemCounts"];
+            /** Format: date-time */
+            modifiedAtUtc: string;
+            modifiedBy?: null | string;
+            /** Format: uint32 */
+            version: number;
+        };
+        /**
+         * @description Una fila del listado. int? FormCatalogRow.OptionsCount: en uno a mano, todas sus opciones; en uno de miembros, los que cumplen los
+         *     filtros; en uno de contactos o que no se puede usar, `null`.
+         */
+        FormCatalogRow: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            description?: null | string;
+            source: components["schemas"]["FormCatalogSource"];
+            valueType: components["schemas"]["FormCatalogValueType"];
+            /** Format: int32 */
+            optionsCount?: null | number;
+            isActive: boolean;
+            usable: boolean;
+            unusableReason?: null | components["schemas"]["FormCatalogUnusableReason"];
+        };
+        FormCatalogSample: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            detail?: null | string;
+        };
+        /** @description Un cliente de ejemplo de Clientes, sin teléfono (C12). */
+        FormCatalogSampleContactRow: {
+            /** Format: uuid */
+            contactId: string;
+            name: string;
+        };
+        /** @description Una persona de ejemplo, sin correo, con los nombres de sus empresas y sus roles. */
+        FormCatalogSampleMemberRow: {
+            /** Format: uuid */
+            memberId: string;
+            name: string;
+            companies: string[];
+            roles: string[];
+        };
+        /**
+         * @description De dónde salen las opciones de un catálogo; no cambia después de crearlo (E12, §3).
+         * @enum {string}
+         */
+        FormCatalogSource: "Manual" | "Members" | "Contacts";
+        FormCatalogSourceColumn: {
+            key: string;
+            type: components["schemas"]["FormCatalogColumnType"];
+            operators: string[];
+            canDetail: boolean;
+            canSort: boolean;
+        };
+        /** @enum {null|string} */
+        FormCatalogSourceFilter: "All" | "Manual" | "Members" | "Contacts" | null;
+        /** @description La definición de la fuente «Miembros» (§4): su versión y el catálogo cerrado de columnas y operadores. */
+        FormCatalogSourceResponse: {
+            /** Format: int32 */
+            version: number;
+            columns: components["schemas"]["FormCatalogSourceColumn"][];
+        };
+        /** @enum {null|string} */
+        FormCatalogStatusFilter: "All" | "Active" | "Inactive" | null;
+        /** @description Una etiqueta que usan los contactos de la organización, con cuántos la tienen (C12). */
+        FormCatalogTagRow: {
+            name: string;
+            /** Format: int32 */
+            contacts: number;
+        };
+        /** @enum {null|string} */
+        FormCatalogUnusableReason: "NoActiveOptions" | "SourceOutdated" | "ChannelUnavailable" | "RoleMissing" | "CompanyMissing" | null;
+        /** @description Guardar: la versión nueva del catálogo y el mapa de ids de las opciones nuevas (C3). */
+        FormCatalogUpdatedResponse: {
+            /** Format: uint32 */
+            version: number;
+            itemIdentityMap: components["schemas"]["FormCatalogItemIdentity"][];
+        };
+        /**
+         * @description El tipo del valor de cada opción, fijo desde el alta; un catálogo con filtros es siempre FormCatalogValueType.Text (C6). Los números
+         *     se llaman como los de las acciones del asistente (CA1720): FormCatalogValueType.WholeNumber es el Integer de la spec y
+         *     FormCatalogValueType.DecimalNumber, su Decimal.
+         * @enum {string}
+         */
+        FormCatalogValueType: "Text" | "WholeNumber" | "DecimalNumber" | "Date";
         /** @description Entrega la URL del desafío Google al controller sin exponerla en la representación textual del objeto. */
         GoogleChallengeResponse: {
             redirectUrl: string;
@@ -31007,6 +33149,146 @@ export interface components {
         /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
         PagedResultOfDirectoryEntryRow: {
             items: components["schemas"]["DirectoryEntryRow"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasPrevious?: boolean;
+            hasNext?: boolean;
+        };
+        /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
+        PagedResultOfFormCatalogImportAddedRow: {
+            items: components["schemas"]["FormCatalogImportAddedRow"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasPrevious?: boolean;
+            hasNext?: boolean;
+        };
+        /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
+        PagedResultOfFormCatalogImportChangedRow: {
+            items: components["schemas"]["FormCatalogImportChangedRow"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasPrevious?: boolean;
+            hasNext?: boolean;
+        };
+        /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
+        PagedResultOfFormCatalogImportDeactivatedRow: {
+            items: components["schemas"]["FormCatalogImportDeactivatedRow"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasPrevious?: boolean;
+            hasNext?: boolean;
+        };
+        /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
+        PagedResultOfFormCatalogImportErrorRow: {
+            items: components["schemas"]["FormCatalogImportErrorRow"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasPrevious?: boolean;
+            hasNext?: boolean;
+        };
+        /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
+        PagedResultOfFormCatalogItemRow: {
+            items: components["schemas"]["FormCatalogItemRow"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasPrevious?: boolean;
+            hasNext?: boolean;
+        };
+        /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
+        PagedResultOfFormCatalogReference: {
+            items: components["schemas"]["FormCatalogReference"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasPrevious?: boolean;
+            hasNext?: boolean;
+        };
+        /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
+        PagedResultOfFormCatalogRow: {
+            items: components["schemas"]["FormCatalogRow"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasPrevious?: boolean;
+            hasNext?: boolean;
+        };
+        /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
+        PagedResultOfFormCatalogSampleContactRow: {
+            items: components["schemas"]["FormCatalogSampleContactRow"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasPrevious?: boolean;
+            hasNext?: boolean;
+        };
+        /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
+        PagedResultOfFormCatalogSampleMemberRow: {
+            items: components["schemas"]["FormCatalogSampleMemberRow"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            totalPages?: number;
+            hasPrevious?: boolean;
+            hasNext?: boolean;
+        };
+        /** @description Representa una página y el total de resultados para que el consumidor pueda mostrar navegación anterior y siguiente. */
+        PagedResultOfFormCatalogTagRow: {
+            items: components["schemas"]["FormCatalogTagRow"][];
             /** Format: int32 */
             page: number;
             /** Format: int32 */
@@ -32344,6 +34626,26 @@ export interface components {
             roleIds?: null | string[];
             /** Format: uint32 */
             version?: null | number;
+        };
+        /**
+         * @description Guardar todo junto (C3): `items` lleva solo lo nuevo o cambiado; `isActive` es obligatorio; `moves`,
+         *     `sort` y `deleteItems` (hasta 500, sin repetir) no se combinan entre sí.
+         */
+        UpdateFormCatalogHttpRequest: {
+            name?: null | string;
+            description?: null | string;
+            isActive?: null | boolean;
+            /** Format: uint32 */
+            version?: null | number;
+            items?: null | components["schemas"]["FormCatalogItemHttpInput"][];
+            moves?: null | components["schemas"]["FormCatalogMoveHttpInput"][];
+            sort?: null | components["schemas"]["FormCatalogItemSortHttpInput"];
+            deleteItems?: null | string[];
+            filters?: null | components["schemas"]["FormCatalogFiltersHttpInput"];
+            /** Format: uuid */
+            sampleMemberId?: null | string;
+            /** Format: uuid */
+            sampleContactId?: null | string;
         };
         /** @description Preferencias de la cuenta autenticada, nunca de un id recibido del cliente. */
         UpdateMeHttpRequest: {
