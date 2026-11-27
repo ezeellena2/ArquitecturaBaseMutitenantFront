@@ -217,6 +217,8 @@ describe("Catálogo con filtros (FRM-Catalogo-Filtros y FRM-Catalogo-Contactos)"
     await user.click(screen.getAllByRole("button", { name: "Reintentar" })[0]);
     await waitFor(() => expect(screen.queryAllByText(columnsError)).toHaveLength(0));
     expect(await within(phone()).findByText("No pudimos actualizar la vista previa.")).toBeVisible();
+    // Debajo, el motivo: acá el común de un 5xx (errores).
+    expect(within(phone()).getByText("Algo salió mal. Probá de nuevo en un rato.")).toBeVisible();
     previewsFailing = false;
     await user.click(within(phone()).getByRole("button", { name: "Reintentar" }));
     expect(await within(phone()).findByText("Martín Paz")).toBeInTheDocument();

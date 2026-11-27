@@ -13,14 +13,17 @@ import type { CatalogImport, ImportSource } from "../../hooks/useCatalogImport";
 import type { CatalogImportColumn } from "../../lib/catalogImport";
 import { ImportBand, ImportZone } from "./ImportParts";
 
-/** Un renglón del origen (.imp-f): el rótulo con su (i) a la izquierda y el campo a la derecha, con su error debajo. */
-function OriginRow({ labelId, htmlFor, label, help, error, errorId, children }: {
-  labelId: string; htmlFor?: string; label: string; help: string; error?: string; errorId: string; children: ReactNode;
+/**
+ * Un renglón del origen (.imp-f): el rótulo con su (i) a la izquierda y el campo a la derecha, con su error debajo. La (i) lleva
+ * `helpId`, que el campo suma a su descripción (pantallas-y-ui).
+ */
+function OriginRow({ labelId, htmlFor, label, help, helpId, error, errorId, children }: {
+  labelId: string; htmlFor?: string; label: string; help: string; helpId: string; error?: string; errorId: string; children: ReactNode;
 }) {
   return <div className="grid min-h-12 grid-cols-[6.875rem_minmax(0,1fr)] items-center gap-x-3 border-t border-[var(--borde)] px-5 py-1.5">
     <span className="inline-flex items-center gap-1">
       <Label id={labelId} htmlFor={htmlFor} className="text-[0.8125rem] font-semibold text-[var(--t2)]">{label}</Label>
-      <InfoTip text={help} title={label} />
+      <InfoTip id={helpId} text={help} title={label} />
     </span>
     <div className="min-w-0">{children}</div>
     {error ? <p id={errorId} role="alert" className="col-start-2 -mt-0.5 text-[0.78125rem] text-[var(--peligro)]">{error}</p> : null}
@@ -48,19 +51,20 @@ export function ImportOrigin({ imp, valueType, columnLabel }: {
     <Download aria-hidden="true" className="size-3.5" />{t("forms:catalog.import.template")}
   </Button>;
 
-  const fromRow = <OriginRow labelId={`${fromId}-label`} htmlFor={fromId} label={t("forms:catalog.import.from")} help={t("forms:catalog.import.fromHelp")} errorId={originErrorId}>
-    <Picker id={fromId} className="md:max-w-85" value={imp.source} disabledReason={lockedReason}
+  const fromRow = <OriginRow labelId={`${fromId}-label`} htmlFor={fromId} label={t("forms:catalog.import.from")} help={t("forms:catalog.import.fromHelp")}
+    helpId={`${fromId}-help`} errorId={originErrorId}>
+    <Picker id={fromId} className="md:max-w-85" value={imp.source} disabledReason={lockedReason} aria-describedby={`${fromId}-help`}
       onChange={(next) => imp.chooseSource(next as ImportSource)}
       options={[{ value: "file", label: t("forms:catalog.import.sources.file") }, { value: "paste", label: t("forms:catalog.import.sources.paste") }]} />
   </OriginRow>;
 
   const fileRow = <OriginRow labelId={`${fileId}-label`} htmlFor={fileId} label={t("forms:catalog.import.file")} help={t("forms:catalog.import.fileHelp")}
-    error={originError} errorId={originErrorId}>
+    helpId={`${fileId}-help`} error={originError} errorId={originErrorId}>
     <input ref={fileInput} id={fileId} type="file" accept=".xlsx,.csv" hidden aria-invalid={originError ? true : undefined} aria-describedby={originError ? originErrorId : undefined}
       onChange={(event) => { const chosen = event.target.files?.[0] ?? null; event.target.value = ""; if (chosen) imp.chooseFile(chosen); }} />
     <span className="flex items-center justify-between gap-3">
       {imp.file ? <b className="min-w-0 font-semibold break-words">{imp.file.name}</b> : <span className="text-[var(--t3)]">{t("forms:catalog.import.noFile")}</span>}
-      <Button type="button" size="sm" variant="outline" disabledReason={lockedReason} aria-describedby={originError ? originErrorId : undefined}
+      <Button type="button" size="sm" variant="outline" disabledReason={lockedReason} aria-describedby={originError ? `${fileId}-help ${originErrorId}` : `${fileId}-help`}
         onClick={() => fileInput.current?.click()}>
         {t(imp.file ? "forms:catalog.import.change" : "forms:catalog.import.choose")}
       </Button>

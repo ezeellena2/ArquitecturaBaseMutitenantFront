@@ -107,6 +107,9 @@ describe("ImportDialog (FRM-Catalogo-Importar)", () => {
     const mounted = await openImport();
     const { user, dialog } = mounted;
     expect(within(dialog).getByRole("button", { name: pickerName("Desde") })).toHaveTextContent("Subir un archivo");
+    // La (i) de cada renglón describe su campo (pantallas-y-ui).
+    expect(within(dialog).getByRole("button", { name: pickerName("Desde") })).toHaveAccessibleDescription(/Pegar suma filas al catálogo/);
+    expect(within(dialog).getByRole("button", { name: "Elegir archivo" })).toHaveAccessibleDescription("XLSX o CSV en UTF-8, de hasta 10 MiB y 10.000 filas.");
     await choose(user, "Desde", "Pegar desde Excel");
 
     const grid = within(dialog).getByRole("table", { name: "Filas pegadas" });

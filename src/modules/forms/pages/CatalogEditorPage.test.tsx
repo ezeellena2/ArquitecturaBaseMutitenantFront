@@ -118,6 +118,18 @@ describe("CatalogEditorPage (FRM-Catalogo)", () => {
     expect(screen.getByRole("button", { name: "Más acciones de las opciones" })).toHaveFocus();
   });
 
+  it("en la vista previa, las opciones se marcan también con el teclado (accesibilidad)", async () => {
+    const { user } = await openEditor();
+    const preview = screen.getByRole("group", { name: "Así lo ve quien lo recibe" });
+    await user.click(within(preview).getByRole("button", { name: /Elegí una opción/ }));
+    within(preview).getByRole("button", { name: "Pregunta" }).focus();
+    await user.tab();
+    const first = within(preview).getByRole("radio", { name: /^Seguimiento/ });
+    expect(first).toHaveFocus();
+    await user.keyboard(" ");
+    expect(first).toBeChecked();
+  });
+
   it("«Descartar movimientos» vuelve al orden guardado", async () => {
     const { user } = await openEditor();
     await user.click(screen.getByRole("button", { name: "Bajar Seguimiento" }));

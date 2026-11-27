@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { useRetryAfterOf } from "@/shared/api/useRetryAfterCountdown";
 import { useFormat } from "@/shared/format/useFormat";
 import { Button } from "@/shared/ui/button";
@@ -42,9 +43,10 @@ export function CatalogPreviewPhone({ options, withSwitch = true }: { options: r
                 <span className="block break-words">{option.text}</span>
                 {option.detail ? <span className="block break-words text-[var(--t3)]">{option.detail}</span> : null}
               </span>
+              {/* Se marcan con el mouse y con el teclado, igual (accesibilidad). */}
               {multiple
-                ? <input type="checkbox" tabIndex={-1} className="mt-0.5 accent-[var(--ok)]" />
-                : <input type="radio" name="catalog-preview" tabIndex={-1} className="mt-0.5 accent-[var(--ok)]" />}
+                ? <input type="checkbox" className="mt-0.5 accent-[var(--ok)]" />
+                : <input type="radio" name="catalog-preview" className="mt-0.5 accent-[var(--ok)]" />}
             </label>
           </li>)}
         </ul>
@@ -83,6 +85,8 @@ export function CatalogListPhone({ preview, updating, error, onRetry }: {
     <div className="min-h-[18rem]">
       {error !== undefined && !updating ? <div role="alert" className="flex flex-col items-center gap-2 px-3 py-6 text-center text-[var(--peligro)]">
         {t("forms:catalog.preview.error")}
+        {/* El motivo, debajo: el que tradujo el back (la persona de ejemplo ya no está) o el común de red y 5xx (errores). */}
+        <span className="text-[var(--t2)]">{apiErrorMessage(error, t)}</span>
         {onRetry ? <Button type="button" size="sm" variant="outline" disabled={limit.isRunning} onClick={onRetry}>{limit.label ?? t("common:actions.retry")}</Button> : null}
       </div> : updating ? <div className="flex flex-col gap-3 p-3.5" aria-label={t("forms:catalog.preview.updating")} role="status">
         {["80%", "60%", "70%"].map((width) => <Skeleton key={width} className="h-2.5 rounded-full" style={{ width }} />)}
