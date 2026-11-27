@@ -113,7 +113,7 @@ function CardFailure({ name, error, retrying, onRetry }: { name: string; error: 
 function OpenButton({ adapter, contract, proposal, label, phone }: { adapter: AssistantActionAdapter; contract: AssistantActionContract; proposal: AssistantProposalResponse; label: string; phone: boolean }) {
   const location = useLocation();
   // El diálogo abre donde está la tarjeta, sobre el Inicio; una página, en su lugar (ADR 0068 §9).
-  const to = adapter.Dialog ? withAssistantProposal(`${location.pathname}${location.search}`, proposal.id) : adapter.href(proposal);
+  const to = withAssistantProposal(adapter.Dialog ? `${location.pathname}${location.search}` : adapter.href(proposal), proposal.id);
   return <Button asChild variant={contract.kind === "remove" ? "danger" : "default"} size={phone ? "lg" : "sm"} className={phone ? "w-full" : "h-7"}>
     <Link to={to}>{label}</Link>
   </Button>;

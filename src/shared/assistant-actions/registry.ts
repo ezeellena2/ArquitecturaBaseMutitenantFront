@@ -11,7 +11,10 @@ export const assistantProposalParam = "proposal";
 export interface AssistantActionAdapter {
   /** `<id>@<versión>`, como la publica `assistant-actions.json`. */
   readonly action: AssistantActionKey;
-  /** La pantalla de la acción con `?proposal=<id>` (`withAssistantProposal`); la de editar o quitar, la de su destino. */
+  /**
+   * La pantalla de la acción, sin la propuesta: la tarjeta le suma `?proposal=<id>` (`withAssistantProposal`). La de editar o
+   * quitar, la de su destino. Así un registro solo importa el tipo y no carga nada de esta carpeta al arrancar.
+   */
   readonly href: (proposal: { readonly id: string; readonly target?: { readonly id: string } | null }) => string;
   /**
    * Solo si la acción se confirma en un diálogo: el diálogo, que lee la propuesta de la dirección. La tarjeta lo abre donde

@@ -3,7 +3,7 @@ import en from "./locales/en/forms.json";
 import esEnums from "./locales/es/enums.json";
 import enEnums from "./locales/en/enums.json";
 import { lazy } from "react";
-import { withAssistantProposal, type AssistantActionAdapter } from "@/shared/assistant-actions";
+import type { AssistantActionAdapter } from "@/shared/assistant-actions";
 import type { ModuleGuard, ModuleNavigationPanel, ModuleRegistration } from "@/shared/modules/types";
 import { CatalogsIcon, FormsIcon } from "./components/icons";
 
@@ -38,7 +38,7 @@ const catalogPath = (id: string) => `${catalogsPath}/${encodeURIComponent(id)}`;
 export const formsAssistantActions: readonly AssistantActionAdapter[] = [
   {
     action: "catalogoptions.edit@1",
-    href: (proposal) => withAssistantProposal(proposal.target ? catalogPath(proposal.target.id) : catalogsPath, proposal.id),
+    href: (proposal) => (proposal.target ? catalogPath(proposal.target.id) : catalogsPath),
     appliedHref: (proposal) => (proposal.target ? catalogPath(proposal.target.id) : undefined),
   },
 ];

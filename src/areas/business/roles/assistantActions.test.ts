@@ -14,13 +14,13 @@ describe("las acciones de Roles del asistente", () => {
     const create = findAssistantActionAdapter(rolesAssistantActions, "roles.create", 1)!;
     const edit = findAssistantActionAdapter(rolesAssistantActions, "roles.edit", 1)!;
     const remove = findAssistantActionAdapter(rolesAssistantActions, "roles.remove", 1)!;
-    expect(create.href({ id: "p-1" })).toBe("/org/roles/nuevo?proposal=p-1");
+    expect(create.href({ id: "p-1" })).toBe("/org/roles/nuevo");
     expect(create.appliedHref?.({ appliedLocation: "/api/roles/role-created" })).toBe("/org/roles/role-created");
     expect(create.appliedHref?.({ appliedLocation: null })).toBeUndefined();
     expect(create.reviewHref).toBe("/org/roles");
-    expect(edit.href({ id: "p-1", target: { id: "role-custom" } })).toBe("/org/roles/role-custom?proposal=p-1");
+    expect(edit.href({ id: "p-1", target: { id: "role-custom" } })).toBe("/org/roles/role-custom");
     expect(edit.appliedHref?.({ target: { id: "role-custom" } })).toBe("/org/roles/role-custom");
-    expect(remove.href({ id: "p-1", target: { id: "role-custom" } })).toBe("/org/roles?proposal=p-1");
+    expect(remove.href({ id: "p-1", target: { id: "role-custom" } })).toBe("/org/roles");
     expect(remove.appliedHref).toBeUndefined();
   });
 });

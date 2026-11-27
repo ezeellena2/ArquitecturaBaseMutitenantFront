@@ -1,4 +1,4 @@
-import { withAssistantProposal, type AssistantActionAdapter } from "@/shared/assistant-actions";
+import type { AssistantActionAdapter } from "@/shared/assistant-actions";
 
 const rolesPath = "/org/roles";
 const rolePath = (roleId: string) => `${rolesPath}/${encodeURIComponent(roleId)}`;
@@ -23,7 +23,7 @@ export function createdRolePath(location: string | null | undefined): string {
 export const rolesAssistantActions: readonly AssistantActionAdapter[] = [
   {
     action: "roles.create@1",
-    href: (proposal) => withAssistantProposal(`${rolesPath}/nuevo`, proposal.id),
+    href: () => `${rolesPath}/nuevo`,
     // «Ver el rol»: el que creó el guardado; una «Sin confirmar» se revisa en la lista.
     appliedHref: (proposal) => {
       const id = createdRoleId(proposal.appliedLocation);
@@ -33,12 +33,12 @@ export const rolesAssistantActions: readonly AssistantActionAdapter[] = [
   },
   {
     action: "roles.edit@1",
-    href: (proposal) => withAssistantProposal(proposal.target ? rolePath(proposal.target.id) : rolesPath, proposal.id),
+    href: (proposal) => proposal.target ? rolePath(proposal.target.id) : rolesPath,
     appliedHref: (proposal) => (proposal.target ? rolePath(proposal.target.id) : undefined),
   },
   {
     // Dado de baja, el rol ya no se ve: la tarjeta aplicada va sin enlace.
     action: "roles.remove@1",
-    href: (proposal) => withAssistantProposal(rolesPath, proposal.id),
+    href: () => rolesPath,
   },
 ];

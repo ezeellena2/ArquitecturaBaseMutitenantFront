@@ -19,7 +19,7 @@ import type { AssistantMessageResponse } from "@/modules/assistant/api/types";
 import { resetHttpClient } from "@/shared/api/httpClient";
 import type { AssistantProposalResponse } from "@/shared/api/types";
 import {
-  AssistantActionRegistryProvider, AssistantProposalDialog, assistantActions, withAssistantProposal, type AssistantActionAdapter,
+  AssistantActionRegistryProvider, AssistantProposalDialog, assistantActions, type AssistantActionAdapter,
 } from "@/shared/assistant-actions";
 import { server } from "@/test/mocks/server";
 import { asPhone, cardData } from "@/test/utils/phone";
@@ -79,11 +79,11 @@ function InviteDialog({ onClose }: { readonly onClose: () => void }) {
 }
 
 const adapters: AssistantActionAdapter[] = [
-  { action: "users.invite@1", href: (proposal) => withAssistantProposal("/org/usuarios", proposal.id), Dialog: InviteDialog, appliedHref: () => "/org/usuarios", reviewHref: "/org/usuarios" },
-  { action: "users.edit@1", href: (proposal) => withAssistantProposal(`/org/usuarios/${proposal.target?.id}`, proposal.id), appliedHref: (proposal) => `/org/usuarios/${proposal.target?.id}` },
-  { action: "users.remove@1", href: (proposal) => withAssistantProposal(`/org/usuarios/${proposal.target?.id}`, proposal.id) },
-  { action: "roles.create@1", href: (proposal) => withAssistantProposal("/org/roles/nuevo", proposal.id), appliedHref: (proposal) => proposal.appliedLocation ?? undefined, reviewHref: "/org/roles" },
-  { action: "roles.remove@1", href: (proposal) => withAssistantProposal("/org/roles", proposal.id) },
+  { action: "users.invite@1", href: () => "/org/usuarios", Dialog: InviteDialog, appliedHref: () => "/org/usuarios", reviewHref: "/org/usuarios" },
+  { action: "users.edit@1", href: (proposal) => `/org/usuarios/${proposal.target?.id}`, appliedHref: (proposal) => `/org/usuarios/${proposal.target?.id}` },
+  { action: "users.remove@1", href: (proposal) => `/org/usuarios/${proposal.target?.id}` },
+  { action: "roles.create@1", href: () => "/org/roles/nuevo", appliedHref: (proposal) => proposal.appliedLocation ?? undefined, reviewHref: "/org/roles" },
+  { action: "roles.remove@1", href: () => "/org/roles" },
 ];
 
 function Where() {

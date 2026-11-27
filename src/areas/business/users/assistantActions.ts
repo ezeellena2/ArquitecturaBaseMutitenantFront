@@ -1,4 +1,4 @@
-import { withAssistantProposal, type AssistantActionAdapter } from "@/shared/assistant-actions";
+import type { AssistantActionAdapter } from "@/shared/assistant-actions";
 import { homeOf } from "@/tenancy/access";
 import { InviteUserProposalDialog } from "./components/InviteUserDialog";
 
@@ -13,7 +13,7 @@ const memberPath = (target: { readonly id: string } | null | undefined) => (targ
 export const usersAssistantActions: readonly AssistantActionAdapter[] = [
   {
     action: "users.invite@1",
-    href: (proposal) => withAssistantProposal(homeOf("business"), proposal.id),
+    href: () => homeOf("business"),
     Dialog: InviteUserProposalDialog,
     // La invitación se ve en la lista («Ver en Usuarios»), y ahí se revisa una «Sin confirmar».
     appliedHref: () => usersPath,
@@ -21,12 +21,12 @@ export const usersAssistantActions: readonly AssistantActionAdapter[] = [
   },
   {
     action: "users.edit@1",
-    href: (proposal) => withAssistantProposal(memberPath(proposal.target), proposal.id),
+    href: (proposal) => memberPath(proposal.target),
     appliedHref: (proposal) => (proposal.target ? memberPath(proposal.target) : undefined),
   },
   {
     // Quitada, la persona ya no tiene ficha: la tarjeta aplicada va sin enlace.
     action: "users.remove@1",
-    href: (proposal) => withAssistantProposal(memberPath(proposal.target), proposal.id),
+    href: (proposal) => memberPath(proposal.target),
   },
 ];

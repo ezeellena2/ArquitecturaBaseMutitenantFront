@@ -5,8 +5,8 @@ import {
   AssistantActionRegistryProvider, findAssistantActionAdapter, useAssistantActionAdapter, withAssistantProposal, type AssistantActionAdapter,
 } from "./registry";
 
-const invite: AssistantActionAdapter = { action: "users.invite@1", href: (proposal) => withAssistantProposal("/org", proposal.id) };
-const editUser: AssistantActionAdapter = { action: "users.edit@1", href: (proposal) => withAssistantProposal(`/org/usuarios/${proposal.target!.id}`, proposal.id) };
+const invite: AssistantActionAdapter = { action: "users.invite@1", href: () => "/org" };
+const editUser: AssistantActionAdapter = { action: "users.edit@1", href: (proposal) => `/org/usuarios/${proposal.target!.id}` };
 
 describe("el registro de adaptadores", () => {
   it("cada acción encuentra su adaptador por id y versión, y otra versión no tiene", () => {
@@ -19,8 +19,8 @@ describe("el registro de adaptadores", () => {
   });
 
   it("la dirección lleva solo el id de la propuesta y conserva lo que ya traía", () => {
-    expect(invite.href({ id: "p 1" })).toBe("/org?proposal=p+1");
-    expect(editUser.href({ id: "p-2", target: { id: "m-1" } })).toBe("/org/usuarios/m-1?proposal=p-2");
+    expect(withAssistantProposal(invite.href({ id: "p 1" }), "p 1")).toBe("/org?proposal=p+1");
+    expect(withAssistantProposal(editUser.href({ id: "p-2", target: { id: "m-1" } }), "p-2")).toBe("/org/usuarios/m-1?proposal=p-2");
     expect(withAssistantProposal("/org/roles?tab=company&proposal=old", "p-3")).toBe("/org/roles?tab=company&proposal=p-3");
   });
 
