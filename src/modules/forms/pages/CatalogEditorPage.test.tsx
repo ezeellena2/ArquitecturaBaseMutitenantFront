@@ -319,6 +319,27 @@ describe("CatalogEditorPage: crear (idempotencia)", () => {
     expect(keys[0]).toMatch(/^[0-9a-f-]{36}$/);
     expect(keys[1]).toBe(keys[0]);
   });
+
+  it("si «Crear catálogo» recibe un 400, el pedido corregido sale con otra Idempotency-Key", async () => {
+    const keys: (string | null)[] = [];
+    server.use(http.post(base, ({ request }) => {
+      keys.push(request.headers.get("Idempotency-Key"));
+      return keys.length === 1
+        ? HttpResponse.json({ code: "General.Validation", status: 400, title: "Bad Request", errors: { name: ["Ya hay un catálogo con ese nombre."] } }, { status: 400 })
+        : HttpResponse.json({ catalog: catalog(), itemIdentityMap: [] }, { status: 201 });
+    }));
+    const { user, router } = mountForms(formsOwner, "/org/formularios/catalogos/nuevo");
+    await user.click(await screen.findByRole("textbox", { name: /Nombre del catálogo/ }));
+    await user.paste("Motivos");
+    await user.click(screen.getByRole("button", { name: "Crear catálogo" }));
+    expect(await screen.findByText("Ya hay un catálogo con ese nombre.")).toBeVisible();
+    await user.click(screen.getByRole("textbox", { name: /Nombre del catálogo/ }));
+    await user.paste(" de visita");
+    await user.click(screen.getByRole("button", { name: "Crear catálogo" }));
+    await waitFor(() => expect(router.state.location.pathname).toBe(path));
+    expect(keys).toHaveLength(2);
+    expect(keys[1]).not.toBe(keys[0]);
+  });
 });
 
 describe("CatalogEditorPage: los errores (errores.md)", () => {

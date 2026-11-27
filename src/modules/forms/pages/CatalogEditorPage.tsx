@@ -1,10 +1,11 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { Ban, RotateCcw } from "lucide-react";
-import { useRef, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 import { actionErrorMessage, isNotFoundError } from "@/shared/api/errorMessage";
+import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { AssistantProposalChangesSection, AssistantProposalMark } from "@/shared/assistant-actions";
 import { useFormat } from "@/shared/format/useFormat";
 import { useEditPage } from "@/shared/hooks/useEditPage";
@@ -246,9 +247,10 @@ function NewCatalogEditor() {
     else applyOrigin(next);
   };
   const pendingLost = pendingOrigin ? lostBy(pendingOrigin) : null;
-  // Una sola clave por intento: un reintento del mismo pedido no crea otro catálogo (idempotencia).
-  const idempotencyKey = useRef<string | null>(null);
-  const create = useMutation({ mutationFn: (request: CreateFormCatalogRequest) => createCatalog(request, idempotencyKey.current ??= crypto.randomUUID()) });
+  // Una clave por formulario (idempotencia): la red y un 5xx la conservan, así un reintento no crea otro catálogo; un 4xx o
+  // un pedido corregido salen con otra (datos-y-api).
+  const create = useIdempotentMutation((request: CreateFormCatalogRequest, key: string) => createCatalog(request, key),
+    { sameOperation: (previous, next) => JSON.stringify(previous) === JSON.stringify(next) });
   const edit = useEditPage({
     isDirty: editor.name.trim() !== "" || editor.description.trim() !== "" || editor.rows.length > 0 || filters.draft.conditions.length > 0,
     error: editor.saveError,
@@ -269,7 +271,6 @@ function NewCatalogEditor() {
     create.mutate({ name: editor.name, description: editor.description.trim() || null, source: origin.source, valueType: origin.valueType, items,
       ...(manual ? {} : filters.request()) }, {
       onSuccess: (result) => {
-        idempotencyKey.current = null;
         toast.success(t("forms:catalog.saved"));
         void queryClient.invalidateQueries({ queryKey: catalogsQueryRoot });
         edit.allowNextNavigation();
