@@ -44,17 +44,18 @@ export interface CatalogFieldError {
 const plainFields: Readonly<Record<string, CatalogErrorField>> = {
   name: "name", description: "description", sampleMemberId: "sample", sampleContactId: "sample", file: "file",
 };
-const itemKey = /^items\[(\d+)\](?:\.(code|text|detail|value))?$/;
-const rowKey = /^(deleteItems|moves)\[(\d+)\]$/;
-const conditionKey = /^(?:filters\.)?conditions\[(\d+)\](?:\..+)?$/;
+// `items[3].code` o, como lo manda el back desde la B3, `items.3.code`.
+const itemKey = /^items(?:\[(\d+)\]|\.(\d+))(?:\.(code|text|detail|value))?$/;
+const rowKey = /^(deleteItems|moves)(?:\[(\d+)\]|\.(\d+))$/;
+const conditionKey = /^(?:filters\.)?conditions(?:\[(\d+)\]|\.(\d+))(?:\..+)?$/;
 
 function fieldOf(key: string): Omit<CatalogFieldError, "message"> | null {
   const item = itemKey.exec(key);
-  if (item) return { list: "items", index: Number(item[1]), field: (item[2] as CatalogErrorField | undefined) ?? "row" };
+  if (item) return { list: "items", index: Number(item[1] ?? item[2]), field: (item[3] as CatalogErrorField | undefined) ?? "row" };
   const row = rowKey.exec(key);
-  if (row) return { list: row[1] as CatalogErrorList, index: Number(row[2]), field: "row" };
+  if (row) return { list: row[1] as CatalogErrorList, index: Number(row[2] ?? row[3]), field: "row" };
   const condition = conditionKey.exec(key);
-  if (condition) return { list: "conditions", index: Number(condition[1]), field: "condition" };
+  if (condition) return { list: "conditions", index: Number(condition[1] ?? condition[2]), field: "condition" };
   const field = Object.hasOwn(plainFields, key) ? plainFields[key] : undefined;
   return field ? { list: null, index: null, field } : null;
 }

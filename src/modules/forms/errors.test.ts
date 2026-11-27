@@ -68,6 +68,21 @@ describe("catalogFieldErrors", () => {
     ]);
   });
 
+  // Desde la B3 el back nombra los campos con puntos, como manda validacion.md y como los arma FluentValidation.
+  it("lee igual las claves con puntos: items.3.code, deleteItems.0, moves.1 y conditions.2", () => {
+    const error = rejected("Validation.Failed", 400, {
+      "items.3.code": ["Ya está en la opción 2."], "items.4": ["Está repetido en el pedido."], "deleteItems.0": ["Esa opción no es de este catálogo."],
+      "moves.1": ["Esa opción no es de este catálogo."], "conditions.2": ["Revisá esta condición."],
+    });
+    expect(catalogFieldErrors(error)).toEqual([
+      { list: "items", index: 3, field: "code", message: "Ya está en la opción 2." },
+      { list: "items", index: 4, field: "row", message: "Está repetido en el pedido." },
+      { list: "deleteItems", index: 0, field: "row", message: "Esa opción no es de este catálogo." },
+      { list: "moves", index: 1, field: "row", message: "Esa opción no es de este catálogo." },
+      { list: "conditions", index: 2, field: "condition", message: "Revisá esta condición." },
+    ]);
+  });
+
   it("sin errores por campo, o con una clave que el editor no tiene, no devuelve nada de eso", () => {
     expect(catalogFieldErrors(rejected("Forms.Catalog.TooManyItems"))).toEqual([]);
     expect(catalogFieldErrors(rejected("Validation.Failed", 400, { "items[x].code": ["?"], other: ["?"] }))).toEqual([]);
