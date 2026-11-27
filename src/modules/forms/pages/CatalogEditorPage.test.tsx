@@ -104,7 +104,8 @@ describe("CatalogEditorPage (FRM-Catalogo)", () => {
     await user.keyboard("{Escape}");
     await user.click(saveButton());
     await waitFor(() => expect(puts).toHaveLength(1));
-    expect(puts[0]).toMatchObject({ version: 7, moves: [{ itemId: "i-seg", direction: "Down" }] });
+    // El contrato exige el nombre, la versión e isActive en cada guardado (C3).
+    expect(puts[0]).toMatchObject({ version: 7, isActive: true, name: "Motivos de visita", moves: [{ itemId: "i-seg", direction: "Down" }] });
     expect(puts[0].items).toBeUndefined();
   });
 
@@ -233,13 +234,37 @@ describe("CatalogEditorPage (FRM-Catalogo)", () => {
     await waitFor(() => expect(calls).toBe(reads + 1));
   });
 
-  it("«Dar de baja», en el ⋮ de la banda, pregunta y manda el PUT con la versión y isActive", async () => {
+  it("«Dar de baja», en el ⋮ de la banda, pregunta y manda el mismo PUT: la versión, el nombre, lo pendiente e isActive", async () => {
     const { user } = await openEditor();
+    const field = textbox("Texto de Seguimiento");
+    // Pegado y no tipeado letra por letra: cada test entra en 5 s (tests).
+    await user.clear(field);
+    await user.paste("Seguimiento programado");
     await openMenu(user, "Acciones de Motivos de visita");
     await user.click(await screen.findByRole("menuitem", { name: /Dar de baja/ }));
     const dialog = await screen.findByRole("dialog", { name: "¿Dar de baja «Motivos de visita»?" });
     await user.click(within(dialog).getByRole("button", { name: "Dar de baja" }));
-    await waitFor(() => expect(puts).toEqual([{ version: 7, isActive: false }]));
+    await waitFor(() => expect(puts).toHaveLength(1));
+    expect(puts[0]).toMatchObject({
+      version: 7, isActive: false, name: "Motivos de visita", description: "Por qué se visita a un cliente.",
+      items: [{ itemId: "i-seg", text: "Seguimiento programado" }],
+    });
+    expect(await screen.findByText("Dimos de baja el catálogo.")).toBeVisible();
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+  });
+
+  it("si otra persona guardó, «Dar de baja» abre la revisión lado a lado y «Ver lo nuevo» se lleva el 409", async () => {
+    let calls = 0;
+    serve({ put: () => HttpResponse.json({ code: "General.ConcurrencyConflict", status: 409, title: "Conflict" }, { status: 409 }) });
+    server.use(http.get(`${base}/c-motivos`, () => HttpResponse.json(catalog(calls++ === 0 ? {} : { modifiedBy: "Laura Ríos", version: 8 }))));
+    const { user } = await openEditor();
+    await openMenu(user, "Acciones de Motivos de visita");
+    await user.click(await screen.findByRole("menuitem", { name: /Dar de baja/ }));
+    await user.click(within(await screen.findByRole("dialog", { name: "¿Dar de baja «Motivos de visita»?" })).getByRole("button", { name: "Dar de baja" }));
+    const review = await screen.findByRole("dialog", { name: "Otra persona guardó el catálogo" });
+    await user.click(within(review).getByRole("button", { name: "Ver lo nuevo" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(screen.queryByText("Otra persona cambió esto mientras lo editabas.")).not.toBeInTheDocument();
   });
 
   it("con solo formcatalogs.read: la tabla de lectura, sin casillas ni guardar, con Exportar", async () => {

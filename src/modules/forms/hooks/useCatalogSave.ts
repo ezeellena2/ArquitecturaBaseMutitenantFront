@@ -51,14 +51,17 @@ export function useCatalogSave(id: string | undefined, data: CatalogData, draft:
     meta: { silent: true },
   });
 
+  // «Guardar cambios» y «Dar de baja» o «Reactivar» son el mismo `PUT` (C3); cada uno con su pedido, para su «Guardando…».
   const update = useMutation({ mutationFn: (request: UpdateFormCatalogRequest) => updateCatalog(id!, request) });
+  const activation = useMutation({ mutationFn: (request: UpdateFormCatalogRequest) => updateCatalog(id!, request) });
 
   // Después de guardar: lo guardado pasa a la caché de la ficha y de la página a la vista.
   function keepSavedInView(request: UpdateFormCatalogRequest, nextVersion: number, view: Partial<FormCatalogResponse>, rows = draft.rows,
     edits = draft.edits, deletes = draft.deletes) {
     if (!saved) return;
     queryClient.setQueryData<FormCatalogResponse>(catalogQueryKey(saved.id), {
-      ...saved, name: request.name ?? saved.name, description: request.description ?? null, version: nextVersion, ...view,
+      ...saved, name: request.name ?? saved.name, description: request.description ?? null, isActive: request.isActive ?? saved.isActive,
+      version: nextVersion, ...view,
     });
     queryClient.setQueryData<PagedResultOfFormCatalogItemRow>(catalogItemsQueryKey(saved.id, itemsQuery), (current) => current && {
       ...current,
@@ -72,18 +75,19 @@ export function useCatalogSave(id: string | undefined, data: CatalogData, draft:
   }
 
   /**
-   * «Guardar cambios». Un catálogo con filtros suma `extra`. `onSaved` recibe la versión que respondió el guardado, también
-   * si entró con «Reintentar».
+   * El `PUT` con lo pendiente y el `isActive` que corresponde. `false` si no salió (falta el nombre o un valor no se puede
+   * leer: queda marcado en su campo). `onSaved` recibe la versión que respondió, también si entró con «Reintentar».
    */
-  function save(extra?: CatalogSaveExtra, onSaved?: (version: number) => void) {
-    if (!saved) return;
+  function send(mutation: typeof update, isActive: boolean, extra: CatalogSaveExtra | undefined, onSaved?: (version: number) => void,
+    onSettled?: () => void): boolean {
+    if (!saved) return false;
     setSaveError(undefined);
-    if (!draft.attempt()) return;
-    const request = draft.buildRequest(version, extra?.request);
-    if (!request) return;
+    if (!draft.attempt()) return false;
+    const request = draft.buildRequest(version, isActive, extra?.request);
+    if (!request) return false;
     // Lo que se ve al mandar: lo guardado se arma con esto aunque entre más tarde.
     const { rows, edits, deletes } = draft;
-    update.mutate(request, {
+    mutation.mutate(request, {
       onSuccess: (result) => {
         keepSavedInView(request, result.version, extra?.view ?? {}, rows, edits, deletes);
         setVersion(result.version);
@@ -99,7 +103,22 @@ export function useCatalogSave(id: string | undefined, data: CatalogData, draft:
           setConflictOpen(true);
         }
       },
+      onSettled,
     });
+    return true;
+  }
+
+  /** «Guardar cambios». Un catálogo con filtros suma `extra`. */
+  function save(extra?: CatalogSaveExtra, onSaved?: (version: number) => void) {
+    send(update, saved?.isActive ?? true, extra, onSaved);
+  }
+
+  /**
+   * «Dar de baja» o «Reactivar» el catálogo, desde el ⋮ de la banda (209): el mismo guardado, con lo pendiente y su versión,
+   * y lo que rechaza va donde va lo de guardar. `false` si no salió.
+   */
+  function setCatalogActive(isActive: boolean, extra: CatalogSaveExtra | undefined, onSaved?: (version: number) => void, onSettled?: () => void) {
+    return send(activation, isActive, extra, onSaved, onSettled);
   }
 
   /** Un rechazo del `POST` de un catálogo nuevo: cada error en su campo. */
@@ -124,16 +143,6 @@ export function useCatalogSave(id: string | undefined, data: CatalogData, draft:
     return fresh;
   }
 
-  /** «Dar de baja» o «Reactivar» el catálogo, desde el ⋮ de la banda (209): el mismo `PUT`, con su versión. */
-  const setCatalogActive = useMutation({
-    mutationFn: (isActive: boolean) => updateCatalog(id!, { version, isActive }),
-    onSuccess: async (result) => {
-      setVersion(result.version);
-      discard();
-      await queryClient.invalidateQueries({ queryKey: catalogsQueryRoot });
-    },
-  });
-
   return {
     save,
     saving: update.isPending,
@@ -147,5 +156,6 @@ export function useCatalogSave(id: string | undefined, data: CatalogData, draft:
     /** «Seguir editando»: cierra la revisión y conserva lo escrito y la versión de la que partió. */
     continueEditing: () => setConflictOpen(false),
     setCatalogActive,
+    activating: activation.isPending,
   };
 }

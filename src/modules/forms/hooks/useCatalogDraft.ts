@@ -232,8 +232,12 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
   /** Un valor que no se puede leer frena el guardado: queda marcado en su campo y el modal se abre en él (117). */
   const unreadable = (list: readonly (typeof rows)[number][]) => list.some((row) => row.problems.value && !serverErrors[row.key]?.value);
 
-  /** El `PUT` con solo lo que cambió (C3); `null` si un valor no se puede leer y queda marcado en su campo. */
-  function buildRequest(version: number | undefined, extra: Partial<UpdateFormCatalogRequest> = {}): UpdateFormCatalogRequest | null {
+  /**
+   * El `PUT` con solo lo que cambió (C3), siempre con el nombre, la versión e `isActive`, que el contrato exige: «Guardar
+   * cambios» manda el estado de ahora; «Dar de baja» y «Reactivar», el nuevo, con lo pendiente. `null` si un valor no se puede
+   * leer y queda marcado en su campo.
+   */
+  function buildRequest(version: number | undefined, isActive: boolean, extra: Partial<UpdateFormCatalogRequest> = {}): UpdateFormCatalogRequest | null {
     const changed = rows.filter((row) => !row.pendingDelete && (row.isNew || edits[row.key]));
     if (unreadable(changed)) {
       setErrorRound((round) => round + 1);
@@ -242,6 +246,7 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
     sent.current = { items: changed.map((row) => row.key), deleteItems: [...deletes] };
     return {
       version,
+      isActive,
       name: currentName,
       description: currentDescription.trim() === "" ? null : currentDescription,
       ...(changed.length ? { items: changed.map(itemInput) } : {}),

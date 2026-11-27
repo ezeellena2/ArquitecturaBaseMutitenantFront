@@ -35,7 +35,7 @@ import { FiltersPreview } from "../components/catalog/FiltersPreview";
 import { ImportDialog } from "../components/catalog/ImportDialog";
 import { OptionsSection } from "../components/catalog/OptionsSection";
 import { catalogFieldErrors, isCatalogConflict } from "../errors";
-import { useCatalogEditor, type CatalogEditor } from "../hooks/useCatalogEditor";
+import { useCatalogEditor, type CatalogEditor, type CatalogSaveExtra } from "../hooks/useCatalogEditor";
 import { useCatalogFilters, type CatalogFilters } from "../hooks/useCatalogFilters";
 import { useCatalogProposal, useCatalogProposalTargets } from "../hooks/useCatalogProposal";
 import { catalogLimits } from "../lib/catalogLimits";
@@ -113,7 +113,7 @@ function SavedCatalogEditor({ id }: { id: string }) {
   const discard = () => { editor.discard(); filters.reset(); proposal.drop?.(); };
   const edit = useEditPage({
     isDirty,
-    error: conflictInDialog ? undefined : editor.saveError ?? editor.setCatalogActive.error,
+    error: conflictInDialog ? undefined : editor.saveError,
     onSeeNew: () => { void seeNew(); },
     onContinueEditing: editor.continueEditing,
     // Un error de un campo va debajo de lo que lo causó; el resto, en la franja.
@@ -133,18 +133,32 @@ function SavedCatalogEditor({ id }: { id: string }) {
   const manual = saved.source === "Manual";
   const statusText = format.formatEnum("FormCatalogStatus", status);
   const unusable = status === "Unusable" && saved.unusableReason ? format.formatEnum("FormCatalogUnusableReason", saved.unusableReason) : undefined;
-  const save = () => {
-    // Los filtros viajan solo si cambiaron: cambiar el nombre no vuelve a validarlos. Sin persona de ejemplo no se guarda.
+  // Los filtros viajan solo si cambiaron: cambiar el nombre no vuelve a validarlos. `false`: falta la persona de ejemplo.
+  const filtersExtra = (): CatalogSaveExtra | undefined | false => {
     const withFilters = filters.isDirty ? filters.request() : null;
-    if (withFilters && !filters.checkSample()) return;
-    // Con la propuesta, la tarjeta pasa a aplicada con la versión que respondió el guardado.
+    if (!withFilters) return undefined;
+    return filters.checkSample() && { request: withFilters, view: filters.savedView() };
+  };
+  // Con la propuesta, la tarjeta pasa a aplicada con la versión que respondió el guardado.
+  const savedWith = (message: string) => {
     const markApplied = proposal.markApplied;
+    return (version: number) => {
+      toast.success(message);
+      if (markApplied) void markApplied(version);
+    };
+  };
+  const save = () => {
+    const extra = filtersExtra();
+    if (extra === false) return;
     // Guardar conserva el lugar (F7 del traspaso 15, 160): ni la página ni la búsqueda ni el desplazamiento cambian. Lo que
     // sigue al guardado va en su `onSuccess`, así «Reintentar» del aviso termina igual (errores).
-    editor.save(withFilters ? { request: withFilters, view: filters.savedView() } : undefined, (version) => {
-      toast.success(t("forms:catalog.saved"));
-      if (markApplied) void markApplied(version);
-    });
+    editor.save(extra, savedWith(t("forms:catalog.saved")));
+  };
+  // «Dar de baja» y «Reactivar» mandan el mismo guardado, con lo pendiente (C3); `false` si no salió.
+  const setActive = (isActive: boolean, onSettled?: () => void) => {
+    const extra = filtersExtra();
+    return extra !== false && editor.setCatalogActive(isActive, extra,
+      savedWith(t(isActive ? "forms:catalog.reactivated" : "forms:catalog.deactivated")), onSettled);
   };
   const activeCount = saved.itemCounts.active
     + editor.rows.filter((row) => row.isNew && row.draft.isActive).length
@@ -161,10 +175,10 @@ function SavedCatalogEditor({ id }: { id: string }) {
         <Button type="button" variant="outline" onClick={discard}>{t("forms:catalog.discard")}</Button>
         <Button type="button" disabled={!isDirty} pending={editor.saving} pendingLabel={t("common:states.saving")} onClick={save}>{t("forms:catalog.save")}</Button>
       </> : undefined}
-      moreActions={saved.canManage ? { label: t("forms:catalog.actions.catalogMore", { name: saved.name }), pending: editor.setCatalogActive.isPending, items: [
+      moreActions={saved.canManage ? { label: t("forms:catalog.actions.catalogMore", { name: saved.name }), pending: editor.activating, items: [
         saved.isActive
           ? { label: t("forms:catalog.actions.deactivate"), icon: Ban, destructive: true, onSelect: () => setConfirmDeactivate(true) }
-          : { label: t("forms:catalog.actions.reactivateCatalog"), icon: RotateCcw, onSelect: () => { editor.setCatalogActive.mutate(true, { onSuccess: () => { toast.success(t("forms:catalog.reactivated")); } }); } },
+          : { label: t("forms:catalog.actions.reactivateCatalog"), icon: RotateCcw, onSelect: () => { setActive(true); } },
       ] } : undefined}
     >
       {edit.formError}
@@ -200,11 +214,8 @@ function SavedCatalogEditor({ id }: { id: string }) {
       valueType={editor.valueType} savedRow={editor.savedRow} onContinue={editor.continueEditing} onSeeNew={() => { void seeNew(); }} />
     <ConfirmDialog open={confirmDeactivate} onOpenChange={setConfirmDeactivate}
       title={t("forms:catalog.deactivateDialog.title", { name: saved.name })} description={t("forms:catalog.deactivateDialog.description")}
-      confirmLabel={t("forms:catalog.actions.deactivate")} pending={editor.setCatalogActive.isPending} pendingLabel={t("forms:catalog.deactivating")}
-      onConfirm={() => editor.setCatalogActive.mutate(false, {
-        onSuccess: () => { toast.success(t("forms:catalog.deactivated")); },
-        onSettled: () => setConfirmDeactivate(false),
-      })} />
+      confirmLabel={t("forms:catalog.actions.deactivate")} pending={editor.activating} pendingLabel={t("forms:catalog.deactivating")}
+      onConfirm={() => { if (!setActive(false, () => setConfirmDeactivate(false))) setConfirmDeactivate(false); }} />
   </>;
 }
 
