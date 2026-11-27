@@ -131,6 +131,17 @@ El árbol ubica responsabilidades. Solo enumera archivos que sirven como modelo 
     │   │   ├── settings/
     │   │   ├── test/  fixtures de pruebas y galería; registro sólo en DEV
     │   │   └── usage/
+    │   ├── forms/  Gestión de formularios (E12, Catálogos): registration.ts suma el panel, las rutas y la acción del asistente
+    │   │   ├── api/
+    │   │   ├── components/
+    │   │   │   └── catalog/  el editor de un catálogo: opciones, importar, filtros y vista previa
+    │   │   ├── hooks/
+    │   │   ├── lib/
+    │   │   ├── locales/  textos y enums propios, aportados por registration.ts
+    │   │   │   ├── en/
+    │   │   │   └── es/
+    │   │   ├── pages/
+    │   │   └── test/
     │   └── whatsapp/  una carpeta por área, cada una con su routes.ts; registration.ts las compone
     │       ├── api/  alias del schema (types.ts) y el contador del menú (CC09)
     │       ├── bot/  /org/whatsapp/bot y /plataforma/whatsapp/bot: Configuración | Recorrido
