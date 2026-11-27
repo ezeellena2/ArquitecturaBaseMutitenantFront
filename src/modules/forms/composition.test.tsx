@@ -68,7 +68,12 @@ describe("composición real de Formularios", () => {
     expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
   });
 
-  it.each([["/org/formularios/catalogos/nuevo", manager, "Nuevo catálogo"], ["/org/formularios/catalogos/c-1", reader, "Catálogos"]] as const)("%s abre el editor", async (path, me, title) => {
+  it.each([["/org/formularios/catalogos/nuevo", manager, "Nuevo catálogo"], ["/org/formularios/catalogos/c-1", reader, "Motivos de visita"]] as const)("%s abre el editor", async (path, me, title) => {
+    server.use(
+      http.get("/api/organization/forms/catalogs/c-1", () => HttpResponse.json({ id: "c-1", name: "Motivos de visita", source: "Manual", valueType: "Text", isActive: true, usable: true,
+        canManage: false, itemCounts: { total: 0, active: 0 }, modifiedAtUtc: "2026-11-20T13:00:00Z", version: 1 })),
+      http.get("/api/organization/forms/catalogs/c-1/items", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 1, hasPrevious: false, hasNext: false })),
+    );
     mount(path, me);
     expect(await screen.findByRole("heading", { name: title, level: 1 })).toBeVisible();
   });

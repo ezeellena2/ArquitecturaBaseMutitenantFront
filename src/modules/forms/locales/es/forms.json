@@ -41,12 +41,163 @@
     "section": "El catálogo",
     "fields": {
       "source": "De dónde salen las opciones",
-      "valueType": "Tipo de valor"
+      "valueType": "Tipo de valor",
+      "name": "Nombre",
+      "newName": "Nombre del catálogo",
+      "description": "Descripción"
     },
     "sourceDescriptions": {
       "Manual": "Para listas que mantiene una persona: motivos, proveedores, zonas.",
       "Members": "Se arma sola con los miembros de la organización que cumplen los filtros.",
       "Contacts": "Se arma sola con los contactos de Clientes, por etiqueta."
+    },
+    "screen": "Catálogo",
+    "optional": "Opcional",
+    "options": "Opciones",
+    "discard": "Descartar",
+    "save": "Guardar cambios",
+    "create": "Crear catálogo",
+    "creating": "Creando…",
+    "saved": "Guardamos el catálogo.",
+    "deactivated": "Dimos de baja el catálogo.",
+    "reactivated": "Reactivamos el catálogo.",
+    "deactivating": "Dando de baja…",
+    "search": "Buscar opción",
+    "newOption": "Opción nueva",
+    "noCode": "Sin código",
+    "deleteOnSave": "Se borra al guardar",
+    "itemsLoadError": "No pudimos cargar las opciones.",
+    "noMatches": "Ninguna opción coincide con la búsqueda.",
+    "noOptions": "Todavía no hay opciones.",
+    "templateFile": "Plantilla de catálogo",
+    "actions": {
+      "catalogMore": "Acciones de {{name}}",
+      "deactivate": "Dar de baja",
+      "reactivateCatalog": "Reactivar",
+      "add": "Agregar opción",
+      "import": "Importar",
+      "export": "Exportar",
+      "more": "Más acciones de las opciones",
+      "template": "Descargar la plantilla",
+      "sort": "Ordenar por…",
+      "generateCodes": "Generar los códigos que faltan",
+      "restore": "Restaurar",
+      "restoreOption": "Restaurar {{option}}",
+      "reactivate": "Reactivar",
+      "reactivateOption": "Reactivar {{option}}",
+      "up": "Subir {{option}}",
+      "down": "Bajar {{option}}",
+      "edit": "Editar {{option}}",
+      "removeNew": "Quitar {{option}}",
+      "delete": "Borrar {{option}}",
+      "rowMore": "Acciones de {{option}}"
+    },
+    "deactivateDialog": {
+      "title": "¿Dar de baja «{{name}}»?",
+      "description": "Sus opciones dejan de poder elegirse. Se puede reactivar desde acá."
+    },
+    "deleteDialog": {
+      "title": "¿Borrar «{{option}}»?",
+      "description": "Se borra al guardar el catálogo. Hasta entonces se puede restaurar.",
+      "confirm": "Borrar opción"
+    },
+    "reasons": {
+      "saveFirst": "Guardá el catálogo antes.",
+      "full": "Llegó a 10.000 opciones, el máximo de un catálogo.",
+      "saveBeforeImport": "Guardá o descartá los cambios antes de importar.",
+      "discardMovesFirst": "Primero descartá los cambios de posición.",
+      "orderPending": "Guardá o descartá el orden pendiente para borrar opciones.",
+      "deletePending": "Guardá o descartá el borrado pendiente para mover opciones.",
+      "saveToMove": "Guardá la opción para poder moverla."
+    },
+    "pending": {
+      "moves_one": "{{n}} movimiento pendiente. Se aplica al guardar.",
+      "moves_other": "{{n}} movimientos pendientes. Se aplican en este orden al guardar.",
+      "discardMoves": "Descartar movimientos",
+      "sort": "Se ordenará por «{{column}}», {{order}}, al guardar.",
+      "cancelSort": "Cancelar orden"
+    },
+    "sort": {
+      "title": "Ordenar las opciones",
+      "column": "Columna",
+      "order": "Orden",
+      "orderHelp": "Las opciones con el mismo valor quedan en el orden de ahora, y las que no tienen valor van al final.",
+      "columns": {
+        "Text": "Texto",
+        "Code": "Código"
+      },
+      "ascending": "De la A a la Z",
+      "descending": "De la Z a la A",
+      "ascendingInSentence": "de la A a la Z",
+      "descendingInSentence": "de la Z a la A",
+      "apply": "Ordenar"
+    },
+    "selection": {
+      "count_one": "{{n}} elegida",
+      "count_other": "{{n}} elegidas",
+      "deactivate": "Dar de baja",
+      "reactivate": "Reactivar",
+      "clear": "Quitar la selección",
+      "page": "Elegir las de esta página",
+      "one": "Elegir {{option}}"
+    },
+    "cells": {
+      "text": "Texto de {{option}}",
+      "code": "Código de {{option}}",
+      "value": "Valor de {{option}}",
+      "detail": "Detalle de {{option}}",
+      "active": "Activa: {{option}}"
+    },
+    "columns": {
+      "text": "Texto",
+      "code": "Código",
+      "value": "Valor",
+      "detail": "Detalle",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "status": {
+      "active": "Activa",
+      "inactive": "De baja"
+    },
+    "warnings": {
+      "textRepeated": "Otra opción tiene el mismo texto."
+    },
+    "errors": {
+      "nameRequired": "Escribí el nombre del catálogo.",
+      "textTooLong": "Puede tener hasta {{n}} caracteres.",
+      "detailTooLong": "Puede tener hasta {{n}} caracteres.",
+      "duplicateCode": "Ya está en la opción {{n}}.",
+      "valueRequired": "Escribí el valor.",
+      "valueInvalid": {
+        "WholeNumber": "Escribí un número entero.",
+        "DecimalNumber": "Escribí un número.",
+        "Date": "Escribí una fecha."
+      }
+    },
+    "preview": {
+      "title": "Así lo ve quien lo recibe",
+      "howToChoose": "Cómo se elige",
+      "one": "Una opción",
+      "many": "Varias",
+      "question": "Pregunta",
+      "chooseUpTo": "Elegí hasta {{n}}",
+      "form": "Formulario",
+      "choose": "Elegí una opción",
+      "send": "Enviar"
+    },
+    "conflict": {
+      "title": "Otra persona guardó el catálogo",
+      "byPerson": "{{name}} lo guardó mientras lo editabas. Tus cambios se conservan hasta que elijas.",
+      "bySomeone": "Otra persona lo guardó mientras lo editabas. Tus cambios se conservan hasta que elijas.",
+      "name": "Nombre",
+      "option": "Opción {{n}}",
+      "options": "Opciones",
+      "counts": "{{total}} · {{active}} activas",
+      "yours": "Tus cambios",
+      "saved": "Lo guardado ahora",
+      "continue": "Seguir editando",
+      "seeNew": "Ver lo nuevo"
     }
   }
 }

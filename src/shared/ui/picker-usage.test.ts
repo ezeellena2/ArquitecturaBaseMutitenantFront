@@ -12,6 +12,13 @@ const twoViews = new Map([
   ["modules/assistant/usage/AssistantUsagePage.tsx", "«Por día | Por persona»: dos vistas del mismo uso"],
   ["modules/whatsapp/bot/components/BotScreen.tsx", "«Configuración | Recorrido»: dos vistas del mismo bot"],
   ["modules/whatsapp/chats/components/ChatsWorkspace.tsx", "«Clientes | Internos»: dos vistas de la bandeja (tablero Criterio-Elegir)"],
+  ["modules/forms/components/catalog/CatalogPreviewPhone.tsx", "«Una opción | Varias»: dos vistas de la misma vista previa de un catálogo (FRM-Catalogo)"],
+]);
+
+// Las vistas previas que imitan WhatsApp: sus radios dibujan cómo se ve la lista en el teléfono de quien la recibe, no eligen
+// nada de la pantalla, y cada una lleva su porqué (pantallas-y-ui).
+const previews = new Map([
+  ["modules/forms/components/catalog/CatalogPreviewPhone.tsx", "la lista de un catálogo como la dibuja WhatsApp, con «Una opción» (FRM-Catalogo)"],
 ]);
 
 function sourceFiles(directory: string): string[] {
@@ -35,7 +42,7 @@ function violations(relative: string, rawSource: string): string[] {
   }
   if (/\bDropdownMenu(?:RadioGroup|RadioItem|CheckboxItem)\b/.test(source)) found.push("un menú con radios o casillas para elegir: va `Picker`");
   if (/<select\b/.test(source)) found.push("<select> a mano: va `Picker`");
-  if (/<input\b[^>]*\btype=["']radio["']/.test(source)) found.push("<input type=\"radio\">: va `Picker`");
+  if (!previews.has(normalized) && /<input\b[^>]*\btype=["']radio["']/.test(source)) found.push("<input type=\"radio\">: va `Picker`");
   return found;
 }
 
@@ -51,6 +58,8 @@ describe("una sola pieza para elegir (262)", () => {
     expect(violations("modules/whatsapp/x/Pick.tsx", "<select value={value}>")).not.toEqual([]);
     expect(violations("areas/public/x/Pick.tsx", '<input type="radio" name="a" />')).not.toEqual([]);
     expect(violations("shared/ui/FilterBar.tsx", '<input type="radio" name="a" />')).toEqual([]);
+    expect(violations("modules/forms/components/catalog/CatalogPreviewPhone.tsx", '<input type="radio" name="a" />')).toEqual([]);
+    expect(violations("modules/forms/components/catalog/OptionsSection.tsx", '<input type="radio" name="a" />')).not.toEqual([]);
     expect(violations("areas/business/x/Page.tsx", 'import { Picker } from "@/shared/ui/Picker"; // antes, SearchSelect de "@/shared/ui/SearchSelect"')).toEqual([]);
   });
 
