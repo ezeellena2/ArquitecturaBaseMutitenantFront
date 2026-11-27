@@ -273,6 +273,25 @@ describe("CatalogEditorPage: un catálogo nuevo", () => {
   });
 });
 
+describe("CatalogEditorPage: crear (idempotencia)", () => {
+  it("si «Crear catálogo» falla, el reintento manda la misma Idempotency-Key y el catálogo se crea una vez", async () => {
+    const keys: (string | null)[] = [];
+    server.use(http.post(base, ({ request }) => {
+      keys.push(request.headers.get("Idempotency-Key"));
+      return keys.length === 1 ? HttpResponse.error() : HttpResponse.json({ catalog: catalog(), itemIdentityMap: [] }, { status: 201 });
+    }));
+    const { user, router } = mountForms(formsOwner, "/org/formularios/catalogos/nuevo");
+    await user.type(await screen.findByRole("textbox", { name: /Nombre del catálogo/ }), "Motivos de visita");
+    await user.click(screen.getByRole("button", { name: "Crear catálogo" }));
+    expect(await screen.findByText("No pudimos conectarnos. Revisá tu conexión.")).toBeVisible();
+    await user.click(screen.getByRole("button", { name: "Crear catálogo" }));
+    await waitFor(() => expect(router.state.location.pathname).toBe(path));
+    expect(keys).toHaveLength(2);
+    expect(keys[0]).toMatch(/^[0-9a-f-]{36}$/);
+    expect(keys[1]).toBe(keys[0]);
+  });
+});
+
 describe("CatalogEditorPage: los errores (errores.md)", () => {
   it("si se corta la red al guardar, «Reintentar» del aviso termina el guardado: «Guardamos el catálogo.» y el siguiente va con la versión nueva", async () => {
     serve({ put: () => puts.length === 1 ? HttpResponse.error() : HttpResponse.json({ version: puts.length === 2 ? 8 : 9, itemIdentityMap: [] }) });
