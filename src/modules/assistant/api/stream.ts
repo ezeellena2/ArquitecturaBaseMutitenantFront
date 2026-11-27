@@ -21,7 +21,7 @@ const attachment: z.ZodType<AssistantAttachmentSummaryResponse> = z.object({
   id: z.string(), fileName: z.string(), mediaType: z.enum(assistantAttachmentTypes), byteLength: integer, version,
 });
 const link: z.ZodType<AssistantLinkResponse> = z.object({
-  routeKey: z.enum(["business.users", "business.roles", "business.companies", "business.audit", "business.home",
+  routeKey: z.enum(["business.users", "business.roles", "business.companies", "business.audit", "business.home", "business.forms.catalogs",
     "platform.organizations", "platform.accounts", "platform.recoveries", "platform.audit", "platform.assistant.usage",
     "personal.account", "personal.organizations"]),
   parameters: z.object({ userId: z.string().nullish(), roleId: z.string().nullish(), companyId: z.string().nullish(),

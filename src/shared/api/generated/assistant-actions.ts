@@ -32,6 +32,25 @@ export interface AssistantActionContract {
 
 export const assistantActions: readonly AssistantActionContract[] = [
   {
+    "id": "catalogoptions.edit",
+    "version": 1,
+    "kind": "edit",
+    "requirement": {
+      "kind": "organization",
+      "permission": "formcatalogs.manage"
+    },
+    "module": "forms",
+    "saveRoute": "PUT api/organization/forms/catalogs/{id}",
+    "confirmation": "page",
+    "screen": "catalogEditor",
+    "effect": "none",
+    "target": {
+      "readRoute": "GET api/organization/forms/catalogs/{id}"
+    },
+    "fieldsFromTarget": true,
+    "fields": []
+  },
+  {
     "id": "roles.create",
     "version": 1,
     "kind": "create",
@@ -225,6 +244,7 @@ export const assistantActions: readonly AssistantActionContract[] = [
 
 /** Cada acción como `<id>@<versión>`, la clave de su adaptador. */
 export const assistantActionKeys = [
+  "catalogoptions.edit@1",
   "roles.create@1",
   "roles.edit@1",
   "roles.remove@1",

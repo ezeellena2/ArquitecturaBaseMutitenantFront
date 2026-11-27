@@ -9917,7 +9917,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Listado paginado (10 por defecto; 20, 50 o 100) con search, source (all, manual, members o contacts), status (all, active o inactive) y sort por name, source, valueType, optionsCount o status, con - delante el otro sentido (264); optionsCount nulo va al final en los dos sentidos y source, valueType y status ordenan por su orden. */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Listado paginado (10 por defecto; 20, 50 o 100) con search, source (all, manual, members o contacts), status (all, active o inactive) y sort por name, source, valueType, optionsCount o status, con - delante el otro sentido (264); optionsCount nulo va al final en los dos sentidos y source, valueType y status ordenan por su orden. */
         get: {
             parameters: {
                 query?: {
@@ -9999,19 +9999,10 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         put?: never;
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Alta con Location: sin tipo, Text; Members con condiciones exige sampleMemberId. Devuelve el detalle y el mapa de ids de las opciones nuevas. */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Alta con Location: sin tipo, Text; Members con condiciones exige sampleMemberId. Devuelve el detalle y el mapa de ids de las opciones nuevas. */
         post: {
             parameters: {
                 query?: never;
@@ -10113,15 +10104,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -10137,7 +10119,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Solo {all, active}: lo que dice el resumen del listado (262). */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Solo {all, active}: lo que dice el resumen del listado (262). */
         get: {
             parameters: {
                 query?: never;
@@ -10203,15 +10185,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         put?: never;
@@ -10229,7 +10202,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Detalle con los nombres de los roles y las empresas del filtro, la persona o el cliente de ejemplo, canManage, itemCounts y quién lo guardó por última vez. */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Detalle con los nombres de los roles y las empresas del filtro, la persona o el cliente de ejemplo, canManage, itemCounts y quién lo guardó por última vez. */
         get: {
             parameters: {
                 query?: never;
@@ -10297,18 +10270,9 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Guarda todo junto con su versión (C3): items solo con lo nuevo o cambiado, moves, sort o deleteItems (hasta 500), que no se combinan entre sí. Devuelve la versión y el mapa de ids. */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Guarda todo junto con su versión (C3): items solo con lo nuevo o cambiado, moves, sort o deleteItems (hasta 500), que no se combinan entre sí. Devuelve la versión y el mapa de ids. */
         put: {
             parameters: {
                 query?: never;
@@ -10400,15 +10364,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         post?: never;
@@ -10425,7 +10380,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Opciones por posición, paginadas, con search y status (active, inactive o all). */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Opciones por posición, paginadas, con search y status (active, inactive o all). */
         get: {
             parameters: {
                 query?: {
@@ -10507,15 +10462,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         put?: never;
@@ -10535,7 +10481,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Revisa el archivo o lo pegado (mode append al pegar, replace con un archivo) sin escribir: versión leída, SHA-256 y las cuatro listas paginadas con el page y el pageSize del pedido. De a una por persona (Busy) y con lugar en la organización y la instalación (429 TooManyAtOnce, con Retry-After). */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Revisa el archivo o lo pegado (mode append al pegar, replace con un archivo) sin escribir: versión leída, SHA-256 y las cuatro listas paginadas con el page y el pageSize del pedido. De a una por persona (Busy) y con lugar en la organización y la instalación (429 TooManyAtOnce, con Retry-After). */
         post: {
             parameters: {
                 query?: never;
@@ -10643,15 +10589,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -10669,7 +10606,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Aplica lo revisado en una UoW: el mismo archivo (409 FileChanged si el SHA-256 difiere), la versión de la revisión, skipErrorRows y confirmedDeactivations con la cantidad exacta. Más del 25 % de bajas o del 10 % de filas con error sin confirmar es 400 ConfirmationRequired. */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Aplica lo revisado en una UoW: el mismo archivo (409 FileChanged si el SHA-256 difiere), la versión de la revisión, skipErrorRows y confirmedDeactivations con la cantidad exacta. Más del 25 % de bajas o del 10 % de filas con error sin confirmar es 400 ConfirmationRequired. */
         post: {
             parameters: {
                 query?: never;
@@ -10789,15 +10726,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         delete?: never;
@@ -10813,7 +10741,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. XLSX con todas las opciones, activas y dadas de baja, con las columnas de la plantilla (C10). De a una por persona. */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. XLSX con todas las opciones, activas y dadas de baja, con las columnas de la plantilla (C10). De a una por persona. */
         get: {
             parameters: {
                 query?: never;
@@ -10890,15 +10818,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         put?: never;
@@ -10916,7 +10835,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. XLSX de la plantilla para el valueType pedido, sin barrera (C11). */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. XLSX de la plantilla para el valueType pedido, sin barrera (C11). */
         get: {
             parameters: {
                 query?: {
@@ -10937,7 +10856,7 @@ export interface paths {
                         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": string;
                     };
                 };
-                /** @description Bad Request; Validation.Failed */
+                /** @description Bad Request; Request.Invalid */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -10993,15 +10912,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         put?: never;
@@ -11019,7 +10929,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. La fuente «Miembros»: su versión y el catálogo cerrado de columnas y operadores (§4). */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. La fuente «Miembros»: su versión y el catálogo cerrado de columnas y operadores (§4). */
         get: {
             parameters: {
                 query?: never;
@@ -11085,15 +10995,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         put?: never;
@@ -11111,7 +11012,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Lista paginada con search y orden por name, para editar los filtros. */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Lista paginada con search y orden por name, para editar los filtros. */
         get: {
             parameters: {
                 query?: {
@@ -11184,15 +11085,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -11217,7 +11109,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Lista paginada con search y orden por name, para editar los filtros. */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Lista paginada con search y orden por name, para editar los filtros. */
         get: {
             parameters: {
                 query?: {
@@ -11297,15 +11189,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         put?: never;
@@ -11323,7 +11206,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Lista paginada con search y orden por name, para editar los filtros. */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Lista paginada con search y orden por name, para editar los filtros. */
         get: {
             parameters: {
                 query?: {
@@ -11403,15 +11286,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         put?: never;
@@ -11429,7 +11303,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Personas de ejemplo de la organización, sin correo, con los nombres de sus empresas y sus roles. */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Personas de ejemplo de la organización, sin correo, con los nombres de sus empresas y sus roles. */
         get: {
             parameters: {
                 query?: {
@@ -11509,15 +11383,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         put?: never;
@@ -11535,7 +11400,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Clientes de ejemplo de Clientes, sin teléfono (C12). */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Clientes de ejemplo de Clientes, sin teléfono (C12). */
         get: {
             parameters: {
                 query?: {
@@ -11615,15 +11480,6 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
             };
         };
         put?: never;
@@ -11643,7 +11499,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Responde 501 General.Contract.NotImplemented hasta que la B8 conecte la ruta con su servicio. Vista previa de unos filtros sin guardar con la persona o el cliente de ejemplo como destinatario; no escribe. Hasta 200 opciones, total exacto y exceedsLimit. */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Vista previa de unos filtros sin guardar con la persona o el cliente de ejemplo como destinatario; no escribe. Hasta 200 opciones, total exacto y exceedsLimit. */
         post: {
             parameters: {
                 query?: never;
@@ -11717,15 +11573,6 @@ export interface paths {
                 };
                 /** @description Internal Server Error; General.Unexpected */
                 500: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/problem+json": components["schemas"]["ProblemDetails"];
-                    };
-                };
-                /** @description Not Implemented; General.Contract.NotImplemented */
-                501: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -31762,7 +31609,7 @@ export interface components {
             createdAtUtc: string;
         };
         /** @enum {string} */
-        AssistantRouteKey: "business.users" | "business.roles" | "business.companies" | "business.audit" | "business.home" | "platform.organizations" | "platform.accounts" | "platform.recoveries" | "platform.audit" | "platform.assistant.usage" | "personal.account" | "personal.organizations";
+        AssistantRouteKey: "business.users" | "business.roles" | "business.companies" | "business.audit" | "business.home" | "business.forms.catalogs" | "platform.organizations" | "platform.accounts" | "platform.recoveries" | "platform.audit" | "platform.assistant.usage" | "personal.account" | "personal.organizations";
         AssistantSecurityRowResponse: {
             /** Format: uuid */
             id: string;
@@ -34318,6 +34165,9 @@ export interface components {
             dailyLimit?: null | number;
             /** Format: date-time */
             dailyResetAtUtc?: null | string;
+            /** Format: int32 */
+            n?: null | number;
+            uses?: null | string[];
         };
         PublicPageHttpResponse: {
             slug?: null | string;

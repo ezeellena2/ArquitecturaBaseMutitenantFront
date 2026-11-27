@@ -387,6 +387,12 @@ export const validationConstraints = {
     }
   },
   "CreateFormCatalogHttpRequest": {
+    "name": {
+      "maxLength": 60
+    },
+    "description": {
+      "maxLength": 300
+    },
     "items": {
       "maxItems": 10000
     }
@@ -1721,6 +1727,10 @@ export const validationConstraints = {
     "attemptsLeft": {
       "minimum": -2147483648,
       "maximum": 2147483647
+    },
+    "n": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
     }
   },
   "PublishedLegalDocumentResponse": {
@@ -1878,6 +1888,12 @@ export const validationConstraints = {
     }
   },
   "UpdateFormCatalogHttpRequest": {
+    "name": {
+      "maxLength": 60
+    },
+    "description": {
+      "maxLength": 300
+    },
     "items": {
       "maxItems": 10000
     },
@@ -2563,6 +2579,7 @@ export const schemaEnums = {
     "business.companies",
     "business.audit",
     "business.home",
+    "business.forms.catalogs",
     "platform.organizations",
     "platform.accounts",
     "platform.recoveries",
