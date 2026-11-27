@@ -131,9 +131,16 @@ describe("Catálogos", () => {
     filtered.unmount();
 
     serve(() => HttpResponse.json({ status: 500, title: "Error" }, { status: 500 }));
-    mountForms(formsOwner, listPath);
+    const failed = mountForms(formsOwner, listPath);
     expect(await screen.findByText("No pudimos cargar los catálogos.")).toBeVisible();
+    expect(screen.getByText("Algo salió mal. Probá de nuevo en un rato.")).toBeVisible();
     expect(screen.getByRole("button", { name: "Reintentar" })).toBeVisible();
+    failed.unmount();
+
+    // Un límite de uso: «Reintentar» espera la cuenta del Retry-After (errores, P2).
+    serve(() => HttpResponse.json({ status: 429, code: "Security.RateLimit.Exceeded", title: "Too Many Requests", detail: "Hiciste muchos pedidos." }, { status: 429, headers: { "Retry-After": "41" } }));
+    mountForms(formsOwner, listPath);
+    expect(await screen.findByRole("button", { name: /^Reintentá en 0:4\d$/ })).toBeDisabled();
   });
 
   it("con solo «Ver catálogos» no ofrece «Nuevo catálogo»", async () => {

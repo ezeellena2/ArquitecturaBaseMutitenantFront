@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
+import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { countOf } from "@/shared/format/countOf";
 import { useFormat } from "@/shared/format/useFormat";
 import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
@@ -75,7 +76,9 @@ export function CatalogsPage({ me }: ModuleContentProps) {
         <DataTable columns={columns} rows={catalogs.data?.items ?? []} rowKey={(catalog) => catalog.id} sort={pagination.sort} onSortChange={pagination.setSort}
           mobileRow={(catalog) => catalogPhoneRow(catalog, t)}
           isLoading={catalogs.isPending} isFetching={catalogs.isFetching}
-          error={catalogs.error ? t("forms:catalogs.loadError") : undefined} onRetry={() => { void catalogs.refetch(); }}
+          // El motivo va debajo (el detail del back, o sin conexión y 5xx con el texto común), y un 429 hace esperar a «Reintentar».
+          error={catalogs.error ? t("forms:catalogs.loadError") : undefined} errorDescription={catalogs.error ? apiErrorMessage(catalogs.error, t) : undefined}
+          failure={catalogs.error} onRetry={() => { void catalogs.refetch(); }}
           emptyTitle={filtered ? t("forms:catalogs.empty.filtered") : t("forms:catalogs.empty.all")}
           emptyAction={filtered ? <Button type="button" variant="outline" onClick={filters.clear}>{t("common:actions.clearFilters")}</Button> : undefined} />
         {paginationProps ? <Pagination {...paginationProps} /> : null}
