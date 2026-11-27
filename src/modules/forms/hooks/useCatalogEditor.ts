@@ -370,7 +370,7 @@ export function useCatalogEditor(id: string | undefined, newValueType: FormCatal
   }
 
   /** El `PUT` con solo lo que cambió (C3); `null` si un valor no se puede leer y queda marcado en su campo. */
-  function buildRequest(): UpdateFormCatalogRequest | null {
+  function buildRequest(extra: Partial<UpdateFormCatalogRequest> = {}): UpdateFormCatalogRequest | null {
     const changed = rows.filter((row) => !row.pendingDelete && (row.isNew || edits[row.key]));
     if (changed.some((row) => row.errors.value && !serverErrors[row.key]?.value)) return null;
     sent.current = { items: changed.map((row) => row.key), deleteItems: [...deletes] };
@@ -382,6 +382,7 @@ export function useCatalogEditor(id: string | undefined, newValueType: FormCatal
       ...(moves.length ? { moves: [...moves] } : {}),
       ...(sort ? { sort } : {}),
       ...(deletes.size ? { deleteItems: [...deletes] } : {}),
+      ...extra,
     };
   }
 
@@ -430,10 +431,10 @@ export function useCatalogEditor(id: string | undefined, newValueType: FormCatal
   const update = useMutation({ mutationFn: (request: UpdateFormCatalogRequest) => updateCatalog(id!, request) });
 
   // Después de guardar: lo guardado pasa a la caché de la página a la vista, así la tabla no se vacía ni la pantalla sube.
-  function keepSavedInView(request: UpdateFormCatalogRequest, nextVersion: number) {
+  function keepSavedInView(request: UpdateFormCatalogRequest, nextVersion: number, view: Partial<FormCatalogResponse>) {
     if (!saved) return;
     queryClient.setQueryData<FormCatalogResponse>(catalogQueryKey(saved.id), {
-      ...saved, name: request.name ?? saved.name, description: request.description ?? null, version: nextVersion,
+      ...saved, name: request.name ?? saved.name, description: request.description ?? null, version: nextVersion, ...view,
     });
     queryClient.setQueryData<PagedResultOfFormCatalogItemRow>(catalogItemsQueryKey(saved.id, itemsQuery), (current) => current && {
       ...current,
@@ -446,7 +447,11 @@ export function useCatalogEditor(id: string | undefined, newValueType: FormCatal
     });
   }
 
-  async function save(): Promise<boolean> {
+  /**
+   * «Guardar cambios». Un catálogo con filtros suma sus filtros y su persona de ejemplo (`extra.request`) y, para la caché del
+   * detalle, cómo quedan (`extra.view`).
+   */
+  async function save(extra?: { request: Partial<UpdateFormCatalogRequest>; view: Partial<FormCatalogResponse> }): Promise<boolean> {
     if (!saved) return false;
     setSaveError(undefined);
     if (!currentName.trim()) {
@@ -454,14 +459,14 @@ export function useCatalogEditor(id: string | undefined, newValueType: FormCatal
       return false;
     }
     setNameError(undefined);
-    const request = buildRequest();
+    const request = buildRequest(extra?.request);
     if (!request) {
       setErrorRound((round) => round + 1);
       return false;
     }
     try {
       const result = await update.mutateAsync(request);
-      keepSavedInView(request, result.version);
+      keepSavedInView(request, result.version, extra?.view ?? {});
       setVersion(result.version);
       resetDraft();
       setName(undefined);
@@ -482,14 +487,15 @@ export function useCatalogEditor(id: string | undefined, newValueType: FormCatal
     setConflict({ fresh, freshItems: freshItems.items });
   }
 
-  /** «Ver lo nuevo»: relee el catálogo y su página y suelta lo escrito, con la versión nueva. */
-  async function seeNew() {
-    if (!id) return;
+  /** «Ver lo nuevo»: relee el catálogo y su página y suelta lo escrito, con la versión nueva; devuelve lo leído. */
+  async function seeNew(): Promise<FormCatalogResponse | undefined> {
+    if (!id) return undefined;
     setConflict(null);
     await queryClient.invalidateQueries({ queryKey: catalogQueryKey(id) });
     const fresh = await queryClient.fetchQuery({ queryKey: catalogQueryKey(id), queryFn: ({ signal }) => fetchCatalog(id, signal) });
     setVersion(fresh.version);
     discard();
+    return fresh;
   }
 
   /** «Seguir editando»: cierra la revisión y conserva lo escrito y la versión de la que partió. */

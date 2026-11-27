@@ -173,7 +173,8 @@
         "WholeNumber": "Escribí un número entero.",
         "DecimalNumber": "Escribí un número.",
         "Date": "Escribí una fecha."
-      }
+      },
+      "sampleRequired": "Elegí una persona."
     },
     "preview": {
       "title": "Así lo ve quien lo recibe",
@@ -184,7 +185,12 @@
       "chooseUpTo": "Elegí hasta {{n}}",
       "form": "Formulario",
       "choose": "Elegí una opción",
-      "send": "Enviar"
+      "send": "Enviar",
+      "none": "Ninguna opción",
+      "updating": "Actualizando la vista previa",
+      "more_one": "y {{n}} opción más",
+      "more_other": "y {{n}} opciones más",
+      "moreHelp": "Con estos filtros hay {{total}} opciones, y WhatsApp muestra hasta {{max}}."
     },
     "optionsDialog": {
       "title": "Opciones de «{{name}}»",
@@ -300,6 +306,82 @@
       "waitApplying": "Esperá a que termine de aplicar.",
       "conflict": "Otra persona guardó el catálogo. Revisá de nuevo.",
       "imported": "Importamos las opciones."
+    },
+    "filters": {
+      "title": {
+        "Members": "Qué miembros entran",
+        "Contacts": "Qué contactos entran"
+      },
+      "optionText": "Texto de cada opción",
+      "detail": "Detalle",
+      "noDetail": "Sin detalle",
+      "sort": "Orden",
+      "sortAscending": "{{column}}, de la A a la Z",
+      "sortDescending": "{{column}}, de la Z a la A",
+      "if": "Si",
+      "and": "Y",
+      "column": "Columna",
+      "operator": "Comparación",
+      "value": "Valor",
+      "columns": {
+        "name": "Nombre",
+        "role": "Rol",
+        "company": "Empresa",
+        "active": "Activo",
+        "tags": "Etiqueta"
+      },
+      "detailColumns": {
+        "tags": "Etiquetas"
+      },
+      "valueLabels": {
+        "role": "Roles",
+        "company": "Empresas",
+        "tags": "Etiquetas"
+      },
+      "operators": {
+        "contains": "contiene",
+        "equals": "es igual a",
+        "hasAny": "tiene alguno de",
+        "hasNone": "no tiene ninguno de",
+        "is": "es",
+        "tags": {
+          "hasAny": "tiene alguna de",
+          "hasNone": "no tiene ninguna de"
+        }
+      },
+      "placeholders": {
+        "role": "Elegí los roles",
+        "company": "Elegí las empresas",
+        "tags": "Elegí las etiquetas",
+        "text": "Escribí el nombre"
+      },
+      "yes": "Sí",
+      "no": "No",
+      "missing": {
+        "role": "Rol no disponible",
+        "company": "Empresa no disponible"
+      },
+      "missingError": {
+        "role": "Ese rol ya no existe. Elegí otro.",
+        "company": "Esa empresa ya no existe. Elegí otra."
+      },
+      "addCondition": "Agregar condición",
+      "removeCondition": "Quitar condición",
+      "conditionsMax": "Llegó a 10 condiciones, el máximo.",
+      "conditionMore": "Acciones de la condición",
+      "conditionTitle": "Si · {{column}}",
+      "edit": "Editar",
+      "editTitle": "Editar condición",
+      "done": "Listo",
+      "otherOptions": "Otras opciones",
+      "excludeRecipient": "Sin incluir a quien lo recibe",
+      "excludeRecipientHelp": "Nadie se elige a sí mismo."
+    },
+    "sample": {
+      "member": "Persona",
+      "memberPlaceholder": "Elegí a quién",
+      "contact": "Cliente",
+      "noContact": "Sin cliente"
     }
   }
 }

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Ban, RotateCcw } from "lucide-react";
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
@@ -27,10 +27,13 @@ import type { CreateFormCatalogRequest } from "../api/types";
 import { CatalogConflictDialog } from "../components/catalog/CatalogConflictDialog";
 import { CatalogOriginFields, type CatalogOrigin } from "../components/catalog/CatalogOriginFields";
 import { CatalogPreviewPhone } from "../components/catalog/CatalogPreviewPhone";
+import { FiltersEditor } from "../components/catalog/FiltersEditor";
+import { FiltersPreview } from "../components/catalog/FiltersPreview";
 import { ImportDialog } from "../components/catalog/ImportDialog";
 import { OptionsSection } from "../components/catalog/OptionsSection";
 import { catalogFieldErrors, isCatalogConflict } from "../errors";
 import { useCatalogEditor, type CatalogEditor } from "../hooks/useCatalogEditor";
+import { useCatalogFilters, type CatalogFilters } from "../hooks/useCatalogFilters";
 import { catalogStatus } from "../lib/catalogStatus";
 import { catalogsPath } from "../registration";
 
@@ -61,14 +64,24 @@ function PreviewAside({ editor }: { editor: CatalogEditor }) {
   </section>;
 }
 
-function PhonePreviewDialog({ editor, open, onOpenChange }: { editor: CatalogEditor; open: boolean; onOpenChange: (open: boolean) => void }) {
+/** En el teléfono, «Así lo ve quien lo recibe» se abre desde la barra: a mano, con «Una opción | Varias»; con filtros, con la
+ * persona o el cliente de ejemplo arriba (M-FRM-Catalogo-Filtros y M-FRM-Catalogo-Contactos). */
+function PhonePreviewDialog({ editor, filters, open, onOpenChange }: { editor: CatalogEditor; filters: CatalogFilters; open: boolean; onOpenChange: (open: boolean) => void }) {
   const { t } = useTranslation("forms");
   return <Dialog open={open} onOpenChange={onOpenChange}>
     <DialogContent aria-describedby={undefined}>
       <DialogHeader><DialogTitle>{t("forms:catalog.preview.title")}</DialogTitle></DialogHeader>
-      <DialogBody><CatalogPreviewPhone options={previewOptions(editor)} /></DialogBody>
+      <DialogBody>{filters.filtered ? <FiltersPreview filters={filters} bare /> : <CatalogPreviewPhone options={previewOptions(editor)} />}</DialogBody>
     </DialogContent>
   </Dialog>;
+}
+
+/** «El catálogo» arriba y, con filtros, «Qué miembros entran» o «Qué contactos entran» debajo; la vista previa, al costado. */
+function CatalogColumns({ phone, editor, filters, editable, children }: { phone: boolean; editor: CatalogEditor; filters: CatalogFilters; editable: boolean; children: ReactNode }) {
+  return <div className="grid gap-3.5 lg:grid-cols-[minmax(0,1fr)_20rem]">
+    {filters.filtered ? <div className="flex min-w-0 flex-col gap-3.5">{children}<FiltersEditor filters={filters} editable={editable} /></div> : children}
+    {phone ? null : filters.filtered ? <FiltersPreview filters={filters} /> : <PreviewAside editor={editor} />}
+  </div>;
 }
 
 function SavedCatalogEditor({ id }: { id: string }) {
@@ -80,11 +93,17 @@ function SavedCatalogEditor({ id }: { id: string }) {
   const [previewOpen, setPreviewOpen] = useState(false);
   const [importing, setImporting] = useState(false);
   const { saved } = editor;
+  const filters = useCatalogFilters({ source: saved?.source ?? "Manual", saved, canManage: saved?.canManage ?? false, error: editor.saveError,
+    sampleRequiredMessage: t("forms:catalog.errors.sampleRequired") });
+  const editableNow = Boolean(saved?.canManage && saved.isActive);
+  const isDirty = editor.isDirty || (editableNow && filters.isDirty);
   const conflictError = isCatalogConflict(editor.saveError);
+  const seeNew = async () => { const fresh = await editor.seeNew(); filters.reset(fresh); };
+  const discard = () => { editor.discard(); filters.reset(); };
   const edit = useEditPage({
-    isDirty: editor.isDirty,
+    isDirty,
     error: conflictError ? undefined : editor.saveError ?? editor.setCatalogActive.error,
-    onSeeNew: () => { void editor.seeNew(); },
+    onSeeNew: () => { void seeNew(); },
     onContinueEditing: editor.continueEditing,
     // Un error de un campo va debajo de lo que lo causó; el resto, en la franja.
     errorMessage: (error) => catalogFieldErrors(error).length ? null : actionErrorMessage(error, t),
@@ -103,8 +122,11 @@ function SavedCatalogEditor({ id }: { id: string }) {
   const statusText = format.formatEnum("FormCatalogStatus", status);
   const unusable = status === "Unusable" && saved.unusableReason ? format.formatEnum("FormCatalogUnusableReason", saved.unusableReason) : undefined;
   const save = async () => {
+    // Los filtros viajan solo si cambiaron: cambiar el nombre no vuelve a validarlos. Sin persona de ejemplo no se guarda.
+    const withFilters = filters.isDirty ? filters.request() : null;
+    if (withFilters && !filters.checkSample()) return;
     // Guardar conserva el lugar (F7 del traspaso 15, 160): ni la página ni la búsqueda ni el desplazamiento cambian.
-    if (await editor.save()) toast.success(t("forms:catalog.saved"));
+    if (await editor.save(withFilters ? { request: withFilters, view: filters.savedView() } : undefined)) toast.success(t("forms:catalog.saved"));
   };
   const activeCount = saved.itemCounts.active
     + editor.rows.filter((row) => row.isNew && row.draft.isActive).length
@@ -115,10 +137,10 @@ function SavedCatalogEditor({ id }: { id: string }) {
       title={saved.name}
       backTo={back(t)}
       status={<span className="inline-flex items-center gap-1">{statusText}{unusable ? <InfoTip text={unusable} title={statusText} /> : null}</span>}
-      barAction={phone && manual ? { label: t("forms:catalog.preview.title"), onClick: () => setPreviewOpen(true) } : undefined}
+      barAction={phone ? { label: t("forms:catalog.preview.title"), onClick: () => setPreviewOpen(true) } : undefined}
       actions={editable ? <>
-        <Button type="button" variant="outline" disabled={!editor.isDirty || editor.saving} onClick={editor.discard}>{t("forms:catalog.discard")}</Button>
-        <Button type="button" disabled={!editor.isDirty} pending={editor.saving} pendingLabel={t("common:states.saving")} onClick={() => { void save(); }}>{t("forms:catalog.save")}</Button>
+        <Button type="button" variant="outline" disabled={!isDirty || editor.saving} onClick={discard}>{t("forms:catalog.discard")}</Button>
+        <Button type="button" disabled={!isDirty} pending={editor.saving} pendingLabel={t("common:states.saving")} onClick={() => { void save(); }}>{t("forms:catalog.save")}</Button>
       </> : undefined}
       moreActions={saved.canManage ? { label: t("forms:catalog.actions.catalogMore", { name: saved.name }), pending: editor.setCatalogActive.isPending, items: [
         saved.isActive
@@ -127,10 +149,11 @@ function SavedCatalogEditor({ id }: { id: string }) {
       ] } : undefined}
     >
       {edit.formError}
-      <div className="grid gap-3.5 lg:grid-cols-[minmax(0,1fr)_20rem]">
+      <CatalogColumns phone={phone} editor={editor} filters={filters} editable={editable}>
         <Section title={t("forms:catalog.section")} phone="untitled">
           <SectionFields className="grid gap-3.5">
-            <p className="text-[0.8125rem] text-[var(--t2)]">{`${format.formatEnum("FormCatalogSource", saved.source)} · ${format.formatEnum("FormCatalogValueType", saved.valueType)}`}</p>
+            {/* Uno con filtros es siempre de texto: dice solo de dónde salen (FRM-Catalogo-Filtros). */}
+            <p className="text-[0.8125rem] text-[var(--t2)]">{manual ? `${format.formatEnum("FormCatalogSource", saved.source)} · ${format.formatEnum("FormCatalogValueType", saved.valueType)}` : format.formatEnum("FormCatalogSource", saved.source)}</p>
             {editable ? <>
               <FormField label={t("forms:catalog.fields.name")} required error={editor.nameError}>
                 <Input value={editor.name} onChange={(event) => editor.setName(event.target.value)} autoComplete="off" />
@@ -144,15 +167,14 @@ function SavedCatalogEditor({ id }: { id: string }) {
             </>}
           </SectionFields>
         </Section>
-        {manual && !phone ? <PreviewAside editor={editor} /> : null}
-      </div>
+      </CatalogColumns>
       {manual ? <OptionsSection editor={editor} editable={editable} isNew={false} onImport={() => setImporting(true)} /> : null}
     </Page>
     {edit.leaveDialog}
-    {phone ? <PhonePreviewDialog editor={editor} open={previewOpen} onOpenChange={setPreviewOpen} /> : null}
+    {phone ? <PhonePreviewDialog editor={editor} filters={filters} open={previewOpen} onOpenChange={setPreviewOpen} /> : null}
     {importing ? <ImportDialog catalog={saved} onClose={() => setImporting(false)} onCatalogChanged={() => { void editor.seeNew(); }} /> : null}
     <CatalogConflictDialog conflict={editor.conflict} name={editor.name} rows={editor.rows} total={editor.total} active={activeCount}
-      onContinue={editor.continueEditing} onSeeNew={() => { void editor.seeNew(); }} />
+      onContinue={editor.continueEditing} onSeeNew={() => { void seeNew(); }} />
     <ConfirmDialog open={confirmDeactivate} onOpenChange={setConfirmDeactivate}
       title={t("forms:catalog.deactivateDialog.title", { name: saved.name })} description={t("forms:catalog.deactivateDialog.description")}
       confirmLabel={t("forms:catalog.actions.deactivate")} pending={editor.setCatalogActive.isPending} pendingLabel={t("forms:catalog.deactivating")}
@@ -171,11 +193,12 @@ function NewCatalogEditor() {
   const [origin, setOrigin] = useState<CatalogOrigin>({ source: "Manual", valueType: "Text" });
   const [previewOpen, setPreviewOpen] = useState(false);
   const editor = useCatalogEditor(undefined, origin.valueType);
+  const filters = useCatalogFilters({ source: origin.source, canManage: true, error: editor.saveError, sampleRequiredMessage: t("forms:catalog.errors.sampleRequired") });
   // Una sola clave por intento: un reintento del mismo pedido no crea otro catálogo (idempotencia).
   const idempotencyKey = useRef<string | null>(null);
   const create = useMutation({ mutationFn: (request: CreateFormCatalogRequest) => createCatalog(request, idempotencyKey.current ??= crypto.randomUUID()) });
   const edit = useEditPage({
-    isDirty: editor.name.trim() !== "" || editor.description.trim() !== "" || editor.rows.length > 0,
+    isDirty: editor.name.trim() !== "" || editor.description.trim() !== "" || editor.rows.length > 0 || filters.draft.conditions.length > 0,
     error: editor.saveError,
     onSeeNew: () => undefined,
     onContinueEditing: () => undefined,
@@ -184,13 +207,15 @@ function NewCatalogEditor() {
   const manual = origin.source === "Manual";
 
   function submit() {
-    if (!editor.name.trim()) {
-      editor.setNameError(t("forms:catalog.errors.nameRequired"));
-      return;
-    }
+    const named = Boolean(editor.name.trim());
+    if (!named) editor.setNameError(t("forms:catalog.errors.nameRequired"));
+    // Sin persona de ejemplo no se crea uno de miembros con condiciones (§10).
+    const sampled = manual || filters.checkSample();
+    if (!named || !sampled) return;
     const items = manual ? editor.createItems() : [];
     if (!items) return;
-    create.mutate({ name: editor.name, description: editor.description.trim() || null, source: origin.source, valueType: origin.valueType, items }, {
+    create.mutate({ name: editor.name, description: editor.description.trim() || null, source: origin.source, valueType: origin.valueType, items,
+      ...(manual ? {} : filters.request()) }, {
       onSuccess: (result) => {
         idempotencyKey.current = null;
         toast.success(t("forms:catalog.saved"));
@@ -204,14 +229,14 @@ function NewCatalogEditor() {
 
   return <>
     <Page title={t("forms:catalogs.new")} backTo={back(t)} banner={edit.banner}
-      barAction={phone && manual ? { label: t("forms:catalog.preview.title"), onClick: () => setPreviewOpen(true) } : undefined}
+      barAction={phone ? { label: t("forms:catalog.preview.title"), onClick: () => setPreviewOpen(true) } : undefined}
       actions={<>
         <Button type="button" variant="outline" onClick={() => { void navigate(catalogsPath); }}>{t("common:actions.cancel")}</Button>
         <Button type="button" pending={create.isPending} pendingLabel={t("forms:catalog.creating")} onClick={submit}>{t("forms:catalog.create")}</Button>
       </>}
     >
       {edit.formError}
-      <div className="grid gap-3.5 lg:grid-cols-[minmax(0,1fr)_20rem]">
+      <CatalogColumns phone={phone} editor={editor} filters={filters} editable>
         <Section title={t("forms:catalog.section")} phone="untitled">
           <SectionFields className="grid gap-3.5">
             <CatalogOriginFields value={origin} onChange={setOrigin} />
@@ -223,11 +248,10 @@ function NewCatalogEditor() {
             </FormField>
           </SectionFields>
         </Section>
-        {manual && !phone ? <PreviewAside editor={editor} /> : null}
-      </div>
+      </CatalogColumns>
       {manual ? <OptionsSection editor={editor} editable isNew /> : null}
     </Page>
     {edit.leaveDialog}
-    {phone ? <PhonePreviewDialog editor={editor} open={previewOpen} onOpenChange={setPreviewOpen} /> : null}
+    {phone ? <PhonePreviewDialog editor={editor} filters={filters} open={previewOpen} onOpenChange={setPreviewOpen} /> : null}
   </>;
 }

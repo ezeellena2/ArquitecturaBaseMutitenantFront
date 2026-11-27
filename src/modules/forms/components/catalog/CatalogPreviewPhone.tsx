@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { SegmentedControl } from "@/shared/ui/SegmentedControl";
+import { useFormat } from "@/shared/format/useFormat";
 import { cn } from "@/shared/lib/utils";
+import { InfoTip } from "@/shared/ui/InfoTip";
+import { SegmentedControl } from "@/shared/ui/SegmentedControl";
+import { Skeleton } from "@/shared/ui/skeleton";
+import type { FormCatalogPreviewResponse } from "../../api/types";
 
 export interface PreviewOption { readonly key: string; readonly text: string; readonly detail?: string | null }
 
@@ -52,6 +56,44 @@ export function CatalogPreviewPhone({ options, withSwitch = true }: { options: r
         </div>
         <p className="m-3 rounded-full bg-[var(--ok)] py-2 text-center font-semibold text-white">{t("forms:catalog.preview.send")}</p>
       </div>}
+    </div>
+  </div>;
+}
+
+/** Hasta cuántas opciones muestra WhatsApp en una lista: con más, la vista previa termina en «y N opciones más» (12 y 22). */
+export const previewOptionsMax = 200;
+
+/**
+ * La vista previa de un catálogo de los miembros o de los contactos (FRM-Catalogo-Filtros y FRM-Catalogo-Contactos): el
+ * teléfono con la lista abierta, como la dibuja WhatsApp, sin «Una opción | Varias». Mientras se actualiza, un esqueleto
+ * («Actualizando»); sin opciones, «Ninguna opción»; con más de las que entran, «y N opciones más» con su ⓘ. Sin respuesta
+ * (falta la persona de ejemplo), la lista queda vacía.
+ */
+export function CatalogListPhone({ preview, updating }: { preview: FormCatalogPreviewResponse | undefined; updating: boolean }) {
+  const { t } = useTranslation("forms");
+  const format = useFormat();
+  const more = preview ? preview.total - preview.options.length : 0;
+  const moreText = t("forms:catalog.preview.more", { count: more, n: format.formatInteger(more) });
+  return <div role="group" aria-label={t("forms:catalog.preview.title")} aria-busy={updating}
+    className="mx-auto w-full max-w-[17rem] overflow-hidden rounded-[1.5rem] border-[6px] border-[var(--t1)] bg-white text-[0.78125rem]">
+    <p className="flex items-center gap-2 border-b border-[var(--borde)] px-3 py-2.5 font-semibold"><span aria-hidden="true">{"‹"}</span>{t("forms:catalog.preview.question")}</p>
+    <div className="min-h-[18rem]">
+      {updating ? <div className="flex flex-col gap-3 p-3.5" aria-label={t("forms:catalog.preview.updating")} role="status">
+        {["80%", "60%", "70%"].map((width) => <Skeleton key={width} className="h-2.5 rounded-full" style={{ width }} />)}
+      </div> : preview ? <>
+        {preview.options.length === 0 ? <p className="px-3 py-6 text-center text-[var(--t3)]">{t("forms:catalog.preview.none")}</p> : <ul className="flex flex-col">
+          {preview.options.map((option, index) => <li key={index} className="flex items-start gap-2.5 border-b border-[var(--borde)] px-3 py-2">
+            <span className="min-w-0 flex-1">
+              <span className="block break-words">{option.text}</span>
+              {option.detail ? <span className="block break-words text-[var(--t3)]">{option.detail}</span> : null}
+            </span>
+            <span aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 rounded-full border-[1.5px] border-[var(--borde2)]" />
+          </li>)}
+        </ul>}
+        {more > 0 ? <p className="flex items-center gap-1 px-3 py-2.5 text-[var(--t2)]">{moreText}
+          <InfoTip text={t("forms:catalog.preview.moreHelp", { total: format.formatInteger(preview.total), max: format.formatInteger(previewOptionsMax) })} title={moreText} />
+        </p> : null}
+      </> : null}
     </div>
   </div>;
 }
