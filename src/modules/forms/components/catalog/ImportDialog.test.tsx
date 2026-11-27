@@ -25,6 +25,7 @@ function paged<T>(rows: readonly T[], page: number, totalCount: number, pageSize
 const errorsPage1: FormCatalogImportErrorRow[] = [
   { row: 37, column: "code", code: "Forms.Catalog.DuplicateCode", otherRow: 52 },
   { row: 88, column: "text", code: "Forms.Catalog.ItemTextTooLong" },
+  { row: 90, column: "code", code: "Forms.Catalog.ItemTextTooLong" },
 ];
 const errorsPage2: FormCatalogImportErrorRow[] = [{ row: 415, column: "code", code: "Forms.Catalog.DuplicateCode", otherRow: 477 }];
 
@@ -147,6 +148,8 @@ describe("ImportDialog (FRM-Catalogo-Importar)", () => {
     expect(within(dialog).getByRole("tab", { name: "Errores 12" })).toHaveAttribute("aria-selected", "true");
     const errors = within(dialog).getByRole("table", { name: "Errores" });
     expect(within(errors).getByRole("row", { name: "88 Texto Tiene más de 30 caracteres." })).toBeVisible();
+    // Un código largo dice el tope del código, no el del texto.
+    expect(within(errors).getByRole("row", { name: "90 Código Tiene más de 40 caracteres." })).toBeVisible();
     expect(within(errors).getByRole("row", { name: "37 Código Está repetido en la fila 52." })).toBeVisible();
     expect(within(dialog).getByRole("button", { name: "Aplicar sin las 12 filas con errores" })).toBeVisible();
 

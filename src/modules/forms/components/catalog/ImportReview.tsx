@@ -47,7 +47,9 @@ export function ImportReview({ imp, valueType }: { imp: CatalogImport; valueType
     switch (row.code) {
       case "Forms.Catalog.DuplicateCode":
         return row.otherRow != null ? t("forms:catalog.import.issues.repeated", { row: format.formatInteger(row.otherRow) }) : t("forms:catalog.import.issues.repeatedPlain");
-      case "Forms.Catalog.ItemTextTooLong": return t("forms:catalog.import.issues.tooLong", { n: format.formatInteger(catalogLimits.itemText) });
+      // El servidor usa el mismo código para el código y el texto: el tope sale de la columna de la fila.
+      case "Forms.Catalog.ItemTextTooLong":
+        return t("forms:catalog.import.issues.tooLong", { n: format.formatInteger(importColumnOf(row.column) === "code" ? catalogLimits.itemCode : catalogLimits.itemText) });
       case "Forms.Catalog.ItemDetailTooLong": return t("forms:catalog.import.issues.tooLong", { n: format.formatInteger(catalogLimits.itemDetail) });
       case "Forms.CatalogImport.CellRequired": return t("forms:catalog.import.issues.required");
       case "Forms.Catalog.ValueRequired": return t("forms:catalog.errors.valueRequired");
