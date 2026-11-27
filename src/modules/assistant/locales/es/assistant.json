@@ -430,6 +430,17 @@
       "subject": "La cuenta de esa persona se dio de baja."
     },
     "actions": {
+      "catalogoptions": {
+        "edit": {
+          "name": "Cambio de opciones",
+          "open": "Revisar cambios",
+          "applied": "Opciones cambiadas",
+          "appliedLink": "Ver el catálogo",
+          "target": "Catálogo",
+          "noPermission": "Ya no tenés el permiso «Administrar catálogos».",
+          "noTarget": "El catálogo ya no está en la organización."
+        }
+      },
       "users": {
         "invite": {
           "name": "Invitación de usuario",

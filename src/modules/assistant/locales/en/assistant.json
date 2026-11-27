@@ -430,6 +430,17 @@
       "subject": "That person's account was closed."
     },
     "actions": {
+      "catalogoptions": {
+        "edit": {
+          "name": "Options change",
+          "open": "Review changes",
+          "applied": "Options changed",
+          "appliedLink": "View catalog",
+          "target": "Catalog",
+          "noPermission": "You no longer have the “Manage catalogs” permission.",
+          "noTarget": "The catalog is no longer in the organization."
+        }
+      },
       "users": {
         "invite": {
           "name": "User invitation",
