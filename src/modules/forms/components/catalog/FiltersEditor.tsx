@@ -9,13 +9,12 @@ import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import { cn } from "@/shared/lib/utils";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { Button } from "@/shared/ui/button";
-import { Checkbox } from "@/shared/ui/checkbox";
+import { CheckboxField } from "@/shared/ui/CheckboxField";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { FormField } from "@/shared/ui/FormField";
 import { IconButton } from "@/shared/ui/IconButton";
 import { CloseIcon, TrashIcon } from "@/shared/ui/icons";
-import { InfoTip } from "@/shared/ui/InfoTip";
 import { Input } from "@/shared/ui/input";
 import { Picker, type PickerOption } from "@/shared/ui/Picker";
 import { RowActions } from "@/shared/ui/RowActions";
@@ -166,17 +165,11 @@ function SettingsFields({ filters, editable, phone }: { filters: CatalogFilters;
   </div>;
 }
 
-/** «Sin incluir a quien lo recibe»: una casilla, porque es un sí o no suelto (262), con su (i). */
+/** «Sin incluir a quien lo recibe»: una casilla, porque es un sí o no suelto (262), con su (i), que la describe. */
 function ExcludeRecipient({ filters, editable }: { filters: CatalogFilters; editable: boolean }) {
   const { t } = useTranslation("forms");
-  const label = t("forms:catalog.filters.excludeRecipient");
-  return <span className="flex items-center gap-2 text-[0.875rem]">
-    <label className="inline-flex items-center gap-2">
-      <Checkbox checked={filters.draft.excludeRecipient} disabled={!editable} onCheckedChange={(checked) => filters.setExcludeRecipient(checked === true)} />
-      {label}
-    </label>
-    <InfoTip text={t("forms:catalog.filters.excludeRecipientHelp")} title={label} />
-  </span>;
+  return <CheckboxField label={t("forms:catalog.filters.excludeRecipient")} help={t("forms:catalog.filters.excludeRecipientHelp")}
+    checked={filters.draft.excludeRecipient} disabled={!editable} onCheckedChange={filters.setExcludeRecipient} />;
 }
 
 /** Una condición en la compu: «Si» o «Y», la columna, la comparación, los valores y quitarla; debajo, solo su error. */
@@ -229,7 +222,7 @@ function ConditionCard({ filters, condition, editable, onEdit }: { filters: Cata
   if (!editable) return <div className="flex items-center gap-2 px-4 py-3">{body}</div>;
   return <div className="flex items-center gap-2 px-4 py-3">
     <button type="button" className="flex min-w-0 flex-1" onClick={() => onEdit()}>{body}</button>
-    <RowActions label={t("forms:catalog.filters.conditionMore")} title={t("forms:catalog.filters.conditionTitle", { column: name })} actions={[
+    <RowActions label={t("forms:catalog.filters.conditionMore", { column: name })} title={t("forms:catalog.filters.conditionTitle", { column: name })} actions={[
       { label: t("forms:catalog.filters.edit"), accessibleName: t("forms:catalog.filters.edit"), icon: Pencil, onSelect: onEdit },
       { label: t("forms:catalog.filters.removeCondition"), accessibleName: t("forms:catalog.filters.removeCondition"), icon: TrashIcon, destructive: true,
         onSelect: () => filters.removeCondition(condition.key) },
@@ -323,7 +316,6 @@ function ConditionValues(props: ValuesProps) {
       onChange={(value) => onChange([value])} />;
   }
   return <Input aria-label={label} disabled={!editable} aria-invalid={invalid || undefined} value={condition.values[0] ?? ""} autoComplete="off"
-    placeholder={t([`forms:catalog.filters.placeholders.${condition.column}`, "forms:catalog.filters.placeholders.text"])}
     onChange={(event) => onChange(event.target.value ? [event.target.value] : [])} />;
 }
 

@@ -375,8 +375,7 @@
       "placeholders": {
         "role": "Choose the roles",
         "company": "Choose the companies",
-        "tags": "Choose the tags",
-        "text": "Enter the name"
+        "tags": "Choose the tags"
       },
       "yes": "Yes",
       "no": "No",
@@ -398,7 +397,7 @@
       "addCondition": "Add condition",
       "removeCondition": "Remove condition",
       "conditionsMax": "It reached 10 conditions, the maximum.",
-      "conditionMore": "Condition actions",
+      "conditionMore": "{{column}} condition actions",
       "conditionTitle": "If · {{column}}",
       "edit": "Edit",
       "editTitle": "Edit condition",

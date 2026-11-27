@@ -89,6 +89,8 @@ describe("Catálogo con filtros (FRM-Catalogo-Filtros y FRM-Catalogo-Contactos)"
     expect(await screen.findByRole("button", { name: pickerName("Roles") })).toHaveAccessibleName(/Supervisor, Jefe de obra/);
     expect(screen.getByRole("button", { name: pickerName("Persona") })).toHaveAccessibleName(/Tomás Acosta/);
     expect(await within(phone()).findByText("Martín Paz")).toBeInTheDocument();
+    // La (i) de la casilla es su descripción (pantallas-y-ui).
+    expect(screen.getByRole("checkbox", { name: "Sin incluir a quien lo recibe" })).toHaveAccessibleDescription("Nadie se elige a sí mismo.");
     expect(previews[0]).toMatchObject({ source: "Members", sampleMemberId: "m-tomas",
       filters: { sourceVersion: 1, excludeRecipient: true, detail: "company", conditions: [{ column: "role", operator: "hasAny", values: ["r-sup", "r-jefe"] }, { column: "active", operator: "is", values: ["true"] }] } });
     expect(screen.queryByRole("button", { name: /Probar/ })).not.toBeInTheDocument();
@@ -127,6 +129,9 @@ describe("Catálogo con filtros (FRM-Catalogo-Filtros y FRM-Catalogo-Contactos)"
       const { user } = mountForms(formsOwner, "/org/formularios/catalogos/c-sup");
       expect(await screen.findByText("Supervisor, Jefe de obra")).toBeInTheDocument();
       expect(screen.getByText("Otras opciones")).toBeInTheDocument();
+      // Cada ⋮ dice de qué condición es (accesibilidad).
+      expect(screen.getByRole("button", { name: "Acciones de la condición Rol" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Acciones de la condición Activo" })).toBeInTheDocument();
       await user.click(screen.getByText("Supervisor, Jefe de obra"));
       const dialog = await screen.findByRole("dialog", { name: "Editar condición" });
       await user.click(within(dialog).getByRole("button", { name: pickerName("Comparación") }));

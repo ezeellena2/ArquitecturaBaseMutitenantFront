@@ -375,8 +375,7 @@
       "placeholders": {
         "role": "Elegí los roles",
         "company": "Elegí las empresas",
-        "tags": "Elegí las etiquetas",
-        "text": "Escribí el nombre"
+        "tags": "Elegí las etiquetas"
       },
       "yes": "Sí",
       "no": "No",
@@ -398,7 +397,7 @@
       "addCondition": "Agregar condición",
       "removeCondition": "Quitar condición",
       "conditionsMax": "Llegó a 10 condiciones, el máximo.",
-      "conditionMore": "Acciones de la condición",
+      "conditionMore": "Acciones de la condición {{column}}",
       "conditionTitle": "Si · {{column}}",
       "edit": "Editar",
       "editTitle": "Editar condición",
