@@ -3,5 +3,50 @@
   "nav": {
     "management": "Form management",
     "catalogs": "Catalogs"
+  },
+  "catalogs": {
+    "new": "New catalog",
+    "summaryTotal_one": "{{n}} catalog",
+    "summaryTotal_other": "{{n}} catalogs",
+    "summaryActive_one": "{{n}} active",
+    "summaryActive_other": "{{n}} active",
+    "summaryEmpty": "No catalogs",
+    "columns": {
+      "name": "Catalog",
+      "source": "Where they come from",
+      "valueType": "Value type",
+      "options": "Options",
+      "status": "Status"
+    },
+    "filters": {
+      "label": "Catalog filters",
+      "search": "Search by name",
+      "source": "Source: all",
+      "sourceMenu": "Filter by source",
+      "allSources": "All sources",
+      "status": "Status: all",
+      "statusMenu": "Filter by status",
+      "allStatuses": "All statuses",
+      "active": "Active",
+      "inactive": "Deactivated"
+    },
+    "empty": {
+      "all": "There are no catalogs yet.",
+      "filtered": "No catalog matches the filters."
+    },
+    "loadError": "We couldn't load the catalogs."
+  },
+  "catalog": {
+    "backToList": "Back to Catalogs",
+    "section": "The catalog",
+    "fields": {
+      "source": "Where the options come from",
+      "valueType": "Value type"
+    },
+    "sourceDescriptions": {
+      "Manual": "For lists a person keeps up to date: reasons, suppliers, zones.",
+      "Members": "Built on its own from the organization's members who match the filters.",
+      "Contacts": "Built on its own from the Customers contacts, by tag."
+    }
   }
 }

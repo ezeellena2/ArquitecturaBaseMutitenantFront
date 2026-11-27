@@ -3,5 +3,23 @@
     "Manual": "Written by hand",
     "Members": "From the members",
     "Contacts": "From the WhatsApp contacts"
+  },
+  "FormCatalogValueType": {
+    "Text": "Text",
+    "WholeNumber": "Whole number",
+    "DecimalNumber": "Decimal number",
+    "Date": "Date"
+  },
+  "FormCatalogStatus": {
+    "Active": "Active",
+    "Inactive": "Deactivated",
+    "Unusable": "Can't be used"
+  },
+  "FormCatalogUnusableReason": {
+    "NoActiveOptions": "It has no active options.",
+    "SourceOutdated": "The filters are out of date: review them.",
+    "ChannelUnavailable": "WhatsApp isn't available.",
+    "RoleMissing": "A role in the filters no longer exists.",
+    "CompanyMissing": "A company in the filters no longer exists."
   }
 }

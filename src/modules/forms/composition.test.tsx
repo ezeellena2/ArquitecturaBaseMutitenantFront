@@ -1,7 +1,8 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { http, HttpResponse } from "msw";
 import { axe } from "vitest-axe";
 import { AppProviders } from "@/app/providers";
 import { routesForHost } from "@/app/routes";
@@ -35,6 +36,10 @@ function mount(path: string, me: MeResponse, modules: readonly ModuleRegistratio
 }
 
 beforeAll(async () => { await import("./pages/CatalogsPage"); await import("./pages/CatalogEditorPage"); await import("@/layouts/MorePage"); });
+beforeEach(() => server.use(
+  http.get("/api/organization/forms/catalogs", () => HttpResponse.json({ items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 1, hasPrevious: false, hasNext: false })),
+  http.get("/api/organization/forms/catalogs/filter-counts", () => HttpResponse.json({ all: 0, active: 0 })),
+));
 
 describe("composición real de Formularios", () => {
   it("en la compu, «Gestión de formularios» abre su panel con solo «Catálogos»", async () => {
@@ -63,9 +68,9 @@ describe("composición real de Formularios", () => {
     expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
   });
 
-  it.each([["/org/formularios/catalogos/nuevo", manager], ["/org/formularios/catalogos/c-1", reader]] as const)("%s abre el editor", async (path, me) => {
+  it.each([["/org/formularios/catalogos/nuevo", manager, "Nuevo catálogo"], ["/org/formularios/catalogos/c-1", reader, "Catálogos"]] as const)("%s abre el editor", async (path, me, title) => {
     mount(path, me);
-    expect(await screen.findByRole("heading", { name: "Catálogos", level: 1 })).toBeVisible();
+    expect(await screen.findByRole("heading", { name: title, level: 1 })).toBeVisible();
   });
 
   it("en el teléfono, Más tiene el grupo «Gestión de formularios» con «Catálogos»", async () => {

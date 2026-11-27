@@ -3,5 +3,50 @@
   "nav": {
     "management": "Gestión de formularios",
     "catalogs": "Catálogos"
+  },
+  "catalogs": {
+    "new": "Nuevo catálogo",
+    "summaryTotal_one": "{{n}} catálogo",
+    "summaryTotal_other": "{{n}} catálogos",
+    "summaryActive_one": "{{n}} activo",
+    "summaryActive_other": "{{n}} activos",
+    "summaryEmpty": "Sin catálogos",
+    "columns": {
+      "name": "Catálogo",
+      "source": "De dónde salen",
+      "valueType": "Tipo de valor",
+      "options": "Opciones",
+      "status": "Estado"
+    },
+    "filters": {
+      "label": "Filtros de catálogos",
+      "search": "Buscar por nombre",
+      "source": "Origen: todos",
+      "sourceMenu": "Filtrar por origen",
+      "allSources": "Todos los orígenes",
+      "status": "Estado: todos",
+      "statusMenu": "Filtrar por estado",
+      "allStatuses": "Todos los estados",
+      "active": "Activos",
+      "inactive": "Dados de baja"
+    },
+    "empty": {
+      "all": "Todavía no hay catálogos.",
+      "filtered": "Ningún catálogo coincide con los filtros."
+    },
+    "loadError": "No pudimos cargar los catálogos."
+  },
+  "catalog": {
+    "backToList": "Volver a Catálogos",
+    "section": "El catálogo",
+    "fields": {
+      "source": "De dónde salen las opciones",
+      "valueType": "Tipo de valor"
+    },
+    "sourceDescriptions": {
+      "Manual": "Para listas que mantiene una persona: motivos, proveedores, zonas.",
+      "Members": "Se arma sola con los miembros de la organización que cumplen los filtros.",
+      "Contacts": "Se arma sola con los contactos de Clientes, por etiqueta."
+    }
   }
 }
