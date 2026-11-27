@@ -1,7 +1,8 @@
+import { useMutation } from "@tanstack/react-query";
 import { ArrowDown, ArrowUp, ArrowUpDown, Download, Plus, RotateCcw, Search, Wand2 } from "lucide-react";
 import { useId, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { apiErrorMessage } from "@/shared/api/errorMessage";
+import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import { useRetryAfterOf } from "@/shared/api/useRetryAfterCountdown";
 import { useFormat } from "@/shared/format/useFormat";
 import type { AssistantProposalFieldReview } from "@/shared/assistant-actions";
@@ -82,13 +83,18 @@ export function OptionsSection({ editor, editable, isNew, onImport, rowReview }:
   const deleteReason = editor.moves.length || editor.sort ? t("forms:catalog.reasons.orderPending") : undefined;
   const moveReason = editor.deletes.size ? t("forms:catalog.reasons.deletePending") : undefined;
 
-  const download = async (kind: "export" | "template") => {
-    if (kind === "export" && saved) await saveResponse(await exportCatalog(saved.id), `${saved.name}.xlsx`);
-    else await saveResponse(await fetchCatalogTemplate(valueType), `${t("forms:catalog.templateFile")}.xlsx`);
-  };
+  // Exportar y la plantilla: red, 5xx y 429 los avisa el MutationCache; un rechazo de negocio (sin permiso, el módulo
+  // apagado), un aviso (errores).
+  const download = useMutation({
+    mutationFn: async (kind: "export" | "template") => {
+      if (kind === "export" && saved) await saveResponse(await exportCatalog(saved.id), `${saved.name}.xlsx`);
+      else await saveResponse(await fetchCatalogTemplate(valueType), `${t("forms:catalog.templateFile")}.xlsx`);
+    },
+    onError: (error) => toastActionError(error, t),
+  });
 
   const moreActions: RowAction[] = [
-    { label: t("forms:catalog.actions.template"), accessibleName: t("forms:catalog.actions.template"), icon: Download, onSelect: () => { void download("template"); } },
+    { label: t("forms:catalog.actions.template"), accessibleName: t("forms:catalog.actions.template"), icon: Download, onSelect: () => download.mutate("template") },
     { label: t("forms:catalog.actions.sort"), accessibleName: t("forms:catalog.actions.sort"), icon: ArrowUpDown, hidden: !editable, disabledReason: sortReason, onSelect: (trigger) => { setSortTrigger(trigger); setSortOpen(true); } },
     { label: t("forms:catalog.actions.generateCodes"), accessibleName: t("forms:catalog.actions.generateCodes"), icon: Wand2, hidden: !editable, onSelect: editor.generateMissingCodes },
   ];
@@ -101,7 +107,7 @@ export function OptionsSection({ editor, editable, isNew, onImport, rowReview }:
       </Button>
       {phone ? null : <Button type="button" size="sm" variant="outline" onClick={onImport} disabledReason={importReason}>{t("forms:catalog.actions.import")}</Button>}
     </> : null}
-    <Button type="button" size="sm" variant="outline" onClick={() => { void download("export"); }} disabledReason={isNew ? t("forms:catalog.reasons.saveFirst") : undefined}>{t("forms:catalog.actions.export")}</Button>
+    <Button type="button" size="sm" variant="outline" onClick={() => download.mutate("export")} disabledReason={isNew ? t("forms:catalog.reasons.saveFirst") : undefined}>{t("forms:catalog.actions.export")}</Button>
     <RowActions label={t("forms:catalog.actions.more")} title={t("forms:catalog.options")} actions={moreActions} />
   </div>;
 

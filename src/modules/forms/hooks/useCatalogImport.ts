@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { ApiError } from "@/shared/api/ApiError";
-import { actionErrorMessage, apiErrorMessage, isGenericApiError } from "@/shared/api/errorMessage";
+import { actionErrorMessage, apiErrorMessage, isGenericApiError, toastActionError } from "@/shared/api/errorMessage";
 import { pageSizes } from "@/shared/api/pageSizes";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { saveBlobAs } from "@/shared/lib/saveFile";
@@ -71,7 +71,11 @@ export function useCatalogImport(catalog: FormCatalogResponse, { onClose, onCata
   const [busy, setBusy] = useState(false);
   const stale = useRef(false);
 
-  const downloadTemplate = useMutation({ mutationFn: async () => saveResponse(await fetchCatalogTemplate(catalog.valueType), `${t("forms:catalog.templateFile")}.xlsx`) });
+  // Red, 5xx y 429 los avisa el MutationCache; un rechazo de negocio (sin permiso, el módulo apagado), un aviso (errores).
+  const downloadTemplate = useMutation({
+    mutationFn: async () => saveResponse(await fetchCatalogTemplate(catalog.valueType), `${t("forms:catalog.templateFile")}.xlsx`),
+    onError: (error) => toastActionError(error, t),
+  });
   const preview = useMutation({ mutationFn: (input: Parameters<typeof previewCatalogImport>[1]) => previewCatalogImport(catalog.id, input) });
   const apply = useIdempotentMutation((input: CatalogImportInput, key) => importCatalog(catalog.id, input, key), { sameOperation: sameApply });
   const conflict = isCatalogConflict(failure?.error) || (failure?.error instanceof ApiError && failure.error.code === "Forms.CatalogImport.FileChanged");

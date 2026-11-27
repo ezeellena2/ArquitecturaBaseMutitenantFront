@@ -379,6 +379,14 @@ describe("CatalogEditorPage: crear (idempotencia)", () => {
 });
 
 describe("CatalogEditorPage: los errores (errores.md)", () => {
+  it("si el servidor rechaza «Exportar», lo dice en un aviso con su motivo", async () => {
+    server.use(http.get(`${base}/c-motivos/export`, () => HttpResponse.json(
+      { code: "Security.Forbidden", status: 403, title: "Forbidden", detail: "No tenés permiso para exportar este catálogo." }, { status: 403 })));
+    const { user } = await openEditor();
+    await user.click(screen.getByRole("button", { name: "Exportar" }));
+    expect(await screen.findByText("No tenés permiso para exportar este catálogo.")).toBeVisible();
+  });
+
   it("si se corta la red al guardar, «Reintentar» del aviso termina el guardado: «Guardamos el catálogo.» y el siguiente va con la versión nueva", async () => {
     serve({ put: () => puts.length === 1 ? HttpResponse.error() : HttpResponse.json({ version: puts.length === 2 ? 8 : 9, itemIdentityMap: [] }) });
     const { user } = await openEditor();
