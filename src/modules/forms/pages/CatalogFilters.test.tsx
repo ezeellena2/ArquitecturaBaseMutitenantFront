@@ -82,7 +82,6 @@ const phone = () => screen.getByRole("group", { name: "Así lo ve quien lo recib
 
 beforeAll(async () => { await import("./CatalogEditorPage"); });
 beforeEach(() => serve());
-vi.setConfig({ testTimeout: 20_000 });
 
 describe("Catálogo con filtros (FRM-Catalogo-Filtros y FRM-Catalogo-Contactos)", () => {
   it("abre con sus condiciones en la pieza, varias por su nombre, y la vista previa se pide sola con la persona de ejemplo", async () => {

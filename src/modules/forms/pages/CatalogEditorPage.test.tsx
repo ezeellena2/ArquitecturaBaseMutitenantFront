@@ -53,7 +53,6 @@ const saveButton = () => screen.getByRole("button", { name: "Guardar cambios" })
 
 beforeAll(async () => { await import("./CatalogEditorPage"); });
 beforeEach(() => serve());
-vi.setConfig({ testTimeout: 20_000 });
 
 describe("CatalogEditorPage (FRM-Catalogo)", () => {
   it("abre con «El catálogo», la vista previa y la tabla editable, sin cambios para guardar y sin problemas de accesibilidad", async () => {
@@ -297,8 +296,9 @@ describe("CatalogEditorPage: los errores (errores.md)", () => {
     serve({ put: () => puts.length === 1 ? HttpResponse.error() : HttpResponse.json({ version: puts.length === 2 ? 8 : 9, itemIdentityMap: [] }) });
     const { user } = await openEditor();
     const field = textbox("Texto de Seguimiento");
+    // Pegado y no tipeado letra por letra: cada test entra en 5 s (tests).
     await user.clear(field);
-    await user.type(field, "Seguimiento programado");
+    await user.paste("Seguimiento programado");
     await user.click(saveButton());
     expect(await screen.findByText("No pudimos conectarnos. Revisá tu conexión.")).toBeVisible();
     await user.click(screen.getByRole("button", { name: "Reintentar" }));
@@ -307,7 +307,7 @@ describe("CatalogEditorPage: los errores (errores.md)", () => {
     await waitFor(() => expect(saveButton()).toBeDisabled());
     const again = textbox("Texto de Seguimiento");
     await user.clear(again);
-    await user.type(again, "Seguimiento mensual");
+    await user.paste("Seguimiento mensual");
     await user.click(saveButton());
     await waitFor(() => expect(puts).toHaveLength(3));
     expect(puts.map((put) => put.version)).toEqual([7, 7, 8]);
@@ -319,8 +319,9 @@ describe("CatalogEditorPage: los errores (errores.md)", () => {
     server.use(http.get(`${base}/c-motivos`, () => reads++ === 0 ? HttpResponse.json(catalog()) : HttpResponse.error()));
     const { user } = await openEditor();
     const field = textbox("Texto de Seguimiento");
+    // Pegado y no tipeado letra por letra: cada test entra en 5 s (tests).
     await user.clear(field);
-    await user.type(field, "Seguimiento programado");
+    await user.paste("Seguimiento programado");
     await user.click(saveButton());
     expect(await screen.findByText("Otra persona cambió esto mientras lo editabas.")).toBeVisible();
     expect(screen.getByRole("button", { name: "Ver lo nuevo" })).toBeVisible();

@@ -101,7 +101,6 @@ beforeEach(async () => {
   serve();
 });
 afterEach(() => { vi.unstubAllGlobals(); });
-vi.setConfig({ testTimeout: 20_000 });
 
 describe("ImportDialog (FRM-Catalogo-Importar)", () => {
   it("«Desde» va en la pieza (262): pegar arma la grilla del catálogo, marca «Pegá las filas.», deja afuera una columna ajena y revisa lo pegado como un CSV que agrega", async () => {

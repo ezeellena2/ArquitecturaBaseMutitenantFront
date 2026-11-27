@@ -74,7 +74,6 @@ const changes = () => within(screen.getByRole("table", { name: "Lo que cambia" }
 const saveButton = () => screen.getByRole("button", { name: "Guardar cambios" });
 
 beforeAll(async () => { await import("./CatalogEditorPage"); });
-vi.setConfig({ testTimeout: 20_000 });
 
 describe("la propuesta del asistente en el editor de un catálogo (FRM-Catalogo-Opciones-Propuesta)", () => {
   it("todo lo propuesto se ve: la marca, «Lo que cambia» con lo que se suma, cambia y quita, las filas cargadas sin guardar y «Revisá»", async () => {

@@ -46,7 +46,6 @@ const optionsOf = (dialog: HTMLElement, name = "Opciones") => within(within(dial
 
 beforeAll(async () => { await import("../../pages/CatalogEditorPage"); });
 beforeEach(() => serve());
-vi.setConfig({ testTimeout: 20_000 });
 
 describe("OptionsDialog (FRM-Catalogo-Opciones)", () => {
   it("«Agregar opción» abre «Opciones nuevas» con una nueva; «Listo» conserva lo escrito y quita la nueva sin nada escrito", async () => {
@@ -85,10 +84,13 @@ describe("OptionsDialog (FRM-Catalogo-Opciones)", () => {
     expect(screen.queryByRole("textbox", { name: "Texto de Opción nueva" })).not.toBeInTheDocument();
     expect(saveButton()).toBeDisabled();
 
-    await user.type(textbox("Texto de Reclamo"), " urgente");
+    // Pegado y no tipeado: cada letra cambia el nombre de la fila y vuelve a dibujar la tabla; cada test entra en 5 s (tests).
+    await user.click(textbox("Texto de Reclamo"));
+    await user.paste(" urgente");
     await user.click(screen.getByRole("button", { name: "Editar Reclamo urgente" }));
     dialog = await screen.findByRole("dialog", { name: "Opciones de «Motivos de visita»" });
-    await user.type(within(dialog).getByRole("textbox", { name: "Texto" }), " y grave");
+    await user.click(within(dialog).getByRole("textbox", { name: "Texto" }));
+    await user.paste(" y grave");
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(textbox("Texto de Reclamo urgente")).toHaveValue("Reclamo urgente");
