@@ -55,6 +55,7 @@
     "done_other": "We linked {{linked}} phones and sent {{count}} invitations."
   },
   "errors": {
-    "channelUnavailable": "WhatsApp can't send invitations right now. Try again in a while."
+    "channelUnavailable": "WhatsApp can't send invitations right now. Try again in a while.",
+    "dailyLimit": "No more WhatsApp invitations can be sent for now, and nothing was saved. Try again later."
   }
 }

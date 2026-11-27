@@ -11,6 +11,7 @@ import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { validationConstraints } from "@/shared/api/generated/validation";
 import { companyOptions, roleOptions, usersQueryRoot } from "@/shared/api/resourceOptions";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
+import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
 import { useFormat } from "@/shared/format/useFormat";
 import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
@@ -105,6 +106,9 @@ export function LoadPhonesPage() {
   const preview = useMutation({ mutationFn: (request: WhatsAppPhoneImportPreviewRequest) => previewPhoneImport(request) });
   const confirm = useIdempotentMutation((request: WhatsAppPhoneImportRequest, key) => importPhones(request, key), { meta: { handlesError: true }, sameOperation: sameImport });
   const [failure, setFailure] = useState<unknown>();
+  // El tope diario de las invitaciones por WhatsApp (429), como el del correo al invitar (ADR 0063 §7): «Vincular y
+  // mandar» cuenta la espera en horas y minutos y se apaga mientras tanto; la carga revisada queda como estaba.
+  const limit = useRetryAfterCountdown();
   // Decisión 179: para invitar, quien carga confirma que cada persona aceptó recibir mensajes por WhatsApp. Sin la casilla,
   // el botón sigue habilitado y al tocarlo se marca el campo, sin mandar nada.
   const [consent, setConsent] = useState(false);
@@ -136,7 +140,7 @@ export function LoadPhonesPage() {
         void client.invalidateQueries({ queryKey: usersQueryRoot });
         void navigate(usersPath);
       },
-      onError: (error) => { if (isConsentRequired(error)) setConsentError(true); else setFailure(error); },
+      onError: (error) => { limit.startFromError(error); if (isConsentRequired(error)) setConsentError(true); else setFailure(error); },
     });
   }
 
@@ -154,8 +158,8 @@ export function LoadPhonesPage() {
 
   const reachable = reviewed ? reviewed.alreadyMembers + reviewed.invites : 0;
   const primary = reviewed
-    ? <Button type="button" onClick={send} disabled={reachable === 0} pending={confirm.isPending} pendingLabel={t("whatsapp:phones.sending")}>
-      {t("whatsapp:phones.confirm", { count: reviewed.invites })}
+    ? <Button type="button" onClick={send} disabled={reachable === 0 || limit.isRunning} pending={confirm.isPending} pendingLabel={t("whatsapp:phones.sending")}>
+      {limit.label ?? t("whatsapp:phones.confirm", { count: reviewed.invites })}
     </Button>
     : <Button type="submit" form="load-phones" pending={preview.isPending} pendingLabel={t("whatsapp:phones.reviewing")}>
       {t("whatsapp:phones.review", { count: lines.length })}

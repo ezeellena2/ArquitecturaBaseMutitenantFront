@@ -55,6 +55,7 @@
     "done_other": "Vinculamos {{linked}} teléfonos y mandamos {{count}} invitaciones."
   },
   "errors": {
-    "channelUnavailable": "WhatsApp no puede mandar invitaciones ahora. Probá de nuevo en un rato."
+    "channelUnavailable": "WhatsApp no puede mandar invitaciones ahora. Probá de nuevo en un rato.",
+    "dailyLimit": "Por ahora no se pueden mandar más invitaciones por WhatsApp, y no se guardó nada. Probá de nuevo más tarde."
   }
 }

@@ -142,6 +142,36 @@ describe("Cargar teléfonos", () => {
     expect(screen.getAllByText("Confirmá que la persona aceptó recibir mensajes por WhatsApp.")).toHaveLength(1);
   });
 
+  // Decisión 1 de los arreglos de la revisión (T05-03), como el tope del correo al invitar (ADR 0063 §7): el tope diario de
+  // las invitaciones por WhatsApp dice su texto en la franja (el del back o, sin él, el propio) y la espera en horas y
+  // minutos en el botón, que se apaga mientras cuenta; sin el aviso de abajo, y la carga revisada queda como estaba.
+  it.each([
+    ["con el texto del back", "Por ahora no se pueden mandar más invitaciones por WhatsApp. Probá de nuevo más tarde.", "Por ahora no se pueden mandar más invitaciones por WhatsApp. Probá de nuevo más tarde."],
+    ["sin texto, con el propio", undefined, "Por ahora no se pueden mandar más invitaciones por WhatsApp, y no se guardó nada. Probá de nuevo más tarde."],
+  ])("el tope diario de las invitaciones (429) %s dice la espera en el botón y no limpia la carga", async (_, detail, text) => {
+    let posts = 0;
+    server.use(http.post("/api/organization/whatsapp/phone-imports", () => {
+      posts++;
+      return HttpResponse.json({ status: 429, code: "WhatsApp.PhoneImport.DailyLimit", detail, retryAfter: 82345 }, { status: 429, headers: { "Retry-After": "82345" } });
+    }));
+    const { user } = mountWhatsApp(whatsappOwner, path);
+    await review(user);
+    const consent = await screen.findByRole("checkbox", { name: "La persona aceptó recibir mensajes por WhatsApp" });
+    await user.click(consent);
+    await user.click(screen.getAllByRole("button", { name: "Vincular y mandar 1 invitación" })[0]);
+
+    expect(await screen.findByText(text)).toBeVisible();
+    const waits = await screen.findAllByRole("button", { name: "Reintentá en 22 h 53 min" });
+    for (const button of waits) expect(button).toBeDisabled();
+    expect(document.querySelector("[data-sonner-toast]")).toBeNull();
+    expect(posts).toBe(1);
+    expect(screen.getByText("3 teléfonos · 1 ya es miembro · 1 invitación · 1 inválido")).toBeVisible();
+    expect(screen.getByText("Tomás Acosta")).toBeVisible();
+    expect(screen.getByText("Se invita")).toBeVisible();
+    expect(screen.getByText("11 4444")).toBeVisible();
+    expect(consent).toBeChecked();
+  });
+
   it("pide «Invitar usuarios» y el módulo prendido", async () => {
     const first = mountWhatsApp(whatsappMember("whatsapp.manage"), path);
     expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();
