@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { AssistantLinkResponse, AssistantRouteKey } from "@/modules/assistant/api/types";
-import { resolveAssistantLink } from "./assistantLinks";
+import { moduleLinkPath, resolveAssistantLink } from "./assistantLinks";
 
 const context = { scope: { access: "platform" as const, userId: "u", tenantId: null }, hasPermission: () => true };
 const link = (routeKey: AssistantRouteKey): AssistantLinkResponse => ({ routeKey, parameters: {}, query: {}, labelKey: "untrusted.label" });
@@ -15,6 +15,12 @@ describe("enlaces del asistente", () => {
     expect(resolveAssistantLink({ ...link("platform.recoveries"), parameters: { recoveryId: "anything" }, query: { status: "Pending" } }, context)?.to).toBe("/plataforma/recuperaciones?status=Pending");
     expect(resolveAssistantLink({ ...link("platform.organizations"), query: { status: "Pending" } }, context)?.to).toBe("/plataforma/organizaciones?status=PendingApproval");
     expect(resolveAssistantLink({ ...link("business.users"), query: { status: "Pending" } }, { ...context, scope: { ...context.scope, access: "business" } })?.to).toBe("/org/usuarios?state=Invited");
+  });
+  it("la pantalla de un módulo se nombra para comprobar que esté registrada y permitida; la del núcleo, no", () => {
+    expect(moduleLinkPath("business.forms.catalogs")).toBe("/org/formularios/catalogos");
+    expect(moduleLinkPath("platform.assistant.usage")).toBe("/plataforma/asistente/uso");
+    expect(moduleLinkPath("business.users")).toBeNull();
+    expect(moduleLinkPath("constructor" as AssistantRouteKey)).toBeNull();
   });
   it("no usa labelKey del servidor y codifica la búsqueda", () => {
     const result = resolveAssistantLink({ ...link("platform.accounts"), query: { search: "a&x=1" } }, context);

@@ -8,6 +8,7 @@ import type { ModuleContentProps } from "@/shared/modules/types";
 import { useModuleRegistry } from "@/shared/modules/useModules";
 import { AssistantProposalDialog } from "@/shared/assistant-actions";
 import { Page } from "@/shared/ui/Page";
+import { moduleLinkPath } from "../lib/assistantLinks";
 import { AssistantHome } from "./AssistantHome";
 import { AssistantPhonePage } from "./AssistantPhonePage";
 
@@ -20,14 +21,16 @@ function RegisteredAssistant({ me, phone, ...content }: ModuleContentProps & { p
   const configurationPath = me.access === "platform" ? "/plataforma/asistente/configuracion" : "/org/asistente/configuracion";
   const configurationAvailable = registry.some((module) => module.routes.some((route) => route.path === configurationPath && route.access === me.access && route.guard(me) === "allowed"));
   const usagePath = me.access === "platform" ? "/plataforma/asistente/uso" : "/org/asistente/uso";
-  const usageAvailable = registry.some((module) => module.routes.some((route) => route.path === usagePath && route.access === me.access && route.guard(me) === "allowed"));
+  // Una pantalla de un módulo se abre solo si su ruta está registrada y permitida: el módulo instalado y prendido (forms, uso).
+  const routeAllowed = (path: string) => registry.some((module) => module.routes.some((route) => route.path === path && route.access === me.access && route.guard(me) === "allowed"));
+  const usageAvailable = routeAllowed(usagePath);
   const permissions = me.access === "platform" ? me.effectivePermissions.platform : me.effectivePermissions.organization;
   const Page = phone ? AssistantPhonePage : AssistantHome;
   if (status) return <div className="fixed inset-0 z-[100]">{status}</div>;
   return <Page {...content} enabled scope={{ access: me.access, userId: me.id, tenantId: me.activeTenantId ?? null }}
     onUnavailable={content.onUnavailable ?? (() => { void client.invalidateQueries({ queryKey: currentUserQueryKey }); void navigate(homeOf(me.access), { replace: true }); })}
     organizationName={activeOrganization(me)?.name} hasPermission={(permission) => permissions.includes(permission)}
-    canOpenLink={(routeKey) => routeKey !== "platform.assistant.usage" || usageAvailable}
+    canOpenLink={(routeKey) => { const path = moduleLinkPath(routeKey); return path === null || routeAllowed(path); }}
     organizationIds={me.access === "consumer" ? me.organizations.map((organization) => organization.id) : undefined}
     organizationNames={me.access === "consumer" ? Object.fromEntries(me.organizations.map((organization) => [organization.id, organization.name])) : undefined}
     onOpenOrganization={me.access === "consumer" ? (id) => profiles.find((profile) => profile.key === id)?.select() : undefined}

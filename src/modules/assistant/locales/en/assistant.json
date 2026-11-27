@@ -164,7 +164,10 @@
       "roles": "View roles and permissions",
       "companies": "View businesses",
       "audit": "View audit",
-      "home": "Go home"
+      "home": "Go home",
+      "forms": {
+        "catalogs": "View catalogs"
+      }
     },
     "platform": {
       "organizations": "View in Organizations",

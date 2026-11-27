@@ -276,6 +276,23 @@ describe("composición real de accesos e inicios", () => {
     expect(app.client.getQueryCache().findAll({ queryKey: ["assistant"] })).toHaveLength(0);
     expect(await screen.findByRole("heading", { name: status === "Suspended" ? /suspendida/i : "Inicio" })).toBeVisible();
   });
+  // accesos-y-permisos: el permiso no alcanza; la pantalla de un módulo apagado para la organización no se ofrece.
+  it("el enlace a Catálogos de una conversación vieja sólo aparece con el módulo forms prendido, aunque Me otorgue formcatalogs.read", async () => {
+    const reader = { ...business, effectivePermissions: { ...business.effectivePermissions, organization: [...business.effectivePermissions.organization, "formcatalogs.read"] } };
+    const detail: AssistantConversationResponse = { conversation: { id: "chat", title: "Consulta de catálogos", version: 1, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z", available: true }, activeTurnId: null,
+      messages: { items: [{ id: "answer", role: "assistant", text: "Respuesta de catálogos", status: "Complete", createdAtUtc: "2026-10-10T12:00:00Z", version: 1, attachments: [], links: [{ routeKey: "business.forms.catalogs", labelKey: "business.forms.catalogs", parameters: {}, query: {} }] }], hasMore: false } };
+    server.use(http.get("/api/organization/assistant/conversations", ({ request }) => HttpResponse.json({ items: new URL(request.url).searchParams.get("saved") === "false" ? [detail.conversation] : [], hasMore: false })),
+      http.get("/api/organization/assistant/conversations/chat", () => HttpResponse.json(detail)));
+    const off = mount("/org", reader);
+    await off.user.click(await screen.findByRole("button", { name: "Consulta de catálogos" }));
+    await screen.findByText("Respuesta de catálogos");
+    expect(screen.queryAllByRole("link").map((link) => link.getAttribute("href"))).not.toContain("/org/formularios/catalogos");
+    off.unmount();
+    const on = mount("/org", { ...reader, features: [...reader.features, "forms"] });
+    await on.user.click(await screen.findByRole("button", { name: "Consulta de catálogos" }));
+    expect(await screen.findByRole("link", { name: "Ver catálogos" })).toHaveAttribute("href", "/org/formularios/catalogos");
+  });
+
   it("un enlace de Uso sólo aparece al registrar su página, aunque Me ya otorgue read", async () => {
     const me = { ...platform, effectivePermissions: { ...platform.effectivePermissions, platform: [...platform.effectivePermissions.platform, "platform.assistant.read"] } };
     const detail: AssistantConversationResponse = { conversation: { id: "chat", title: "Consulta de uso", version: 1, isSaved: false, createdAtUtc: "2026-10-10T12:00:00Z", lastActivityAtUtc: "2026-10-10T12:00:00Z", available: true }, activeTurnId: null,

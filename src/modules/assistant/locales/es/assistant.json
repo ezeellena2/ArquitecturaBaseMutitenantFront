@@ -164,7 +164,10 @@
       "roles": "Ver roles y permisos",
       "companies": "Ver empresas",
       "audit": "Ver auditoría",
-      "home": "Ir al inicio"
+      "home": "Ir al inicio",
+      "forms": {
+        "catalogs": "Ver catálogos"
+      }
     },
     "platform": {
       "organizations": "Ver en Organizaciones",

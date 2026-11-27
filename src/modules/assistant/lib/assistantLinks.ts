@@ -13,21 +13,30 @@ export interface AssistantLinkContext {
   onOpenOrganization?: (id: string) => void;
 }
 
-const routes: Record<AssistantRouteKey, { access: AssistantScope["access"]; path: string; permission?: string; id?: keyof AssistantLinkResponse["parameters"] }> = {
+/** Cada enlace con su acceso, su permiso y su pantalla; `module`, si la pantalla la presta un módulo (puede estar apagado). */
+const routes: Record<AssistantRouteKey, { access: AssistantScope["access"]; path: string; permission?: string; id?: keyof AssistantLinkResponse["parameters"]; module?: true }> = {
   "business.users": { access: "business", path: "/org/usuarios", permission: "users.read", id: "userId" },
   "business.roles": { access: "business", path: "/org/roles", permission: "roles.read", id: "roleId" },
   "business.companies": { access: "business", path: "/org/empresas", permission: "companies.read", id: "companyId" },
   "business.audit": { access: "business", path: "/org/auditoria", permission: "audit.read" },
   "business.home": { access: "business", path: homeOf("business") },
-  "business.forms.catalogs": { access: "business", path: "/org/formularios/catalogos", permission: "formcatalogs.read" },
+  "business.forms.catalogs": { access: "business", path: "/org/formularios/catalogos", permission: "formcatalogs.read", module: true },
   "platform.organizations": { access: "platform", path: "/plataforma/organizaciones", permission: "platform.tenants.read", id: "tenantId" },
   "platform.accounts": { access: "platform", path: "/plataforma/cuentas", permission: "platform.accounts.read", id: "userId" },
   "platform.recoveries": { access: "platform", path: "/plataforma/recuperaciones", permission: "platform.recoveries.manage" },
   "platform.audit": { access: "platform", path: "/plataforma/auditoria", permission: "platform.audit.read" },
-  "platform.assistant.usage": { access: "platform", path: "/plataforma/asistente/uso", permission: "platform.assistant.read" },
+  "platform.assistant.usage": { access: "platform", path: "/plataforma/asistente/uso", permission: "platform.assistant.read", module: true },
   "personal.account": { access: "consumer", path: "/cuenta" },
   "personal.organizations": { access: "consumer", path: "/" },
 };
+/**
+ * La pantalla de un enlace que presta un módulo, o `null` si es del núcleo: quien abre el hilo comprueba que la ruta esté
+ * registrada y permitida (el módulo instalado y prendido para la organización, accesos-y-permisos), no solo el permiso.
+ */
+export function moduleLinkPath(routeKey: AssistantRouteKey): string | null {
+  return Object.hasOwn(routes, routeKey) && routes[routeKey].module ? routes[routeKey].path : null;
+}
+
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export function resolveAssistantLink(link: AssistantLinkResponse, context: AssistantLinkContext): { to?: string; organizationId?: string; organizationName?: string; labelKey: string } | null {
