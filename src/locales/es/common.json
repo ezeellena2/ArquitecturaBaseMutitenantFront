@@ -23,6 +23,12 @@
     "back": "Volver",
     "moreInfo": "Más información sobre {{label}}"
   },
+  "pasteGrid": {
+    "target": "Pegá acá las filas",
+    "placeholder": "Pegá con Ctrl+V",
+    "moreRows_one": "Y {{n}} fila más",
+    "moreRows_other": "Y {{n}} filas más"
+  },
   "notice": {
     "whatCanYouDo": "Qué podés hacer",
     "understood": "Entendido"

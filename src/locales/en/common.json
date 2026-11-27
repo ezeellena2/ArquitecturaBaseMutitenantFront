@@ -23,6 +23,12 @@
     "back": "Back",
     "moreInfo": "More about {{label}}"
   },
+  "pasteGrid": {
+    "target": "Paste the rows here",
+    "placeholder": "Paste with Ctrl+V",
+    "moreRows_one": "And {{n}} more row",
+    "moreRows_other": "And {{n}} more rows"
+  },
   "notice": {
     "whatCanYouDo": "What you can do",
     "understood": "Got it"

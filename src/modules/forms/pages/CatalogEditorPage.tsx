@@ -27,6 +27,7 @@ import type { CreateFormCatalogRequest } from "../api/types";
 import { CatalogConflictDialog } from "../components/catalog/CatalogConflictDialog";
 import { CatalogOriginFields, type CatalogOrigin } from "../components/catalog/CatalogOriginFields";
 import { CatalogPreviewPhone } from "../components/catalog/CatalogPreviewPhone";
+import { ImportDialog } from "../components/catalog/ImportDialog";
 import { OptionsSection } from "../components/catalog/OptionsSection";
 import { catalogFieldErrors, isCatalogConflict } from "../errors";
 import { useCatalogEditor, type CatalogEditor } from "../hooks/useCatalogEditor";
@@ -77,6 +78,7 @@ function SavedCatalogEditor({ id }: { id: string }) {
   const editor = useCatalogEditor(id);
   const [confirmDeactivate, setConfirmDeactivate] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [importing, setImporting] = useState(false);
   const { saved } = editor;
   const conflictError = isCatalogConflict(editor.saveError);
   const edit = useEditPage({
@@ -144,10 +146,11 @@ function SavedCatalogEditor({ id }: { id: string }) {
         </Section>
         {manual && !phone ? <PreviewAside editor={editor} /> : null}
       </div>
-      {manual ? <OptionsSection editor={editor} editable={editable} isNew={false} /> : null}
+      {manual ? <OptionsSection editor={editor} editable={editable} isNew={false} onImport={() => setImporting(true)} /> : null}
     </Page>
     {edit.leaveDialog}
     {phone ? <PhonePreviewDialog editor={editor} open={previewOpen} onOpenChange={setPreviewOpen} /> : null}
+    {importing ? <ImportDialog catalog={saved} onClose={() => setImporting(false)} onCatalogChanged={() => { void editor.seeNew(); }} /> : null}
     <CatalogConflictDialog conflict={editor.conflict} name={editor.name} rows={editor.rows} total={editor.total} active={activeCount}
       onContinue={editor.continueEditing} onSeeNew={() => { void editor.seeNew(); }} />
     <ConfirmDialog open={confirmDeactivate} onOpenChange={setConfirmDeactivate}
