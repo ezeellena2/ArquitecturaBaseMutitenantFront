@@ -108,6 +108,30 @@ describe("useAssistantProposal", () => {
     expect(state.changes.lists).toEqual([{ field: "roles", added: [{ id: "r-2", label: "Compras" }], removed: [{ id: "r-1", label: "Ventas" }] }]);
   });
 
+  it("lo armado como dato (fieldsFromTarget) espera los campos del destino y aplica las filas con ellos", async () => {
+    server.use(http.get(base, () => HttpResponse.json(proposal({
+      action: "catalogoptions.edit", target: { id: "cat-1", label: "Motivos", version: 3 },
+      values: [
+        { field: "options", value: { op: "add", key: "GAR", row: { code: "GAR", text: "Garantía" } } },
+        { field: "options", value: { op: "change", key: "i-1", row: { detail: "Nuevo" } }, label: "Venta" },
+      ],
+    }))));
+    const fields = [{ name: "options", type: "items" as const, required: false, maxItems: 500, itemKey: "code", itemFields: [
+      { name: "code", type: "text" as const, required: true, maxLength: 40 },
+      { name: "text", type: "text" as const, required: true, maxLength: 30 },
+      { name: "detail", type: "longText" as const, required: false, maxLength: 300 },
+    ] }];
+    const read: AssistantProposalValues = { fields: {}, lists: {}, rows: { options: [{ key: "i-1", label: "Venta", values: { code: "VEN", text: "Venta" } }] } };
+    const toKeys = (values: AssistantProposalValues) => (values.rows.options ?? []).map((row) => `${row.key}:${String(row.values.detail ?? "")}`);
+    let targetFields: typeof fields | undefined;
+    const { result, rerender } = render<string[]>(() => useAssistantProposal("catalogoptions.edit@1", toKeys, read, targetFields));
+
+    await waitFor(() => expect(result.current.status).toBe("waiting"));
+    targetFields = fields;
+    rerender();
+    expect(ready(result.current).formValues).toEqual(["i-1:Nuevo", "GAR:"]);
+  });
+
   it("crear guarda con la clave de la propuesta y después avisa que se aplicó", async () => {
     const calls: string[] = [];
     server.use(

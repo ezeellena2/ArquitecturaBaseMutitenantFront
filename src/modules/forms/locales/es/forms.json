@@ -160,6 +160,17 @@
       "active": "Activa",
       "inactive": "De baja"
     },
+    "proposal": {
+      "changedSince": "El catálogo {{name}} cambió desde la propuesta.",
+      "changed": "{{fields, list}} de {{option}}",
+      "fields": {
+        "text": "texto",
+        "code": "código",
+        "value": "valor",
+        "detail": "detalle",
+        "isActive": "estado"
+      }
+    },
     "warnings": {
       "textRepeated": "Otra opción tiene el mismo texto."
     },

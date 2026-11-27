@@ -304,6 +304,7 @@
       "title": "Lo que cambia",
       "where": "Dónde",
       "added": "Se suma",
+      "changed": "Cambia",
       "removed": "Se quita",
       "addedIn": "Se suma en {{where}}",
       "removedIn": "Se quita en {{where}}"

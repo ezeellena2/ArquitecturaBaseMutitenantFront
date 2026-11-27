@@ -5,9 +5,11 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 import { actionErrorMessage, isNotFoundError } from "@/shared/api/errorMessage";
+import { AssistantProposalChangesSection, AssistantProposalMark } from "@/shared/assistant-actions";
 import { useFormat } from "@/shared/format/useFormat";
 import { useEditPage } from "@/shared/hooks/useEditPage";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
+import { Banner } from "@/shared/ui/Banner";
 import { Button } from "@/shared/ui/button";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { Dialog, DialogBody, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
@@ -34,6 +36,7 @@ import { OptionsSection } from "../components/catalog/OptionsSection";
 import { catalogFieldErrors, isCatalogConflict } from "../errors";
 import { useCatalogEditor, type CatalogEditor } from "../hooks/useCatalogEditor";
 import { useCatalogFilters, type CatalogFilters } from "../hooks/useCatalogFilters";
+import { useCatalogProposal } from "../hooks/useCatalogProposal";
 import { catalogStatus } from "../lib/catalogStatus";
 import { catalogsPath } from "../registration";
 
@@ -41,7 +44,8 @@ import { catalogsPath } from "../registration";
  * El editor de un catálogo (FRM-Catalogo y M-FRM-Catalogo), nuevo (`/nuevo`, donde «Crear catálogo» manda el `POST`) o
  * guardado (`/:id`). «El catálogo» dice de dónde salen y el tipo, con el nombre y la descripción; al costado, «Así lo ve
  * quien lo recibe». La banda trae «Descartar» y «Guardar cambios», y un ⋮ con «Dar de baja» o «Reactivar» (209). Todo se
- * guarda junto en un `PUT`, con su versión (C3); si otra persona guardó, la revisión lado a lado (138).
+ * guarda junto en un `PUT`, con su versión (C3); si otra persona guardó, la revisión lado a lado (138). Con `?proposal=<id>`,
+ * lo que propone el asistente para las opciones, cargado y sin guardar (FRM-Catalogo-Opciones-Propuesta y su M-).
  */
 export function CatalogEditorPage() {
   const { id } = useParams();
@@ -96,10 +100,12 @@ function SavedCatalogEditor({ id }: { id: string }) {
   const filters = useCatalogFilters({ source: saved?.source ?? "Manual", saved, canManage: saved?.canManage ?? false, error: editor.saveError,
     sampleRequiredMessage: t("forms:catalog.errors.sampleRequired") });
   const editableNow = Boolean(saved?.canManage && saved.isActive);
+  const proposal = useCatalogProposal(editor, editableNow);
   const isDirty = editor.isDirty || (editableNow && filters.isDirty);
   const conflictError = isCatalogConflict(editor.saveError);
   const seeNew = async () => { const fresh = await editor.seeNew(); filters.reset(fresh); };
-  const discard = () => { editor.discard(); filters.reset(); };
+  // «Descartar» vuelve a lo guardado; también descarta la propuesta.
+  const discard = () => { editor.discard(); filters.reset(); proposal.drop?.(); };
   const edit = useEditPage({
     isDirty,
     error: conflictError ? undefined : editor.saveError ?? editor.setCatalogActive.error,
@@ -125,8 +131,13 @@ function SavedCatalogEditor({ id }: { id: string }) {
     // Los filtros viajan solo si cambiaron: cambiar el nombre no vuelve a validarlos. Sin persona de ejemplo no se guarda.
     const withFilters = filters.isDirty ? filters.request() : null;
     if (withFilters && !filters.checkSample()) return;
+    // Con la propuesta, la tarjeta pasa a aplicada con la versión que respondió el guardado.
+    const markApplied = proposal.markApplied;
     // Guardar conserva el lugar (F7 del traspaso 15, 160): ni la página ni la búsqueda ni el desplazamiento cambian.
-    if (await editor.save(withFilters ? { request: withFilters, view: filters.savedView() } : undefined)) toast.success(t("forms:catalog.saved"));
+    const version = await editor.save(withFilters ? { request: withFilters, view: filters.savedView() } : undefined);
+    if (version === undefined) return;
+    toast.success(t("forms:catalog.saved"));
+    if (markApplied) void markApplied(version);
   };
   const activeCount = saved.itemCounts.active
     + editor.rows.filter((row) => row.isNew && row.draft.isActive).length
@@ -135,6 +146,7 @@ function SavedCatalogEditor({ id }: { id: string }) {
   return <>
     <Page banner={edit.banner}
       title={saved.name}
+      titleAside={proposal.proposing ? <AssistantProposalMark /> : undefined}
       backTo={back(t)}
       status={<span className="inline-flex items-center gap-1">{statusText}{unusable ? <InfoTip text={unusable} title={statusText} /> : null}</span>}
       barAction={phone ? { label: t("forms:catalog.preview.title"), onClick: () => setPreviewOpen(true) } : undefined}
@@ -149,6 +161,10 @@ function SavedCatalogEditor({ id }: { id: string }) {
       ] } : undefined}
     >
       {edit.formError}
+      {/* FRM-Catalogo-Opciones-Propuesta: si el catálogo cambió desde la propuesta, lo dice arriba; «Lo que cambia», arriba de
+          todo, ya va sobre lo de ahora. */}
+      {proposal.changedSince ? <Banner tone="warning" className="max-md:mx-4 max-md:mt-4">{t("forms:catalog.proposal.changedSince", { name: saved.name })}</Banner> : null}
+      {proposal.changeRows.length ? <AssistantProposalChangesSection rows={proposal.changeRows} /> : null}
       <CatalogColumns phone={phone} editor={editor} filters={filters} editable={editable}>
         <Section title={t("forms:catalog.section")} phone="untitled">
           <SectionFields className="grid gap-3.5">
@@ -168,7 +184,7 @@ function SavedCatalogEditor({ id }: { id: string }) {
           </SectionFields>
         </Section>
       </CatalogColumns>
-      {manual ? <OptionsSection editor={editor} editable={editable} isNew={false} onImport={() => setImporting(true)} /> : null}
+      {manual ? <OptionsSection editor={editor} editable={editable} isNew={false} onImport={() => setImporting(true)} rowReview={proposal.rowReview} /> : null}
     </Page>
     {edit.leaveDialog}
     {phone ? <PhonePreviewDialog editor={editor} filters={filters} open={previewOpen} onOpenChange={setPreviewOpen} /> : null}

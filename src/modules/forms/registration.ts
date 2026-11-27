@@ -3,6 +3,7 @@ import en from "./locales/en/forms.json";
 import esEnums from "./locales/es/enums.json";
 import enEnums from "./locales/en/enums.json";
 import { lazy } from "react";
+import { withAssistantProposal, type AssistantActionAdapter } from "@/shared/assistant-actions";
 import type { ModuleGuard, ModuleNavigationPanel, ModuleRegistration } from "@/shared/modules/types";
 import { CatalogsIcon, FormsIcon } from "./components/icons";
 
@@ -28,6 +29,19 @@ export const catalogsPath = "/org/formularios/catalogos";
 const CatalogsPage = lazy(() => import("./pages/CatalogsPage").then((module) => ({ default: module.CatalogsPage })));
 const CatalogEditorPage = lazy(() => import("./pages/CatalogEditorPage").then((module) => ({ default: module.CatalogEditorPage })));
 const read = catalogsGuard("formcatalogs.read");
+const catalogPath = (id: string) => `${catalogsPath}/${encodeURIComponent(id)}`;
+
+/**
+ * Las acciones del asistente de Formularios (ADR 0068, §17): cambiar las opciones de un catálogo a mano se confirma en su
+ * editor, con lo propuesto cargado y sin guardar, y la tarjeta aplicada lleva al catálogo.
+ */
+export const formsAssistantActions: readonly AssistantActionAdapter[] = [
+  {
+    action: "catalogoptions.edit@1",
+    href: (proposal) => withAssistantProposal(proposal.target ? catalogPath(proposal.target.id) : catalogsPath, proposal.id),
+    appliedHref: (proposal) => (proposal.target ? catalogPath(proposal.target.id) : undefined),
+  },
+];
 
 export const formsRegistration: ModuleRegistration = {
   id: "forms",
@@ -41,4 +55,5 @@ export const formsRegistration: ModuleRegistration = {
     { access: "business", path: `${catalogsPath}/nuevo`, guard: catalogsGuard("formcatalogs.manage"), Page: CatalogEditorPage },
     { access: "business", path: `${catalogsPath}/:id`, guard: read, Page: CatalogEditorPage },
   ],
+  assistantActions: formsAssistantActions,
 };

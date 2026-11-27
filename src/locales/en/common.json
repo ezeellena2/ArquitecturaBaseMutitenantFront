@@ -304,6 +304,7 @@
       "title": "What changes",
       "where": "Where",
       "added": "Added",
+      "changed": "Changed",
       "removed": "Removed",
       "addedIn": "Added in {{where}}",
       "removedIn": "Removed in {{where}}"

@@ -1,6 +1,7 @@
 import type { TFunction } from "i18next";
 import type { ComponentType, ReactNode } from "react";
 import type { MeResponse, NotificationItem, PendingItem, PlatformFeatureResponse, PlatformTenantDetailResponse } from "@/shared/api/types";
+import type { AssistantActionAdapter } from "@/shared/assistant-actions";
 import type { RowAction } from "@/shared/ui/RowActions";
 import type { IconComponent } from "@/shared/ui/icons";
 import type { Access } from "@/tenancy/access";
@@ -136,6 +137,8 @@ export interface ModuleRegistration {
   notifications?: readonly ModuleNotificationKind[];
   /** Lo que el módulo suma a Plataforma › Configuración (Config-Plat-Base2): sus plazos y sus reglas. */
   platformSettings?: readonly ModulePlatformSettingsPart[];
+  /** Los adaptadores de las acciones del asistente que se confirman en sus pantallas (ADR 0068): los lee `app/assistantActionComposition.ts`. */
+  assistantActions?: readonly AssistantActionAdapter[];
 }
 
 /**

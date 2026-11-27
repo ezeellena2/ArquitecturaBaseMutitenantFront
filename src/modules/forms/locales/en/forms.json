@@ -160,6 +160,17 @@
       "active": "Active",
       "inactive": "Deactivated"
     },
+    "proposal": {
+      "changedSince": "The catalog {{name}} changed since the proposal.",
+      "changed": "{{fields, list}} of {{option}}",
+      "fields": {
+        "text": "text",
+        "code": "code",
+        "value": "value",
+        "detail": "detail",
+        "isActive": "status"
+      }
+    },
     "warnings": {
       "textRepeated": "Another option has the same text."
     },

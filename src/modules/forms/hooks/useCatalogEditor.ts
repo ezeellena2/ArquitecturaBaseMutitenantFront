@@ -25,6 +25,7 @@ import type {
   UpdateFormCatalogRequest,
 } from "../api/types";
 import { catalogFieldErrors, isCatalogConflict } from "../errors";
+import type { CatalogProposalDraft } from "../lib/proposal";
 
 /** El tope del texto y del detalle de una opción, el mismo que valida el servidor (269). */
 export const itemTextMax = 30;
@@ -94,6 +95,16 @@ export function displayValue(value: string | null | undefined, valueType: FormCa
   return `${negative ? "-" : ""}${grouped}${fraction === undefined ? "" : `${culture.decimalSeparator}${fraction}`}`;
 }
 
+/**
+ * El canónico como se escribe en una celda, sin miles («1500», «2,5»): así se vuelve a leer igual, sin la duda de un solo
+ * separador de miles. Lo usa lo que propone el asistente, que llega canónico.
+ */
+function editableValue(value: string | null, valueType: FormCatalogValueType, format: FormatState): string {
+  if (value == null || valueType === "Text" || valueType === "Date") return displayValue(value, valueType, format);
+  const culture = format.referenceData?.cultures.find((item) => item.code === format.culture);
+  return culture ? value.replace(".", culture.decimalSeparator) : value;
+}
+
 type ValueRead = { canonical: string | null; error?: string };
 
 /** Lee el valor escrito con la región del idioma y da el canónico, o el error de su campo (207 y C6). */
@@ -158,6 +169,8 @@ export function useCatalogEditor(id: string | undefined, newValueType: FormCatal
   const [sort, setSort] = useState<FormCatalogItemSortInput | null>(null);
   const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
   const [serverErrors, setServerErrors] = useState<Readonly<Record<string, RowError>>>({});
+  // Las opciones guardadas que toca una propuesta del asistente: con cambios o por borrar se ven aunque no estén en la página.
+  const [proposed, setProposed] = useState<readonly FormCatalogItemRow[]>([]);
   const [nameError, setNameError] = useState<string | undefined>(undefined);
   const [saveError, setSaveError] = useState<unknown>(undefined);
   const [conflict, setConflict] = useState<CatalogConflict | null>(null);
@@ -173,6 +186,7 @@ export function useCatalogEditor(id: string | undefined, newValueType: FormCatal
   const effective = (row: FormCatalogItemRow) => positions[row.id] ?? row.position;
   const ordered = [...pageRows].sort((a, b) => effective(a) - effective(b));
   const byPosition = new Map(ordered.map((row) => [effective(row), row]));
+  const savedRow = (key: string | undefined) => pageRows.find((item) => item.id === key) ?? proposed.find((item) => item.id === key);
 
   const draftOf = (row: FormCatalogItemRow): ItemDraft => {
     const edit = edits[row.id] ?? {};
@@ -185,8 +199,10 @@ export function useCatalogEditor(id: string | undefined, newValueType: FormCatal
     };
   };
 
+  const elsewhere = proposed.filter((row) => !pageRows.some((item) => item.id === row.id) && (edits[row.id] || deletes.has(row.id)));
   const visible = [
     ...ordered.map((row) => ({ key: row.id, row, draft: draftOf(row) })),
+    ...elsewhere.map((row) => ({ key: row.id, row, draft: draftOf(row) })),
     ...added.map((item) => ({ key: item.localId, row: undefined, draft: item as ItemDraft })),
   ];
 
@@ -213,7 +229,8 @@ export function useCatalogEditor(id: string | undefined, newValueType: FormCatal
       ? draft.text.trim() !== "" && visible.some((item) => item.key !== key && !deletes.has(item.key) && sameText(item.draft.text, draft.text))
       : row.textRepeated;
     const neighbor = (offset: number) => row ? byPosition.get(effective(row) + offset) : undefined;
-    const movable = Boolean(row) && !pendingDelete && deletes.size === 0;
+    // Una de otra página se mueve en la suya.
+    const movable = row !== undefined && pageRows.includes(row) && !pendingDelete && deletes.size === 0;
     return {
       key,
       itemId: row?.id,
@@ -245,7 +262,7 @@ export function useCatalogEditor(id: string | undefined, newValueType: FormCatal
       setAdded((current) => current.map((item) => item.localId === key ? { ...item, ...patch } : item));
       return;
     }
-    const row = pageRows.find((item) => item.id === key);
+    const row = savedRow(key);
     if (!row) return;
     setEdits((current) => {
       const next = { ...current[key], ...patch };
@@ -335,7 +352,32 @@ export function useCatalogEditor(id: string | undefined, newValueType: FormCatal
     setServerErrors(snapshot.serverErrors);
   }
 
+  /**
+   * Lo que propone el asistente (catalogoptions.edit@1), sin guardar: las opciones guardadas que toca (`touched`), lo que
+   * cambia en cada una, las nuevas y las que se borran al guardar. Desde ahí se editan como siempre.
+   */
+  function propose(touched: readonly FormCatalogItemRow[], draft: CatalogProposalDraft) {
+    setProposed(touched);
+    setEdits((current) => {
+      const next = { ...current };
+      for (const [key, patch] of Object.entries(draft.changes)) {
+        const { value, ...rest } = patch;
+        next[key] = { ...next[key], ...rest, ...(value !== undefined ? { value: editableValue(value, valueType, format) } : {}) };
+      }
+      return next;
+    });
+    setAdded((current) => [...current, ...draft.added.map((item) => ({ ...item, value: editableValue(item.value, valueType, format) }))]);
+    setDeletes((current) => new Set([...current, ...draft.deletes]));
+  }
+
+  /** Lo que se cambió de una opción guardada, en el orden de la tabla: «Lo que cambia» de la propuesta lo nombra. */
+  const changedFields = (key: string): (keyof ItemDraft)[] => {
+    const edit = edits[key];
+    return edit ? (["text", "code", "value", "detail", "isActive"] as const).filter((field) => edit[field] !== undefined) : [];
+  };
+
   function resetDraft() {
+    setProposed([]);
     setEdits(emptyEdits);
     setAdded([]);
     setDeletes(new Set());
@@ -355,7 +397,7 @@ export function useCatalogEditor(id: string | undefined, newValueType: FormCatal
   }
 
   function itemInput(row: CatalogRowView): FormCatalogItemInput {
-    const original = pageRows.find((item) => item.id === row.itemId);
+    const original = savedRow(row.itemId);
     const value = valueType === "Text"
       ? row.draft.value.trim() === "" ? null : row.draft.value
       : original && edits[row.key]?.value === undefined ? original.value ?? null : readValue(row.draft.value, valueType, format, t).canonical;
@@ -449,20 +491,20 @@ export function useCatalogEditor(id: string | undefined, newValueType: FormCatal
 
   /**
    * «Guardar cambios». Un catálogo con filtros suma sus filtros y su persona de ejemplo (`extra.request`) y, para la caché del
-   * detalle, cómo quedan (`extra.view`).
+   * detalle, cómo quedan (`extra.view`). Devuelve la versión que respondió el guardado, o `undefined` si no se guardó.
    */
-  async function save(extra?: { request: Partial<UpdateFormCatalogRequest>; view: Partial<FormCatalogResponse> }): Promise<boolean> {
-    if (!saved) return false;
+  async function save(extra?: { request: Partial<UpdateFormCatalogRequest>; view: Partial<FormCatalogResponse> }): Promise<number | undefined> {
+    if (!saved) return undefined;
     setSaveError(undefined);
     if (!currentName.trim()) {
       setNameError(t("forms:catalog.errors.nameRequired"));
-      return false;
+      return undefined;
     }
     setNameError(undefined);
     const request = buildRequest(extra?.request);
     if (!request) {
       setErrorRound((round) => round + 1);
-      return false;
+      return undefined;
     }
     try {
       const result = await update.mutateAsync(request);
@@ -472,12 +514,12 @@ export function useCatalogEditor(id: string | undefined, newValueType: FormCatal
       setName(undefined);
       setDescription(undefined);
       void queryClient.invalidateQueries({ queryKey: catalogsQueryRoot });
-      return true;
+      return result.version;
     } catch (error) {
       setSaveError(error);
       applyServerErrors(error);
       if (isCatalogConflict(error)) await openConflict();
-      return false;
+      return undefined;
     }
   }
 
@@ -528,7 +570,7 @@ export function useCatalogEditor(id: string | undefined, newValueType: FormCatal
     itemsDirty,
     total,
     full: total >= catalogItemsMax,
-    edit, add, remove, restore, move, setActive,
+    edit, add, remove, restore, move, setActive, propose, changedFields,
     moves, discardMoves,
     deletes,
     sort, setSort, cancelSort: () => setSort(null),

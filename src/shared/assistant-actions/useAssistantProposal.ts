@@ -3,7 +3,9 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useSearchParams } from "react-router";
 import { ApiError } from "@/shared/api/ApiError";
 import { retryWhileInProgress } from "@/shared/api/useIdempotentMutation";
-import { assistantActions, type AssistantActionContract, type AssistantActionKey } from "@/shared/api/generated/assistant-actions";
+import {
+  assistantActions, type AssistantActionContract, type AssistantActionContractField, type AssistantActionKey,
+} from "@/shared/api/generated/assistant-actions";
 import type { AssistantProposalResponse } from "@/shared/api/types";
 import { assistantProposalQueryKey, markAssistantProposalApplied, readAssistantProposal, requestAssistantProposalAttempt } from "./api";
 import {
@@ -73,23 +75,29 @@ export type AssistantProposal<TForm> =
 /**
  * Abre la propuesta de `?proposal=<id>` en la pantalla de su acción (ADR 0068 §9). `toFormValues` (estable, fuera del
  * componente) pasa lo propuesto al formulario y devuelve `undefined` si algo no entra: entonces la pantalla no abre la
- * propuesta. Al editar, `current` es lo que la pantalla leyó al abrir, memorizado, con los nombres que muestra.
+ * propuesta. Al editar, `current` es lo que la pantalla leyó al abrir, memorizado, con los nombres que muestra. Lo armado
+ * como dato (`fieldsFromTarget`, como las opciones de un catálogo) no publica sus campos en el contrato: `targetFields` son
+ * los del destino que la pantalla leyó, memorizados, y sin ellos la propuesta espera.
  */
 export function useAssistantProposal<TForm>(
   action: AssistantActionKey,
   toFormValues: (values: AssistantProposalValues) => TForm | undefined,
   current?: AssistantProposalValues,
+  targetFields?: readonly AssistantActionContractField[],
 ): AssistantProposal<TForm> {
   const [params] = useSearchParams();
   const proposalId = params.get(assistantProposalParam);
   const query = useAssistantProposalQuery(proposalId);
   const client = useQueryClient();
-  const contract = assistantActions.find((candidate) => assistantActionKey(candidate.id, candidate.version) === action);
+  const published = assistantActions.find((candidate) => assistantActionKey(candidate.id, candidate.version) === action);
+  const contract = useMemo(() => !published?.fieldsFromTarget ? published : targetFields && { ...published, fields: targetFields },
+    [published, targetFields]);
   const data = query.data;
   const matches = data !== undefined && data.kind === "action" && assistantActionKey(data.action, data.version) === action;
 
   const prepared = useMemo(() => {
-    if (!data || !matches || !contract || data.state !== "new") return undefined;
+    if (!data || !matches || !published || data.state !== "new") return undefined;
+    if (!contract) return "waiting" as const;
     const operations = decodeAssistantProposal(contract, data.values);
     if (!operations) return "rejected" as const;
     const base = contract.kind === "edit" ? current : emptyAssistantProposalValues;
@@ -99,7 +107,7 @@ export function useAssistantProposal<TForm>(
     if (!next || formValues === undefined) return "rejected" as const;
     const doubts = assistantProposalDoubts(operations);
     return { formValues, changes: assistantProposalChanges(contract, base, next), doubtOf: (field: string, item?: string) => doubts.get(doubtKey(field, item)) };
-  }, [data, matches, contract, current, toFormValues]);
+  }, [data, matches, published, contract, current, toFormValues]);
 
   const markApplied = useCallback(async (version?: number) => {
     if (!proposalId) return;
@@ -157,7 +165,7 @@ export function useAssistantProposal<TForm>(
   if (!matches) return { status: "none" };
   if (data.state === "applied") return { status: "applied", proposalId, proposal: data };
   if (data.state !== "new") return { status: "unavailable", proposalId, proposal: data };
-  if (!contract || prepared === "rejected") return { status: "rejected", proposalId, proposal: data };
-  if (prepared === undefined || prepared === "waiting") return { status: "waiting", proposalId, proposal: data };
+  if (!published || prepared === "rejected") return { status: "rejected", proposalId, proposal: data };
+  if (prepared === undefined || prepared === "waiting" || !contract) return { status: "waiting", proposalId, proposal: data };
   return { status: "ready", proposalId, proposal: data, action: contract, ...prepared, send, markApplied };
 }

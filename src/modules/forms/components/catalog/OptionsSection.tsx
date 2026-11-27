@@ -2,6 +2,7 @@ import { ArrowDown, ArrowUp, ArrowUpDown, Download, Plus, RotateCcw, Search, Wan
 import { useId, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useFormat } from "@/shared/format/useFormat";
+import type { AssistantProposalFieldReview } from "@/shared/assistant-actions";
 import { saveBlobAs } from "@/shared/lib/saveFile";
 import { cn } from "@/shared/lib/utils";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
@@ -33,12 +34,15 @@ async function saveResponse(response: Response, fallback: string) {
  * selección, el Estado como casilla y ↑ ↓ ✎ 🗑 a la vista; «Restaurar» y «Reactivar», en el ⋮ de la fila (261). Con solo
  * `formcatalogs.read` o dado de baja, la tabla de lectura, con Exportar y la plantilla. Lo apagado dice por qué (116).
  * «Agregar opción» y ✎ abren el modal de opciones; si guardar encuentra un error, se abre en la primera con problemas (117).
+ * Con una propuesta del asistente, `rowReview` marca «Revisá» en el texto de cada opción dudosa, con su motivo debajo
+ * (FRM-Catalogo-Opciones-Propuesta).
  */
-export function OptionsSection({ editor, editable, isNew, onImport }: {
+export function OptionsSection({ editor, editable, isNew, onImport, rowReview }: {
   editor: CatalogEditor;
   editable: boolean;
   isNew: boolean;
   onImport?: () => void;
+  rowReview?: (row: CatalogRowView) => AssistantProposalFieldReview | undefined;
 }) {
   const { t } = useTranslation(["forms", "common"]);
   const format = useFormat();
@@ -120,11 +124,11 @@ export function OptionsSection({ editor, editable, isNew, onImport }: {
   const fieldError = (row: CatalogRowView, field: ItemField | "row") => row.errors[field]
     ? <span role="alert" className="mt-1 block text-[0.75rem] text-[var(--peligro)]">{row.errors[field]}</span> : null;
 
-  const cellInput = (row: CatalogRowView, field: Exclude<ItemField, never>, extra?: ReactNode) => <div className="min-w-0 py-1.5">
+  const cellInput = (row: CatalogRowView, field: Exclude<ItemField, never>, extra?: ReactNode, inputClassName?: string) => <div className="min-w-0 py-1.5">
     <div className="flex items-center gap-1.5">
       <Input value={row.draft[field]} aria-label={t(`forms:catalog.cells.${field}`, { option: label(row) })} aria-invalid={Boolean(row.errors[field]) || undefined}
         disabled={row.pendingDelete} placeholder={field === "detail" ? t("forms:catalog.optional") : undefined}
-        className={cn(field === "code" && "font-mono", field === "value" && "text-right tabular-nums")}
+        className={cn(field === "code" && "font-mono", field === "value" && "text-right tabular-nums", inputClassName)}
         onChange={(event) => editor.edit(row.key, { [field]: event.target.value })} />
       {extra}
     </div>
@@ -167,11 +171,18 @@ export function OptionsSection({ editor, editable, isNew, onImport }: {
       cell: (row) => row.pendingDelete ? null : <Checkbox checked={editor.selected.has(row.key)} aria-label={t("forms:catalog.selection.one", { option: label(row) })} onCheckedChange={() => editor.toggleSelected(row.key)} /> },
     { id: "number", width: "3.25rem", pinned: "left", type: "number", header: "#", cell: number },
     { id: "text", minWidth: "12rem", pinned: "left", header: t("forms:catalog.columns.text"),
-      cell: (row) => <div>
-        {cellInput(row, "text", <small className={cn("shrink-0 tabular-nums text-[var(--t3)]", row.draft.text.length > itemTextMax && "text-[var(--peligro)]")}>{`${row.draft.text.length}/${itemTextMax}`}</small>)}
-        {row.textRepeated && !row.errors.text ? <span className="-mt-1 mb-1 block text-[0.75rem] text-[var(--alerta)]">{t("forms:catalog.warnings.textRepeated")}</span> : null}
-        {fieldError(row, "row")}
-      </div> },
+      cell: (row) => {
+        const doubt = rowReview?.(row);
+        return <div>
+          {cellInput(row, "text", <>
+            {doubt?.adornment}
+            <small className={cn("shrink-0 tabular-nums text-[var(--t3)]", row.draft.text.length > itemTextMax && "text-[var(--peligro)]")}>{`${row.draft.text.length}/${itemTextMax}`}</small>
+          </>, doubt?.className)}
+          {doubt?.warning ? <span role="status" className="-mt-1 mb-1 block text-[0.75rem] text-[var(--alerta)]">{doubt.warning}</span> : null}
+          {row.textRepeated && !row.errors.text ? <span className="-mt-1 mb-1 block text-[0.75rem] text-[var(--alerta)]">{t("forms:catalog.warnings.textRepeated")}</span> : null}
+          {fieldError(row, "row")}
+        </div>;
+      } },
     { id: "code", minWidth: "6rem", header: t("forms:catalog.columns.code"), cell: (row) => cellInput(row, "code") },
     ...(typed ? [{ id: "value", minWidth: "8rem", header: t("forms:catalog.columns.value"), type: valueType === "Date" ? undefined : "number" as const, cell: (row: CatalogRowView) => cellInput(row, "value") }] : []),
     { id: "detail", minWidth: "12rem", header: t("forms:catalog.columns.detail"), cell: (row) => cellInput(row, "detail") },
@@ -189,12 +200,13 @@ export function OptionsSection({ editor, editable, isNew, onImport }: {
   ];
 
   const phoneList = <ul className="flex flex-col">
-    {rows.map((row) => <li key={row.key} className="flex flex-col gap-1 border-b border-[var(--borde)] px-3.5 py-3 text-[0.90625rem]">
+    {rows.map((row) => { const doubt = rowReview?.(row); return <li key={row.key} className="flex flex-col gap-1 border-b border-[var(--borde)] px-3.5 py-3 text-[0.90625rem]">
       <div className="flex items-start gap-2">
         <span className="w-6 shrink-0 text-[var(--t3)] tabular-nums">{number(row)}</span>
-        <span className="min-w-0 flex-1 break-words font-medium">{row.draft.text || t("forms:catalog.newOption")}</span>
+        <span className="min-w-0 flex-1 break-words font-medium">{row.draft.text || t("forms:catalog.newOption")}{doubt ? <span className="ml-2 align-[1px]">{doubt.adornment}</span> : null}</span>
         {editable ? actions(row) : null}
       </div>
+      {doubt?.warning ? <span role="status" className="ml-8 text-[0.8125rem] text-[var(--alerta)]">{doubt.warning}</span> : null}
       <dl className="ml-8 grid grid-cols-[auto_minmax(0,1fr)] gap-x-2 text-[0.8125rem]">
         <dt className="text-[var(--t3)]">{t("forms:catalog.columns.code")}</dt><dd className="font-mono">{row.draft.code || t("forms:catalog.noCode")}</dd>
         {typed ? <><dt className="text-[var(--t3)]">{t("forms:catalog.columns.value")}</dt><dd>{row.draft.value}</dd></> : null}
@@ -202,7 +214,7 @@ export function OptionsSection({ editor, editable, isNew, onImport }: {
           : !row.draft.isActive ? <><dt className="text-[var(--t3)]">{t("forms:catalog.columns.status")}</dt><dd>{t("forms:catalog.status.inactive")}</dd></> : null}
       </dl>
       {fieldError(row, "row")}
-    </li>)}
+    </li>; })}
   </ul>;
 
   const empty = rows.length === 0;

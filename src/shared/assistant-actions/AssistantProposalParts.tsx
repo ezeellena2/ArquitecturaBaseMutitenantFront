@@ -41,6 +41,8 @@ export interface AssistantProposalChangeRow {
   /** Lo mismo dentro de la frase del teléfono: «Se suma en la organización». */
   readonly whereIn?: string;
   readonly added: readonly AssistantProposalChangeItem[];
+  /** Lo que cambia sin sumarse ni quitarse («Detalle de Venta nueva»); con él, la tabla suma «Cambia» (FRM-Catalogo-Opciones-Propuesta). */
+  readonly changed?: readonly AssistantProposalChangeItem[];
   readonly removed: readonly AssistantProposalChangeItem[];
 }
 
@@ -55,14 +57,14 @@ function Names({ items }: { items: readonly AssistantProposalChangeItem[] }) {
 }
 
 /**
- * «Lo que cambia» (Usuario-Propuesta y Rol-Propuesta, .acc-cambia): lo que se suma y lo que se quita sobre lo guardado.
- * En la compu, una tabla en su caja; en el teléfono (M-*-Propuesta), un renglón por lo que se suma y otro por lo que se
- * quita. Sin cambios no se muestra.
+ * «Lo que cambia» (Usuario-Propuesta y Rol-Propuesta, .acc-cambia): lo que se suma y lo que se quita sobre lo guardado y,
+ * si la pantalla lo da, lo que cambia («Cambia», FRM-Catalogo-Opciones-Propuesta). En la compu, una tabla en su caja; en el
+ * teléfono (M-*-Propuesta), un renglón por cada uno que tiene algo. Sin cambios no se muestra.
  */
 export function AssistantProposalChangesSection({ rows }: { rows: readonly AssistantProposalChangeRow[] }) {
   const { t } = useTranslation();
   const { phone } = useAppChrome();
-  const shown = rows.filter((row) => row.added.length > 0 || row.removed.length > 0);
+  const shown = rows.filter((row) => row.added.length > 0 || (row.changed?.length ?? 0) > 0 || row.removed.length > 0);
   if (shown.length === 0) return null;
   const title = t("assistantProposal.changes.title");
   if (phone) return <Section title={title}>
@@ -70,20 +72,25 @@ export function AssistantProposalChangesSection({ rows }: { rows: readonly Assis
       {shown.flatMap((row) => [
         row.added.length ? <SettingsItem key={`${row.key}:added`} title={row.whereIn ? t("assistantProposal.changes.addedIn", { where: row.whereIn }) : t("assistantProposal.changes.added")}
           detail={<Names items={row.added} />} /> : null,
+        row.changed?.length ? <SettingsItem key={`${row.key}:changed`} title={t("assistantProposal.changes.changed")} detail={<Names items={row.changed} />} /> : null,
         row.removed.length ? <SettingsItem key={`${row.key}:removed`} title={row.whereIn ? t("assistantProposal.changes.removedIn", { where: row.whereIn }) : t("assistantProposal.changes.removed")}
           detail={<Names items={row.removed} />} /> : null,
       ])}
     </ul>
   </Section>;
   const where = shown.some((row) => row.where !== undefined);
-  // .acc-tabla: 220 para «Dónde» y el resto a medias; la cabecera arena, con las líneas de las tablas.
-  const columns = where ? "grid-cols-[13.75rem_minmax(0,1fr)_minmax(0,1fr)]" : "grid-cols-2";
+  const changed = shown.some((row) => row.changed !== undefined);
+  // .acc-tabla: 220 para «Dónde» y el resto en partes iguales; la cabecera arena, con las líneas de las tablas.
+  const columns = where
+    ? changed ? "grid-cols-[13.75rem_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)]" : "grid-cols-[13.75rem_minmax(0,1fr)_minmax(0,1fr)]"
+    : changed ? "grid-cols-3" : "grid-cols-2";
   const cell = "min-w-0 px-3.5 py-2.25 [overflow-wrap:anywhere] [&+&]:shadow-[inset_1px_0_0_var(--borde)]";
   return <Section title={title}>
     <div role="table" aria-label={title} className="text-[0.875rem]">
       <div role="row" className={`grid ${columns} bg-[var(--cab)] font-semibold text-[var(--t2)]`}>
         {where ? <span role="columnheader" className={cell}>{t("assistantProposal.changes.where")}</span> : null}
         <span role="columnheader" className={cell}>{t("assistantProposal.changes.added")}</span>
+        {changed ? <span role="columnheader" className={cell}>{t("assistantProposal.changes.changed")}</span> : null}
         <span role="columnheader" className={cell}>{t("assistantProposal.changes.removed")}</span>
       </div>
       {shown.map((row) => <div key={row.key} role="row" className={`grid ${columns} border-t border-[var(--borde)]`}>
@@ -91,6 +98,7 @@ export function AssistantProposalChangesSection({ rows }: { rows: readonly Assis
           {row.whereReview ? <span className="inline-flex flex-wrap items-center gap-2">{row.where}<AssistantProposalReviewMark /></span> : row.where}
         </span> : null}
         <span role="cell" className={cell}><Names items={row.added} /></span>
+        {changed ? <span role="cell" className={cell}><Names items={row.changed ?? []} /></span> : null}
         <span role="cell" className={cell}><Names items={row.removed} /></span>
       </div>)}
     </div>
