@@ -16,6 +16,7 @@ import { acceptPublishedLegalAndReturn, assertPendingTerms, assertPublishedLegal
 import { fixtureChecks } from "./test-e2e-real-whatsapp-ipc.mjs";
 import { runAssistantRealE2E } from "./test-e2e-real-assistant.mjs";
 import { runActionsRealE2E } from "./test-e2e-real-acciones.mjs";
+import { runFormsRealE2E } from "./test-e2e-real-forms.mjs";
 import { acceptAssistantNoticeFromHome } from "./assistant-real-ui.mjs";
 import { completeOperatorFactor } from "./platform-factor-real.mjs";
 import { etapa9Cases } from "./test-e2e-real-e9.mjs";
@@ -2623,6 +2624,12 @@ test("Asistente real E8b en 1440 y 390: seis guiones, SSE durable, archivos y fi
 
 test("Acciones del asistente en 1440 y 390: «Invitar usuario» desde una propuesta del modelo falso y «Ya se guardó» en otra pestaña", { timeout: 900_000 }, async () => {
   await runActionsRealE2E({ build: false });
+});
+
+// E12 · Catálogos (verificación): los cinco casos de la §15 de la spec, con Formularios prendido por Plataforma en una
+// organización nueva del entorno aislado.
+test("Catálogos de la E12 en 1440: a mano, carga de una vez, miembros, contactos y volumen con EXPLAIN", { timeout: 1_800_000 }, async () => {
+  await runFormsRealE2E({ build: false });
 });
 
 test("WhatsApp real en 1440 y 390: OTP, recuperación humana, enlaces y baja", { timeout: 1_920_000 }, async (t) => {
