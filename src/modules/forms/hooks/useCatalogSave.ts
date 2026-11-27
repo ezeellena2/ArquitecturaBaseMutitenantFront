@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import {
-  catalogConflictQueryKey, catalogItemsQueryKey, catalogQueryKey, catalogsQueryRoot, fetchCatalog, fetchCatalogItems, updateCatalog,
+  catalogConflictQueryKey, catalogItemsQueryRoot, catalogQueryKey, catalogsQueryRoot, fetchCatalog, fetchCatalogItems, updateCatalog,
 } from "../api/catalogs";
 import type { FormCatalogItemRow, FormCatalogResponse, PagedResultOfFormCatalogItemRow, UpdateFormCatalogRequest } from "../api/types";
 import { isCatalogConflict } from "../errors";
@@ -22,7 +22,7 @@ export interface CatalogSaveExtra {
 
 /**
  * Guardar un catálogo: «Guardar cambios» manda el `PUT` con la versión de la lectura con la que arrancó el editor y, al
- * entrar, deja lo guardado en la caché de la página a la vista (la tabla no se vacía ni la pantalla sube, 160). Lo que sigue
+ * entrar, deja lo guardado en la caché de las páginas leídas (la tabla no se vacía ni la pantalla sube, 160). Lo que sigue
  * al guardado va en el `onSuccess` del pedido, así «Reintentar» del aviso termina igual (errores). Un 409 abre la revisión
  * con lo guardado ahora, leído por TanStack Query; si esa lectura falla, el 409 se ve en su cartel de siempre.
  */
@@ -55,7 +55,8 @@ export function useCatalogSave(id: string | undefined, data: CatalogData, draft:
   const update = useMutation({ mutationFn: (request: UpdateFormCatalogRequest) => updateCatalog(id!, request) });
   const activation = useMutation({ mutationFn: (request: UpdateFormCatalogRequest) => updateCatalog(id!, request) });
 
-  // Después de guardar: lo guardado pasa a la caché de la ficha y de la página a la vista.
+  // Después de guardar: lo guardado pasa a la caché de la ficha y de cada página o búsqueda leída, no solo de la que se ve: lo
+  // cambiado en otra página o antes de buscar se ve con su valor nuevo al volver, sin pasar por el viejo mientras se relee.
   function keepSavedInView(request: UpdateFormCatalogRequest, nextVersion: number, view: Partial<FormCatalogResponse>, rows = draft.rows,
     edits = draft.edits, deletes = draft.deletes) {
     if (!saved) return;
@@ -63,7 +64,7 @@ export function useCatalogSave(id: string | undefined, data: CatalogData, draft:
       ...saved, name: request.name ?? saved.name, description: request.description ?? null, isActive: request.isActive ?? saved.isActive,
       version: nextVersion, ...view,
     });
-    queryClient.setQueryData<PagedResultOfFormCatalogItemRow>(catalogItemsQueryKey(saved.id, itemsQuery), (current) => current && {
+    queryClient.setQueriesData<PagedResultOfFormCatalogItemRow>({ queryKey: catalogItemsQueryRoot(saved.id) }, (current) => current && {
       ...current,
       items: current.items.filter((row) => !deletes.has(row.id)).map((row) => {
         const shown = rows.find((item) => item.key === row.id);

@@ -38,7 +38,9 @@ export const catalogsQueryRoot = [...formsQueryRoot, "catalogs"] as const;
 export const catalogsQueryKey = (query: CatalogsQuery) => [...catalogsQueryRoot, "list", query] as const;
 export const catalogFilterCountsQueryKey = [...catalogsQueryRoot, "filter-counts"] as const;
 export const catalogQueryKey = (id: string) => [...catalogsQueryRoot, "detail", id] as const;
-export const catalogItemsQueryKey = (id: string, query: CatalogItemsQuery) => [...catalogsQueryRoot, "detail", id, "items", query] as const;
+/** Todas las páginas y búsquedas leídas de las opciones de un catálogo. */
+export const catalogItemsQueryRoot = (id: string) => [...catalogsQueryRoot, "detail", id, "items"] as const;
+export const catalogItemsQueryKey = (id: string, query: CatalogItemsQuery) => [...catalogItemsQueryRoot(id), query] as const;
 export const membersSourceQueryKey = [...catalogsQueryRoot, "sources", "members"] as const;
 export const catalogPreviewQueryKey = (request: FormCatalogPreviewRequest) => [...catalogsQueryRoot, "preview", request] as const;
 /** Lo guardado ahora cuando guardar dio un 409: una lectura por cada revisión (`round`), aparte de la ficha que se edita. */

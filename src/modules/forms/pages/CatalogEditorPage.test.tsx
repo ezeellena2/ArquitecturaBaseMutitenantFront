@@ -206,6 +206,55 @@ describe("CatalogEditorPage (FRM-Catalogo)", () => {
     expect(within(dialog).getByText("Ya hay otra opción con ese código.")).toBeInTheDocument();
   });
 
+  it("lo cambiado en dos páginas y antes de buscar viaja junto al guardar, y después cada opción se ve en su página con su valor nuevo (T09-01)", async () => {
+    let many = Array.from({ length: 12 }, (_, index) => item(`i-${index + 1}`, index + 1, `Opción ${index + 1}`, `O${index + 1}`));
+    serve({
+      items: (url) => {
+        const page = Number(url.searchParams.get("page") ?? "1");
+        const search = url.searchParams.get("search")?.toLocaleLowerCase();
+        const found = search ? many.filter((row) => row.text.toLocaleLowerCase().includes(search)) : many;
+        return paged(found.slice((page - 1) * 10, page * 10), page, found.length);
+      },
+      // Lo guardado queda en el servidor: una relectura ya trae lo nuevo.
+      put: () => {
+        const sent = puts[puts.length - 1].items ?? [];
+        many = many.map((row) => {
+          const input = sent.find((candidate) => candidate.itemId === row.id);
+          return input ? { ...row, code: input.code ?? row.code, text: input.text ?? row.text } : row;
+        });
+        return HttpResponse.json({ version: 8, itemIdentityMap: [] });
+      },
+    });
+    const { user } = mountForms(formsOwner, path);
+    const first = await screen.findByRole("textbox", { name: "Código de Opción 1" });
+    await user.clear(first);
+    await user.paste("O99");
+    await user.click(screen.getByRole("button", { name: /Página siguiente|Siguiente/ }));
+    const field = await screen.findByRole("textbox", { name: "Texto de Opción 11" });
+    await user.clear(field);
+    await user.paste("Opción once");
+    const search = screen.getByRole("searchbox", { name: "Buscar opción" });
+    await user.type(search, "Opción 5");
+    await screen.findByRole("textbox", { name: "Texto de Opción 5" });
+    // La búsqueda no las trae, pero las dos cambiadas siguen a la vista.
+    expect(textbox("Código de Opción 1")).toHaveValue("O99");
+    expect(textbox("Texto de Opción once")).toHaveValue("Opción once");
+    await user.click(saveButton());
+    await waitFor(() => expect(puts).toHaveLength(1));
+    expect(puts[0].items).toEqual([
+      { itemId: "i-1", code: "O99", text: "Opción 1", detail: null, value: null, isActive: true },
+      { itemId: "i-11", code: "O11", text: "Opción once", detail: null, value: null, isActive: true },
+    ]);
+    expect(await screen.findByText("Guardamos el catálogo.")).toBeInTheDocument();
+    // Sin la búsqueda, cada una se ve en su página con lo guardado, sin pasar antes por lo que tenía.
+    await user.clear(search);
+    expect(await screen.findByRole("textbox", { name: "Código de Opción 1" })).toHaveValue("O99");
+    await user.click(screen.getByRole("button", { name: /Página siguiente|Siguiente/ }));
+    await screen.findByRole("textbox", { name: "Texto de Opción 12" });
+    expect(textbox("Texto de Opción once")).toHaveValue("Opción once");
+    expect(screen.queryByRole("textbox", { name: "Texto de Opción 11" })).not.toBeInTheDocument();
+  });
+
   it("si algo usa la opción que se borra, se dice qué: con dos motivos de `uses`, se ve el primero", async () => {
     serve({ put: () => HttpResponse.json({
       code: "Forms.Catalog.ItemInUse", status: 409, title: "Conflict", errors: { "deleteItems[0]": ["No se puede borrar porque se usa. Podés darla de baja."] },
