@@ -16,7 +16,8 @@ import { Input } from "@/shared/ui/input";
 import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions, type RowAction } from "@/shared/ui/RowActions";
 import { exportCatalog, fetchCatalogTemplate } from "../../api/catalogs";
-import { itemTextMax, type CatalogEditor, type CatalogRowView, type ItemField } from "../../hooks/useCatalogEditor";
+import { itemTextMax, rowHasErrors, type CatalogEditor, type CatalogRowView, type ItemField } from "../../hooks/useCatalogEditor";
+import { OptionsDialog, type OptionsDialogOpening } from "./OptionsDialog";
 import { SortDialog } from "./SortDialog";
 
 async function saveResponse(response: Response, fallback: string) {
@@ -31,13 +32,13 @@ async function saveResponse(response: Response, fallback: string) {
  * la plantilla, «Ordenar por…» y los códigos que faltan; abajo, «Buscar opción». En la compu, la tabla editable con la
  * selección, el Estado como casilla y ↑ ↓ ✎ 🗑 a la vista; «Restaurar» y «Reactivar», en el ⋮ de la fila (261). Con solo
  * `formcatalogs.read` o dado de baja, la tabla de lectura, con Exportar y la plantilla. Lo apagado dice por qué (116).
+ * «Agregar opción» y ✎ abren el modal de opciones; si guardar encuentra un error, se abre en la primera con problemas (117).
  */
-export function OptionsSection({ editor, editable, isNew, onImport, onEdit }: {
+export function OptionsSection({ editor, editable, isNew, onImport }: {
   editor: CatalogEditor;
   editable: boolean;
   isNew: boolean;
   onImport?: () => void;
-  onEdit?: (key: string) => void;
 }) {
   const { t } = useTranslation(["forms", "common"]);
   const format = useFormat();
@@ -45,8 +46,23 @@ export function OptionsSection({ editor, editable, isNew, onImport, onEdit }: {
   const titleId = useId();
   const [sortOpen, setSortOpen] = useState(false);
   const [deleting, setDeleting] = useState<CatalogRowView | null>(null);
+  const [dialog, setDialog] = useState<OptionsDialogOpening | null>(null);
+  const [errorRound, setErrorRound] = useState(editor.errorRound);
   const { saved, valueType, rows } = editor;
   const typed = valueType !== "Text";
+
+  // Guardar encontró un error en las opciones: el modal se abre en la primera con problemas, y la lista las marca (117).
+  if (editor.errorRound !== errorRound) {
+    setErrorRound(editor.errorRound);
+    const first = rows.find(rowHasErrors);
+    if (editable && first) setDialog({ mode: "edit", key: first.key, snapshot: editor.takeSnapshot(), startOnList: true });
+  }
+
+  const openAdd = () => {
+    const snapshot = editor.takeSnapshot();
+    setDialog({ mode: "add", key: editor.add(), snapshot });
+  };
+  const openEdit = (key: string) => setDialog({ mode: "edit", key, snapshot: editor.takeSnapshot() });
 
   const importReason = isNew ? t("forms:catalog.reasons.saveFirst")
     : editor.full ? t("forms:catalog.reasons.full")
@@ -69,7 +85,7 @@ export function OptionsSection({ editor, editable, isNew, onImport, onEdit }: {
   const header = <div className="flex flex-wrap items-center gap-2 border-b border-[var(--borde)] px-4 py-3 max-md:px-3.5">
     <h2 id={titleId} className="mr-auto text-[0.875rem] font-semibold text-[var(--t1)]">{t("forms:catalog.options")}</h2>
     {editable ? <>
-      <Button type="button" size="sm" onClick={() => { editor.add(); }} disabledReason={editor.full ? t("forms:catalog.reasons.full") : undefined}>
+      <Button type="button" size="sm" onClick={openAdd} disabledReason={editor.full ? t("forms:catalog.reasons.full") : undefined}>
         <Plus aria-hidden="true" className="size-4" />{t("forms:catalog.actions.add")}
       </Button>
       {phone ? null : <Button type="button" size="sm" variant="outline" onClick={onImport} disabledReason={importReason}>{t("forms:catalog.actions.import")}</Button>}
@@ -128,7 +144,7 @@ export function OptionsSection({ editor, editable, isNew, onImport, onEdit }: {
         disabledReason={moveDisabled} disabled={!moveDisabled && !row.canMoveUp}><ArrowUp aria-hidden="true" className="size-4" /></IconButton>
       <IconButton label={t("forms:catalog.actions.down", { option: label(row) })} onClick={() => editor.move(row.key, "Down")}
         disabledReason={moveDisabled} disabled={!moveDisabled && !row.canMoveDown}><ArrowDown aria-hidden="true" className="size-4" /></IconButton>
-      <IconButton label={t("forms:catalog.actions.edit", { option: label(row) })} onClick={() => onEdit?.(row.key)}><PencilIcon aria-hidden="true" className="size-4" /></IconButton>
+      <IconButton label={t("forms:catalog.actions.edit", { option: label(row) })} onClick={() => openEdit(row.key)}><PencilIcon aria-hidden="true" className="size-4" /></IconButton>
       {row.pendingDelete ? null : row.isNew
         ? <IconButton label={t("forms:catalog.actions.removeNew", { option: label(row) })} onClick={() => editor.remove(row.key)}><TrashIcon aria-hidden="true" className="size-4" /></IconButton>
         : <IconButton label={t("forms:catalog.actions.delete", { option: label(row) })} disabledReason={deleteReason} onClick={() => setDeleting(row)}><TrashIcon aria-hidden="true" className="size-4" /></IconButton>}
@@ -203,6 +219,7 @@ export function OptionsSection({ editor, editable, isNew, onImport, onEdit }: {
         : <EditableTable columns={editable ? editableColumns : readColumns} rows={rows} rowKey={(row) => row.key} />}
     {pageData && pageData.totalCount > 0 ? <Pagination page={pageData.page} pageSize={pageData.pageSize} totalCount={pageData.totalCount} totalPages={pageData.totalPages ?? 1}
       hasPrevious={pageData.hasPrevious ?? false} hasNext={pageData.hasNext ?? false} onPageChange={editor.setPage} onPageSizeChange={editor.setPageSize} /> : null}
+    {dialog ? <OptionsDialog editor={editor} opening={dialog} onClose={() => setDialog(null)} /> : null}
     <SortDialog open={sortOpen} initial={editor.sort} onOpenChange={setSortOpen} onSort={editor.setSort} />
     <ConfirmDialog open={deleting !== null} onOpenChange={(open) => { if (!open) setDeleting(null); }}
       title={t("forms:catalog.deleteDialog.title", { option: deleting ? label(deleting) : "" })} description={t("forms:catalog.deleteDialog.description")}

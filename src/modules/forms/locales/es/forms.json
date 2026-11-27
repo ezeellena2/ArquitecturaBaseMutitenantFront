@@ -186,6 +186,33 @@
       "choose": "Elegí una opción",
       "send": "Enviar"
     },
+    "optionsDialog": {
+      "title": "Opciones de «{{name}}»",
+      "titleNew": "Opciones nuevas de «{{name}}»",
+      "list": "Opciones",
+      "listNew": "Opciones nuevas",
+      "range": "{{from}}–{{to}} de {{total}}",
+      "position": "Opción {{n}} de {{total}}",
+      "newOption": "Nueva opción",
+      "remove": "Quitar opción",
+      "noText": "Sin texto",
+      "newBadge": "Nueva",
+      "hasError": "Tiene un error",
+      "generateCode": "Generar desde el texto",
+      "writeTextFirst": "Escribí el texto antes.",
+      "backToList": "Volver a la lista",
+      "value": {
+        "WholeNumber": "Valor (entero)",
+        "DecimalNumber": "Valor (decimal)",
+        "Date": "Valor (fecha)"
+      },
+      "help": {
+        "text": "Es lo que se ve en WhatsApp.",
+        "code": "No se ve en WhatsApp. Identifica la opción al importar.",
+        "detail": "Se ve debajo del texto en WhatsApp.",
+        "status": "De baja no se ofrece más, y lo ya respondido no cambia."
+      }
+    },
     "conflict": {
       "title": "Otra persona guardó el catálogo",
       "byPerson": "{{name}} lo guardó mientras lo editabas. Tus cambios se conservan hasta que elijas.",

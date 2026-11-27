@@ -82,10 +82,14 @@ describe("CatalogEditorPage (FRM-Catalogo)", () => {
 
   it("una opción nueva se quita sin preguntar y no se puede mover hasta guardarla", async () => {
     const { user } = await openEditor();
+    // «Agregar opción» abre el modal de opciones (117); lo escrito queda en la tabla con «Listo».
     await user.click(screen.getByRole("button", { name: "Agregar opción" }));
-    expect(screen.getByRole("button", { name: "Subir Opción nueva" })).toHaveAttribute("aria-disabled", "true");
-    await user.click(screen.getByRole("button", { name: "Quitar Opción nueva" }));
-    expect(screen.queryByRole("textbox", { name: "Texto de Opción nueva" })).not.toBeInTheDocument();
+    const dialog = await screen.findByRole("dialog", { name: "Opciones nuevas de «Motivos de visita»" });
+    await user.type(within(dialog).getByRole("textbox", { name: "Texto" }), "Garantía");
+    await user.click(within(dialog).getByRole("button", { name: "Listo" }));
+    expect(screen.getByRole("button", { name: "Subir Garantía" })).toHaveAttribute("aria-disabled", "true");
+    await user.click(screen.getByRole("button", { name: "Quitar Garantía" }));
+    expect(screen.queryByRole("textbox", { name: "Texto de Garantía" })).not.toBeInTheDocument();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
@@ -163,7 +167,9 @@ describe("CatalogEditorPage (FRM-Catalogo)", () => {
     await user.click(screen.getByRole("button", { name: "Borrar Reclamo" }));
     await user.click(await screen.findByRole("button", { name: "Borrar opción" }));
     await user.click(saveButton());
-    expect(await screen.findByText("No se puede borrar porque se usa. Podés darla de baja. FormQuestion")).toBeInTheDocument();
+    // El modal de opciones se abre en la que tiene el problema (117).
+    const dialog = await screen.findByRole("dialog", { name: "Opciones de «Motivos de visita»" });
+    expect(within(dialog).getByText("No se puede borrar porque se usa. Podés darla de baja. FormQuestion")).toBeInTheDocument();
     expect(screen.queryByText(/AssistantDraft/)).not.toBeInTheDocument();
   });
 
@@ -186,8 +192,13 @@ describe("CatalogEditorPage (FRM-Catalogo)", () => {
     expect(await screen.findByText("Se puede leer de dos maneras: escribilo sin separador de miles, como 1500 o 1500,5.")).toBeInTheDocument();
     await user.click(saveButton());
     expect(puts).toHaveLength(0);
-    await user.clear(value);
-    await user.type(value, "123456789012345678");
+    // El modal de opciones se abre en la que tiene el problema (117), y ahí se corrige.
+    const dialog = await screen.findByRole("dialog", { name: "Opciones de «Recargo por zona»" });
+    const modalValue = within(dialog).getByRole("textbox", { name: "Valor (decimal)" });
+    expect(modalValue).toHaveValue("1.500");
+    await user.clear(modalValue);
+    await user.type(modalValue, "123456789012345678");
+    await user.click(within(dialog).getByRole("button", { name: "Listo" }));
     await user.click(saveButton());
     await waitFor(() => expect(puts).toHaveLength(1));
     expect(puts[0].items?.[0].value).toBe("123456789012345678");

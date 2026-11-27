@@ -186,6 +186,33 @@
       "choose": "Choose an option",
       "send": "Send"
     },
+    "optionsDialog": {
+      "title": "Options of “{{name}}”",
+      "titleNew": "New options of “{{name}}”",
+      "list": "Options",
+      "listNew": "New options",
+      "range": "{{from}}–{{to}} of {{total}}",
+      "position": "Option {{n}} of {{total}}",
+      "newOption": "New option",
+      "remove": "Remove option",
+      "noText": "No text",
+      "newBadge": "New",
+      "hasError": "Has an error",
+      "generateCode": "Generate from the text",
+      "writeTextFirst": "Enter the text first.",
+      "backToList": "Back to the list",
+      "value": {
+        "WholeNumber": "Value (whole number)",
+        "DecimalNumber": "Value (decimal)",
+        "Date": "Value (date)"
+      },
+      "help": {
+        "text": "It's what shows in WhatsApp.",
+        "code": "It doesn't show in WhatsApp. It identifies the option when importing.",
+        "detail": "It shows below the text in WhatsApp.",
+        "status": "A deactivated option is no longer offered, and what was already answered doesn't change."
+      }
+    },
     "conflict": {
       "title": "Someone else saved the catalog",
       "byPerson": "{{name}} saved it while you were editing. Your changes are kept until you choose.",

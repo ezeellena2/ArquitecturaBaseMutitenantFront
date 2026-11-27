@@ -67,6 +67,18 @@ export interface CatalogConflict {
   readonly freshItems: readonly FormCatalogItemRow[];
 }
 
+/** Las opciones del borrador como estaban al abrir el modal de opciones: «Cancelar» o Esc las devuelven así (117). */
+export interface CatalogDraftSnapshot {
+  readonly edits: Readonly<Record<string, ItemEdits>>;
+  readonly added: readonly NewItem[];
+  readonly deletes: ReadonlySet<string>;
+  readonly selected: ReadonlySet<string>;
+  readonly serverErrors: Readonly<Record<string, RowError>>;
+}
+
+/** Una opción con algún error (no el aviso de texto repetido, que no frena): la lista del modal la marca con un triángulo. */
+export const rowHasErrors = (row: CatalogRowView) => Object.values(row.errors).some(Boolean);
+
 const emptyEdits: Readonly<Record<string, ItemEdits>> = {};
 
 /** El canónico «2500.5» como se ve en la región del idioma («2.500,5»), sin pasar por `Number`, que perdería dígitos (C6). */
@@ -149,6 +161,8 @@ export function useCatalogEditor(id: string | undefined, newValueType: FormCatal
   const [nameError, setNameError] = useState<string | undefined>(undefined);
   const [saveError, setSaveError] = useState<unknown>(undefined);
   const [conflict, setConflict] = useState<CatalogConflict | null>(null);
+  // Sube cada vez que guardar encuentra un error en las opciones: el modal se abre en la primera con problemas (117).
+  const [errorRound, setErrorRound] = useState(0);
   // Lo que se mandó: el índice de un error de `items[i]` o `deleteItems[i]` es el del pedido, no el de la tabla.
   const sent = useRef<{ items: string[]; deleteItems: string[] }>({ items: [], deleteItems: [] });
 
@@ -300,6 +314,27 @@ export function useCatalogEditor(id: string | undefined, newValueType: FormCatal
     }
   }
 
+  /** «Generar desde el texto» del modal: el código de esa opción, desde su texto, sin repetir el de otra. */
+  function generateCode(key: string) {
+    const row = rows.find((item) => item.key === key);
+    if (!row || !row.draft.text.trim()) return;
+    const taken = new Set(rows.filter((item) => item.key !== key && !item.pendingDelete)
+      .map((item) => item.draft.code.trim().toLocaleUpperCase()).filter(Boolean));
+    edit(key, { code: uniqueCode(codeFromText(row.draft.text), taken) });
+  }
+
+  function takeSnapshot(): CatalogDraftSnapshot {
+    return { edits, added, deletes, selected, serverErrors };
+  }
+
+  function restoreSnapshot(snapshot: CatalogDraftSnapshot) {
+    setEdits(snapshot.edits);
+    setAdded(snapshot.added);
+    setDeletes(snapshot.deletes);
+    setSelected(snapshot.selected);
+    setServerErrors(snapshot.serverErrors);
+  }
+
   function resetDraft() {
     setEdits(emptyEdits);
     setAdded([]);
@@ -373,11 +408,15 @@ export function useCatalogEditor(id: string | undefined, newValueType: FormCatal
       next[key] = { ...next[key], [field in { code: 1, text: 1, detail: 1, value: 1 } ? field : "row"]: message };
     }
     setServerErrors(next);
+    if (Object.keys(next).length) setErrorRound((round) => round + 1);
   }
 
   /** Las opciones de un catálogo nuevo, para el `POST` de «Crear catálogo»; `null` si un valor no se puede leer. */
   function createItems(): FormCatalogItemInput[] | null {
-    if (rows.some((row) => row.errors.value && !serverErrors[row.key]?.value)) return null;
+    if (rows.some((row) => row.errors.value && !serverErrors[row.key]?.value)) {
+      setErrorRound((round) => round + 1);
+      return null;
+    }
     sent.current = { items: rows.map((row) => row.key), deleteItems: [] };
     return rows.map(itemInput);
   }
@@ -416,7 +455,10 @@ export function useCatalogEditor(id: string | undefined, newValueType: FormCatal
     }
     setNameError(undefined);
     const request = buildRequest();
-    if (!request) return false;
+    if (!request) {
+      setErrorRound((round) => round + 1);
+      return false;
+    }
     try {
       const result = await update.mutateAsync(request);
       keepSavedInView(request, result.version);
@@ -485,7 +527,8 @@ export function useCatalogEditor(id: string | undefined, newValueType: FormCatal
     deletes,
     sort, setSort, cancelSort: () => setSort(null),
     selected, toggleSelected, selectPage, clearSelection: () => setSelected(new Set()),
-    generateMissingCodes,
+    generateMissingCodes, generateCode,
+    takeSnapshot, restoreSnapshot, errorRound,
     save, saving: update.isPending, saveError, discard, createItems, rejected, setNameError,
     conflict, seeNew, continueEditing,
     setCatalogActive,
