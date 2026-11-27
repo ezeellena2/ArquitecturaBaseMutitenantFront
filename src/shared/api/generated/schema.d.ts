@@ -31609,7 +31609,7 @@ export interface components {
             createdAtUtc: string;
         };
         /** @enum {string} */
-        AssistantRouteKey: "business.users" | "business.roles" | "business.companies" | "business.audit" | "business.home" | "business.forms.catalogs" | "platform.organizations" | "platform.accounts" | "platform.recoveries" | "platform.audit" | "platform.assistant.usage" | "personal.account" | "personal.organizations";
+        AssistantRouteKey: "business.users" | "business.roles" | "business.companies" | "business.audit" | "business.home" | "platform.organizations" | "platform.accounts" | "platform.recoveries" | "platform.audit" | "platform.assistant.usage" | "personal.account" | "personal.organizations" | "business.forms.catalogs";
         AssistantSecurityRowResponse: {
             /** Format: uuid */
             id: string;
