@@ -1832,7 +1832,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Cada mensaje: status suma Uncertain («Sin confirmar», ADR 0066), derivado de la cola mientras Meta no avise otra cosa; failureReason es el texto del motivo guardado (uno de los códigos WhatsApp.Send.*); reviewedByName y reviewedAtUtc dicen quién lo revisó y cuándo. */
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Cada mensaje: status suma Uncertain («Sin confirmar», ADR 0066), derivado de la cola mientras Meta no avise otra cosa; failureReason es el texto del motivo guardado (uno de los códigos WhatsApp.Send.*); reviewedByName y reviewedAtUtc dicen quién lo revisó y cuándo; sentFromPhone marca lo que la organización mandó desde la app del celular, en coexistencia. */
         get: {
             parameters: {
                 query?: {
@@ -3106,7 +3106,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Cada mensaje: status suma Uncertain («Sin confirmar», ADR 0066), derivado de la cola mientras Meta no avise otra cosa; failureReason es el texto del motivo guardado (uno de los códigos WhatsApp.Send.*); reviewedByName y reviewedAtUtc dicen quién lo revisó y cuándo. */
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Cada mensaje: status suma Uncertain («Sin confirmar», ADR 0066), derivado de la cola mientras Meta no avise otra cosa; failureReason es el texto del motivo guardado (uno de los códigos WhatsApp.Send.*); reviewedByName y reviewedAtUtc dicen quién lo revisó y cuándo; sentFromPhone marca lo que la organización mandó desde la app del celular, en coexistencia. */
         get: {
             parameters: {
                 query?: {
@@ -4380,7 +4380,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Cada mensaje: status suma Uncertain («Sin confirmar», ADR 0066), derivado de la cola mientras Meta no avise otra cosa; failureReason es el texto del motivo guardado (uno de los códigos WhatsApp.Send.*); reviewedByName y reviewedAtUtc dicen quién lo revisó y cuándo. */
+        /** @description Atención por WhatsApp (ADR 0038). La organización sale del token y el número de Meta; nunca del cuerpo. Cada mensaje: status suma Uncertain («Sin confirmar», ADR 0066), derivado de la cola mientras Meta no avise otra cosa; failureReason es el texto del motivo guardado (uno de los códigos WhatsApp.Send.*); reviewedByName y reviewedAtUtc dicen quién lo revisó y cuándo; sentFromPhone marca lo que la organización mandó desde la app del celular, en coexistencia. */
         get: {
             parameters: {
                 query?: {
@@ -34900,7 +34900,7 @@ export interface components {
         WhatsAppChatMessageKind: "Text" | "Template" | "Note" | "Event" | "Media";
         /**
          * @description Un mensaje de la conversación. Las notas nunca salen a Meta; los archivos se informan sin descarga hasta la E14. Un
-         *     mensaje saliente sin author es la respuesta automática del bot.
+         *     mensaje saliente sin author es la respuesta automática del bot, salvo que tenga SentFromPhone.
          */
         WhatsAppChatMessageResponse: {
             /** Format: uuid */
@@ -34922,6 +34922,8 @@ export interface components {
              * @description Cuándo se marcó como revisado; null sin revisión.
              */
             reviewedAtUtc?: null | string;
+            /** @description true en un mensaje saliente que la organización mandó desde la app WhatsApp Business del celular, en coexistencia; false en los demás. Un saliente sin author y sin sentFromPhone es la respuesta del bot. Puede faltar en una versión anterior: se lee como false. */
+            sentFromPhone?: boolean;
         };
         /**
          * @description `Uncertain` («Sin confirmar», ADR 0066) se deriva al leer, desde la cola: no se guarda.
