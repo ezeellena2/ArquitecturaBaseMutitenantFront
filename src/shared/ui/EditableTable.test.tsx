@@ -143,4 +143,32 @@ describe("EditableTable", () => {
     expect(() => render(<EditableTable columns={apart} rows={rows} rowKey={(row) => row.id} />)).toThrow(/juntas/);
     silence.mockRestore();
   });
+
+  it("el campo que toma el foco debajo de una fija queda a la vista entero, entre las fijas (accesibilidad)", () => {
+    render(<EditableTable columns={columns} rows={rows} rowKey={(row) => row.id} />);
+    const box = screen.getByRole("table").parentElement!;
+    const place = (element: Element, left: number, right: number) => vi.spyOn(element, "getBoundingClientRect")
+      .mockReturnValue({ left, right, top: 0, bottom: 40, width: right - left, height: 40, x: left, y: 0, toJSON: () => ({}) });
+    // Una caja de 600 px: a la izquierda, la casilla, el número y «Texto», que creció a 200 px; a la derecha, las acciones.
+    const [select, number, text, code, detail, , actions] = cellsOf(1);
+    place(box, 0, 600);
+    place(select, 0, 48);
+    place(number, 48, 88);
+    place(text, 88, 288);
+    place(actions, 456, 600);
+    // El navegador dejó «Código» en el borde izquierdo, debajo de «Texto»: la caja vuelve lo que lo tapa.
+    box.scrollLeft = 300;
+    place(code, 100, 196);
+    screen.getByRole("textbox", { name: "Código de a" }).focus();
+    expect(box.scrollLeft).toBe(300 - (288 - 100));
+    // Y «Detalle», debajo de las acciones: la caja avanza lo que lo tapa, sin llevar su principio debajo de «Texto».
+    box.scrollLeft = 300;
+    place(detail, 400, 592);
+    screen.getByRole("textbox", { name: "Detalle de a" }).focus();
+    expect(box.scrollLeft).toBe(300 + (400 - 288));
+    // Una fija no mueve nada.
+    box.scrollLeft = 300;
+    screen.getByRole("textbox", { name: "Texto de a" }).focus();
+    expect(box.scrollLeft).toBe(300);
+  });
 });

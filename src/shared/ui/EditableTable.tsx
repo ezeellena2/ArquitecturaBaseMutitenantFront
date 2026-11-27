@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { FocusEvent, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/shared/lib/utils";
 import { EmptyState } from "./EmptyState";
@@ -100,6 +100,25 @@ function alignClass<TRow>(column: EditableColumn<TRow>): string | undefined {
 }
 
 /**
+ * El campo que toma el foco en una celda que pasa debajo de las fijas queda a la vista entero, entre ellas (accesibilidad): el
+ * navegador lo lleva al borde de la caja, que es donde están las fijas, así que la caja se corre lo que lo tapan. Las fijas se
+ * miden en el momento, porque «Texto» crece más que su mínimo.
+ */
+function keepFocusedCellInView(event: FocusEvent<HTMLTableElement>) {
+  const cell = event.target instanceof Element ? event.target.closest("td, th") : null;
+  const box = event.currentTarget.parentElement;
+  if (!cell || !box || cell.hasAttribute("data-pinned") || !cell.parentElement) return;
+  const pinned = (side: "left" | "right") => [...cell.parentElement!.children].filter((other) => other.getAttribute("data-pinned") === side)
+    .map((other) => other.getBoundingClientRect());
+  const boxRect = box.getBoundingClientRect();
+  const start = Math.max(boxRect.left, ...pinned("left").map((rect) => rect.right));
+  const end = Math.min(boxRect.right, ...pinned("right").map((rect) => rect.left));
+  const rect = cell.getBoundingClientRect();
+  if (rect.left < start) box.scrollLeft -= start - rect.left;
+  else if (rect.right > end) box.scrollLeft += Math.min(rect.right - end, rect.left - start);
+}
+
+/**
  * La tabla editable (E12, las opciones de un catálogo): sus filas no son de solo lectura, cada celda es un campo. No se
  * aplasta: cada columna tiene su ancho mínimo y, si no entran, la tabla se desplaza a lo ancho dentro de su caja, con las
  * fijas pegadas a su lado y sin ningún «hay más columnas a la derecha» (137). No ordena por columnas: su orden es un dato.
@@ -110,7 +129,7 @@ export function EditableTable<TRow>({ columns, rows, rowKey, emptyTitle, emptyDe
   const lastLeft = columns.findLastIndex((column) => column.pinned === "left");
 
   return (
-    <Table className="text-[0.8125rem]">
+    <Table className="text-[0.8125rem]" onFocus={keepFocusedCellInView}>
       <TableHeader>
         <TableRow className="bg-[var(--s2)] hover:bg-[var(--s2)]">
           {columns.map((column, index) => {
