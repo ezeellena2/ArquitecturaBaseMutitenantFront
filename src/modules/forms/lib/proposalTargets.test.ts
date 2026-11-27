@@ -40,7 +40,8 @@ describe("las opciones que toca una propuesta (cuotas)", () => {
     let open = 0, most = 0;
     const fetchPage = vi.fn(async (query: CatalogItemsQuery) => {
       open += 1; most = Math.max(most, open);
-      await new Promise((resolve) => setTimeout(resolve, 1));
+      // Sin tiempo real (tests): una vuelta de promesas deja que los demás pedidos arranquen antes de que este termine.
+      await Promise.resolve();
       open -= 1;
       return server(rows)(query);
     });

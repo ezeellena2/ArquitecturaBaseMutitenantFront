@@ -79,11 +79,13 @@ describe("composición real de Formularios", () => {
   });
 
   it("en el teléfono, Más tiene el grupo «Gestión de formularios» con «Catálogos»", async () => {
-    asPhone();
-    const app = mount("/mas", reader);
-    const group = await screen.findByRole("list", { name: "Gestión de formularios" });
-    expect(within(group).getAllByRole("link").map((link) => [link.textContent, link.getAttribute("href")])).toEqual([["Catálogos", "/org/formularios/catalogos"]]);
-    expect(within(screen.getByRole("navigation", { name: "Secciones" })).queryByRole("link", { name: "Catálogos" })).not.toBeInTheDocument();
-    expect(await axe(app.container)).toHaveNoViolations();
+    const restore = asPhone();
+    try {
+      const app = mount("/mas", reader);
+      const group = await screen.findByRole("list", { name: "Gestión de formularios" });
+      expect(within(group).getAllByRole("link").map((link) => [link.textContent, link.getAttribute("href")])).toEqual([["Catálogos", "/org/formularios/catalogos"]]);
+      expect(within(screen.getByRole("navigation", { name: "Secciones" })).queryByRole("link", { name: "Catálogos" })).not.toBeInTheDocument();
+      expect(await axe(app.container)).toHaveNoViolations();
+    } finally { restore(); }
   });
 });

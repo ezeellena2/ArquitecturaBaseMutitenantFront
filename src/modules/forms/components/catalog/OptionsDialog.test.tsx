@@ -153,20 +153,22 @@ describe("OptionsDialog (FRM-Catalogo-Opciones)", () => {
   });
 
   it("a 390 px ocupa la pantalla: ✎ abre la opción con «Volver a la lista», y la lista cierra con «Listo»", async () => {
-    asPhone();
-    const { user } = mountForms(formsOwner, path);
-    await user.click(await screen.findByRole("button", { name: "Editar Venta nueva" }));
-    const dialog = await screen.findByRole("dialog", { name: "Opción 2 de 4" });
-    expect(within(dialog).getByText("Motivos de visita")).toBeInTheDocument();
-    await user.type(within(dialog).getByRole("textbox", { name: "Texto" }), " al interior");
-    await user.click(within(dialog).getByRole("button", { name: "Volver a la lista" }));
-    expect(await screen.findByRole("dialog", { name: "Opciones" })).toBe(dialog);
-    expect(optionsOf(dialog)).toHaveLength(4);
-    await user.click(optionsOf(dialog)[3]);
-    expect(screen.getByRole("dialog", { name: "Opción 4 de 4" })).toBe(dialog);
-    await user.click(within(dialog).getByRole("button", { name: "Volver a la lista" }));
-    await user.click(within(dialog).getByRole("button", { name: "Listo" }));
-    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
-    expect(screen.getByText("Venta nueva al interior")).toBeInTheDocument();
+    const restore = asPhone();
+    try {
+      const { user } = mountForms(formsOwner, path);
+      await user.click(await screen.findByRole("button", { name: "Editar Venta nueva" }));
+      const dialog = await screen.findByRole("dialog", { name: "Opción 2 de 4" });
+      expect(within(dialog).getByText("Motivos de visita")).toBeInTheDocument();
+      await user.type(within(dialog).getByRole("textbox", { name: "Texto" }), " al interior");
+      await user.click(within(dialog).getByRole("button", { name: "Volver a la lista" }));
+      expect(await screen.findByRole("dialog", { name: "Opciones" })).toBe(dialog);
+      expect(optionsOf(dialog)).toHaveLength(4);
+      await user.click(optionsOf(dialog)[3]);
+      expect(screen.getByRole("dialog", { name: "Opción 4 de 4" })).toBe(dialog);
+      await user.click(within(dialog).getByRole("button", { name: "Volver a la lista" }));
+      await user.click(within(dialog).getByRole("button", { name: "Listo" }));
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+      expect(screen.getByText("Venta nueva al interior")).toBeInTheDocument();
+    } finally { restore(); }
   });
 });

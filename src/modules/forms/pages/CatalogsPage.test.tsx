@@ -151,16 +151,19 @@ describe("Catálogos", () => {
   });
 
   it("a 390 px cada catálogo es una tarjeta, con la lupa, «Filtros» y el «+» para uno nuevo", async () => {
-    asPhone();
-    serve();
-    const { container } = mountForms(formsOwner, listPath);
-    const card = await screen.findByRole("link", { name: /Responsables de obra/ });
-    expect(card).toHaveAttribute("href", `${listPath}/c-responsables`);
-    expect(cardData(card.closest("li")!).map(([label]) => label)).toEqual(["De dónde salen", "Opciones", "Estado"]);
-    expect(screen.getByRole("button", { name: "Buscar por nombre" })).toBeVisible();
-    expect(screen.getByRole("button", { name: "Filtros de catálogos" })).toBeVisible();
-    expect(screen.getByRole("link", { name: "Nuevo catálogo" })).toHaveAttribute("href", `${listPath}/nuevo`);
-    expect(await axe(container)).toHaveNoViolations();
+    // El teléfono se deshace al terminar: los tests que siguen corren en la compu, en cualquier orden (tests).
+    const restore = asPhone();
+    try {
+      serve();
+      const { container } = mountForms(formsOwner, listPath);
+      const card = await screen.findByRole("link", { name: /Responsables de obra/ });
+      expect(card).toHaveAttribute("href", `${listPath}/c-responsables`);
+      expect(cardData(card.closest("li")!).map(([label]) => label)).toEqual(["De dónde salen", "Opciones", "Estado"]);
+      expect(screen.getByRole("button", { name: "Buscar por nombre" })).toBeVisible();
+      expect(screen.getByRole("button", { name: "Filtros de catálogos" })).toBeVisible();
+      expect(screen.getByRole("link", { name: "Nuevo catálogo" })).toHaveAttribute("href", `${listPath}/nuevo`);
+      expect(await axe(container)).toHaveNoViolations();
+    } finally { restore(); }
   });
 });
 
