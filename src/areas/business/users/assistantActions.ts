@@ -1,4 +1,5 @@
 import { withAssistantProposal, type AssistantActionAdapter } from "@/shared/assistant-actions";
+import { homeOf } from "@/tenancy/access";
 import { InviteUserProposalDialog } from "./components/InviteUserDialog";
 
 const usersPath = "/org/usuarios";
@@ -12,7 +13,7 @@ const memberPath = (target: { readonly id: string } | null | undefined) => (targ
 export const usersAssistantActions: readonly AssistantActionAdapter[] = [
   {
     action: "users.invite@1",
-    href: (proposal) => withAssistantProposal("/org", proposal.id),
+    href: (proposal) => withAssistantProposal(homeOf("business"), proposal.id),
     Dialog: InviteUserProposalDialog,
     // La invitación se ve en la lista («Ver en Usuarios»), y ahí se revisa una «Sin confirmar».
     appliedHref: () => usersPath,
