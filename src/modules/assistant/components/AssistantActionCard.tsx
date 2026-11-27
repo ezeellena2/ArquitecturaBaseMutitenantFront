@@ -1,24 +1,22 @@
-import { Fragment, useEffect, useRef } from "react";
+import { Fragment, useEffect, useRef, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
-import { CircleAlert } from "lucide-react";
 import type { AssistantMessageResponse } from "@/modules/assistant/api/types";
+import { apiErrorMessage } from "@/shared/api/errorMessage";
 import type { AssistantProposalResponse } from "@/shared/api/types";
+import { useRetryAfterOf } from "@/shared/api/useRetryAfterCountdown";
 import {
-  assistantActionKey, assistantActions, assistantProposalQueryKey, useAssistantActionAdapter, useAssistantProposalQuery, withAssistantProposal,
-  type AssistantActionAdapter, type AssistantActionContract,
+  AssistantProposalReviewMark, assistantActionKey, assistantActions, assistantProposalQueryKey, useAssistantActionAdapter, useAssistantProposalDoubtReasons,
+  useAssistantProposalQuery, withAssistantProposal, type AssistantActionAdapter, type AssistantActionContract,
 } from "@/shared/assistant-actions";
 import { useMediaQuery } from "@/shared/hooks/useMediaQuery";
 import { Button } from "@/shared/ui/button";
+import { TextWithEmails } from "@/shared/ui/format/EmailText";
+import { Spinner } from "@/shared/ui/Spinner";
 
 type MessageProposal = NonNullable<AssistantMessageResponse["proposal"]>;
-
-// Las dudas («Revisá») que tienen texto publicado; una clave desconocida deja solo la marca, nunca la clave a la vista.
-const doubtTexts: Readonly<Record<string, string>> = {
-  "Assistant.Action.Doubt.Similar": "actionCard.doubts.similar",
-};
 
 interface CardItem {
   readonly text: string;
@@ -89,14 +87,27 @@ function unavailableText(contract: AssistantActionContract, reason: AssistantPro
 
 const linkClass = "rounded-[0.25rem] font-semibold whitespace-nowrap text-[var(--marca-tx)] outline-none hover:underline focus-visible:ring-[3px] focus-visible:ring-[var(--foco-halo)]";
 
-function FoldedCard({ name, subject, tag, reason, link }: { name: string; subject?: string; tag: string; reason?: string; link?: { to: string; text: string } }) {
+function FoldedCard({ name, subject, tag, reason, link, children }: {
+  name: string; subject?: string; tag?: string; reason?: string; link?: { to: string; text: string }; children?: ReactNode;
+}) {
   return <div role="group" aria-label={name} className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1.5 rounded-[0.625rem] border border-[var(--borde2)] bg-[var(--superficie)] px-3 py-2 text-[0.8125rem] max-md:py-2.5 max-md:text-[0.875rem]">
     <span className="font-semibold text-[var(--t1)]">{name}</span>
-    {subject ? <span className="min-w-0 [overflow-wrap:anywhere] text-[var(--t1)]">{subject}</span> : null}
-    <span className="whitespace-nowrap rounded-[0.1875rem] border border-[var(--borde2)] px-1.5 text-[0.71875rem] text-[var(--t2)]">{tag}</span>
+    {subject ? <span className="min-w-0 [overflow-wrap:anywhere] text-[var(--t1)]"><TextWithEmails value={subject} /></span> : null}
+    {tag ? <span className="whitespace-nowrap rounded-[0.1875rem] border border-[var(--borde2)] px-1.5 text-[0.71875rem] text-[var(--t2)]">{tag}</span> : null}
     {reason ? <span className="text-[var(--t2)]">{reason}</span> : null}
     {link ? <Link className={linkClass} to={link.to}>{link.text}</Link> : null}
+    {children}
   </div>;
+}
+
+/** No se pudo leer la propuesta: lo dice en el lugar de la tarjeta, con «Reintentar» (que espera la cuenta de un 429). */
+function CardFailure({ name, error, retrying, onRetry }: { name: string; error: unknown; retrying: boolean; onRetry: () => void }) {
+  const { t } = useTranslation("assistant");
+  const limit = useRetryAfterOf(error);
+  return <FoldedCard name={name}>
+    <span role="alert" className="min-w-0 text-[var(--peligro-tx)]">{apiErrorMessage(error, t)}</span>
+    <Button type="button" variant="outline" size="sm" className="h-7" pending={retrying} disabled={limit.isRunning} onClick={onRetry}>{limit.label ?? t("retry")}</Button>
+  </FoldedCard>;
 }
 
 function OpenButton({ adapter, contract, proposal, label, phone }: { adapter: AssistantActionAdapter; contract: AssistantActionContract; proposal: AssistantProposalResponse; label: string; phone: boolean }) {
@@ -111,7 +122,8 @@ function OpenButton({ adapter, contract, proposal, label, phone }: { adapter: As
 /**
  * La tarjeta de una propuesta del asistente en el hilo, después del texto de la IA (Asistente-Org-Acciones). Lee la
  * propuesta del servidor (el estado y los nombres de ahora) y muestra sus seis estados: nueva, con «Revisá», reemplazada,
- * ya no disponible, aplicada y sin confirmar. El botón abre la pantalla de la acción con `?proposal=<id>`.
+ * ya no disponible, aplicada y sin confirmar; mientras la lee, el aro en su lugar, y si no puede, el error con «Reintentar».
+ * El botón abre la pantalla de la acción con `?proposal=<id>`.
  */
 export function AssistantActionCard({ proposal: summary }: { proposal: MessageProposal }) {
   const { t, i18n } = useTranslation("assistant");
@@ -129,11 +141,19 @@ export function AssistantActionCard({ proposal: summary }: { proposal: MessagePr
     void client.invalidateQueries({ queryKey: assistantProposalQueryKey(summary.id) });
   }, [client, summary.id, summary.state]);
 
+  const reasonsOf = useAssistantProposalDoubtReasons();
   const proposal = query.data;
   // Una acción que este front no conoce (otra versión del contrato) no tiene con qué nombrarse.
-  if (!contract || !proposal || proposal.kind !== "action") return null;
+  if (!contract) return null;
   const texts = `actionCard.actions.${contract.id}`;
   const name = t(`${texts}.name`);
+  // Mientras se lee la propuesta, la tarjeta ocupa su lugar con el aro; si la lectura falla, lo dice ahí mismo.
+  if (!proposal) {
+    return query.isError
+      ? <CardFailure name={name} error={query.error} retrying={query.isFetching} onRetry={() => void query.refetch()} />
+      : <FoldedCard name={name}><Spinner className="inline-flex [&>span]:size-3.5" /></FoldedCard>;
+  }
+  if (proposal.kind !== "action") return null;
   const subject = cardSubject(contract, proposal);
 
   switch (proposal.state) {
@@ -163,16 +183,14 @@ export function AssistantActionCard({ proposal: summary }: { proposal: MessagePr
     </div>
     <dl className="grid grid-cols-[11.875rem_minmax(0,1fr)] gap-x-3.5 gap-y-1.5 px-3 pt-2.5 pb-3 max-md:grid-cols-[7rem_minmax(0,1fr)]">
       {rows.map((row) => {
-        const reasons = [...new Set(row.items.flatMap((item) => (item.doubt && doubtTexts[item.doubt] ? [t(doubtTexts[item.doubt])] : [])))];
+        const reasons = reasonsOf(row.items.map((item) => item.doubt));
         return <Fragment key={row.key}>
           <div className="contents">
             <dt className="text-[var(--t2)]">{row.label}</dt>
             <dd className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 [overflow-wrap:anywhere] text-[var(--t1)]">
               {row.items.map((item, index) => <span key={index} className="inline-flex flex-wrap items-center gap-x-2 gap-y-1">
-                <span>{item.text}{index < row.items.length - 1 ? "," : null}</span>
-                {item.doubt ? <span className="inline-flex h-5 items-center gap-1 whitespace-nowrap rounded-[0.1875rem] bg-[var(--alerta-t)] px-1.5 text-[0.71875rem] font-semibold text-[var(--alerta-tx)]">
-                  <CircleAlert className="size-3" aria-hidden="true" />{t("actionCard.review")}
-                </span> : null}
+                <span><TextWithEmails value={item.text} />{index < row.items.length - 1 ? "," : null}</span>
+                {item.doubt ? <AssistantProposalReviewMark /> : null}
               </span>)}
             </dd>
           </div>

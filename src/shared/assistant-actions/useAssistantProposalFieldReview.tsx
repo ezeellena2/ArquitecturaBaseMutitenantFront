@@ -15,15 +15,24 @@ export interface AssistantProposalFieldReview {
 }
 
 /**
+ * El motivo de cada duda que tiene texto publicado («Hay más de una opción parecida.»), sin repetir. Lo usan el campo de
+ * la pantalla y la tarjeta del hilo, así una duda nueva se escribe en un solo lugar.
+ */
+export function useAssistantProposalDoubtReasons() {
+  const { t } = useTranslation();
+  return (doubts: readonly (string | null | undefined)[]): string[] =>
+    [...new Set(doubts.flatMap((key) => (key && doubtTexts[key] ? [t(doubtTexts[key])] : [])))];
+}
+
+/**
  * «Revisá» en un campo (.acc-duda): el borde ámbar, la marca adentro y el motivo debajo, como el error de un campo. Recibe
  * las dudas de lo que muestra el campo (de cada elemento elegido) y devuelve `undefined` si ninguna duda.
  */
 export function useAssistantProposalFieldReview() {
-  const { t } = useTranslation();
+  const reasonsOf = useAssistantProposalDoubtReasons();
   return (doubts: readonly (string | undefined)[]): AssistantProposalFieldReview | undefined => {
-    const keys = doubts.filter((doubt): doubt is string => Boolean(doubt));
-    if (keys.length === 0) return undefined;
-    const reasons = [...new Set(keys.flatMap((key) => (doubtTexts[key] ? [t(doubtTexts[key])] : [])))];
+    if (!doubts.some(Boolean)) return undefined;
+    const reasons = reasonsOf(doubts);
     return {
       warning: reasons.length ? reasons.join(" ") : undefined,
       adornment: <AssistantProposalReviewMark />,

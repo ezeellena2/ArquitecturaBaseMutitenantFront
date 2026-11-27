@@ -2,13 +2,19 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createInstance } from "i18next";
-import { HttpResponse, http } from "msw";
+import { HttpResponse, delay, http } from "msw";
 import { I18nextProvider } from "react-i18next";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router";
 import { afterEach, describe, expect, it } from "vitest";
 import { axe } from "vitest-axe";
 import es from "@/modules/assistant/locales/es/assistant.json";
 import en from "@/modules/assistant/locales/en/assistant.json";
+import commonEs from "@/locales/es/common.json";
+import commonEn from "@/locales/en/common.json";
+import errorsEs from "@/locales/es/errors.json";
+import errorsEn from "@/locales/en/errors.json";
+import formatEs from "@/locales/es/format.json";
+import formatEn from "@/locales/en/format.json";
 import type { AssistantMessageResponse } from "@/modules/assistant/api/types";
 import { resetHttpClient } from "@/shared/api/httpClient";
 import type { AssistantProposalResponse } from "@/shared/api/types";
@@ -85,10 +91,17 @@ function Where() {
   return <p data-testid="where">{location.pathname}{location.search}</p>;
 }
 
-async function mount(proposal: AssistantProposalResponse, options: { language?: string; registry?: AssistantActionAdapter[] } = {}) {
-  server.use(http.get(`/api/organization/assistant/proposals/${proposal.id}`, () => HttpResponse.json(proposal)));
+async function mount(proposal: AssistantProposalResponse, options: { language?: string; registry?: AssistantActionAdapter[]; respond?: () => Response | Promise<Response> } = {}) {
+  server.use(http.get(`/api/organization/assistant/proposals/${proposal.id}`, options.respond ?? (() => HttpResponse.json(proposal))));
   const i18n = createInstance();
-  await i18n.init({ lng: options.language ?? "es", fallbackLng: false, resources: { es: { assistant: es }, en: { assistant: en } }, interpolation: { escapeValue: false } });
+  await i18n.init({
+    lng: options.language ?? "es", fallbackLng: false, defaultNS: "common",
+    resources: {
+      es: { assistant: es, common: commonEs, errors: errorsEs, format: formatEs },
+      en: { assistant: en, common: commonEn, errors: errorsEn, format: formatEn },
+    },
+    interpolation: { escapeValue: false },
+  });
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   const summary: MessageProposal = { id: proposal.id, kind: proposal.kind, action: proposal.action, version: proposal.version, state: proposal.state };
   const view = (message: MessageProposal) => <I18nextProvider i18n={i18n}><QueryClientProvider client={client}>
@@ -105,7 +118,12 @@ async function mount(proposal: AssistantProposalResponse, options: { language?: 
   return { ...result, client, rerender: (message: MessageProposal) => result.rerender(view(message)) };
 }
 
-const card = (name: string) => screen.findByRole("group", { name });
+// La tarjeta ya leída: mientras carga ocupa su lugar con el mismo nombre y el aro.
+const card = (name: string) => waitFor(() => {
+  const found = screen.getByRole("group", { name });
+  expect(within(found).queryByRole("status")).toBeNull();
+  return found;
+});
 
 afterEach(() => resetHttpClient());
 
@@ -143,6 +161,41 @@ describe("AssistantActionCard", () => {
     ]);
     expect(found.textContent).not.toContain("Assistant.Action");
     expect(await axe(app.container)).toHaveNoViolations();
+  });
+
+  it("un correo se parte después de la @ y antes de un punto del dominio, nunca en cualquier letra, también plegado", async () => {
+    const app = await mount(removeUser());
+    const found = await card("Quitar de la organización");
+    const mail = [...found.querySelectorAll("dd")].find((dd) => dd.textContent === "martin.paz@delta.ejemplo.com");
+
+    expect(mail?.innerHTML).toContain("martin.paz@<wbr>delta<wbr>.ejemplo<wbr>.com");
+    app.unmount();
+
+    await mount(invite({ state: "replaced" }));
+    expect((await card("Invitación de usuario")).innerHTML).toContain("ana.lopez@<wbr>delta<wbr>.ejemplo<wbr>.com");
+  });
+
+  it("mientras lee la propuesta, la tarjeta ocupa su lugar con el aro, sin datos ni botón", async () => {
+    const app = await mount(invite(), { respond: async () => { await delay("infinite"); return HttpResponse.json(invite()); } });
+    const found = await screen.findByRole("group", { name: "Invitación de usuario" });
+
+    expect(within(found).getByRole("status")).toHaveTextContent("Cargando…");
+    expect(within(found).queryByRole("link")).toBeNull();
+    expect(await axe(app.container)).toHaveNoViolations();
+  });
+
+  it("si no puede leer la propuesta, lo dice en su lugar con «Reintentar», y al reintentar se ve la tarjeta", async () => {
+    let fail = true;
+    const app = await mount(invite(), { respond: () => (fail ? HttpResponse.json({ traceId: "trace" }, { status: 500 }) : HttpResponse.json(invite())) });
+    const failed = await card("Invitación de usuario");
+
+    expect(await within(failed).findByRole("alert")).toHaveTextContent("Algo salió mal. Probá de nuevo en un rato.");
+    expect(await axe(app.container)).toHaveNoViolations();
+
+    fail = false;
+    await userEvent.click(within(failed).getByRole("button", { name: "Reintentar" }));
+    expect(await within(await card("Invitación de usuario")).findByRole("link", { name: "Revisar e invitar" })).toBeVisible();
+    expect(screen.queryByRole("alert")).toBeNull();
   });
 
   it("editar: lo que se suma y lo que se quita, cada uno en su renglón, con la persona de ahora", async () => {

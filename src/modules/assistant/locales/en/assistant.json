@@ -420,7 +420,6 @@
     }
   },
   "actionCard": {
-    "review": "Review",
     "reason": "Reason",
     "replaced": "Replaced",
     "unavailable": "No longer available",
@@ -429,9 +428,6 @@
       "module": "That feature is no longer enabled in your organization.",
       "version": "It's from an earlier version. Ask for it again.",
       "subject": "That person's account was closed."
-    },
-    "doubts": {
-      "similar": "There's more than one similar option."
     },
     "actions": {
       "users": {
