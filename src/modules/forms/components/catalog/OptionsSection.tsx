@@ -128,13 +128,17 @@ export function OptionsSection({ editor, editable, isNew, onImport, rowReview }:
   </div>;
 
   const label = (row: CatalogRowView) => row.draft.text.trim() || t("forms:catalog.newOption");
+  // El error de una celda describe su campo (aria-describedby), como en FormField (accesibilidad).
+  const errorId = (row: CatalogRowView, field: ItemField | "row") => `${titleId}-${row.key}-${field}-error`;
   const fieldError = (row: CatalogRowView, field: ItemField | "row") => row.errors[field]
-    ? <span role="alert" className="mt-1 block text-[0.75rem] text-[var(--peligro)]">{row.errors[field]}</span> : null;
+    ? <span id={errorId(row, field)} role="alert" className="mt-1 block text-[0.75rem] text-[var(--peligro)]">{row.errors[field]}</span> : null;
 
+  // El código y el detalle llevan el tope del contrato: al llegar, no se escribe más (269 y O13); el texto lo dice su contador.
+  const maxLengths: Partial<Record<ItemField, number>> = { code: catalogLimits.itemCode, detail: catalogLimits.itemDetail };
   const cellInput = (row: CatalogRowView, field: Exclude<ItemField, never>, extra?: ReactNode, inputClassName?: string) => <div className="min-w-0 py-1.5">
     <div className="flex items-center gap-1.5">
       <Input value={row.draft[field]} aria-label={t(`forms:catalog.cells.${field}`, { option: label(row) })} aria-invalid={Boolean(row.errors[field]) || undefined}
-        disabled={row.pendingDelete}
+        aria-describedby={row.errors[field] ? errorId(row, field) : undefined} disabled={row.pendingDelete} maxLength={maxLengths[field]}
         className={cn(field === "code" && "font-mono", field === "value" && "text-right tabular-nums", inputClassName)}
         onChange={(event) => editor.edit(row.key, { [field]: event.target.value })} />
       {extra}
@@ -170,7 +174,8 @@ export function OptionsSection({ editor, editable, isNew, onImport, rowReview }:
   const pageKeys = rows.filter((row) => !row.pendingDelete).map((row) => row.key);
   const allChosen = pageKeys.length > 0 && pageKeys.every((key) => editor.selected.has(key));
   const someChosen = pageKeys.some((key) => editor.selected.has(key));
-  const number = (row: CatalogRowView) => row.number == null ? "—" : format.formatInteger(row.number);
+  // Una nueva todavía no tiene número: «—» con EmptyValue, tenue y «Sin dato» para el lector (formatos).
+  const number = (row: CatalogRowView) => row.number == null ? <EmptyValue /> : format.formatInteger(row.number);
 
   const editableColumns: EditableColumn<CatalogRowView>[] = [
     { id: "select", width: "2.75rem", pinned: "left",
@@ -183,7 +188,7 @@ export function OptionsSection({ editor, editable, isNew, onImport, rowReview }:
         return <div>
           {cellInput(row, "text", <>
             {doubt?.adornment}
-            <small className={cn("shrink-0 tabular-nums text-[var(--t3)]", row.draft.text.length > catalogLimits.itemText && "text-[var(--peligro)]")}>{`${row.draft.text.length}/${catalogLimits.itemText}`}</small>
+            <small className={cn("shrink-0 tabular-nums text-[var(--t3)]", row.draft.text.length > catalogLimits.itemText && "text-[var(--peligro)]")}>{`${format.formatInteger(row.draft.text.length)}/${format.formatInteger(catalogLimits.itemText)}`}</small>
           </>, doubt?.className)}
           {doubt?.warning ? <span role="status" className="-mt-1 mb-1 block text-[0.75rem] text-[var(--alerta)]">{doubt.warning}</span> : null}
           {row.textRepeated && !row.errors.text ? <span className="-mt-1 mb-1 block text-[0.75rem] text-[var(--alerta)]">{t("forms:catalog.warnings.textRepeated")}</span> : null}

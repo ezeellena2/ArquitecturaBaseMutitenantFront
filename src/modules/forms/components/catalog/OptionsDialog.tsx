@@ -7,6 +7,7 @@ import { cn } from "@/shared/lib/utils";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { Button } from "@/shared/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { AlertTriangleIcon, ChevronLeftIcon, TrashIcon } from "@/shared/ui/icons";
 import { InfoTip } from "@/shared/ui/InfoTip";
 import { Input } from "@/shared/ui/input";
@@ -83,7 +84,8 @@ export function OptionsDialog({ editor, opening, onClose }: { editor: CatalogEdi
   const typed = editor.valueType !== "Text";
 
   const textOf = (row: CatalogRowView) => row.draft.text.trim();
-  const number = (row: CatalogRowView) => row.number == null ? "—" : format.formatInteger(row.number);
+  // Una nueva todavía no tiene número: «—» con EmptyValue, tenue y «Sin dato» para el lector (formatos).
+  const number = (row: CatalogRowView) => row.number == null ? <EmptyValue /> : format.formatInteger(row.number);
   const position = (row: CatalogRowView) => row.isNew || row.number == null
     ? t("forms:catalog.optionsDialog.newOption")
     : t("forms:catalog.optionsDialog.position", { n: format.formatInteger(row.number), total: format.formatInteger(editor.saved?.itemCounts.total ?? 0) });
@@ -225,13 +227,13 @@ export function OptionsDialog({ editor, opening, onClose }: { editor: CatalogEdi
           <Input {...control} data-option-text="" value={row.draft.text} autoComplete="off" className="pr-14"
             onChange={(event) => set({ text: event.target.value })} />
           <small className={cn("pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[0.71875rem] tabular-nums", row.draft.text.length > catalogLimits.itemText ? "text-[var(--peligro)]" : "text-[var(--t3)]")}>
-            {`${row.draft.text.length}/${catalogLimits.itemText}`}
+            {`${format.formatInteger(row.draft.text.length)}/${format.formatInteger(catalogLimits.itemText)}`}
           </small>
         </div>}
       </OptionField>
       <OptionField label={t("forms:catalog.columns.code")} required help={t("forms:catalog.optionsDialog.help.code")} error={row.errors.code}>
         {(control) => <div className="flex items-center gap-3">
-          <Input {...control} value={row.draft.code} autoComplete="off" className="min-w-0 flex-1 font-mono"
+          <Input {...control} value={row.draft.code} autoComplete="off" maxLength={catalogLimits.itemCode} className="min-w-0 flex-1 font-mono"
             onChange={(event) => set({ code: event.target.value })} />
           <Button type="button" size="sm" variant="link" disabledReason={textOf(row) ? undefined : t("forms:catalog.optionsDialog.writeTextFirst")}
             onClick={() => editor.generateCode(row.key)}>{t("forms:catalog.optionsDialog.generateCode")}</Button>
@@ -242,7 +244,7 @@ export function OptionsDialog({ editor, opening, onClose }: { editor: CatalogEdi
           className={editor.valueType === "Date" ? undefined : "text-right tabular-nums"} onChange={(event) => set({ value: event.target.value })} />}
       </OptionField> : null}
       <OptionField label={t("forms:catalog.columns.detail")} help={t("forms:catalog.optionsDialog.help.detail")} error={row.errors.detail}>
-        {(control) => <Input {...control} value={row.draft.detail} autoComplete="off"
+        {(control) => <Input {...control} value={row.draft.detail} autoComplete="off" maxLength={catalogLimits.itemDetail}
           onChange={(event) => set({ detail: event.target.value })} />}
       </OptionField>
       {row.isNew ? null : <OptionField label={t("forms:catalog.columns.status")} help={t("forms:catalog.optionsDialog.help.status")}>

@@ -6,6 +6,7 @@ import { server } from "@/test/mocks/server";
 import { choose } from "@/test/picker";
 import { asPhone } from "@/test/utils/phone";
 import type { FormCatalogItemRow, FormCatalogResponse, UpdateFormCatalogRequest } from "../../api/types";
+import { catalogLimits } from "../../lib/catalogLimits";
 import { formsOwner, mountForms } from "../../test/support";
 
 const base = "/api/organization/forms/catalogs";
@@ -48,6 +49,16 @@ beforeAll(async () => { await import("../../pages/CatalogEditorPage"); });
 beforeEach(() => serve());
 
 describe("OptionsDialog (FRM-Catalogo-Opciones)", () => {
+  it("el código y el detalle llevan el tope del contrato, en la tabla y en el modal: al llegar, no se escribe más (269 y O13)", async () => {
+    const { user } = await openEditor();
+    expect(textbox("Código de Seguimiento")).toHaveAttribute("maxlength", String(catalogLimits.itemCode));
+    expect(textbox("Detalle de Seguimiento")).toHaveAttribute("maxlength", String(catalogLimits.itemDetail));
+    await user.click(screen.getByRole("button", { name: "Editar Seguimiento" }));
+    const dialog = await screen.findByRole("dialog", { name: "Opciones de «Motivos de visita»" });
+    expect(within(dialog).getByRole("textbox", { name: "Código" })).toHaveAttribute("maxlength", String(catalogLimits.itemCode));
+    expect(within(dialog).getByRole("textbox", { name: "Detalle" })).toHaveAttribute("maxlength", String(catalogLimits.itemDetail));
+  });
+
   it("«Agregar opción» abre «Opciones nuevas» con una nueva; «Listo» conserva lo escrito y quita la nueva sin nada escrito", async () => {
     const { user } = await openEditor();
     await user.click(screen.getByRole("button", { name: "Agregar opción" }));
@@ -55,7 +66,9 @@ describe("OptionsDialog (FRM-Catalogo-Opciones)", () => {
     expect(within(dialog).getByRole("region", { name: "Nueva opción" })).toBeInTheDocument();
     // El Estado va solo en una guardada.
     expect(within(dialog).queryByRole("button", { name: /^Estado/ })).not.toBeInTheDocument();
-    await user.type(within(dialog).getByRole("textbox", { name: "Texto" }), "Garantía");
+    // Pegado y no tipeado letra por letra: cada test entra en 5 s (tests).
+    await user.click(within(dialog).getByRole("textbox", { name: "Texto" }));
+    await user.paste("Garantía");
     expect(within(dialog).getByText("8/30")).toBeInTheDocument();
     await user.click(within(dialog).getByRole("button", { name: "Generar desde el texto" }));
     expect(within(dialog).getByRole("textbox", { name: "Código" })).toHaveValue("GAR");
@@ -76,7 +89,7 @@ describe("OptionsDialog (FRM-Catalogo-Opciones)", () => {
     expect(within(dialog).getByText("1–4 de 4")).toBeInTheDocument();
     const text = within(dialog).getByRole("textbox", { name: "Texto" });
     await user.clear(text);
-    await user.type(text, "Venta");
+    await user.paste("Venta");
     await user.click(within(dialog).getByRole("button", { name: "Agregar opción" }));
     await user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
@@ -141,7 +154,7 @@ describe("OptionsDialog (FRM-Catalogo-Opciones)", () => {
     }, { status: 400 }));
     const { user } = await openEditor();
     await user.clear(textbox("Código de Venta nueva"));
-    await user.type(textbox("Código de Venta nueva"), "VTA");
+    await user.paste("VTA");
     await user.click(saveButton());
     await waitFor(() => expect(puts).toHaveLength(1));
     const dialog = await screen.findByRole("dialog", { name: "Opciones de «Motivos de visita»" });
@@ -152,6 +165,27 @@ describe("OptionsDialog (FRM-Catalogo-Opciones)", () => {
     expect(within(seguimiento).queryByTitle("Tiene un error")).not.toBeInTheDocument();
   });
 
+  it("el error de una celda describe su campo, y una nueva va con «—» sin número, tenue y «Sin dato» para el lector", async () => {
+    serve(() => HttpResponse.json({
+      code: "Forms.Catalog.DuplicateCode", status: 400, title: "Bad Request", errors: { "items.0.code": ["Ya está en la opción 1."] }, n: 1,
+    }, { status: 400 }));
+    const { user } = await openEditor();
+    await user.clear(textbox("Código de Venta nueva"));
+    await user.paste("VTA");
+    await user.click(saveButton());
+    await screen.findByRole("dialog", { name: "Opciones de «Motivos de visita»" });
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(textbox("Código de Venta nueva")).toHaveAccessibleDescription("Ya está en la opción 1.");
+    await user.click(screen.getByRole("button", { name: "Agregar opción" }));
+    const dialog = await screen.findByRole("dialog", { name: "Opciones nuevas de «Motivos de visita»" });
+    await user.click(within(dialog).getByRole("textbox", { name: "Texto" }));
+    await user.paste("Garantía");
+    await user.click(within(dialog).getByRole("button", { name: "Listo" }));
+    const row = textbox("Texto de Garantía").closest("tr")!;
+    expect(within(row).getByRole("img", { name: "Sin dato" })).toHaveTextContent("—");
+  });
+
   it("a 390 px ocupa la pantalla: ✎ abre la opción con «Volver a la lista», y la lista cierra con «Listo»", async () => {
     const restore = asPhone();
     try {
@@ -159,7 +193,9 @@ describe("OptionsDialog (FRM-Catalogo-Opciones)", () => {
       await user.click(await screen.findByRole("button", { name: "Editar Venta nueva" }));
       const dialog = await screen.findByRole("dialog", { name: "Opción 2 de 4" });
       expect(within(dialog).getByText("Motivos de visita")).toBeInTheDocument();
-      await user.type(within(dialog).getByRole("textbox", { name: "Texto" }), " al interior");
+      await user.click(within(dialog).getByRole("textbox", { name: "Texto" }));
+      await user.keyboard("{End}");
+      await user.paste(" al interior");
       await user.click(within(dialog).getByRole("button", { name: "Volver a la lista" }));
       expect(await screen.findByRole("dialog", { name: "Opciones" })).toBe(dialog);
       expect(optionsOf(dialog)).toHaveLength(4);
