@@ -505,8 +505,6 @@ export function accionesSteps(ctx) {
       await card.getByText("Ya no disponible", { exact: true }).waitFor({ timeout: 30_000 });
       await card.getByText("Ya no tenés el permiso «Invitar usuarios».", { exact: true }).waitFor();
       assert.equal(await card.getByRole("link").count(), 0, "Sin el permiso, la tarjeta va sin botón.");
-      await memberBrowser.close();
-      memberBrowser = undefined;
       return `Sin «${names.inviter}», la tarjeta de la persona quedó «Ya no disponible» con «Ya no tenés el permiso «Invitar usuarios».».`;
     },
     // Confirmar-Propuesta: quitar a una persona desde su ficha, con el botón rojo de la tarjeta.
