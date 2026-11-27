@@ -109,6 +109,15 @@ describe("CatalogEditorPage (FRM-Catalogo)", () => {
     expect(puts[0].items).toBeUndefined();
   });
 
+  it("«Ordenar por…», abierto desde el ⋮, devuelve el foco a ese botón al cerrar (formularios)", async () => {
+    const { user } = await openEditor();
+    await openMenu(user, "Más acciones de las opciones");
+    await user.click(await screen.findByRole("menuitem", { name: /Ordenar por…/ }));
+    await user.click(within(await screen.findByRole("dialog", { name: "Ordenar las opciones" })).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(screen.getByRole("button", { name: "Más acciones de las opciones" })).toHaveFocus();
+  });
+
   it("«Descartar movimientos» vuelve al orden guardado", async () => {
     const { user } = await openEditor();
     await user.click(screen.getByRole("button", { name: "Bajar Seguimiento" }));

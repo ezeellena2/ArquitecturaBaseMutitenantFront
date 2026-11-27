@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useFormat } from "@/shared/format/useFormat";
+import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
@@ -28,6 +29,8 @@ export function CatalogConflictDialog({ conflict, name, rows, total, active, val
 }) {
   const { t } = useTranslation("forms");
   const format = useFormat();
+  // Se abre al guardar, desde la banda o desde el ⋮: al cerrar, el foco vuelve a donde estaba (formularios).
+  const restoreFocus = useRestoreFocusOnClose(conflict !== null);
   if (!conflict) return null;
   const { fresh, freshItems } = conflict;
   const changes = conflictChanges({ name, rows, total, active, fresh, freshItems, savedRow, freshDraft: (row) => savedDraft(row, valueType, format) });
@@ -56,7 +59,7 @@ export function CatalogConflictDialog({ conflict, name, rows, total, active, val
 
   const head = "text-[0.78125rem] font-semibold text-[var(--t2)]";
   return <Dialog open onOpenChange={(open) => { if (!open) onContinue(); }}>
-    <DialogContent className="md:max-w-160">
+    <DialogContent className="md:max-w-160" onCloseAutoFocus={restoreFocus}>
       <DialogHeader><DialogTitle>{t("forms:catalog.conflict.title")}</DialogTitle></DialogHeader>
       <DialogBody className="grid gap-3">
         <DialogDescription>{description}</DialogDescription>

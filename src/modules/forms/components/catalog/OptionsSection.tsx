@@ -54,6 +54,7 @@ export function OptionsSection({ editor, editable, isNew, onImport, rowReview }:
   const { phone } = useAppChrome();
   const titleId = useId();
   const [sortOpen, setSortOpen] = useState(false);
+  const [sortTrigger, setSortTrigger] = useState<HTMLElement | null>(null);
   const [deleting, setDeleting] = useState<CatalogRowView | null>(null);
   const [dialog, setDialog] = useState<OptionsDialogOpening | null>(null);
   const [errorRound, setErrorRound] = useState(editor.errorRound);
@@ -88,7 +89,7 @@ export function OptionsSection({ editor, editable, isNew, onImport, rowReview }:
 
   const moreActions: RowAction[] = [
     { label: t("forms:catalog.actions.template"), accessibleName: t("forms:catalog.actions.template"), icon: Download, onSelect: () => { void download("template"); } },
-    { label: t("forms:catalog.actions.sort"), accessibleName: t("forms:catalog.actions.sort"), icon: ArrowUpDown, hidden: !editable, disabledReason: sortReason, onSelect: () => setSortOpen(true) },
+    { label: t("forms:catalog.actions.sort"), accessibleName: t("forms:catalog.actions.sort"), icon: ArrowUpDown, hidden: !editable, disabledReason: sortReason, onSelect: (trigger) => { setSortTrigger(trigger); setSortOpen(true); } },
     { label: t("forms:catalog.actions.generateCodes"), accessibleName: t("forms:catalog.actions.generateCodes"), icon: Wand2, hidden: !editable, onSelect: editor.generateMissingCodes },
   ];
 
@@ -242,7 +243,7 @@ export function OptionsSection({ editor, editable, isNew, onImport, rowReview }:
     {pageData && pageData.totalCount > 0 ? <Pagination page={pageData.page} pageSize={pageData.pageSize} totalCount={pageData.totalCount} totalPages={pageData.totalPages ?? 1}
       hasPrevious={pageData.hasPrevious ?? false} hasNext={pageData.hasNext ?? false} onPageChange={editor.setPage} onPageSizeChange={editor.setPageSize} /> : null}
     {dialog ? <OptionsDialog editor={editor} opening={dialog} onClose={() => setDialog(null)} /> : null}
-    <SortDialog open={sortOpen} initial={editor.sort} onOpenChange={setSortOpen} onSort={editor.setSort} />
+    <SortDialog open={sortOpen} initial={editor.sort} returnFocusTo={sortTrigger} onOpenChange={setSortOpen} onSort={editor.setSort} />
     <ConfirmDialog open={deleting !== null} onOpenChange={(open) => { if (!open) setDeleting(null); }}
       title={t("forms:catalog.deleteDialog.title", { option: deleting ? label(deleting) : "" })} description={t("forms:catalog.deleteDialog.description")}
       confirmLabel={t("forms:catalog.deleteDialog.confirm")} destructive onConfirm={() => { if (deleting) editor.remove(deleting.key); setDeleting(null); }} />

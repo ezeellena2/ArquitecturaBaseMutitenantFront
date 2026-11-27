@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useRetryAfterOf } from "@/shared/api/useRetryAfterCountdown";
 import { useFormat } from "@/shared/format/useFormat";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
+import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import { cn } from "@/shared/lib/utils";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { Button } from "@/shared/ui/button";
@@ -80,7 +81,8 @@ function conditionValuesText(filters: CatalogFilters, condition: ConditionDraft,
 export function FiltersEditor({ filters, editable }: { filters: CatalogFilters; editable: boolean }) {
   const { t } = useTranslation("forms");
   const { phone } = useAppChrome();
-  const [editing, setEditing] = useState<{ condition: ConditionDraft; isNew: boolean } | null>(null);
+  // `trigger`: el ⋮ de la tarjeta, si se abrió desde su menú, que se va con él; el foco vuelve a ese botón al cerrar.
+  const [editing, setEditing] = useState<{ condition: ConditionDraft; isNew: boolean; trigger?: HTMLElement | null } | null>(null);
   const title = t(`forms:catalog.filters.title.${filters.source}`);
   const columnsError = filters.columnsLoad.error !== undefined;
   const maxReason = columnsError ? t("forms:catalog.filters.columnsError")
@@ -89,7 +91,7 @@ export function FiltersEditor({ filters, editable }: { filters: CatalogFilters; 
 
   const conditions = filters.draft.conditions.map((condition, index) => phone
     ? <ConditionCard key={condition.key} filters={filters} condition={condition} editable={editable}
-      onEdit={() => setEditing({ condition, isNew: false })} />
+      onEdit={(trigger) => setEditing({ condition, isNew: false, trigger })} />
     : <ConditionRow key={condition.key} filters={filters} condition={condition} index={index} editable={editable} />);
 
   const settings = <SettingsFields filters={filters} editable={editable} phone={phone} />;
@@ -104,7 +106,7 @@ export function FiltersEditor({ filters, editable }: { filters: CatalogFilters; 
         <div className="flex flex-col divide-y divide-[var(--borde)]">{conditions}</div>
       </Section>
       <Section title={t("forms:catalog.filters.otherOptions")}>{settings}</Section>
-      {editing ? <EditConditionDialog filters={filters} initial={editing.condition} onClose={() => setEditing(null)}
+      {editing ? <EditConditionDialog filters={filters} initial={editing.condition} returnFocusTo={editing.trigger} onClose={() => setEditing(null)}
         onDone={(condition) => {
           if (editing.isNew) filters.appendCondition(condition);
           else filters.updateCondition(condition.key, { column: condition.column, operator: condition.operator, values: condition.values });
@@ -212,7 +214,7 @@ function conditionError(filters: CatalogFilters, condition: ConditionDraft, t: T
 }
 
 /** Una condición en el teléfono: la columna, y su comparación y su valor; al tocarla, «Editar condición». */
-function ConditionCard({ filters, condition, editable, onEdit }: { filters: CatalogFilters; condition: ConditionDraft; editable: boolean; onEdit: () => void }) {
+function ConditionCard({ filters, condition, editable, onEdit }: { filters: CatalogFilters; condition: ConditionDraft; editable: boolean; onEdit: (trigger?: HTMLElement | null) => void }) {
   const { t } = useTranslation("forms");
   const error = conditionError(filters, condition, t);
   const name = columnLabel(t, condition.column);
@@ -226,7 +228,7 @@ function ConditionCard({ filters, condition, editable, onEdit }: { filters: Cata
   </span>;
   if (!editable) return <div className="flex items-center gap-2 px-4 py-3">{body}</div>;
   return <div className="flex items-center gap-2 px-4 py-3">
-    <button type="button" className="flex min-w-0 flex-1" onClick={onEdit}>{body}</button>
+    <button type="button" className="flex min-w-0 flex-1" onClick={() => onEdit()}>{body}</button>
     <RowActions label={t("forms:catalog.filters.conditionMore")} title={t("forms:catalog.filters.conditionTitle", { column: name })} actions={[
       { label: t("forms:catalog.filters.edit"), accessibleName: t("forms:catalog.filters.edit"), icon: Pencil, onSelect: onEdit },
       { label: t("forms:catalog.filters.removeCondition"), accessibleName: t("forms:catalog.filters.removeCondition"), icon: TrashIcon, destructive: true,
@@ -236,23 +238,25 @@ function ConditionCard({ filters, condition, editable, onEdit }: { filters: Cata
 }
 
 /** «Editar condición» del teléfono: la columna, la comparación y el valor en la pieza; «Listo» aplica y «Cancelar» no. */
-function EditConditionDialog({ filters, initial, onClose, onDone }: {
-  filters: CatalogFilters; initial: ConditionDraft; onClose: () => void; onDone: (condition: ConditionDraft) => void;
+function EditConditionDialog({ filters, initial, returnFocusTo, onClose, onDone }: {
+  filters: CatalogFilters; initial: ConditionDraft; returnFocusTo?: HTMLElement | null; onClose: () => void; onDone: (condition: ConditionDraft) => void;
 }) {
   const { t } = useTranslation(["forms", "common"]);
   const [condition, setCondition] = useState(initial);
   const change = (patch: Partial<Omit<ConditionDraft, "key">>) => setCondition((current) => ({ ...current, ...patch }));
   const question = useColumnQuestion(filters, condition, change);
+  // Abierto desde el ⋮ de una tarjeta, al cerrar el foco vuelve a ese botón y no cae en <body> (formularios).
+  const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
   // La pregunta va en el mismo diálogo, nunca un diálogo sobre otro (formularios).
   return <Dialog open onOpenChange={(open) => { if (open) return; if (question.pending) question.cancel(); else onClose(); }}>
-    {question.pending ? <DialogContent size="sm" role="alertdialog">
+    {question.pending ? <DialogContent size="sm" role="alertdialog" onCloseAutoFocus={restoreFocus}>
       <DialogHeader><DialogTitle>{question.title}</DialogTitle></DialogHeader>
       <DialogBody><DialogDescription>{question.description}</DialogDescription></DialogBody>
       <DialogFooter>
         <Button type="button" variant="outline" autoFocus onClick={question.cancel}>{t("common:actions.cancel")}</Button>
         <Button type="button" onClick={question.confirm}>{t("forms:catalog.filters.changeColumn.confirm")}</Button>
       </DialogFooter>
-    </DialogContent> : <DialogContent aria-describedby={undefined}>
+    </DialogContent> : <DialogContent aria-describedby={undefined} onCloseAutoFocus={restoreFocus}>
       <DialogHeader><DialogTitle>{t("forms:catalog.filters.editTitle")}</DialogTitle></DialogHeader>
       <DialogBody className="grid gap-3.5">
         <ConditionFields filters={filters} condition={condition} editable labeled invalid={false} onChange={change} onColumnChange={question.ask} />

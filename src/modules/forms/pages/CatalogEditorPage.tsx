@@ -9,6 +9,7 @@ import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { AssistantProposalChangesSection, AssistantProposalMark } from "@/shared/assistant-actions";
 import { useFormat } from "@/shared/format/useFormat";
 import { useEditPage } from "@/shared/hooks/useEditPage";
+import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { Banner } from "@/shared/ui/Banner";
 import { Button } from "@/shared/ui/button";
@@ -75,8 +76,10 @@ function PreviewAside({ editor }: { editor: CatalogEditor }) {
  * persona o el cliente de ejemplo arriba (M-FRM-Catalogo-Filtros y M-FRM-Catalogo-Contactos). */
 function PhonePreviewDialog({ editor, filters, open, onOpenChange }: { editor: CatalogEditor; filters: CatalogFilters; open: boolean; onOpenChange: (open: boolean) => void }) {
   const { t } = useTranslation("forms");
+  // Se abre desde la barra, no desde un DialogTrigger: al cerrar, el foco vuelve a ese botón (formularios).
+  const restoreFocus = useRestoreFocusOnClose(open);
   return <Dialog open={open} onOpenChange={onOpenChange}>
-    <DialogContent aria-describedby={undefined}>
+    <DialogContent aria-describedby={undefined} onCloseAutoFocus={restoreFocus}>
       <DialogHeader><DialogTitle>{t("forms:catalog.preview.title")}</DialogTitle></DialogHeader>
       <DialogBody>{filters.filtered ? <FiltersPreview filters={filters} bare /> : <CatalogPreviewPhone options={previewOptions(editor)} />}</DialogBody>
     </DialogContent>
