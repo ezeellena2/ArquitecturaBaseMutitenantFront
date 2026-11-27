@@ -177,9 +177,9 @@ describe("DataTable", () => {
     expect(screen.getByRole("table")).toHaveClass("text-[0.8125rem]");
     const header = screen.getByRole("columnheader", { name: "Nombre" });
     expect(header).toHaveClass("h-10", "bg-[var(--cab)]", "text-[0.8125rem]", "normal-case", "whitespace-normal", "px-1.5", "first:pl-4", "last:pr-4");
-    // La cebra empieza con una fila blanca, como el tablero. El fondo es una variable, así lo toma una columna fija (137).
-    expect(screen.getAllByRole("row")[1]).toHaveClass("h-10", "bg-[var(--fila-fondo)]", "even:[--fila-fondo:var(--fila-alterna)]");
-    expect(screen.getAllByRole("row")[1]).not.toHaveClass("odd:[--fila-fondo:var(--fila-alterna)]");
+    // La cebra empieza con una fila blanca, como el tablero.
+    expect(screen.getAllByRole("row")[1]).toHaveClass("h-10", "even:bg-[var(--fila-alterna)]");
+    expect(screen.getAllByRole("row")[1]).not.toHaveClass("odd:bg-[var(--fila-alterna)]");
     // Con ⋮ la fila de una línea sigue midiendo 40: la celda del ⋮ no suma relleno arriba y abajo.
     expect(screen.getByRole("button", { name: "Acciones de Ana García" }).closest("td")).toHaveClass("py-0");
     expect(screen.getByRole("button", { name: "Acciones de Ana García" }).closest("td")).not.toHaveClass("py-2");

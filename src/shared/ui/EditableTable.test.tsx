@@ -78,8 +78,11 @@ describe("EditableTable", () => {
     expect(cells[6].style.right).toBe("0px");
     expect(cells[3]).not.toHaveClass("sticky");
     // Una fija lleva el fondo de su fila sobre la superficie de la caja: lo que pasa debajo no se ve a través.
-    expect(cells[0]).toHaveClass("bg-[var(--superficie)]", "bg-[image:linear-gradient(var(--fila-fondo),var(--fila-fondo))]");
-    expect(screen.getAllByRole("row")[2]).toHaveClass("even:[--fila-fondo:var(--fila-alterna)]", "bg-[var(--fila-fondo)]");
+    // Sin degradés ni variables propias (173 y tema.md): la fila es el grupo y la fija repite sus estados con los mismos tokens.
+    expect(cells[0]).toHaveClass("bg-[var(--superficie)]", "group-even/fila:bg-[var(--fila-alterna)]", "group-hover/fila:bg-[var(--fila-hover)]",
+      "group-data-[state=selected]/fila:bg-[var(--marca-t)]");
+    expect(cells[3]).not.toHaveClass("bg-[var(--superficie)]");
+    expect(screen.getAllByRole("row")[2]).toHaveClass("group/fila", "even:bg-[var(--fila-alterna)]");
   });
 
   it("lleva la línea entre columnas también en las fijas: la última de la izquierda dibuja la de su derecha", () => {

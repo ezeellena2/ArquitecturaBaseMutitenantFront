@@ -219,7 +219,7 @@ export function OptionsSection({ editor, editable, isNew, onImport, rowReview }:
 
   const empty = rows.length === 0;
   const pageData = editor.items.data;
-  return <section aria-labelledby={titleId} className="overflow-hidden rounded-lg border border-[var(--borde)] bg-white max-md:rounded-none max-md:border-x-0">
+  return <section aria-labelledby={titleId} className="overflow-hidden rounded-lg border border-[var(--borde)] bg-[var(--superficie)] max-md:rounded-none max-md:border-x-0">
     {header}
     {pending}
     {selection}

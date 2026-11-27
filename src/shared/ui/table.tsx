@@ -61,8 +61,8 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
     <tr
       data-slot="table-row"
       className={cn(
-        // El fondo de la fila es una variable, así una columna fija (`pinned`) lleva el mismo fondo al desplazar.
-        "border-b transition-colors bg-[var(--fila-fondo)] [--fila-fondo:transparent] even:[--fila-fondo:var(--fila-alterna)] hover:[--fila-fondo:var(--fila-hover)] has-aria-expanded:[--fila-fondo:var(--fila-hover)] data-[state=selected]:[--fila-fondo:var(--marca-t)]",
+        // `group/fila`: una columna fija (`pinned`) repite el fondo de su fila con los mismos estados, así no se ve a través.
+        "group/fila border-b transition-colors even:bg-[var(--fila-alterna)] hover:bg-[var(--fila-hover)] has-aria-expanded:bg-[var(--fila-hover)] data-[state=selected]:bg-[var(--marca-t)]",
         className
       )}
       {...props}
@@ -74,6 +74,9 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
 /// fijas que tiene antes de ese lado (`offset`, por ejemplo «3rem» o «0rem»), por encima de las que pasan debajo y con el fondo
 /// de su fila sobre la superficie de la caja. La línea entre columnas la pone la tabla que la usa (`EditableTable`, E12).
 type TablePinned = { side: "left" | "right"; offset: string }
+
+/// El fondo de una fija: la superficie de la caja y, encima, el de su fila (`TableRow`, colores opacos del tema), en el mismo orden.
+const pinnedCellBackground = "sticky z-2 bg-[var(--superficie)] group-even/fila:bg-[var(--fila-alterna)] group-hover/fila:bg-[var(--fila-hover)] group-has-aria-expanded/fila:bg-[var(--fila-hover)] group-data-[state=selected]/fila:bg-[var(--marca-t)]"
 
 function pinnedStyle(pinned: TablePinned | undefined, style: React.CSSProperties | undefined): React.CSSProperties | undefined {
   return pinned ? { ...style, [pinned.side]: pinned.offset } : style
@@ -103,7 +106,7 @@ function TableCell({ className, pinned, style, ...props }: React.ComponentProps<
       style={pinnedStyle(pinned, style)}
       className={cn(
         "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
-        pinned && "sticky z-2 bg-[var(--superficie)] bg-[image:linear-gradient(var(--fila-fondo),var(--fila-fondo))]",
+        pinned && pinnedCellBackground,
         className
       )}
       {...props}

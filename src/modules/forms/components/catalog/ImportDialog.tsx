@@ -369,7 +369,7 @@ export function ImportDialog({ catalog, onClose, onCatalogChanged }: {
           const starts = index === 0 || items[index - 1].row !== row.row || items[index - 1].code !== row.code;
           let span = 1;
           while (starts && index + span < items.length && items[index + span].row === row.row && items[index + span].code === row.code) span++;
-          return <TableRow key={`${row.row}-${row.code}-${row.column}-${index}`} className="even:[--fila-fondo:transparent] hover:[--fila-fondo:transparent]">
+          return <TableRow key={`${row.row}-${row.code}-${row.column}-${index}`} className="even:bg-transparent hover:bg-transparent">
             {starts ? <>
               <TableCell rowSpan={span} className={cn(numberCell, "align-top shadow-none")}>{format.formatInteger(row.row)}</TableCell>
               <TableCell rowSpan={span} className={cn(cell, codeText, "align-top")}>{row.code}</TableCell>

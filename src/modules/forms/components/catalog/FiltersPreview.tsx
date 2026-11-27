@@ -11,7 +11,7 @@ import { SamplePicker } from "./SamplePicker";
 export function FiltersPreview({ filters, bare = false }: { filters: CatalogFilters; bare?: boolean }) {
   const { t } = useTranslation("forms");
   return <section aria-label={t("forms:catalog.preview.title")}
-    className={cn("flex flex-col gap-3", !bare && "self-start rounded-lg border border-[var(--borde)] bg-white p-4")}>
+    className={cn("flex flex-col gap-3", !bare && "self-start rounded-lg border border-[var(--borde)] bg-[var(--superficie)] p-4")}>
     <SamplePicker filters={filters} />
     <CatalogListPhone preview={filters.preview.data} updating={filters.preview.updating} />
   </section>;

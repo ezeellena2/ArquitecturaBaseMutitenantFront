@@ -27,8 +27,8 @@ export function CatalogPreviewPhone({ options, withSwitch = true }: { options: r
       { key: "one", label: t("forms:catalog.preview.one"), pressed: !multiple, onSelect: () => setMultiple(false) },
       { key: "many", label: t("forms:catalog.preview.many"), pressed: multiple, onSelect: () => setMultiple(true) },
     ]} /> : null}
-    <div role="group" aria-label={t("forms:catalog.preview.title")} className="mx-auto w-full max-w-[17rem] overflow-hidden rounded-[1.5rem] border-[6px] border-[var(--t1)] bg-[var(--s2)] text-[0.78125rem]">
-      {open ? <div className="flex min-h-[18rem] flex-col bg-white">
+    <div role="group" aria-label={t("forms:catalog.preview.title")} className="mx-auto w-full max-w-[17rem] overflow-hidden rounded-[1.5rem] border-[0.375rem] border-[var(--t1)] bg-[var(--s2)] text-[0.78125rem]">
+      {open ? <div className="flex min-h-[18rem] flex-col bg-[var(--superficie)]">
         <button type="button" onClick={() => setOpen(false)} className="flex items-center gap-2 border-b border-[var(--borde)] px-3 py-2.5 text-left font-semibold">
           <span aria-hidden="true">{"‹"}</span>{multiple ? t("forms:catalog.preview.chooseUpTo", { n: multipleMax }) : question}
         </button>
@@ -45,7 +45,7 @@ export function CatalogPreviewPhone({ options, withSwitch = true }: { options: r
             </label>
           </li>)}
         </ul>
-      </div> : <div className="flex min-h-[18rem] flex-col bg-white">
+      </div> : <div className="flex min-h-[18rem] flex-col bg-[var(--superficie)]">
         <p className="flex items-center gap-2 border-b border-[var(--borde)] px-3 py-2.5 font-semibold"><span aria-hidden="true">{"×"}</span>{t("forms:catalog.preview.form")}</p>
         <div className="flex flex-1 flex-col gap-1.5 px-3 py-3">
           <span className="font-semibold">{question}</span>
@@ -54,7 +54,7 @@ export function CatalogPreviewPhone({ options, withSwitch = true }: { options: r
             {t("forms:catalog.preview.choose")}<span aria-hidden="true">{"›"}</span>
           </button>
         </div>
-        <p className="m-3 rounded-full bg-[var(--ok)] py-2 text-center font-semibold text-white">{t("forms:catalog.preview.send")}</p>
+        <p className="m-3 rounded-full bg-[var(--ok)] py-2 text-center font-semibold text-[var(--superficie)]">{t("forms:catalog.preview.send")}</p>
       </div>}
     </div>
   </div>;
@@ -75,7 +75,7 @@ export function CatalogListPhone({ preview, updating }: { preview: FormCatalogPr
   const more = preview ? preview.total - preview.options.length : 0;
   const moreText = t("forms:catalog.preview.more", { count: more, n: format.formatInteger(more) });
   return <div role="group" aria-label={t("forms:catalog.preview.title")} aria-busy={updating}
-    className="mx-auto w-full max-w-[17rem] overflow-hidden rounded-[1.5rem] border-[6px] border-[var(--t1)] bg-white text-[0.78125rem]">
+    className="mx-auto w-full max-w-[17rem] overflow-hidden rounded-[1.5rem] border-[0.375rem] border-[var(--t1)] bg-[var(--superficie)] text-[0.78125rem]">
     <p className="flex items-center gap-2 border-b border-[var(--borde)] px-3 py-2.5 font-semibold"><span aria-hidden="true">{"‹"}</span>{t("forms:catalog.preview.question")}</p>
     <div className="min-h-[18rem]">
       {updating ? <div className="flex flex-col gap-3 p-3.5" aria-label={t("forms:catalog.preview.updating")} role="status">

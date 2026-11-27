@@ -62,7 +62,7 @@ function previewOptions(editor: CatalogEditor) {
 /** Al costado en la compu; en el teléfono, un diálogo desde la barra (M-FRM-Catalogo, «Así lo ve quien lo recibe»). */
 function PreviewAside({ editor }: { editor: CatalogEditor }) {
   const { t } = useTranslation("forms");
-  return <section aria-label={t("forms:catalog.preview.title")} className="flex flex-col gap-2.5 rounded-lg border border-[var(--borde)] bg-white p-4">
+  return <section aria-label={t("forms:catalog.preview.title")} className="flex flex-col gap-2.5 rounded-lg border border-[var(--borde)] bg-[var(--superficie)] p-4">
     <h2 className="text-[0.875rem] font-semibold">{t("forms:catalog.preview.title")}</h2>
     <CatalogPreviewPhone options={previewOptions(editor)} />
   </section>;
