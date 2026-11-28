@@ -253,7 +253,7 @@ function SavedCatalogEditor({ id }: { id: string }) {
       {proposal.changedSince ? <Banner tone="warning">{t("forms:catalog.proposal.changedSince", { name: saved.name })}</Banner> : null}
       {proposal.changeRows.length ? <AssistantProposalChangesSection rows={proposal.changeRows} /> : null}
       <CatalogColumns phone={phone} options={presentationView.options} filters={filters} editable={editable}
-        below={manual ? <CatalogPresentation editor={editor} editable={editable} issues={saved.presentationIssues} example={presentationView.example} /> : undefined}>
+        below={manual ? <CatalogPresentation editor={editor} editable={editable} issues={saved.presentationIssues ?? noIssues} example={presentationView.example} /> : undefined}>
         <Section title={t("forms:catalog.section")} phone="loose">
           <SectionFields className="grid gap-3.5">
             {/* Uno con filtros es siempre de texto: dice solo de dónde salen (FRM-Catalogo-Filtros). */}
