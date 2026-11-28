@@ -23,8 +23,6 @@ export interface EditPageOptions {
   readonly onSeeNew: () => void;
   /** «Seguir editando»: cierra el aviso del 409 y conserva lo escrito. */
   readonly onContinueEditing: () => void;
-  /** El usuario canceló «¿Salir sin guardar?» y decide quedarse en la pantalla. */
-  readonly onStay?: () => void;
   /** El texto de la franja, si la feature traduce un código propio (su `errors.ts`); por defecto, `actionErrorMessage`. */
   readonly errorMessage?: (error: unknown) => string | null;
   /** El aviso del 409 si el tablero de la pantalla dibuja uno propio, con una sola salida (WA-Config-Base2). */
@@ -51,7 +49,7 @@ export interface EditPage {
 /// del 409 debajo de la banda, la franja del error de guardado y la pregunta antes de salir con cambios. Cada error va en
 /// un solo lugar. La banda nunca dice «Cambios sin guardar» (base de la 12): que «Guardar cambios» esté habilitado ya lo
 /// dice («Criterio · Botones»).
-export function useEditPage({ isDirty, error, onSeeNew, onContinueEditing, onStay, errorMessage, searchKeys, onNavigationAttempt, conflict: conflictTexts }: EditPageOptions): EditPage {
+export function useEditPage({ isDirty, error, onSeeNew, onContinueEditing, errorMessage, searchKeys, onNavigationAttempt, conflict: conflictTexts }: EditPageOptions): EditPage {
   const { t } = useTranslation("errors");
   const { phone } = useAppChrome();
   const guard = useAbandonOnLeave(isDirty, searchKeys, onNavigationAttempt);
@@ -73,7 +71,7 @@ export function useEditPage({ isDirty, error, onSeeNew, onContinueEditing, onSta
     formError: message && !phone ? <Banner tone="danger">{message}</Banner> : null,
     leaveDialog: <ConfirmDialog
       open={guard.isBlocked}
-      onOpenChange={(open) => { if (!open) { guard.stay(); onStay?.(); } }}
+      onOpenChange={(open) => { if (!open) guard.stay(); }}
       title={t("unsaved.title")}
       description={t("unsaved.description")}
       confirmLabel={t("unsaved.leave")}
