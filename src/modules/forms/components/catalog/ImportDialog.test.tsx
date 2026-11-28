@@ -188,6 +188,25 @@ describe("ImportDialog (FRM-Catalogo-Importar)", () => {
     await waitFor(() => expect(catalogReads).toBeGreaterThan(readsBefore));
   });
 
+  it("al aplicar, la versión que respondió queda en el catálogo: importar de nuevo enseguida revisa con ella aunque el editor no terminó de releer", async () => {
+    const mounted = await openImport();
+    const { user, dialog } = mounted;
+    await reviewFile(mounted);
+    // La relectura del editor después de aplicar tarda hasta el final de la prueba.
+    let release = () => {};
+    const reread = new Promise<void>((resolve) => { release = resolve; });
+    server.use(http.get(`${base}/c-prov`, async () => { await reread; return HttpResponse.json({ ...catalog, version: 8 }); }));
+    await user.click(within(dialog).getByRole("button", { name: "Aplicar sin las 12 filas con errores" }));
+    expect(await screen.findByText("Importamos las opciones.")).toBeVisible();
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Importar opciones a «Proveedores»" })).not.toBeInTheDocument());
+
+    await user.click(screen.getByRole("button", { name: "Importar" }));
+    const again = await screen.findByRole("dialog", { name: "Importar opciones a «Proveedores»" });
+    await reviewFile({ ...mounted, dialog: again });
+    expect(previews.map((sent) => sent.version)).toEqual(["7", "8"]);
+    release();
+  });
+
   it("con muchas filas con error, aplicar espera «Aplicar sin las 140 filas con errores» y no da de baja sin confirmar", async () => {
     serve({ preview: (page) => HttpResponse.json(previewOf(page, { confirmErrors: true, errorShare: 0.13, errors: paged(errorsPage1, page, 140) })) });
     const mounted = await openImport();

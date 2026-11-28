@@ -7,7 +7,7 @@ import { actionErrorMessage, apiErrorMessage, isGenericApiError, toastActionErro
 import { pageSizes } from "@/shared/api/pageSizes";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { saveBlobAs } from "@/shared/lib/saveFile";
-import { catalogsQueryRoot, fetchCatalogTemplate, importCatalog, previewCatalogImport, type CatalogImportInput } from "../api/catalogs";
+import { catalogQueryKey, catalogsQueryRoot, fetchCatalogTemplate, importCatalog, previewCatalogImport, type CatalogImportInput } from "../api/catalogs";
 import type { FormCatalogImportMode, FormCatalogImportPreviewResponse, FormCatalogResponse } from "../api/types";
 import { catalogErrorField, catalogFieldErrors, isCatalogConflict } from "../errors";
 import { catalogImportColumns, pastedCsv, readPaste, type PastedSheet } from "../lib/catalogImport";
@@ -158,8 +158,11 @@ export function useCatalogImport(catalog: FormCatalogResponse, { onClose, onCata
       skipErrorRows: review.errors.totalCount > 0,
       confirmedDeactivations: review.confirmDeactivations && confirmDeactivations ? review.deactivated.totalCount : 0,
     }, {
-      onSuccess: () => {
+      onSuccess: (result) => {
         toast.success(t("forms:catalog.import.imported"));
+        // La versión que respondió pasa ya a la ficha: si se vuelve a importar antes de que el editor termine de releer, la
+        // revisión va con ella y no con la de antes, que daría 409 (como `keepSavedInView` al guardar).
+        queryClient.setQueryData<FormCatalogResponse>(catalogQueryKey(catalog.id), (current) => current && { ...current, version: result.version });
         void queryClient.invalidateQueries({ queryKey: catalogsQueryRoot });
         onCatalogChanged();
         onClose();
