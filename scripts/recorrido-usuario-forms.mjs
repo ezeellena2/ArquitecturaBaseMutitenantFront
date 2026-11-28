@@ -1,21 +1,23 @@
 import assert from "node:assert/strict";
 import { assistantApi } from "./assistant-real-ui.mjs";
-import { pickerButton } from "./e2e-pieza.mjs";
+import { pickerButton, pickerSearch } from "./e2e-pieza.mjs";
 import { confirmRecentAuthentication, confirmRecentAuthenticationWhenAsked, stopConfirmingRecentAuthentication } from "./platform-factor-real.mjs";
 
-// Catálogos en el recorrido de usuario (E12, verificación): `armar-un-catalogo` y `catalogo-con-filtros`, los dos recorridos
-// del lienzo (docs/design/recorridos). Van después de las acciones del asistente, en las mismas pestañas: arrancan y terminan
-// con la Dueña afuera. Plataforma prende Formularios para la organización (el módulo es quitable y llega apagado) y la Dueña
-// arma, por la pantalla, un catálogo escrito a mano y uno de los miembros con filtros. Las piezas de pantalla de acá las usa
-// también el E2E real de la etapa (test-e2e-real-forms.mjs).
+// Catálogos en el recorrido de usuario (E12 y E13, verificación): `armar-un-catalogo`, `catalogo-con-filtros` y
+// `campos-de-un-catalogo`, los recorridos del lienzo (docs/design/recorridos). Van después de las acciones del asistente, en
+// las mismas pestañas: arrancan y terminan con la Dueña afuera. Plataforma prende Formularios para la organización (el módulo
+// es quitable y llega apagado) y la Dueña arma, por la pantalla, un catálogo escrito a mano, uno de los miembros con filtros y
+// «Proveedores» con sus campos, sus valores y lo que se ve en WhatsApp. Las piezas de pantalla de acá las usa también el E2E
+// real de las etapas (test-e2e-real-forms.mjs).
 
 const definition = (id, title, expected) => ({ id: `FRM-${id}`, title: `Catálogos · ${title}`, expected });
 export const formsDefinitions = [
   definition("01", "Armar un catálogo escrito a mano", "Plataforma prende Formularios y «Gestión de formularios» trae «Catálogos», vacío. «Nuevo catálogo» abre el editor con «Escritas a mano» y «Texto» en la pieza; «Agregar opción» abre el modal, donde se cargan tres opciones con su código generado desde el texto, y «Crear catálogo» lo crea y abre su editor. «Así lo ve quien lo recibe» muestra las tres en el teléfono. En la compu, «Importar» pega tres filas desde Excel, la revisión dice tres altas y «Aplicar» las suma; en el teléfono, Importar no está."),
   definition("02", "Un catálogo que se arma solo, con filtros", "«De los miembros» en la pieza deja de pedir el tipo de valor y trae «Qué miembros entran». La condición «Activo es Sí» y la Dueña como persona de ejemplo piden la vista previa sola, sin «Probar»; con «Sin incluir a quien lo recibe», la Dueña no está entre las opciones y, sin la casilla, sí: una opción más. «Crear catálogo» lo guarda y, al volver a abrirlo, la condición, la persona y la casilla siguen."),
+  definition("03", "Sumarle campos a un catálogo", "La Dueña arma «Zonas» y «Proveedores», escritos a mano. «Agregar campos · 0» abre «Campos de …» en un campo nuevo: el CUIT (texto de hasta 13, único) y la Zona, «De un catálogo», con «Zonas» elegido en el combo buscando adentro de la lista. «Listo» avisa «Guardá el catálogo para cargar los valores de los campos nuevos.» y, en la compu, la columna nueva queda grisada; guardado, cada opción carga su CUIT y su zona (en la tabla o, en el teléfono, en el modal de la opción). En «En WhatsApp», la descripción pasa a «CUIT, Zona»: «Por ejemplo» y el teléfono de al lado (en el teléfono, el ojo de la barra) muestran «30-71234567-1 · Capital». Con la zona en el título, «Aislantes Norte · Gran Buenos Aires» no entra: se guarda igual y se avisa «1 opción supera los 30 caracteres del título.»; con el título otra vez en el texto, el aviso se va."),
 ];
 
-// Nada de la E12 depende de Meta, de un teléfono ni de un proveedor real: no queda nada para probar a mano.
+// Nada de la E12 ni de la E13 depende de Meta, de un teléfono ni de un proveedor real: no queda nada para probar a mano.
 export const formsManualChecks = [];
 
 export const catalogsRoute = "/org/formularios/catalogos";
@@ -305,6 +307,174 @@ export async function ensureDisplayName(page, firstName, lastName) {
 /** Un nombre como lo muestra WhatsApp en una opción: más de 30 caracteres se cortan en 29 y «…» (decisión 36). */
 export const optionText = (name) => name.length > 30 ? `${name.slice(0, 29)}…` : name;
 
+// ── Campos de un catálogo (E13) ─────────────────────────────────────────────────────────────────────────────────────────
+
+/** Los tipos de un campo como los dice la pieza «Tipo» (enums.json de Formularios, FormCatalogFieldType). */
+export const fieldTypeLabels = { Text: "Texto", WholeNumber: "Número entero", DecimalNumber: "Número con decimales", Date: "Fecha", YesNo: "Sí/No", Catalog: "De un catálogo" };
+/** Lo que avisa «Listo» de «Campos de …» si hay un campo nuevo (forms:catalog.fieldsDialog.saveToLoadValues). */
+export const newFieldsNotice = "Guardá el catálogo para cargar los valores de los campos nuevos.";
+/** El tope del título de una opción en WhatsApp (36), el del texto de una opción del contrato. */
+export const titleLimit = 30;
+/** Cómo se unen los lugares del título y de la descripción, como los arma el servidor (FormCatalogPresentationBuilder). */
+export const presented = (...parts) => parts.filter(Boolean).join(" · ");
+/** El aviso de «En WhatsApp» cuando el servidor dice que títulos no entran (forms:catalog.presentation.issues.TitleTooLong). */
+export const titleTooLongNotice = (count) => `${count} ${count === 1 ? "opción supera" : "opciones superan"} los ${titleLimit} caracteres del título.`;
+
+/** Las zonas del recorrido `campos-de-un-catalogo`, como «Zonas» de los tableros FRM-Catalogo-Campos. */
+export const zoneOptions = [{ text: "Capital", code: "CAP" }, { text: "Gran Buenos Aires", code: "GBA" }, { text: "Interior", code: "INT" }, { text: "Patagonia", code: "PAT" }];
+/** Los proveedores del recorrido, con su CUIT y su zona, como FRM-Catalogo-13; el tercero, con la zona en el título, no entra. */
+export const fieldProviders = [
+  { text: "Abrasivos del Sur", code: "PRV-0001", cuit: "30-71234567-1", zone: "Capital" },
+  { text: "Aceros Rosario", code: "PRV-0002", cuit: "30-70988123-4", zone: "Interior" },
+  { text: "Aislantes Norte", code: "PRV-0003", cuit: "33-71011223-9", zone: "Gran Buenos Aires" },
+];
+/** Los campos de «Proveedores»: el CUIT, de hasta 13 caracteres y único, y la zona, que toma los valores de `zonesName`. */
+export const providerFields = (zonesName) => [{ name: "CUIT", length: "13", unique: true }, { name: "Zona", type: "Catalog", catalog: zonesName }];
+
+/** El catálogo por su dirección, con su nombre en la banda y, si se pide, su primera opción a la vista. */
+export async function openCatalog(page, base, catalog, firstOption) {
+  const [detail] = await Promise.all([page.waitForResponse(apiResponse("GET", `${catalogsApi}/${catalog.id}`)), page.goto(new URL(`${catalogsRoute}/${catalog.id}`, base).href)]);
+  assert.equal(detail.status(), 200, `El catálogo respondió ${detail.status()}.`);
+  await page.getByRole("heading", { name: catalog.name, exact: true }).filter({ visible: true }).first().waitFor();
+  if (firstOption) await page.getByText(firstOption, { exact: true }).or(page.getByRole("textbox", { name: `Texto de ${firstOption}`, exact: true })).filter({ visible: true }).first().waitFor();
+}
+
+/** «Agregar campos · N» (o «Campos · N» para quien solo lee): abre «Campos de …», el último diálogo de la página. */
+export async function openFieldsDialog(page) {
+  await page.getByRole("button", { name: /^(Agregar campos|Campos) · \d+$/u }).filter({ visible: true }).first().click();
+  const dialog = page.locator('[role="dialog"]').last();
+  await dialog.waitFor();
+  return dialog;
+}
+
+/** Escribe un campo en el modal: nombre (la clave nace de él), tipo, largo, rango, el catálogo buscando en el combo y «Único». */
+async function fillField(page, dialog, field) {
+  assert.ok(field?.name && (!field.type || field.type in fieldTypeLabels), "Un campo con su nombre y un tipo del contrato.");
+  await dialog.getByRole("textbox", { name: "Nombre", exact: true }).fill(field.name);
+  if (field.type && field.type !== "Text") await pick(page, dialog, "Tipo", fieldTypeLabels[field.type]);
+  if (field.length) await dialog.getByRole("textbox", { name: "Largo", exact: true }).fill(field.length);
+  if (field.min !== undefined) await dialog.getByRole("textbox", { name: "Desde", exact: true }).fill(field.min);
+  if (field.max !== undefined) await dialog.getByRole("textbox", { name: "Hasta", exact: true }).fill(field.max);
+  if (field.catalog) {
+    // El combo (111): los catálogos vienen del servidor, así que se busca adentro de la lista, que tiene el foco.
+    await pickerButton(dialog, "Catálogo").click();
+    await pickerSearch(page, "Catálogo").fill(field.catalog);
+    await page.getByRole("option", { name: new RegExp(`^${escapeRegExp(field.catalog)}(?:\\s|$)`, "u") }).first().click();
+    await page.getByRole("listbox").waitFor({ state: "hidden" });
+  }
+  if (field.unique) await dialog.getByRole("checkbox", { name: "Único", exact: true }).click();
+}
+
+/**
+ * Suma campos con «Campos de …» (125): sin campos, el modal abre en uno nuevo; si no, cada uno sale de «Agregar campo» (en el
+ * teléfono, desde la lista). «Listo» los deja en el catálogo y avisa que se guarde para cargarles valores; no guarda.
+ */
+export async function addFields(page, fields, { phone = false } = {}) {
+  assert.ok(Array.isArray(fields) && fields.length > 0, "Al menos un campo.");
+  const dialog = await openFieldsDialog(page);
+  const name = dialog.getByRole("textbox", { name: "Nombre", exact: true });
+  let onNew = await name.count() > 0 && await name.inputValue() === "";
+  const back = dialog.getByRole("button", { name: "Volver a la lista", exact: true });
+  for (const field of fields) {
+    if (!onNew) {
+      if (phone && await back.count()) await back.click();
+      await dialog.getByRole("button", { name: "Agregar campo", exact: true }).click();
+    }
+    await fillField(page, dialog, field);
+    onNew = false;
+  }
+  if (phone) await back.click();
+  await dialog.getByRole("button", { name: "Listo", exact: true }).click();
+  await dialog.waitFor({ state: "hidden" });
+  await page.getByText(newFieldsNotice, { exact: true }).first().waitFor();
+}
+
+/**
+ * Carga los valores de los campos de una opción guardada: en la compu, en su fila de la tabla («CUIT de Abrasivos del Sur»);
+ * en el teléfono, en el modal de la opción. `values` va del nombre del campo a un texto o a `{ pick }`, la opción de la pieza.
+ */
+export async function setOptionFields(page, option, values, { phone = false } = {}) {
+  const entries = Object.entries(values);
+  assert.ok(entries.length > 0, "Al menos un valor.");
+  if (!phone) {
+    for (const [field, value] of entries) {
+      const name = `${field} de ${option}`;
+      if (typeof value === "object") await pick(page, page, name, value.pick);
+      else await page.getByRole("textbox", { name, exact: true }).fill(value);
+    }
+    return;
+  }
+  await page.getByRole("button", { name: `Editar ${option}`, exact: true }).click();
+  const dialog = page.locator('[role="dialog"]').last();
+  await dialog.getByRole("textbox", { name: "Texto", exact: true }).waitFor();
+  for (const [field, value] of entries) {
+    if (typeof value === "object") await pick(page, dialog, field, value.pick);
+    else await dialog.getByRole("textbox", { name: field, exact: true }).fill(value);
+  }
+  await dialog.getByRole("button", { name: "Volver a la lista", exact: true }).click();
+  await dialog.getByRole("button", { name: "Listo", exact: true }).click();
+  await dialog.waitFor({ state: "hidden" });
+}
+
+/**
+ * «Título · hasta 30 caracteres» o «Descripción · hasta 300» de «En WhatsApp», la pieza múltiple (262): marca o desmarca cada
+ * lugar. En la compu marcar no cierra y Esc cierra; en el teléfono se aplica con «Listo (N)».
+ */
+export async function choosePlaces(page, label, toggles, { phone = false } = {}) {
+  assert.ok(Array.isArray(toggles) && toggles.length > 0, "Al menos un lugar.");
+  await pickerButton(page, label).click();
+  for (const place of toggles) await page.getByRole("option", { name: new RegExp(`^${escapeRegExp(place)}(?:\\s|$)`, "u") }).first().click();
+  if (phone) await page.getByRole("button", { name: /^Listo \(\d+\)$/u }).click();
+  else await page.keyboard.press("Escape");
+  await page.getByRole("listbox").waitFor({ state: "hidden" });
+}
+
+/** «Por ejemplo» de «En WhatsApp»: el título y la descripción de la primera opción activa, como los arma el servidor. */
+export async function exampleText(page) {
+  return (await page.getByRole("group", { name: "Por ejemplo", exact: true }).filter({ visible: true }).first().innerText()).split(/\r?\n/u).map((line) => line.trim()).filter(Boolean);
+}
+
+/**
+ * Cómo ve las opciones quien recibe el catálogo, con el título y la descripción de cada una: en la compu, el teléfono de al
+ * lado, con la lista abierta y otra vez cerrada; en el teléfono, el ojo de la barra, que se cierra al terminar.
+ */
+export async function previewRows(page, { phone = false } = {}) {
+  if (phone) {
+    await page.getByRole("button", { name: "Así lo ve quien lo recibe", exact: true }).click();
+    const sheet = page.getByRole("dialog", { name: "Así lo ve quien lo recibe", exact: true });
+    const cards = sheet.getByRole("group", { name: "Así lo ve quien lo recibe", exact: true }).getByRole("listitem");
+    await cards.first().waitFor();
+    const rows = await cards.evaluateAll((items) => items.map((item) => {
+      const [title = "", detail = ""] = [...item.children].map((child) => child.textContent.trim());
+      return { title, detail };
+    }));
+    await page.keyboard.press("Escape");
+    await sheet.waitFor({ state: "hidden" });
+    return rows;
+  }
+  const phoneFrame = page.getByRole("group", { name: "Así lo ve quien lo recibe", exact: true }).first();
+  const closed = phoneFrame.getByRole("button", { name: /Elegí una opción/u });
+  if (await closed.count()) await closed.click();
+  const radios = phoneFrame.getByRole("radio");
+  await radios.first().waitFor();
+  const rows = await radios.evaluateAll((items) => items.map((radio) => {
+    const [title = "", detail = ""] = [...(radio.closest("label")?.querySelector(":scope > span")?.children ?? [])].map((span) => span.textContent.trim());
+    return { title, detail };
+  }));
+  // Vuelve a la pregunta cerrada, como estaba («‹ Pregunta»).
+  await phoneFrame.getByRole("button", { name: "Pregunta", exact: true }).click();
+  return rows;
+}
+
+/** El detalle de un catálogo, sus campos por nombre y sus opciones, como los lee la pantalla. */
+export async function catalogState(page, catalogId) {
+  const detail = await assistantApi(page, { route: `${catalogsApi}/${catalogId}` });
+  assert.equal(detail.status, 200, `El catálogo respondió ${detail.status}.`);
+  const items = await assistantApi(page, { route: `${catalogsApi}/${catalogId}/items?status=All&pageSize=100` });
+  assert.equal(items.status, 200, `Las opciones respondieron ${items.status}.`);
+  return { detail: detail.body, fields: Object.fromEntries(detail.body.fields.map((field) => [field.name, field])), items: items.body.items };
+}
+
 /**
  * Elige la persona o el cliente de ejemplo en la pieza (262), que busca en la lista del servidor: la que empieza con `name`
  * o, si no está, la primera. Devuelve cómo se llama la elegida.
@@ -412,6 +582,76 @@ export function formsSteps(ctx) {
       assert.equal(await page.getByRole("checkbox", { name: "Sin incluir a quien lo recibe", exact: true }).isChecked(), true);
       await ctx.signOut(page, organization);
       return `«Equipo activo» se creó con «Activo es Sí» y la persona de ejemplo: con la casilla, ${excluded.body.total} opciones sin ella; sin la casilla, ${included.body.total}. La condición, la persona y la casilla siguen al volver.`;
+    },
+    // campos-de-un-catalogo (E13): abre el catálogo, elige el tipo de cada campo, carga los valores, elige qué se ve en
+    // WhatsApp y un título que no entra se avisa y se guarda igual. Vuelve a entrar: el paso anterior termina afuera.
+    "03": async () => {
+      await asOwner();
+      await prepared();
+      let result;
+      try {
+        await openCatalogs(page, base);
+        await startCatalog(page, { name: "Zonas", description: "Dónde entrega cada proveedor." });
+        await addOptions(page, zoneOptions, { phone });
+        const zones = await createCatalog(page);
+        await openCatalogs(page, base);
+        await startCatalog(page, { name: "Proveedores", description: "A quiénes se les compra." });
+        await addOptions(page, fieldProviders.map(({ text, code }) => ({ text, code })), { phone });
+        const providers = await createCatalog(page);
+
+        await addFields(page, providerFields(zones.name), { phone });
+        if (!phone) {
+          // La columna de un campo nuevo queda grisada hasta guardar el catálogo, con su motivo.
+          const header = page.getByRole("columnheader").getByText("Zona", { exact: true });
+          assert.equal(await header.getAttribute("aria-disabled"), "true", "La columna de la Zona nueva está grisada hasta guardar.");
+        }
+        const withFields = await saveCatalog(page, providers.id);
+        assert.equal(withFields.fieldIdentityMap?.length, 2, "Guardar responde la identidad de los dos campos nuevos.");
+
+        for (const provider of fieldProviders) await setOptionFields(page, provider.text, { CUIT: provider.cuit, Zona: { pick: provider.zone } }, { phone });
+        await saveCatalog(page, providers.id);
+        const zoneIds = Object.fromEntries((await catalogState(page, zones.id)).items.map((item) => [item.text, item.id]));
+        let state = await catalogState(page, providers.id);
+        const { CUIT: cuit, Zona: zone } = state.fields;
+        assert.ok(cuit && zone && zone.sourceCatalogId === zones.id, "Los campos son el CUIT y la Zona, que toma los valores de «Zonas».");
+        assert.deepEqual(state.items.map((item) => [item.text, item.fields[cuit.id], item.fields[zone.id]]),
+          fieldProviders.map((provider) => [provider.text, provider.cuit, zoneIds[provider.zone]]), "Cada opción guardó su CUIT y la identidad de su zona.");
+
+        // «En WhatsApp»: la descripción pasa del detalle al CUIT y la zona; «Por ejemplo» y el teléfono la muestran.
+        await choosePlaces(page, "Descripción · hasta 300", ["Detalle", "CUIT", "Zona"], { phone });
+        const [first] = fieldProviders;
+        assert.deepEqual(await exampleText(page), [first.text, presented(first.cuit, first.zone)], "«Por ejemplo» arma la primera opción como el servidor.");
+        const shown = await previewRows(page, { phone });
+        assert.deepEqual(shown, fieldProviders.map((provider) => ({ title: provider.text, detail: presented(provider.cuit, provider.zone) })),
+          `El teléfono muestra ${JSON.stringify(shown)}.`);
+        await saveCatalog(page, providers.id);
+
+        // Un título que no entra: con la zona en el título, «Aislantes Norte · Gran Buenos Aires» pasa de 30; se guarda igual.
+        const tooLong = fieldProviders.filter((provider) => presented(provider.text, provider.zone).length > titleLimit);
+        assert.deepEqual(tooLong.map((provider) => provider.text), ["Aislantes Norte"]);
+        await choosePlaces(page, "Título · hasta 30 caracteres", ["Zona"], { phone });
+        await saveCatalog(page, providers.id);
+        const notice = page.getByText(titleTooLongNotice(1), { exact: true }).filter({ visible: true }).first();
+        await notice.waitFor();
+        state = await catalogState(page, providers.id);
+        assert.equal(state.detail.presentationIssues.count, 1, "El servidor avisa una opción que no entra.");
+        assert.equal(state.items.find((item) => item.text === tooLong[0].text)?.presentationIssue, "TitleTooLong");
+
+        // Corrige y guarda: el título vuelve al texto y el aviso se va.
+        await choosePlaces(page, "Título · hasta 30 caracteres", ["Zona"], { phone });
+        await saveCatalog(page, providers.id);
+        await notice.waitFor({ state: "hidden" });
+        state = await catalogState(page, providers.id);
+        assert.deepEqual(state.detail.presentation, { title: ["text"], description: [`field:${cuit.id}`, `field:${zone.id}`] });
+        assert.equal(state.detail.presentationIssues.count, 0);
+        result = `«Proveedores» sumó el CUIT y la Zona (de «Zonas»), con la columna grisada hasta guardar; cada opción cargó sus valores; la descripción en WhatsApp quedó «CUIT, Zona» («${presented(first.cuit, first.zone)}»), y la zona en el título avisó «${titleTooLongNotice(1)}» hasta corregirlo.`;
+      } catch (error) {
+        // Termina afuera también si falló, sin tapar lo que falló.
+        await ctx.signOut(page, organization).catch(() => {});
+        throw error;
+      }
+      await ctx.signOut(page, organization);
+      return result;
     },
   };
 }

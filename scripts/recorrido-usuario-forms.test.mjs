@@ -1,24 +1,66 @@
 import assert from "node:assert/strict";
 import { EventEmitter } from "node:events";
+import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { factorKeeper } from "./platform-factor-real.mjs";
 import {
-  apiResponse, catalogsApi, catalogsRoute, csv, enableModule, formsDefinitions, formsManualChecks, formsModuleName, nextPreview, optionText, pastedReasons,
-  reviewCounts, runFormsJourney, sourceLabels, tsv, valueTypeLabels, visitReasons,
+  addFields, apiResponse, catalogsApi, catalogsRoute, choosePlaces, csv, enableModule, fieldProviders, fieldTypeLabels, formsDefinitions, formsManualChecks,
+  formsModuleName, newFieldsNotice, nextPreview, optionText, pastedReasons, presented, providerFields, reviewCounts, runFormsJourney, setOptionFields,
+  sourceLabels, titleLimit, titleTooLongNotice, tsv, valueTypeLabels, visitReasons, zoneOptions,
 } from "./recorrido-usuario-forms.mjs";
 
 const base = new URL("https://localtest.me:5174/");
+const locale = (file) => JSON.parse(readFileSync(new URL(`../src/modules/forms/locales/es/${file}.json`, import.meta.url), "utf8"));
 
-test("Catálogos tiene sus dos pasos, uno por recorrido del lienzo, y nada para probar a mano", () => {
-  assert.deepEqual(formsDefinitions.map((step) => step.id), ["FRM-01", "FRM-02"]);
+test("Catálogos tiene sus tres pasos, uno por recorrido del lienzo, y nada para probar a mano", () => {
+  assert.deepEqual(formsDefinitions.map((step) => step.id), ["FRM-01", "FRM-02", "FRM-03"]);
   for (const step of formsDefinitions) assert.ok(step.title.startsWith("Catálogos · ") && step.expected.length > 80, step.id);
-  const [manual, filtered] = formsDefinitions.map((step) => step.expected);
+  const [manual, filtered, fields] = formsDefinitions.map((step) => step.expected);
   // armar-un-catalogo: el módulo prendido, la pieza, el modal, crear, la vista previa e importar solo en la compu.
   for (const text of ["prende Formularios", "Escritas a mano", "Agregar opción", "Crear catálogo", "Así lo ve quien lo recibe", "Importar", "teléfono"])
     assert.ok(manual.includes(text), text);
   // catalogo-con-filtros: el origen, la persona de ejemplo, sin «Probar», la casilla y lo guardado.
   for (const text of ["De los miembros", "persona de ejemplo", "sin «Probar»", "Sin incluir a quien lo recibe", "Crear catálogo"]) assert.ok(filtered.includes(text), text);
+  // campos-de-un-catalogo (E13): abre el catálogo, elige el tipo, carga los valores, qué se ve en WhatsApp y un título que no entra.
+  for (const text of ["Agregar campos · 0", "Campos de …", "De un catálogo", "combo", newFieldsNotice, "grisada", "En WhatsApp", "Por ejemplo",
+    "30-71234567-1 · Capital", "Aislantes Norte · Gran Buenos Aires", titleTooLongNotice(1)]) assert.ok(fields.includes(text), text);
+  assert.equal(formsDefinitions[2].title, "Catálogos · Sumarle campos a un catálogo");
   assert.deepEqual(formsManualChecks, []);
+});
+
+test("los textos de los campos que espera el recorrido son los de la app, en español", () => {
+  const forms = locale("forms").catalog;
+  const enums = locale("enums");
+  assert.deepEqual(fieldTypeLabels, enums.FormCatalogFieldType);
+  assert.equal(newFieldsNotice, forms.fieldsDialog.saveToLoadValues);
+  const issue = (count) => forms.presentation.issues[`TitleTooLong_${count === 1 ? "one" : "other"}`].replace("{{n}}", String(count)).replace("{{max}}", String(titleLimit));
+  assert.equal(titleTooLongNotice(1), issue(1));
+  assert.equal(titleTooLongNotice(3), issue(3));
+  assert.equal(forms.presentation.title.replace("{{n}}", String(titleLimit)), "Título · hasta 30 caracteres");
+  assert.equal(forms.presentation.description.replace("{{n}}", "300"), "Descripción · hasta 300");
+  assert.equal(forms.fieldsButton.addLabel.replace("{{n}}", "0"), "Agregar campos · 0");
+});
+
+test("«Zonas» y «Proveedores» como los tableros: con la zona en el título, solo «Aislantes Norte» no entra en 30", () => {
+  assert.equal(new Set(zoneOptions.map((zone) => zone.code)).size, zoneOptions.length);
+  for (const provider of fieldProviders) {
+    assert.ok(zoneOptions.some((zone) => zone.text === provider.zone), provider.text);
+    assert.equal(provider.cuit.length, 13, "El CUIT entra en el largo del campo.");
+    assert.ok(presented(provider.text).length <= titleLimit, "El título de siempre entra.");
+  }
+  assert.equal(new Set(fieldProviders.map((provider) => provider.cuit)).size, fieldProviders.length, "El CUIT es único.");
+  assert.deepEqual(fieldProviders.filter((provider) => presented(provider.text, provider.zone).length > titleLimit).map((provider) => provider.text), ["Aislantes Norte"]);
+  assert.equal(presented("Abrasivos del Sur", "", "Capital"), "Abrasivos del Sur · Capital", "Un lugar sin contenido no cuenta, como en el servidor.");
+  assert.deepEqual(providerFields("Zonas"), [{ name: "CUIT", length: "13", unique: true }, { name: "Zona", type: "Catalog", catalog: "Zonas" }]);
+});
+
+test("sumar campos, cargar valores o elegir lugares sin nada que hacer se rechaza antes de tocar la pantalla", async () => {
+  const touched = [];
+  const page = new Proxy({}, { get: (_, name) => { touched.push(String(name)); return () => {}; } });
+  await assert.rejects(addFields(page, []), /Al menos un campo/u);
+  await assert.rejects(setOptionFields(page, "Abrasivos del Sur", {}), /Al menos un valor/u);
+  await assert.rejects(choosePlaces(page, "Título · hasta 30 caracteres", []), /Al menos un lugar/u);
+  assert.deepEqual(touched, []);
 });
 
 test("las rutas, el módulo y los textos de la pieza son los de la app", () => {
@@ -82,13 +124,13 @@ test("la vista previa que se espera es la pedida con lo elegido: una vieja o una
   await assert.rejects(nextPreview(page, async () => {}, () => true, { timeout: 300 }), /no se pidió/u);
 });
 
-test("el recorrido corre los dos pasos en orden, en la pestaña de la organización", async () => {
+test("el recorrido corre los tres pasos en orden, en la pestaña de la organización", async () => {
   const page = { url: () => "https://localtest.me:5174/org", name: "organización" };
   const recorded = [];
   const record = async (id, width, getPage, action) => { recorded.push([id, getPage().name, typeof action, width]); };
   await runFormsJourney({ page, platformPage: { name: "plataforma" }, width: 390, base, record, signOut: async () => {}, login: async () => {},
     owner: "e2e-recorrido-empresa@example.test", organization: "Recorrido 390", operator: "e2e-a1-operator@example.test" });
-  assert.deepEqual(recorded, [["FRM-01", "organización", "function", 390], ["FRM-02", "organización", "function", 390]]);
+  assert.deepEqual(recorded, [["FRM-01", "organización", "function", 390], ["FRM-02", "organización", "function", 390], ["FRM-03", "organización", "function", 390]]);
 });
 
 test("sin la pestaña de Plataforma o sin las sesiones del recorrido, Catálogos no abre pantallas ni se declara aprobado", async () => {

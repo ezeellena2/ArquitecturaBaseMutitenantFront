@@ -8,15 +8,17 @@ import { assistantApi, assistantLogin } from "./assistant-real-ui.mjs";
 import { baseUrl, createEnvironment } from "./recorrido-usuario-entorno.mjs";
 import { plainTextBody } from "./test-e2e-real-mail.mjs";
 import {
-  act, addOptions, apiResponse, applyImport, catalogsApi, createCatalog, csv, enableModule, ensureDisplayName, formsModuleName, nextPreview,
-  openCatalogs, pickSample, reviewCounts, reviewImport, saveCatalog, sessionOf, startCatalog, toggleMany, tsv,
+  act, addFields, addOptions, apiResponse, applyImport, catalogsApi, catalogState, choosePlaces, createCatalog, csv, enableModule, ensureDisplayName,
+  exampleText, formsModuleName, nextPreview, openCatalog, openCatalogs, pickSample, previewRows, providerFields, reviewCounts, reviewImport,
+  saveCatalog, sessionOf, startCatalog, toggleMany, tsv, zoneOptions,
 } from "./recorrido-usuario-forms.mjs";
 
 /**
- * E2E real de Catálogos (E12, §15 de la spec): los cinco casos, con el front, la sesión, la base, el correo y el canal privado
- * de WhatsApp de Testing reales, sin Meta. Antes, Plataforma prende Formularios (y WhatsApp, para los contactos) en la
- * organización de la preparación E7. Lo que el control y la pantalla no dan lo hace la orden «forms» del preparador
- * (RealE2ESetup, FormsCommand): un contacto que escribe con el nombre de su perfil y el EXPLAIN de las lecturas de las opciones.
+ * E2E real de Catálogos (E12, §15 de su spec) y de los campos de los catálogos (E13, «Cómo se cierra» de su spec): los ocho
+ * casos, con el front, la sesión, la base, el correo y el canal privado de WhatsApp de Testing reales, sin Meta. Antes,
+ * Plataforma prende Formularios (y WhatsApp, para los contactos) en la organización de la preparación E7. Lo que el control y
+ * la pantalla no dan lo hace la orden «forms» del preparador (RealE2ESetup, FormsCommand): un contacto que escribe con el
+ * nombre de su perfil y el EXPLAIN de las lecturas de las opciones. Los de la E13 no mandan nada por WhatsApp.
  */
 export const formsE2ECases = [
   ["FRM-01", "A mano: «Proveedores» pegando desde una planilla y «Recargo por zona», decimal, con el valor en su columna"],
@@ -24,7 +26,13 @@ export const formsE2ECases = [
   ["FRM-03", "Miembros: filtros con una persona de ejemplo, vacío y con opciones, con «Sin incluir a quien lo recibe»"],
   ["FRM-04", "Contactos: por etiqueta, sin teléfonos a la vista, y un contacto nuevo con el nombre de su perfil"],
   ["FRM-05", "Volumen: 10.000 opciones; buscar, guardar una y exportar, cada lectura con su EXPLAIN"],
+  ["FRM-06", "Campos: «Proveedores» con CUIT, Zona (de «Zonas») y Plazo de pago, cargados importando una planilla y exportados de nuevo sin diferencias"],
+  ["FRM-07", "En WhatsApp: el CUIT en la descripción, guardado y visto en el teléfono al costado"],
+  ["FRM-08", "Una zona dada de baja: «Proveedores» se sigue guardando, importando y exportando con el valor que tenía"],
 ];
+
+/** Los casos de la E13 que siguen al que arma sus catálogos: «Zonas» y «Proveedores» con sus campos, de FRM-06. */
+const fieldsFollowers = ["FRM-07", "FRM-08"];
 
 /** El operador de Plataforma que prende los módulos (el del asistente real a 1440). */
 const operatorEmail = "e2e-a1-operator@example.test";
@@ -42,6 +50,7 @@ export function formsNames(tag) {
     memberA: `e2e-frm-ana-${tag}@example.test`, memberB: `e2e-frm-bruno-${tag}@example.test`,
     memberAName: ["Ana", `Ruiz ${tag}`], memberBName: ["Bruno", `Paz ${tag}`],
     nora: `Nora Benítez ${tag}`, hugo: `Hugo Ferreyra ${tag}`, lucas: `Lucas Profile ${tag}`, scenario: `frm-${tag}`,
+    zones: `Zonas ${tag}`, fieldProviders: `Proveedores con campos ${tag}`,
   };
 }
 
@@ -72,6 +81,25 @@ export function volumeRows(count = 10_000) {
     return [`C${number}`, `Opción ${number}`];
   });
 }
+
+/** Las columnas de la planilla de «Proveedores con campos» (E13): las del catálogo y una por campo, por su nombre. */
+export const fieldSheetHeaders = ["Código", "Texto", "CUIT", "Zona", "Plazo de pago", "Detalle"];
+/**
+ * Las filas de esa planilla: la zona por su texto o, en una, por su código («GBA»), como acepta una fuente (B7); un plazo vacío
+ * queda sin valor. Dos son de «Patagonia», la zona que FRM-08 da de baja.
+ */
+export const fieldSheet = [
+  { code: "PRV-0001", text: "Abrasivos del Sur", cuit: "30-71234567-1", zone: "Capital", zoneText: "Capital", term: "30", detail: "Abrasivos" },
+  { code: "PRV-0002", text: "Aceros Rosario", cuit: "30-70988123-4", zone: "GBA", zoneText: "Gran Buenos Aires", term: "60", detail: "Aceros" },
+  { code: "PRV-0003", text: "Aislantes Norte", cuit: "33-71011223-9", zone: "Interior", zoneText: "Interior", term: "30", detail: "" },
+  { code: "PRV-0004", text: "Alambres Patagónicos", cuit: "30-69877654-2", zone: "Patagonia", zoneText: "Patagonia", term: "90", detail: "Alambres" },
+  { code: "PRV-0005", text: "Andamios Litoral", cuit: "30-70233456-1", zone: "Capital", zoneText: "Capital", term: "", detail: "Andamios" },
+  { code: "PRV-0006", text: "Bulonera Central", cuit: "30-70345678-9", zone: "Patagonia", zoneText: "Patagonia", term: "15", detail: "Bulones" },
+];
+/** Una fila de la planilla, en el orden de sus columnas. */
+export const fieldSheetCells = (row) => [row.code, row.text, row.cuit, row.zone, row.term, row.detail];
+/** Los campos de «Proveedores con campos»: los del recorrido y el plazo de pago, un número entero de 0 a 365. */
+export const fieldsOf = (zonesName) => [...providerFields(zonesName), { name: "Plazo de pago", type: "WholeNumber", min: "0", max: "365" }];
 
 /** Un teléfono de la fixture como lo dice una persona («3456-7891»): ningún texto del catálogo lo puede llevar. */
 export const phoneFragments = (phones) => Object.values(phones).map((phone) => phone.slice(-8)).flatMap((digits) => [digits, `${digits.slice(0, 4)}-${digits.slice(4)}`]);
@@ -143,13 +171,39 @@ async function explained(env, tenantId, action) {
   return plan;
 }
 
-/** Los cinco casos, cada uno una función sobre la misma organización y sus dos pestañas. */
+/** Los ocho casos, cada uno una función sobre la misma organización y sus dos pestañas. */
 export function formsE2ESteps({ page, platformPage, browser, env, tenantId, names, downloads }) {
   const base = baseUrl;
   const items = async (catalogId, query = "") => {
     const read = await assistantApi(page, { route: `${catalogsApi}/${catalogId}/items?status=All&pageSize=100${query}` });
     assert.equal(read.status, 200, `Las opciones respondieron ${read.status}.`);
     return read.body;
+  };
+  // «Zonas» y «Proveedores con campos», con sus campos y sus valores: los arma FRM-06 y los usan FRM-07 y FRM-08.
+  let fieldCatalogs;
+  const fieldCatalogsReady = () => {
+    assert.ok(fieldCatalogs, "FRM-07 y FRM-08 siguen a FRM-06, que arma sus catálogos.");
+    return fieldCatalogs;
+  };
+  // «Exportar» el catálogo abierto y reimportar ese Excel: cada fila vuelve sin cambios. Cancela la revisión.
+  const exportAndReimport = async (catalog, label) => {
+    const [download] = await Promise.all([page.waitForEvent("download"), page.getByRole("button", { name: "Exportar", exact: true }).click()]);
+    const exported = path.join(downloads, `${label}-${randomUUID()}.xlsx`);
+    await download.saveAs(exported);
+    const again = await reviewImport(page, catalog, { file: exported });
+    const counts = reviewCounts(again.review);
+    assert.deepEqual({ errors: counts.errors, added: counts.added, changed: counts.changed, deactivated: counts.deactivated },
+      { errors: 0, added: 0, changed: 0, deactivated: 0 }, `Reimportar lo exportado dio ${JSON.stringify(counts)}.`);
+    assert.equal(counts.unchanged, counts.rowsRead, "Cada fila exportada se reimporta sin cambios.");
+    await again.dialog.getByRole("button", { name: "Cancelar", exact: true }).click();
+    await again.dialog.waitFor({ state: "hidden" });
+    return counts;
+  };
+  // Lo guardado de cada proveedor: el CUIT, la identidad de su zona y el plazo, por código.
+  const savedFieldValues = async () => {
+    const { providers, fields } = fieldCatalogsReady();
+    const { items: rows } = await catalogState(page, providers.id);
+    return Object.fromEntries(rows.map((row) => [row.code, { cuit: row.fields[fields.cuit] ?? null, zone: row.fields[fields.zone] ?? null, term: row.fields[fields.term] ?? null }]));
   };
   return {
     "FRM-01": async () => {
@@ -316,12 +370,105 @@ export function formsE2ESteps({ page, platformPage, browser, env, tenantId, name
       assert.ok(exported.reads >= 10, "Exportar lee las opciones de a tandas.");
       return `10.000 opciones: buscar (${search.reads} lecturas), guardar una (${save.reads}, una sola escrita) y exportar (${exported.reads} tandas), ninguna recorre la tabla.`;
     },
+    "FRM-06": async () => {
+      await openCatalogs(page, base);
+      await startCatalog(page, { name: names.zones });
+      await addOptions(page, zoneOptions);
+      const zones = await createCatalog(page);
+      await openCatalogs(page, base);
+      await startCatalog(page, { name: names.fieldProviders, description: "A quiénes se les compra." });
+      const providers = await createCatalog(page);
+      // Los campos se arman en «Campos de …» y se guardan con el catálogo; los valores llegan después, importando.
+      await addFields(page, fieldsOf(names.zones));
+      const saved = await saveCatalog(page, providers.id);
+      assert.equal(saved.fieldIdentityMap?.length, 3, "Guardar responde la identidad de los tres campos nuevos.");
+      const { fields: byName } = await catalogState(page, providers.id);
+      const fields = { cuit: byName.CUIT?.id, zone: byName.Zona?.id, term: byName["Plazo de pago"]?.id };
+      assert.ok(fields.cuit && fields.zone && fields.term, "Los tres campos quedaron guardados con su identidad.");
+      assert.deepEqual([byName.CUIT.type, byName.CUIT.maxLength, byName.CUIT.unique], ["Text", 13, true]);
+      assert.deepEqual([byName.Zona.type, byName.Zona.sourceCatalogId], ["Catalog", zones.id]);
+      assert.deepEqual([byName["Plazo de pago"].type, byName["Plazo de pago"].min, byName["Plazo de pago"].max], ["WholeNumber", "0", "365"]);
+
+      const sheet = { name: "proveedores-con-campos.csv", mimeType: "text/csv", buffer: Buffer.from(csv(fieldSheetHeaders, fieldSheet.map(fieldSheetCells)), "utf8") };
+      const { dialog, review } = await reviewImport(page, providers, { file: sheet });
+      assert.deepEqual(reviewCounts(review), { rowsRead: fieldSheet.length, unchanged: 0, errors: 0, added: fieldSheet.length, changed: 0, deactivated: 0 });
+      await applyImport(page, providers, dialog);
+      const zoneIds = Object.fromEntries((await items(zones.id)).items.map((item) => [item.text, item.id]));
+      fieldCatalogs = { zones, providers, fields, zoneIds };
+      assert.deepEqual(await savedFieldValues(), Object.fromEntries(fieldSheet.map((row) =>
+        [row.code, { cuit: row.cuit, zone: zoneIds[row.zoneText], term: row.term || null }])), "Cada fila guardó su CUIT, la identidad de su zona (también por código) y su plazo.");
+
+      const counts = await exportAndReimport(providers, "proveedores-con-campos");
+      return `«${names.fieldProviders}» sumó CUIT, Zona (de «${names.zones}») y Plazo de pago; la planilla dio ${fieldSheet.length} altas con sus valores (una zona por su código) y el Excel exportado (${counts.rowsRead} filas) se reimporta sin diferencias.`;
+    },
+    "FRM-07": async () => {
+      const { providers, fields } = fieldCatalogsReady();
+      await openCatalog(page, base, providers, fieldSheet[0].text);
+      // La descripción pasa del detalle al CUIT; el título sigue en el texto.
+      await choosePlaces(page, "Descripción · hasta 300", ["Detalle", "CUIT"]);
+      assert.deepEqual(await exampleText(page), [fieldSheet[0].text, fieldSheet[0].cuit], "«Por ejemplo» arma la primera opción como el servidor.");
+      const expected = fieldSheet.map((row) => ({ title: row.text, detail: row.cuit }));
+      assert.deepEqual(await previewRows(page), expected, "El teléfono de al lado muestra el CUIT debajo de cada opción.");
+      await saveCatalog(page, providers.id);
+      const { detail, items: rows } = await catalogState(page, providers.id);
+      assert.deepEqual(detail.presentation, { title: ["text"], description: [`field:${fields.cuit}`] });
+      assert.equal(detail.presentationIssues.count, 0, "Todo entra en WhatsApp.");
+      assert.ok(rows.every((row) => !row.presentationIssue), "Ninguna opción tiene un aviso.");
+      await openCatalog(page, base, providers, fieldSheet[0].text);
+      assert.deepEqual(await previewRows(page), expected, "Al volver a abrirlo, el teléfono sigue mostrando el CUIT.");
+      return `La descripción en WhatsApp quedó en el CUIT («${fieldSheet[0].text}» con «${fieldSheet[0].cuit}» debajo), guardada como field:<id> y vista en el teléfono al costado, también al volver a abrirlo.`;
+    },
+    "FRM-08": async () => {
+      const { zones, providers, zoneIds } = fieldCatalogsReady();
+      const patagonia = zoneIds.Patagonia;
+      const southern = fieldSheet.filter((row) => row.zoneText === "Patagonia");
+      assert.ok(patagonia && southern.length === 2, "Dos proveedores tienen «Patagonia».");
+      // «Zonas» da de baja «Patagonia».
+      await openCatalog(page, base, zones, zoneOptions[0].text);
+      await page.getByRole("checkbox", { name: "Activa: Patagonia", exact: true }).click();
+      await saveCatalog(page, zones.id);
+      assert.equal((await items(zones.id)).items.find((item) => item.id === patagonia)?.isActive, false, "«Patagonia» quedó dada de baja.");
+
+      // Se sigue guardando: la celda dice la zona guardada y otro cambio se guarda sin tocarla.
+      await openCatalog(page, base, providers, fieldSheet[0].text);
+      await page.getByRole("button", { name: new RegExp(`^Zona de ${southern[0].text} Patagonia`, "u") }).waitFor();
+      await page.getByRole("textbox", { name: `Plazo de pago de ${fieldSheet[0].text}`, exact: true }).fill("45");
+      await saveCatalog(page, providers.id);
+      let values = await savedFieldValues();
+      for (const row of southern) assert.equal(values[row.code].zone, patagonia, `${row.code} conserva «Patagonia» al guardar.`);
+      assert.equal(values[fieldSheet[0].code].term, "45");
+
+      // Se sigue importando: la fila que nombra la zona dada de baja que ya tenía se conserva; ponerla en otra opción es un error.
+      const keep = southern[0];
+      const change = { ...fieldSheet[0], term: "50" };
+      const wrong = { ...fieldSheet[2], zone: "Patagonia" };
+      const paste = (rows) => tsv(fieldSheetHeaders, rows.map(fieldSheetCells));
+      const rejected = await reviewImport(page, providers, { paste: paste([keep, change, wrong]) });
+      assert.equal(reviewCounts(rejected.review).errors, 1, "Una zona dada de baja no se elige como valor nuevo.");
+      await rejected.dialog.getByRole("button", { name: "Cancelar", exact: true }).click();
+      await rejected.dialog.waitFor({ state: "hidden" });
+      const accepted = await reviewImport(page, providers, { paste: paste([keep, change]) });
+      assert.deepEqual(reviewCounts(accepted.review), { rowsRead: 2, unchanged: 1, errors: 0, added: 0, changed: 1, deactivated: 0 });
+      await applyImport(page, providers, accepted.dialog);
+      values = await savedFieldValues();
+      assert.equal(values[keep.code].zone, patagonia, "Importar conserva «Patagonia» en la fila que ya la tenía.");
+      assert.equal(values[wrong.code].zone, zoneIds.Interior, "La fila rechazada no cambió su zona.");
+      assert.equal(values[change.code].term, "50");
+
+      // Se sigue exportando: el Excel se reimporta sin diferencias y la zona sigue.
+      const counts = await exportAndReimport(providers, "proveedores-zona-de-baja");
+      values = await savedFieldValues();
+      for (const row of southern) assert.equal(values[row.code].zone, patagonia, `${row.code} conserva «Patagonia» al exportar y reimportar.`);
+      return `Con «Patagonia» dada de baja, «${names.fieldProviders}» se guardó (plazo 45), importó (una fila sin cambios con la zona de baja y otra con el plazo 50; ponerla en otra opción fue un error) y exportó ${counts.rowsRead} filas sin diferencias, con la zona guardada en sus dos proveedores.`;
+    },
   };
 }
 
 /** Corre los casos pedidos en una organización nueva del entorno aislado, a 1440. */
 export async function runFormsRealE2E({ build = false, cases = formsE2ECases.map(([id]) => id) } = {}) {
   assert.ok(cases.length > 0 && cases.every((id) => formsE2ECases.some(([known]) => known === id)) && new Set(cases).size === cases.length, "Casos de Catálogos inválidos.");
+  const builder = cases.indexOf("FRM-06");
+  assert.ok(cases.every((id, index) => !fieldsFollowers.includes(id) || (builder >= 0 && builder < index)), "FRM-07 y FRM-08 siguen a FRM-06, que arma sus catálogos.");
   const env = await createEnvironment({ build });
   const downloads = await mkdtemp(path.join(os.tmpdir(), "arquitecturabase-catalogos-"));
   let browser;
@@ -337,7 +484,7 @@ export async function runFormsRealE2E({ build = false, cases = formsE2ECases.map
       await assistantLogin(page, env, baseUrl, env.businessEmail, "business");
       await assistantLogin(platformPage, env, baseUrl, operatorEmail, "platform");
       const { tenantId } = await sessionOf(page);
-      assert.ok(await enableModule(platformPage, baseUrl, tenantId, formsModuleName, "E2E de Catálogos (E12).", operatorEmail), "Formularios llega apagado y Plataforma lo prende.");
+      assert.ok(await enableModule(platformPage, baseUrl, tenantId, formsModuleName, "E2E de Catálogos (E12 y E13).", operatorEmail), "Formularios llega apagado y Plataforma lo prende.");
       const names = formsNames(Date.now().toString(36).slice(-6));
       const steps = formsE2ESteps({ page, platformPage, browser, env, tenantId, names, downloads });
       for (const id of cases) {

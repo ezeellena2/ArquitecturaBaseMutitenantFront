@@ -2626,9 +2626,9 @@ test("Acciones del asistente en 1440 y 390: «Invitar usuario» desde una propue
   await runActionsRealE2E({ build: false });
 });
 
-// E12 · Catálogos (verificación): los cinco casos de la §15 de la spec, con Formularios prendido por Plataforma en una
-// organización nueva del entorno aislado.
-test("Catálogos de la E12 en 1440: a mano, carga de una vez, miembros, contactos y volumen con EXPLAIN", { timeout: 1_800_000 }, async () => {
+// E12 · Catálogos y E13 · Campos de los catálogos (verificación): los cinco casos de la §15 de la spec de la E12 y los tres
+// de «Cómo se cierra» de la de la E13, con Formularios prendido por Plataforma en una organización nueva del entorno aislado.
+test("Catálogos de la E12 y sus campos de la E13 en 1440: a mano, carga de una vez, miembros, contactos, volumen con EXPLAIN, campos importados y exportados, el CUIT en WhatsApp y una zona dada de baja", { timeout: 2_400_000 }, async () => {
   await runFormsRealE2E({ build: false });
 });
 
