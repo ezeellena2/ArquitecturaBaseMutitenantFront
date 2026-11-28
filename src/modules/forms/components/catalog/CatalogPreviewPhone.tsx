@@ -34,7 +34,7 @@ function PhoneFrame({ header, subtitle, busy, tall = false, children }: {
 }) {
   const { t } = useTranslation("forms");
   return <div role="group" aria-label={t("forms:catalog.preview.title")} aria-busy={busy} data-slot="preview-phone"
-    className={cn("relative mx-auto flex w-full max-w-[20rem] flex-col overflow-hidden rounded-[2.125rem] border-8 border-[var(--t1)] bg-[oklch(0.93_0.012_150)] text-[0.78125rem]",
+    className={cn("relative mx-auto flex w-full max-w-[20rem] flex-col overflow-hidden rounded-[2.125rem] border-8 border-[var(--t1)] bg-[var(--telefono-fondo)] text-[0.78125rem]",
       tall ? "h-[26rem]" : "min-h-[14.75rem]")}>
     <div aria-hidden="true" data-slot="preview-phone-band" className="h-[2.125rem] shrink-0" />
     <div className="flex min-h-0 flex-1 flex-col rounded-t-[1rem] bg-[var(--superficie)]">
@@ -81,7 +81,7 @@ export function CatalogPreviewPhone({ options, withSwitch = true }: { options: r
   // «Enviar», apagado (verde pálido) hasta elegir: el tablero lo dibuja así (.k-env).
   const send = <p aria-disabled={picked.length === 0 || undefined}
     className={cn("mx-3.5 mt-auto mb-3.5 rounded-[0.5rem] py-2 text-center text-[0.78125rem] font-semibold text-[var(--superficie)]",
-      picked.length ? "bg-[oklch(0.45_0.12_160)]" : "bg-[oklch(0.45_0.12_160/0.5)]")}>{t("forms:catalog.preview.send")}</p>;
+      picked.length ? "bg-[var(--ok)]" : "bg-[color-mix(in_oklch,var(--ok)_50%,transparent)]")}>{t("forms:catalog.preview.send")}</p>;
   const close = <span aria-hidden="true" className="text-[1.125rem] leading-none font-normal text-[var(--t2)]">{"×"}</span>;
   return <div className="flex flex-col gap-2.5">
     {withSwitch ? <div className="flex justify-center [&>[data-slot=segmented]]:w-40 [&>[data-slot=segmented]]:self-auto">
@@ -146,8 +146,8 @@ interface PreviewListProps {
 function OptionCards({ options }: { options: readonly { key?: string; text: string; detail?: string | null; issue?: FormCatalogPresentationIssue | null }[] }) {
   return <ul data-slot="preview-card" className="overflow-hidden rounded-[0.75rem] shadow-[0_0_0_1px_var(--borde)]">
     {options.map((option, index) => <li key={option.key ?? index} className="border-t border-[var(--borde)] px-3.5 py-2.5 first:border-t-0">
-      <span className={cn("block truncate text-[0.9375rem]", option.issue === "TitleTooLong" && "text-[var(--peligro)]")}>{option.text}</span>
-      {option.detail ? <span className={cn("block truncate text-[0.8125rem]", option.issue === "DescriptionTooLong" ? "text-[var(--peligro)]" : "text-[var(--t3)]")}>{option.detail}</span> : null}
+      <span className={cn("block wrap-break-word text-[0.9375rem]", option.issue === "TitleTooLong" && "text-[var(--peligro)]")}>{option.text}</span>
+      {option.detail ? <span className={cn("block wrap-break-word text-[0.8125rem]", option.issue === "DescriptionTooLong" ? "text-[var(--peligro)]" : "text-[var(--t3)]")}>{option.detail}</span> : null}
     </li>)}
   </ul>;
 }

@@ -42,6 +42,7 @@ Tonos cálidos para el contenido, verde pasto como marca y un **marco arena** en
 | `--casilla-incluida` | `oklch(0.78 0.06 140)` | casilla marcada y apagada: lo incluido o lo que quien edita no puede dar (Rol-Base2, 260 y 269) |
 | `--franja` / `--franja-ok` / `--franja-mal` / `--franja-accion` | `oklch(0.27 0.012 60)` / `oklch(0.78 0.14 155)` / `oklch(0.75 0.15 25)` / `oklch(0.84 0.12 130)` | franja oscura de los avisos pasajeros del teléfono: fondo, filo e ícono de lo que salió bien, filo e ícono de lo que falló y acción («Copiar código»); la atención va en `--punto-alerta` y la información en `--punto-apagado`, el gris de `.f-snack .neu` (210) |
 | `--aviso-ok` | `oklch(0.55 0.13 155)` | filo e ícono de lo que salió bien en los avisos de la compu (210) |
+| `--telefono-fondo` | `oklch(0.93 0.012 150)` | fondo del teléfono de una vista previa de WhatsApp, alrededor de la hoja blanca («Así lo ve quien lo recibe», como el teléfono del lienzo) |
 | `--foco` | `var(--marca)` | anillo de foco |
 | `--foco-halo` | `oklch(0.48 0.115 140 / 0.15)` | halo de 3 px alrededor del foco |
 
