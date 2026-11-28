@@ -54,7 +54,7 @@ async function saveResponse(response: Response, fallback: string) {
 export function useCatalogImport(catalog: FormCatalogResponse, { onClose, onCatalogChanged }: { onClose: () => void; onCatalogChanged: () => void }) {
   const { t } = useTranslation(["forms", "common"]);
   const queryClient = useQueryClient();
-  const columns = catalogImportColumns(catalog.valueType);
+  const columns = catalogImportColumns(catalog.valueType, catalog.fields);
 
   const [source, setSource] = useState<ImportSource>("file");
   const [file, setFile] = useState<File | null>(null);
@@ -71,9 +71,10 @@ export function useCatalogImport(catalog: FormCatalogResponse, { onClose, onCata
   const [busy, setBusy] = useState(false);
   const stale = useRef(false);
 
-  // Red, 5xx y 429 los avisa el MutationCache; un rechazo de negocio (sin permiso, el módulo apagado), un aviso (errores).
+  // La plantilla de este catálogo, con las columnas de sus campos activos (E13). Red, 5xx y 429 los avisa el MutationCache; un
+  // rechazo de negocio (sin permiso, el módulo apagado), un aviso (errores).
   const downloadTemplate = useMutation({
-    mutationFn: async () => saveResponse(await fetchCatalogTemplate(catalog.valueType), `${t("forms:catalog.templateFile")}.xlsx`),
+    mutationFn: async () => saveResponse(await fetchCatalogTemplate(catalog.valueType, catalog.id), `${t("forms:catalog.templateFile")}.xlsx`),
     onError: (error) => toastActionError(error, t),
   });
   const preview = useMutation({ mutationFn: (input: Parameters<typeof previewCatalogImport>[1]) => previewCatalogImport(catalog.id, input) });

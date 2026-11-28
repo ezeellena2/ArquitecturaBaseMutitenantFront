@@ -10,7 +10,7 @@ import { PasteGrid, type PasteGridColumn } from "@/shared/ui/PasteGrid";
 import { Picker } from "@/shared/ui/Picker";
 import type { FormCatalogValueType } from "../../api/types";
 import type { CatalogImport, ImportSource } from "../../hooks/useCatalogImport";
-import type { CatalogImportColumn } from "../../lib/catalogImport";
+import { gridColumnKey, isFieldColumn, type CatalogImportColumn, type ImportGridColumn } from "../../lib/catalogImport";
 import { ImportBand, ImportZone } from "./ImportParts";
 
 /**
@@ -32,7 +32,8 @@ function OriginRow({ labelId, htmlFor, label, help, helpId, error, errorId, chil
 
 /**
  * «Origen» de importar opciones (FRM-Catalogo-Importar): «Desde» en la pieza (262), y debajo el archivo (XLSX o CSV, que
- * reemplaza) o la grilla para pegar desde Excel (que agrega). Desde «Revisar», el origen no cambia.
+ * reemplaza) o la grilla para pegar desde Excel (que agrega), con una columna más por cada campo activo (E13). Desde
+ * «Revisar», el origen no cambia.
  */
 export function ImportOrigin({ imp, valueType, columnLabel }: {
   imp: CatalogImport;
@@ -71,16 +72,15 @@ export function ImportOrigin({ imp, valueType, columnLabel }: {
     </span>
   </OriginRow>;
 
+  // La de un campo, con su nombre; un número va a la derecha, como en la tabla de opciones.
+  const gridColumn = (column: ImportGridColumn): PasteGridColumn => isFieldColumn(column)
+    ? { key: gridColumnKey(column), label: column.name, numeric: column.type === "WholeNumber" || column.type === "DecimalNumber" }
+    : { key: column, label: columnLabel(column), mono: column === "code", numeric: column === "value" && valueType !== "Text" && valueType !== "Date" };
   const sheetColumns: PasteGridColumn[] = sheet
-    ? sheet.columns.map((column) => ({
-      key: column.column ?? `other-${column.position}`,
-      label: column.column ? columnLabel(column.column) : column.header ?? t("forms:catalog.import.unnamedColumn", { n: format.formatInteger(column.position) }),
-      cell: column.source >= 0 ? column.source : undefined,
-      invalid: column.column === null,
-      mono: column.column === "code",
-      numeric: column.column === "value" && valueType !== "Text" && valueType !== "Date",
-    }))
-    : imp.columns.map((column) => ({ key: column, label: columnLabel(column) }));
+    ? sheet.columns.map((column) => column.column
+      ? { ...gridColumn(column.column), cell: column.source >= 0 ? column.source : undefined }
+      : { key: `other-${column.position}`, label: column.header ?? t("forms:catalog.import.unnamedColumn", { n: format.formatInteger(column.position) }), cell: column.source, invalid: true })
+    : imp.columns.map((column) => { const { key, label } = gridColumn(column); return { key, label }; });
   const foreign = sheetColumns.filter((column) => column.invalid);
   const pasteZone = <ImportZone>
     <PasteGrid label={t("forms:catalog.import.pasted")} columns={sheetColumns} rows={sheet?.rows ?? null} disabled={locked}

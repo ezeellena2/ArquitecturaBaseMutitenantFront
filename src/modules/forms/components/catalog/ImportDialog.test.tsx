@@ -5,8 +5,12 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vite
 import { axe } from "vitest-axe";
 import { server } from "@/test/mocks/server";
 import { choose, pickerName } from "@/test/picker";
-import type { FormCatalogImportErrorRow, FormCatalogImportPreviewResponse, FormCatalogItemRow, FormCatalogResponse } from "../../api/types";
+import { saveBlobAs } from "@/shared/lib/saveFile";
+import type { FormCatalogFieldDetail, FormCatalogImportErrorRow, FormCatalogImportPreviewResponse, FormCatalogItemRow, FormCatalogResponse } from "../../api/types";
 import { formsOwner, mountForms, withoutFields } from "../../test/support";
+
+// La plantilla se guarda en el disco: acá solo se mira con qué nombre.
+vi.mock("@/shared/lib/saveFile", () => ({ saveBlobAs: vi.fn() }));
 
 const base = "/api/organization/forms/catalogs";
 const catalog: FormCatalogResponse = {
@@ -271,6 +275,66 @@ describe("ImportDialog (FRM-Catalogo-Importar)", () => {
     const mounted = await openImport();
     await reviewFile(mounted);
     expect(within(mounted.dialog).getByRole("row", { name: "3 Valor «1.500» se lee de dos formas. Escribí 1500 o 1,5." })).toBeVisible();
+  });
+});
+
+describe("ImportDialog con los campos del catálogo (E13, FRM-Catalogo-Importar con una columna más por campo)", () => {
+  const field = (id: string, key: string, name: string, type: FormCatalogFieldDetail["type"], isActive = true): FormCatalogFieldDetail =>
+    ({ id, key, name, type, required: false, unique: false, isActive, valuesCount: 0 });
+  const withFields: FormCatalogResponse = { ...catalog, fields: [field("f-cuit", "cuit", "CUIT", "Text"), field("f-viejo", "viejo", "Viejo", "Text", false),
+    field("f-plazo", "plazo_de_pago", "Plazo de pago", "WholeNumber"), field("f-iva", "retiene_iva", "Retiene IVA", "YesNo")] };
+  const headers = (dialog: HTMLElement) => within(within(dialog).getByRole("table", { name: "Filas pegadas" })).getAllByRole("columnheader");
+
+  async function pasteInto(mounted: Awaited<ReturnType<typeof openImport>>, text: string) {
+    await choose(mounted.user, "Desde", "Pegar desde Excel");
+    await mounted.user.click(within(mounted.dialog).getByRole("textbox", { name: "Pegá acá las filas" }));
+    await mounted.user.paste(text);
+  }
+
+  it("la grilla trae una columna por campo activo antes del detalle; con encabezados, un campo se reconoce por su nombre o por su clave, y una columna que no es de ningún campo sigue en rojo", async () => {
+    serve({ current: () => withFields });
+    const mounted = await openImport();
+    const { user, dialog } = mounted;
+    await choose(user, "Desde", "Pegar desde Excel");
+    expect(headers(dialog).map((header) => header.textContent)).toEqual(["Código", "Texto", "CUIT", "Plazo de pago", "Retiene IVA", "Detalle"]);
+
+    await user.click(within(dialog).getByRole("textbox", { name: "Pegá acá las filas" }));
+    await user.paste("Código\tTexto\tplazo_de_pago\tcuit\tRubro\nPRV-1098\tBulones Mar del Plata\t30\t30-71567890-2\tBulones\n");
+    expect(headers(dialog).map((header) => header.textContent)).toEqual(["Código", "Texto", "CUIT", "Plazo de pago", "Retiene IVA", "Detalle", "Rubro"]);
+    const [rubro] = headers(dialog).slice(-1);
+    expect(rubro).toHaveClass("text-[var(--peligro)]");
+    expect(headers(dialog).filter((header) => header.classList.contains("text-[var(--peligro)]"))).toEqual([rubro]);
+    expect(within(dialog).getByText("«Rubro» no es una columna del catálogo: no se manda.")).toBeVisible();
+    expect(within(dialog).getByRole("row", { name: "PRV-1098 Bulones Mar del Plata 30-71567890-2 30 Bulones" })).toBeVisible();
+
+    await user.click(within(dialog).getByRole("button", { name: "Revisar" }));
+    await within(dialog).findByText("Filas leídas");
+    expect(previews.map((sent) => sent.fileText)).toEqual(['"Code","Text","cuit","plazo_de_pago"\r\n"PRV-1098","Bulones Mar del Plata","30-71567890-2","30"']);
+  });
+
+  it("sin encabezados, las celdas llenan los campos en el orden de la plantilla y cada uno viaja con su clave", async () => {
+    serve({ current: () => withFields });
+    const mounted = await openImport();
+    await pasteInto(mounted, "PRV-1098\tBulones Mar del Plata\t30-71567890-2\t30\tSí\tCUIT del proveedor\n");
+    expect(headers(mounted.dialog).map((header) => header.textContent)).toEqual(["Código", "Texto", "CUIT", "Plazo de pago", "Retiene IVA", "Detalle"]);
+    expect(within(mounted.dialog).getByText("1 fila")).toBeVisible();
+    await mounted.user.click(within(mounted.dialog).getByRole("button", { name: "Revisar" }));
+    await within(mounted.dialog).findByText("Filas leídas");
+    expect(previews.map((sent) => sent.fileText)).toEqual([
+      '"Code","Text","cuit","plazo_de_pago","retiene_iva","Detail"\r\n"PRV-1098","Bulones Mar del Plata","30-71567890-2","30","Sí","CUIT del proveedor"']);
+  });
+
+  it("«Descargar la plantilla» pide la de este catálogo, con catalogId, y la guarda con el nombre que manda el servidor", async () => {
+    serve({ current: () => withFields });
+    const asked: URLSearchParams[] = [];
+    server.use(http.get(`${base}/template`, ({ request }) => {
+      asked.push(new URL(request.url).searchParams);
+      return new HttpResponse(new Blob(["xlsx"]), { headers: { "Content-Disposition": "attachment; filename=\"proveedores-plantilla.xlsx\"" } });
+    }));
+    const { user, dialog } = await openImport();
+    await user.click(within(dialog).getByRole("button", { name: "Descargar la plantilla" }));
+    await waitFor(() => expect(saveBlobAs).toHaveBeenCalledWith(expect.anything(), "proveedores-plantilla.xlsx"));
+    expect(asked.map((search) => Object.fromEntries(search))).toEqual([{ valueType: "Text", catalogId: "c-prov" }]);
   });
 });
 

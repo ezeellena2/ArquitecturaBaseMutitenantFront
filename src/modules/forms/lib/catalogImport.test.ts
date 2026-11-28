@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { FormatState } from "@/shared/format/useFormat";
-import { ambiguousReadings, catalogImportColumns, importColumnOf, pastedCsv, readPaste } from "./catalogImport";
+import type { FormCatalogFieldDetail } from "../api/types";
+import { ambiguousReadings, catalogImportColumns, gridColumnKey, importColumnOf, pastedCsv, readPaste, type PastedSheet } from "./catalogImport";
 
 const text = catalogImportColumns("Text");
 const decimal = catalogImportColumns("DecimalNumber");
@@ -23,6 +24,42 @@ describe("lo pegado en la grilla de importar (FRM-Catalogo-Importar)", () => {
     expect(sheet.columns.map((column) => [column.column, column.source])).toEqual([["code", 2], ["text", 1], ["detail", -1], ["value", 0]]);
     expect(pastedCsv(sheet)).toBe('"Code","Text","Value"\r\n"","","zona 1"\r\n"N1","Norte","1,5"');
     expect(readPaste(" \n\t\n", text)).toBeNull();
+  });
+
+  describe("con campos (E13)", () => {
+    const field = (id: string, key: string, name: string, type: FormCatalogFieldDetail["type"], isActive = true): FormCatalogFieldDetail =>
+      ({ id, key, name, type, required: false, unique: false, isActive, valuesCount: 0 });
+    const fields = [field("f-cuit", "cuit", "CUIT", "Text"), field("f-viejo", "viejo", "Viejo", "Text", false),
+      field("f-zona", "zona", "Zona", "Catalog"), field("f-plazo", "plazo_de_pago", "Plazo de pago", "WholeNumber")];
+    const withFields = catalogImportColumns("Text", fields);
+    const keys = (sheet: PastedSheet) => sheet.columns.map((column) => [column.column === null ? null : gridColumnKey(column.column), column.source]);
+
+    it("la grilla trae una columna por campo activo, en el orden del catálogo, antes del detalle (y del valor)", () => {
+      expect(withFields.map(gridColumnKey)).toEqual(["code", "text", "field-f-cuit", "field-f-zona", "field-f-plazo", "detail"]);
+      expect(catalogImportColumns("DecimalNumber", fields).map(gridColumnKey)).toEqual(["code", "text", "field-f-cuit", "field-f-zona", "field-f-plazo", "detail", "value"]);
+    });
+
+    it("sin encabezados, los campos se llenan en el orden de la plantilla y viajan con su clave", () => {
+      const sheet = readPaste("PRV-1\tBulones\t30-71567890-2\tNorte\t30\tFerretería", withFields)!;
+      expect(keys(sheet)).toEqual([["code", 0], ["text", 1], ["field-f-cuit", 2], ["field-f-zona", 3], ["field-f-plazo", 4], ["detail", 5]]);
+      expect(pastedCsv(sheet)).toBe('"Code","Text","cuit","zona","plazo_de_pago","Detail"\r\n"PRV-1","Bulones","30-71567890-2","Norte","30","Ferretería"');
+    });
+
+    it("con encabezados, un campo se reconoce por su nombre (sin tildes ni mayúsculas) o por su clave; lo que no es de ningún campo queda ajeno", () => {
+      const sheet = readPaste("Código\tTexto\tplazo_de_pago\tZONA\tRubro\tViejo\nPRV-1\tBulones\t30\tNorte\tFerretería\tx", withFields)!;
+      expect(keys(sheet)).toEqual([["code", 0], ["text", 1], ["field-f-cuit", -1], ["field-f-zona", 3], ["field-f-plazo", 2], ["detail", -1], [null, 4], [null, 5]]);
+      expect(sheet.columns.slice(-2).map((column) => column.header)).toEqual(["Rubro", "Viejo"]);
+      expect(pastedCsv(sheet)).toBe('"Code","Text","zona","plazo_de_pago"\r\n"PRV-1","Bulones","Norte","30"');
+      // Solo encabezados de campos también son encabezados.
+      expect(readPaste("cuit\nCUIT 1", withFields)!.rows).toEqual([["CUIT 1"]]);
+    });
+
+    it("un campo que se llama como una columna fija toma el segundo encabezado con ese nombre", () => {
+      const columns = catalogImportColumns("Text", [field("f-cod", "codigo", "Código", "Text")]);
+      const sheet = readPaste("Código\tTexto\tCódigo\nPRV-1\tBulones\tA-1", columns)!;
+      expect(keys(sheet)).toEqual([["code", 0], ["text", 1], ["field-f-cod", 2], ["detail", -1]]);
+      expect(pastedCsv(sheet)).toBe('"Code","Text","codigo"\r\n"PRV-1","Bulones","A-1"');
+    });
   });
 
   it("la columna de una fila de la revisión se lee por su clave o por su encabezado", () => {
