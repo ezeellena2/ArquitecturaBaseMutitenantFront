@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { useController, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { z } from "zod";
 import { ApiError } from "@/shared/api/ApiError";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
@@ -127,7 +127,7 @@ export function TemplateDialog({ scope, original, onClose, returnFocusTo }: {
       variables: templateVariables(values.body, values.entries) };
     send.mutate(request, {
       onSuccess: async () => {
-        toast.success(t("whatsapp:templates.messages.sent", { name: request.name }));
+        toastSuccess(t("whatsapp:templates.messages.sent", { name: request.name }));
         onClose();
         await queryClient.invalidateQueries({ queryKey: templatesQueryRoot(scope) });
       },

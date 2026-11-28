@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { useController, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { usePlatformPermissionGroups } from "../lib/permissionCatalog";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { z } from "zod";
 import { rateLimitedActionMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
@@ -59,7 +59,7 @@ export function InviteOperatorDialog({ onClose, onInvited }: { onClose: () => vo
     },
   });
   const invite = useIdempotentMutation(action.guarded((request, key: string) => inviteOperator(request, key),
-    (_response, request) => { toast.success(t("platformAccounts:messages.invited", { email: request.email })); onClose(); void onInvited(); }),
+    (_response, request) => { toastSuccess(t("platformAccounts:messages.invited", { email: request.email })); onClose(); void onInvited(); }),
     { meta: { ...action.meta, handlesRateLimit: true }, sameOperation: sameInvitation });
   const busy = action.isPending;
   const clear = (field: keyof InviteForm) => { form.clearErrors(field); setFailure(undefined); };

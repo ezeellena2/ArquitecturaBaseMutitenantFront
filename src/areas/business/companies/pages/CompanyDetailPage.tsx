@@ -3,7 +3,7 @@ import { Plus, Power } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { usePermissions } from "@/auth/usePermissions";
 import { isNotFoundError, toastActionError } from "@/shared/api/errorMessage";
 import type { CompanyStatus } from "@/shared/api/types";
@@ -68,7 +68,7 @@ export function CompanyDetailPage() {
     mutationFn: ({ status, version }: StatusChange) => changeCompanyStatus(id, { status, version }),
     onSuccess: async (_result, change) => {
       setDialog(null);
-      toast.success(sentence(t(change.status === "Inactive" ? "companies:messages.deactivated" : "companies:messages.activated", { name: change.name })));
+      toastSuccess(sentence(t(change.status === "Inactive" ? "companies:messages.deactivated" : "companies:messages.activated", { name: change.name })));
       await queryClient.invalidateQueries({ queryKey: companiesQueryRoot });
     },
     // La confirmación espera la respuesta y se cierra con ella, sea cual sea («Criterio · Diálogos»).

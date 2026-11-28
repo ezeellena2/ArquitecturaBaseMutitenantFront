@@ -4,7 +4,7 @@ import { Plus, Power, RotateCw, Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { usePermissions } from "@/auth/usePermissions";
 import { invalidateNotifications } from "@/layouts/notifications/api";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
@@ -101,7 +101,7 @@ export function OrganizationsPage() {
     pending={retry.isPending && retry.variables?.id === organization.id} actions={[
     { label: t("platformTenants:actions.view"), accessibleName: t("platformTenants:actions.view"), icon: EyeIcon, onSelect: () => { void navigate(organizationPath(organization.id)); } },
     { label: t("platformTenants:actions.approve"), accessibleName: t("platformTenants:actions.approve"), icon: CheckIcon, hidden: !canManage || organization.status !== "PendingApproval", onSelect: (trigger) => openConfirmation(organization, "approve", trigger) },
-    { label: t("platformTenants:actions.retry"), accessibleName: t("platformTenants:actions.retry"), icon: RotateCw, hidden: !canManage || organization.status !== "Provisioning", onSelect: () => retry.mutate(organization, { onSuccess: (response) => { wrote(organization.id, response.version, "Active"); toast.success(t("platformTenants:messages.retried", { name: organization.name })); void invalidate(); }, onError: (error) => toastActionError(error, t) }) },
+    { label: t("platformTenants:actions.retry"), accessibleName: t("platformTenants:actions.retry"), icon: RotateCw, hidden: !canManage || organization.status !== "Provisioning", onSelect: () => retry.mutate(organization, { onSuccess: (response) => { wrote(organization.id, response.version, "Active"); toastSuccess(t("platformTenants:messages.retried", { name: organization.name })); void invalidate(); }, onError: (error) => toastActionError(error, t) }) },
     { label: t("platformTenants:actions.reactivate"), accessibleName: t("platformTenants:actions.reactivate"), icon: Power, hidden: !canManage || organization.status !== "Suspended", onSelect: (trigger) => openConfirmation(organization, "reactivate", trigger) },
     { label: t("platformTenants:actions.reject"), accessibleName: t("platformTenants:actions.reject"), icon: CloseIcon, destructive: true, hidden: !canManage || organization.status !== "PendingApproval", onSelect: (trigger) => openConfirmation(organization, "reject", trigger) },
     { label: t("platformTenants:actions.suspend"), accessibleName: t("platformTenants:actions.suspend"), icon: Power, destructive: true, hidden: !canManage || organization.status !== "Active", onSelect: (trigger) => openConfirmation(organization, "suspend", trigger) },
@@ -133,6 +133,6 @@ export function OrganizationsPage() {
     {createOpen ? <CreateOrganizationDialog onClose={() => setCreateOpen(false)} onCreated={invalidate} /> : null}
     {confirmation ? <OrganizationStatusDialog confirmation={confirmation}
       onClose={(conflicted) => { if (conflicted) { setOwnWrites((previous) => { const next = new Map(previous); next.delete(confirmation.organization.id); return next; }); void invalidateNotifications(client); } setConfirmation((current) => current === confirmation ? null : current); }}
-      onSuccess={(response) => { wrote(confirmation.organization.id, response.version, nextStatus[confirmation.action]); toast.success(t(`platformTenants:messages.${confirmation.action}`, { name: confirmation.organization.name, email: maskEmail(confirmation.organization.ownerEmail ?? "") })); void invalidate(); }} /> : null}
+      onSuccess={(response) => { wrote(confirmation.organization.id, response.version, nextStatus[confirmation.action]); toastSuccess(t(`platformTenants:messages.${confirmation.action}`, { name: confirmation.organization.name, email: maskEmail(confirmation.organization.ownerEmail ?? "") })); void invalidate(); }} /> : null}
   </>;
 }

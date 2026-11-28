@@ -1,7 +1,7 @@
 import { useQueryClient, type UseQueryResult } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { usePermissions } from "@/auth/usePermissions";
 import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
@@ -68,7 +68,7 @@ export function OrganizationPublicPageTab({ organization, query, write, onWrite,
       const next: OwnPublicPageWrite = { version: response.version, state: confirmation.action === "unpublish" ? "Blocked" : "Draft" };
       onWrite(next);
       client.setQueryData<PlatformPublicSiteResponse>(tenantPublicPageQueryKey(organization.id), (page) => page ? { ...page, version: response.version, isPublished: false, publishBlockedAtUtc: null, publishBlockedReason: null } : page);
-      toast.success(t(`platformTenants:publicPage.messages.${confirmation.action}`, { address: address(confirmation.page), name: organization.name })); void client.invalidateQueries({ queryKey: tenantsQueryRoot });
+      toastSuccess(t(`platformTenants:publicPage.messages.${confirmation.action}`, { address: address(confirmation.page), name: organization.name })); void client.invalidateQueries({ queryKey: tenantsQueryRoot });
     }} /> : null}
   </>;
 }

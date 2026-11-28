@@ -4,7 +4,7 @@ import type { TFunction } from "i18next";
 import { useMemo } from "react";
 import { useController } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { z } from "zod";
 import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage, apiErrorMessage } from "@/shared/api/errorMessage";
@@ -124,7 +124,7 @@ function TeamFormBody({ scope, team, onClose }: { scope: TeamScope; team?: Whats
   }
 
   async function saved(name: string, created: boolean) {
-    toast.success(t(created ? "whatsapp:teams.messages.created" : "whatsapp:teams.messages.updated", { name }));
+    toastSuccess(t(created ? "whatsapp:teams.messages.created" : "whatsapp:teams.messages.updated", { name }));
     onClose();
     await queryClient.invalidateQueries({ queryKey: teamsQueryRoot(scope) });
   }

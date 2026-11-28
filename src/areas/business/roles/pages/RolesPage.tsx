@@ -17,7 +17,7 @@ import { Page } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import type { RoleResponse } from "@/shared/api/types";
 import { AssistantProposalMark, useAssistantProposal, useAssistantProposalConfirmation } from "@/shared/assistant-actions";
 import {
@@ -90,7 +90,7 @@ export function RolesPage() {
     onSuccess: async (_result, { role, markApplied }) => {
       if (markApplied) void markApplied();
       setRoleToDelete(null);
-      toast.success(t("roles:removed", { name: role.name }));
+      toastSuccess(t("roles:removed", { name: role.name }));
       await queryClient.invalidateQueries({ queryKey: rolesQueryKeyRoot });
     },
     // La confirmación espera la respuesta y se cierra con ella, sea cual sea («Criterio · Diálogos»).

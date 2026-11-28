@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { Button } from "@/shared/ui/button";
@@ -38,7 +38,7 @@ function TeamsPage({ scope }: { scope: TeamScope }) {
     mutationFn: (team: WhatsAppTeamResponse) => deleteTeam(scope, team.id, team.version),
     onSuccess: async (_result, team) => {
       setDeleting(null);
-      toast.success(t("whatsapp:teams.messages.deleted", { name: team.name }));
+      toastSuccess(t("whatsapp:teams.messages.deleted", { name: team.name }));
       await queryClient.invalidateQueries({ queryKey: teamsQueryRoot(scope) });
     },
     // La confirmación espera la respuesta y se cierra con ella, sea cual sea («Criterio · Diálogos»).

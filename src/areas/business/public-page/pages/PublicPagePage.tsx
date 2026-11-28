@@ -5,7 +5,6 @@ import { GlobeIcon } from "@/shared/ui/icons";
 import { useId, useState } from "react";
 import { useController, useWatch } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
-import { toast } from "sonner";
 import { z } from "zod";
 import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
@@ -36,7 +35,7 @@ import { Textarea } from "@/shared/ui/textarea";
 import { DateText } from "@/shared/ui/format/DateText";
 import { initials } from "@/shared/lib/initials";
 import { cn } from "@/shared/lib/utils";
-import { toastError } from "@/shared/ui/sonner";
+import { toastError, toastSuccess } from "@/shared/ui/sonner";
 import { publicSiteHost, publicSiteSuffix, publicSiteUrl } from "@/tenancy/publicSite";
 import { checkOrganizationSlug, fetchPublicPage, publicPageQueryKey, setPublicPagePublished, slugAvailabilityQueryKey, updatePublicPage } from "../api/publicPage";
 
@@ -151,7 +150,7 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
       return { sent, saved };
     },
     onSuccess: async ({ sent, saved }, published) => {
-      toast.success(t(published ? "publicPage:published" : "publicPage:unpublished"));
+      toastSuccess(t(published ? "publicPage:published" : "publicPage:unpublished"));
       await client.invalidateQueries({ queryKey: publicPageQueryKey });
       wrote(sent, saved, client.getQueryData<PublicPageResponse>(publicPageQueryKey));
     },
@@ -189,7 +188,7 @@ function PublicPageEditor({ page, loadError, reload }: { page: PublicPageRespons
   async function saved(values: PageForm, sentVersion: number, savedVersion: number) {
     setFailure(undefined);
     form.reset(values);
-    toast.success(t("publicPage:saved"));
+    toastSuccess(t("publicPage:saved"));
     await client.invalidateQueries({ queryKey: publicPageQueryKey });
     wrote(sentVersion, savedVersion, client.getQueryData<PublicPageResponse>(publicPageQueryKey));
   }

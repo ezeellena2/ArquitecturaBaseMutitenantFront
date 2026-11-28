@@ -1,6 +1,6 @@
 import { useResourceAction } from "@/shared/hooks/useResourceAction";
-import { useEffect, useMemo, useRef, useSyncExternalStore } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from "react";
+import { matchQuery, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ExportedMessageRepository, MessageNotSentError, useExternalStoreRuntime, type ExternalStoreAdapter, type ThreadMessageLike } from "@assistant-ui/react";
 import type { AssistantConversationResponse, AssistantMessageResponse, SendAssistantMessageRequest } from "@/modules/assistant/api/types";
 import { ApiError } from "@/shared/api/ApiError";
@@ -17,6 +17,8 @@ interface ClosedAssistantPages {
   readonly tailCursor: string;
   readonly closedCursors: readonly string[];
 }
+
+const emptyMessages: AssistantMessageResponse[] = [];
 
 function closedPageNextCursor(page: AssistantConversationResponse): string | null {
   if (!page.messages.hasMore || !page.messages.nextCursor) return null;
@@ -88,11 +90,22 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
   // Cada activación es un ciclo nuevo: una operación vieja nunca revive con el módulo.
   const lifetime = useMemo(() => new AssistantLifetime(client, [...root, "lifetime", conversationId, enabled]), [client, root, conversationId, enabled]);
   const active = useSyncExternalStore(lifetime.subscribe, lifetime.getSnapshot, lifetime.getSnapshot) && enabled;
-  const subscribeCache = (listener: () => void) => client.getQueryCache().subscribe(listener);
-  const readTurn = () => client.getQueryData<AssistantTurnState>(turnKey) ?? null;
-  const turn = useSyncExternalStore(subscribeCache, readTurn, readTurn);
-  const readMessages = () => client.getQueryData<AssistantMessageResponse[]>(messagesKey) ?? null;
-  const pagedMessages = useSyncExternalStore(subscribeCache, readMessages, readMessages);
+  const subscribeTurn = useCallback(
+    (listener: () => void) => client.getQueryCache().subscribe((event) => {
+      if (matchQuery({ queryKey: turnKey, exact: true }, event.query)) listener();
+    }),
+    [client, turnKey],
+  );
+  const readTurn = useCallback(() => client.getQueryData<AssistantTurnState>(turnKey) ?? null, [client, turnKey]);
+  const turn = useSyncExternalStore(subscribeTurn, readTurn, readTurn);
+  const subscribeMessages = useCallback(
+    (listener: () => void) => client.getQueryCache().subscribe((event) => {
+      if (matchQuery({ queryKey: messagesKey, exact: true }, event.query)) listener();
+    }),
+    [client, messagesKey],
+  );
+  const readMessages = useCallback(() => client.getQueryData<AssistantMessageResponse[]>(messagesKey) ?? null, [client, messagesKey]);
+  const pagedMessages = useSyncExternalStore(subscribeMessages, readMessages, readMessages);
   const readerRef = useRef<{ controller: AbortController; operation: SendOperation } | null>(null);
   const lastOperation = useRef<SendOperation | null>(null);
   const flightRef = useRef<SendOperation | null>(null);
@@ -453,7 +466,7 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
   };
   const sendMutation = useIdempotentMutation((operation: SendOperation, key) => sendAction.guarded(performSend)(operation, key), { meta: { ...sendAction.meta, handlesError: true }, sameOperation: (a, b) => a.operationId === b.operationId });
 
-  const durableMessages = pagedMessages ?? detail.data?.messages.items ?? [];
+  const durableMessages = pagedMessages ?? detail.data?.messages.items ?? emptyMessages;
   const durableGenerating = durableMessages.some((message) => message.status === "Generating");
   const durablePending = isAssistantConversationPending(detail.data) || durableGenerating;
   const activeTurnId = detail.data?.activeTurnId;
@@ -531,7 +544,19 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
     return result;
   };
 
+  const exposedMessages = useMemo(() => {
+    if (!active) return [];
+    const doneMessage = turn?.result?.message;
+    if (!doneMessage) return durableMessages;
+    const index = durableMessages.findIndex((message) => message.id === doneMessage.id);
+    if (index < 0) return [...durableMessages, doneMessage];
+    return durableMessages[index].status === "Generating"
+      ? durableMessages.map((message, i) => (i === index ? doneMessage : message))
+      : durableMessages;
+  }, [active, durableMessages, turn?.result?.message]);
+
   const messages: Array<AssistantMessageResponse | ThreadMessageLike> = (active ? durableMessages : []).map((message) => {
+    if (turn?.result?.message.id === message.id && message.status === "Generating") return turn.result.message;
     if (message.id !== turn?.start?.assistantMessageId || message.status !== "Generating") return message;
     return { id: message.id, role: message.role, content: turn.text || message.text, createdAt: parseUtcInstant(message.createdAtUtc),
       status: sdkStatus(isAssistantTurnPending(turn) ? "Generating" : turn.phase === "Stopped" ? "Stopped" : turn.phase === "Failed" ? "Failed" : "Complete"),
@@ -573,7 +598,7 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
     runtime.thread.import({ messages: [] });
   }, [runtime, lifetime, enabled]);
 
-  return { runtime, state, detail: exposedDetail, turn, messages: active ? durableMessages : [], canSend,
+  return { runtime, state, detail: exposedDetail, turn, messages: exposedMessages, canSend,
     canStop: active && (!!activeTurnId || isAssistantTurnPending(turn) && (!!turn?.start || turn?.phase === "sending")),
     isPending: active && (pendingMutations > 0 || isAssistantTurnPending(turn) || durablePending),
     error: active ? stopError ?? sendError ?? turn?.error ?? null : null,

@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useController, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { z } from "zod";
 import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage } from "@/shared/api/errorMessage";
@@ -67,7 +67,7 @@ export function MemberRolesDialog({ companyId, companyName, member, roles, onClo
   const submit = form.handleSubmit((values) => {
     save.mutate({ roleIds: values.roleIds, version: member.version }, {
       onSuccess: async () => {
-        toast.success(t("companies:messages.rolesUpdated", { name: member.displayName }));
+        toastSuccess(t("companies:messages.rolesUpdated", { name: member.displayName }));
         onClose();
         await queryClient.invalidateQueries({ queryKey: companiesQueryRoot });
       },

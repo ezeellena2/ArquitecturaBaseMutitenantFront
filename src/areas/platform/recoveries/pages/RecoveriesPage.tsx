@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { usePermissions } from "@/auth/usePermissions";
 import { invalidateNotifications } from "@/layouts/notifications/api";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
@@ -77,7 +77,7 @@ export function RecoveriesPage() {
       const written: OwnWrite = { version: response.version, status: operation.action === "approve" ? "Approved" : "Rejected", reason: operation.reason };
       setOwnWrites((previous) => new Map(previous).set(operation.id, written));
       client.setQueriesData<PagedResultOfPlatformRecoveryResponse>({ queryKey: [...recoveriesQueryRoot, "paged"] }, (data) => data ? { ...data, items: data.items.map((row) => row.id === operation.id ? { ...row, ...written } : row) } : data);
-      toast.success(t(operation.action === "approve" ? "platformRecoveries:messages.approved" : "platformRecoveries:messages.rejected", { method: activeConfirmation.recovery.newMethod, account: activeConfirmation.recovery.accountName || format.formatEmpty() }));
+      toastSuccess(t(operation.action === "approve" ? "platformRecoveries:messages.approved" : "platformRecoveries:messages.rejected", { method: activeConfirmation.recovery.newMethod, account: activeConfirmation.recovery.accountName || format.formatEmpty() }));
       void client.invalidateQueries({ queryKey: recoveriesQueryRoot }); void invalidateNotifications(client);
     }} /> : null}
   </>;

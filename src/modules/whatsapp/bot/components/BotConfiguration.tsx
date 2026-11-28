@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { toastActionError } from "@/shared/api/errorMessage";
 import { useFormat } from "@/shared/format/useFormat";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
@@ -50,7 +50,7 @@ export function BotConfiguration<TBot extends BotData>({ bot, variant, teams, on
   // mientras tanto (409), se avisa y se relee el bot.
   const direct = useMutation({
     mutationFn: ({ base, patch }: { base: TBot; patch: BotPatch; done: string }) => onSave(base, patch),
-    onSuccess: (_result, { done }) => { toast.success(done); },
+    onSuccess: (_result, { done }) => { toastSuccess(done); },
     onError: async (error) => {
       toastActionError(error, t);
       await queryClient.invalidateQueries({ queryKey: botQueryRoot });

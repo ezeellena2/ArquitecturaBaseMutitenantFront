@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router";
-import { toast } from "sonner";
+import { toastInfo, toastSuccess } from "@/shared/ui/sonner";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import { useFormat } from "@/shared/format/useFormat";
 import { usePagination } from "@/shared/hooks/usePagination";
@@ -52,8 +52,8 @@ export function NumbersPage() {
   const check = useMutation({
     mutationFn: (number: WhatsAppNumberResponse) => checkNumber(number.id, { version: number.version }),
     onSuccess: async (result) => {
-      if (result.status === "PaymentMissing") toast.info(t("whatsapp:numbers.payment.stillMissing"));
-      else toast.success(t("whatsapp:numbers.payment.ok"));
+      if (result.status === "PaymentMissing") toastInfo(t("whatsapp:numbers.payment.stillMissing"));
+      else toastSuccess(t("whatsapp:numbers.payment.ok"));
       closeDialog();
       await refresh();
     },
@@ -62,7 +62,7 @@ export function NumbersPage() {
   const disconnect = useMutation({
     mutationFn: (number: WhatsAppNumberResponse) => disconnectNumber(number.id, number.version),
     onSuccess: async (_result, number) => {
-      toast.success(t("whatsapp:numbers.disconnect.done", { number: format.formatPhone(number.displayNumber) }));
+      toastSuccess(t("whatsapp:numbers.disconnect.done", { number: format.formatPhone(number.displayNumber) }));
       await refresh();
     },
     onError: (error) => toastActionError(error, t),

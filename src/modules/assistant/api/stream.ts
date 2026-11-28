@@ -1,7 +1,7 @@
 import { assistantAttachmentTypes } from "../lib/assistantFiles";
 import { validationConstraints } from "@/shared/api/generated/validation";
 import { z } from "zod";
-import type { AssistantAttachmentSummaryResponse, AssistantDeltaEventResponse, AssistantErrorEventResponse, AssistantLinkResponse, AssistantMessageResponse, AssistantStartEventResponse, AssistantStreamHttpResponse, AssistantTitleEventResponse, AssistantToolEventResponse, AssistantTurnResultResponse, AssistantTurnUsageResponse } from "@/modules/assistant/api/types";
+import type { AssistantAttachmentSummaryResponse, AssistantDeltaEventResponse, AssistantErrorEventResponse, AssistantLinkResponse, AssistantMessageProposalResponse, AssistantMessageResponse, AssistantStartEventResponse, AssistantStreamHttpResponse, AssistantTitleEventResponse, AssistantToolEventResponse, AssistantTurnResultResponse, AssistantTurnUsageResponse } from "@/modules/assistant/api/types";
 
 export class AssistantStreamError extends Error {
   readonly code: "Assistant.Stream.Protocol" | "Assistant.Stream.Incomplete";
@@ -29,10 +29,15 @@ const link: z.ZodType<AssistantLinkResponse> = z.object({
   query: z.object({ status: z.enum(["Active", "Pending", "Expired"]).nullish(), page: integer.nullish(), pageSize: integer.nullish(), search: z.string().nullish() }),
   labelKey: z.string(),
 });
+const proposal: z.ZodType<AssistantMessageProposalResponse> = z.object({
+  id: z.string(), kind: z.enum(["action"]), action: z.string(), version: integer,
+  state: z.enum(["new", "replaced", "applied", "unconfirmed", "unavailable"]),
+});
 const message: z.ZodType<AssistantMessageResponse> = z.object({
   id: z.string(), role: z.enum(["user", "assistant"]), text: z.string(),
   status: z.enum(["Complete", "Stopped", "Failed", "Generating"]), createdAtUtc: z.string(), version,
   attachments: z.array(attachment), links: z.array(link), rating: z.enum(["up", "down"]).nullish(),
+  proposal: proposal.nullish(),
 });
 const usage: z.ZodType<AssistantTurnUsageResponse> = z.object({
   inputTokens: integer, outputTokens: integer, cacheWriteTokens: integer, cacheReadTokens: integer, cost: money,

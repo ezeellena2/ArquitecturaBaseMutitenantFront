@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Copy, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import { useFormat } from "@/shared/format/useFormat";
 import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
@@ -58,7 +58,7 @@ function TemplatesPage({ scope }: { scope: TemplateScope }) {
     mutationFn: (template: WhatsAppTemplateResponse) => deleteTemplate(scope, template.id, template.version),
     onSuccess: async (_result, template) => {
       setDeleting(null);
-      toast.success(t("whatsapp:templates.messages.deleted", { name: template.name }));
+      toastSuccess(t("whatsapp:templates.messages.deleted", { name: template.name }));
       await queryClient.invalidateQueries({ queryKey: templatesQueryRoot(scope) });
     },
     // La confirmación espera la respuesta y se cierra con ella, sea cual sea («Criterio · Diálogos»).

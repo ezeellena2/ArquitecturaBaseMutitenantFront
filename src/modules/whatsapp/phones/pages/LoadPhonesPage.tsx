@@ -5,7 +5,7 @@ import { useMemo, useRef, useState, type ChangeEvent } from "react";
 import { useController, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { z } from "zod";
 import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { validationConstraints } from "@/shared/api/generated/validation";
@@ -136,7 +136,7 @@ export function LoadPhonesPage() {
     // Mientras se revisa, los teléfonos no se editan: son los mismos renglones que se revisaron.
     confirm.mutate({ ...request(form.getValues(), lines), consentConfirmed: true }, {
       onSuccess: (result) => {
-        toast.success(t("whatsapp:phones.messages.done", { count: result.invited, linked: result.linked }));
+        toastSuccess(t("whatsapp:phones.messages.done", { count: result.invited, linked: result.linked }));
         // Usuarios vuelve con las invitaciones nuevas en la lista y en sus cantidades.
         void client.invalidateQueries({ queryKey: usersQueryRoot });
         void navigate(usersPath);

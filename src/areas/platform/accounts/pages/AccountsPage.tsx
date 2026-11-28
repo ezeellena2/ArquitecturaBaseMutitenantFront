@@ -3,7 +3,7 @@ import { Plus, Power, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { usePermissions } from "@/auth/usePermissions";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
@@ -46,7 +46,7 @@ function AccountActions({ account, self, canManage, canInvite, route, onConfirm 
     },
   });
   const resend = useIdempotentMutation(action.guarded((operation, key: string) => resendOperatorInvitation(operation.id, key),
-    (_response, operation) => { toast.success(t("messages.resent", { name: operation.name })); void client.invalidateQueries({ queryKey: accountsQueryRoot }); }),
+    (_response, operation) => { toastSuccess(t("messages.resent", { name: operation.name })); void client.invalidateQueries({ queryKey: accountsQueryRoot }); }),
     { meta: action.meta, sameOperation: (previous, next) => previous.id === next.id });
   const busy = action.isPending;
   const confirmResend = useResendInvitation(account.invitationDelivery,
@@ -98,8 +98,8 @@ export function AccountsPage() {
     const name = accountLabel(activeConfirmation.account, t); const action = activeConfirmation.action;
     if (action === "deletion") {
       if (detail) client.setQueryData(accountQueryKey(detail.id), detail);
-      toast.success(t(detail?.deletion?.scheduledForUtc ? "platformAccounts:messages.deletion" : "platformAccounts:messages.deletedWithoutDate", { name, date: detail?.deletion?.scheduledForUtc ? format.formatDate(detail.deletion.scheduledForUtc) : "" }));
-    } else toast.success(t(action === "revoke" ? "platformAccounts:messages.revoked" : `platformAccounts:messages.${action}`, { name }));
+      toastSuccess(t(detail?.deletion?.scheduledForUtc ? "platformAccounts:messages.deletion" : "platformAccounts:messages.deletedWithoutDate", { name, date: detail?.deletion?.scheduledForUtc ? format.formatDate(detail.deletion.scheduledForUtc) : "" }));
+    } else toastSuccess(t(action === "revoke" ? "platformAccounts:messages.revoked" : `platformAccounts:messages.${action}`, { name }));
     void invalidate();
   };
   return <>

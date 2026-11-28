@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type ComponentType } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { usePermissions } from "@/auth/usePermissions";
 import { isNotFoundError, toastActionError } from "@/shared/api/errorMessage";
@@ -98,7 +98,7 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
     },
   });
   const resend = useIdempotentMutation(action.guarded((operation, key: string) => resendOperatorInvitation(operation.id, key),
-    (_response, operation) => { toast.success(t("platformAccounts:messages.resent", { name: operation.name })); void client.invalidateQueries({ queryKey: accountsQueryRoot }); }),
+    (_response, operation) => { toastSuccess(t("platformAccounts:messages.resent", { name: operation.name })); void client.invalidateQueries({ queryKey: accountsQueryRoot }); }),
     { meta: action.meta, sameOperation: (previous, next) => previous.id === next.id });
   const busy = action.isPending;
   // Cuenta-Plat-Base2 (0066 §4): si la invitación quedó «Sin confirmar», reenviarla pide revisar con la persona antes.
@@ -118,8 +118,8 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
     if (!active.current || !confirmation) return;
     if (confirmation.action === "deletion") {
       if (detail) client.setQueryData(accountQueryKey(detail.id), detail);
-      toast.success(t(detail?.deletion?.scheduledForUtc ? "platformAccounts:messages.deletion" : "platformAccounts:messages.deletedWithoutDate", { name, date: detail?.deletion?.scheduledForUtc ? format.formatDate(detail.deletion.scheduledForUtc) : "" }));
-    } else toast.success(t(confirmation.action === "revoke" ? "platformAccounts:messages.revoked" : `platformAccounts:messages.${confirmation.action}`, { name }));
+      toastSuccess(t(detail?.deletion?.scheduledForUtc ? "platformAccounts:messages.deletion" : "platformAccounts:messages.deletedWithoutDate", { name, date: detail?.deletion?.scheduledForUtc ? format.formatDate(detail.deletion.scheduledForUtc) : "" }));
+    } else toastSuccess(t(confirmation.action === "revoke" ? "platformAccounts:messages.revoked" : `platformAccounts:messages.${confirmation.action}`, { name }));
     invalidate();
     if (confirmation.action === "revoke") void navigate("/plataforma/cuentas");
   };
@@ -180,12 +180,12 @@ function AccountView({ data, self, canManage, canOperators, canAudit, onOperator
         { value: "history", label: t("platformAccounts:detail.history"), hidden: !canAudit || invitation, content: canAudit && !invitation ? <AccountHistoryTab id={data.id} /> : null },
       ] }} />
     {confirmation ? confirmation.action === "permissions" ? <OperatorPermissionsDialog account={confirmation.account} returnFocusTo={confirmation.trigger} onClose={(conflicted) => { if (conflicted) { onConflict(); invalidate(); } close(); }} onSaved={(response, permissions) => {
-      if (!active.current) return; onOperatorWrite(response, permissions); toast.success(t("platformAccounts:operator.saved", { name })); invalidate();
+      if (!active.current) return; onOperatorWrite(response, permissions); toastSuccess(t("platformAccounts:operator.saved", { name })); invalidate();
     }} /> : confirmation.action === "removeOperator" ? <RemoveOperatorDialog account={confirmation.account} returnFocusTo={confirmation.trigger} onClose={(conflicted) => { if (conflicted) onConflict(); close(); }} onRemoved={() => {
-      if (!active.current) return; toast.success(t("platformAccounts:operator.removed", { name })); invalidate(); void navigate("/plataforma/cuentas");
+      if (!active.current) return; toastSuccess(t("platformAccounts:operator.removed", { name })); invalidate(); void navigate("/plataforma/cuentas");
     }} /> : confirmation.action === "resetAuthenticator" ? <ResetAuthenticatorDialog account={confirmation.account} returnFocusTo={confirmation.trigger} onClose={(conflicted) => { if (conflicted) { onConflict(); invalidate(); } close(); }} onReset={(response) => {
       if (!active.current) return;
-      onOperatorWrite(response, data.operatorPermissions ?? []); toast.success(t("platformAccounts:operator.resetDone", { name })); invalidate();
+      onOperatorWrite(response, data.operatorPermissions ?? []); toastSuccess(t("platformAccounts:operator.resetDone", { name })); invalidate();
       void client.invalidateQueries({ queryKey: platformAuditQueryRoot });
     }} /> : confirmation.action === "revoke" ? <RevokeInvitationDialog confirmation={confirmation} onClose={close} onSuccess={() => success(undefined)} />
       : confirmation.action === "deletion" ? <AccountDeletionDialog confirmation={confirmation} onClose={close} onSuccess={success} /> : <AccountReasonDialog confirmation={confirmation} onClose={close} onSuccess={success} /> : null}

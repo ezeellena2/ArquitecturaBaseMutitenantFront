@@ -1,6 +1,7 @@
 import type { TFunction } from "i18next";
 import type { ReactNode } from "react";
 import type { RemoteOptions } from "@/shared/hooks/useResourceOptions";
+import { foldText } from "@/shared/lib/text";
 
 /** Una opción de la lista. */
 export interface PickerOption {
@@ -34,7 +35,7 @@ export interface PickerRow {
 /** Con más opciones que estas, la lista trae su buscador. */
 export const SEARCH_FROM = 10;
 
-export const fold = (text: string) => text.normalize("NFD").replace(/\p{M}/gu, "").toLocaleLowerCase();
+export const fold = (text: string) => foldText(text);
 
 /** El id de la fila `index` de la lista de una pieza: lo nombra `aria-activedescendant`. */
 export const pickerOptionId = (uid: string, index: number) => `${uid}-option-${index}`;

@@ -15,6 +15,14 @@ const cutsText = new Set([
   "shared/ui/fields/MonthField.tsx",
 ]);
 
+// Excepciones temporales de normalize("NFD") en modules/forms/ (en edición paralela por Tanda 2;
+// retirar cuando cierre Tanda 2 y se complete la migración de KAN-131 en modules/forms/).
+const nfdAllowedPendingTanda2 = new Set([
+  "modules/forms/lib/catalogFields.ts",
+  "modules/forms/lib/catalogImport.ts",
+  "modules/forms/lib/catalogValues.ts",
+]);
+
 function sourceFiles(directory: string): string[] {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
     const full = path.join(directory, entry.name);
@@ -26,6 +34,7 @@ function sourceFiles(directory: string): string[] {
 function violations(relative: string, source: string): string[] {
   const normalized = relative.replaceAll("\\", "/");
   const inFormat = normalized.startsWith("shared/format/");
+  const inLib = normalized.startsWith("shared/lib/");
   const inTime = normalized.startsWith("shared/time/");
   const inPhone = normalized.startsWith("shared/phone/");
   const found: string[] = [];
@@ -54,6 +63,9 @@ function violations(relative: string, source: string): string[] {
   if (!cutsText.has(normalized) && /\b(?:truncate|text-ellipsis|line-clamp(?:-\w+)?)\b/.test(source)) {
     found.push("texto cortado con «…»");
   }
+  if (!inLib && !nfdAllowedPendingTanda2.has(normalized) && /\.normalize\s*\(\s*["']NFD["']\s*\)/.test(source)) {
+    found.push('plegado Unicode NFD fuera de shared/lib/: usar stripDiacritics o foldText de shared/lib/text');
+  }
   return found;
 }
 
@@ -79,6 +91,8 @@ describe("uso exclusivo de formatos y catálogos", () => {
     expect(violations("shared/ui/Picker.tsx", '<span className="truncate">{shown.names}</span>')).toEqual([]);
     expect(violations("layouts/MorePage.tsx", '<span className="overflow-hidden text-ellipsis">')).not.toEqual([]);
     expect(violations("modules/whatsapp/chats/components/ConversationItem.tsx", '<span data-slot="chat-preview" className="truncate">')).toEqual([]);
+    expect(violations("shared/phone/countries.ts", 'value.normalize("NFD").replace(/\\p{M}/gu, "")')).not.toEqual([]);
+    expect(violations("shared/lib/text.ts", 'value.normalize("NFD").replace(/\\p{M}/gu, "")')).toEqual([]);
   });
 
   it("mantiene las reglas en el código de producción", () => {

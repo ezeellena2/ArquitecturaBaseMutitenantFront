@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useController, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { z } from "zod";
 import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { useDialogFailure } from "@/shared/hooks/useDialogFailure";
@@ -40,7 +40,7 @@ export function NumberCompanyDialog({ number, title, onClose, returnFocusTo }: {
   const submit = form.handleSubmit((values) => {
     save.mutate({ companyId: values.company === wholeOrganization ? null : values.company, version: number.version }, {
       onSuccess: async () => {
-        toast.success(t("whatsapp:numbers.company.saved"));
+        toastSuccess(t("whatsapp:numbers.company.saved"));
         onClose();
         await queryClient.invalidateQueries({ queryKey: numbersQueryRoot });
       },

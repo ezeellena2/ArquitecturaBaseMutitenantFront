@@ -39,7 +39,7 @@ describe("AdminPanel", () => {
   it("con un panel configurado abre y cierra con ‹", async () => {
     const onClose = vi.fn();
     render(<MemoryRouter><AdminPanel panel={futurePanel} open onClose={onClose} /></MemoryRouter>);
-    expect(screen.getByRole("navigation", { name: "Administración" })).toHaveClass("w-58", "bg-[var(--panel)]");
+    expect(screen.getByRole("navigation", { name: "Administración" })).toHaveClass("w-58", "bg-[var(--panel)]", "print:hidden");
     expect(screen.getByRole("button", { name: "Cerrar Administración" })).toHaveClass("size-7");
     expect(screen.queryByRole("link", { name: "Usuarios" })).not.toBeInTheDocument();
     await userEvent.click(screen.getByRole("button", { name: "Cerrar Administración" }));

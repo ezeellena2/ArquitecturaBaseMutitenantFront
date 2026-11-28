@@ -1,4 +1,5 @@
 import type { MeResponse } from "@/shared/api/types";
+import { foldText } from "../../../shared/lib/text.ts";
 import { currentUsers, type CurrentUserFixture } from "../../../test/mocks/currentUsers.ts";
 import { platformWhatsAppPermissions, whatsappPermissions } from "../access.ts";
 
@@ -78,7 +79,7 @@ export function galleryApp(scope: GalleryScope, route: string, responses: Galler
   };
 }
 
-const slug = (text: string) => text.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const slug = (text: string) => foldText(text).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 const viewportOf = (board: string): GalleryCase["viewport"] => board.startsWith("M-") ? { width: 390, height: 844 } : { width: 1440, height: 900 };
 
 /** Un caso: el tablero en su estado (`stateKey` del control Tweak del tablero) y la app que se le compara. */

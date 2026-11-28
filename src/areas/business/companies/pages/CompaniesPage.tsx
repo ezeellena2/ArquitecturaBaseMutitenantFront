@@ -16,7 +16,7 @@ import { Page } from "@/shared/ui/Page";
 import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Surface } from "@/shared/ui/Surface";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import {
   changeCompanyStatus,
   companiesCountQueryKey,
@@ -67,7 +67,7 @@ export function CompaniesPage() {
     mutationFn: (company: CompanyResponse) => changeCompanyStatus(company.id, { status: company.status === "Active" ? "Inactive" : "Active", version: company.version }),
     onSuccess: async (_result, company) => {
       setStatusTarget(null);
-      toast.success(sentence(t(company.status === "Active" ? "companies:messages.deactivated" : "companies:messages.activated", { name: company.name })));
+      toastSuccess(sentence(t(company.status === "Active" ? "companies:messages.deactivated" : "companies:messages.activated", { name: company.name })));
       await invalidate();
     },
     // La confirmación espera la respuesta y se cierra con ella, sea cual sea («Criterio · Diálogos»).

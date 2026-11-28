@@ -40,6 +40,18 @@ describe("Assistant wire SSE", () => {
     expectTypeOf(events).toEqualTypeOf<AssistantStreamHttpResponse[]>();
   });
 
+  it("conserva la propuesta de acción cuando viene en el evento done", async () => {
+    const withProposal: AssistantTurnResultResponse = {
+      ...result,
+      message: {
+        ...result.message,
+        proposal: { id: "proposal-1", kind: "action", action: "users.invite", version: 1, state: "new" },
+      },
+    };
+    const events = await collect(response(frame("done", withProposal)));
+    expect(events).toEqual([{ event: "done", data: withProposal }]);
+  });
+
   it("soporta LF y CR y conserva secuencias repetidas para el reducer", async () => {
     const delta = { turnId: "turn", sequence: 7, text: "a" };
     const text = frame("delta", delta).replaceAll("\r\n", "\n") + frame("delta", delta).replaceAll("\r\n", "\r") + frame("done", result);

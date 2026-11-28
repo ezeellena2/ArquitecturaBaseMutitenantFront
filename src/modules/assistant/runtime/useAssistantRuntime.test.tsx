@@ -1247,4 +1247,59 @@ describe("sondeo incremental y espera creciente del runtime (KAN-30)", () => {
     await vi.advanceTimersByTimeAsync(assistantPollBackoffMs[2] + 100);
     await expect(promise).resolves.toEqual(complete);
   });
+
+  it("expone la propuesta del mensaje en done antes de que termine reconcile", async () => {
+    const hook = setup();
+    const live = stream();
+    const reconcileGate = deferred<void>();
+    const doneWithProposal: AssistantTurnResultResponse = {
+      ...terminal,
+      message: {
+        ...terminal.message,
+        proposal: { id: "prop-1", kind: "action", action: "users.invite", version: 1, state: "new" },
+      },
+    };
+    let getCount = 0;
+    server.use(
+      http.get("/api/organization/assistant/conversations/chat", async () => {
+        getCount++;
+        if (getCount > 1) await reconcileGate.promise;
+        return HttpResponse.json(getCount > 1 ? conversation([message("u", "user"), doneWithProposal.message]) : conversation());
+      }),
+      http.post("/api/organization/assistant/conversations/chat/messages", () => new HttpResponse(live.body, { headers: { "Content-Type": "text/event-stream" } })),
+    );
+    await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+
+    let sending!: ReturnType<typeof hook.result.current.send>;
+    act(() => { sending = hook.result.current.send({ text: "Invitá a Ana", conversationVersion: 3 }); });
+    await waitFor(() => expect(hook.result.current.isPending).toBe(true));
+
+    act(() => {
+      live.event("start", start);
+      live.event("done", doneWithProposal);
+      live.close();
+    });
+
+    await waitFor(() => expect(hook.result.current.messages.at(-1)?.proposal).toEqual(doneWithProposal.message.proposal));
+    reconcileGate.resolve();
+    await act(async () => { await sending; });
+    expect(hook.result.current.messages.at(-1)?.proposal).toEqual(doneWithProposal.message.proposal);
+  });
+
+  it("subscribeCache no re-suscribe en cada render ni reacciona a consultas ajenas en QueryCache", async () => {
+    const hook = setup();
+    await waitFor(() => expect(hook.result.current.canSend).toBe(true));
+    const cache = hook.client.getQueryCache();
+    const subscribeSpy = vi.spyOn(cache, "subscribe");
+    const getQueryDataSpy = vi.spyOn(hook.client, "getQueryData");
+
+    hook.rerender({ currentScope: scope, currentConversationId: "chat", enabled: true });
+    expect(subscribeSpy).not.toHaveBeenCalled();
+
+    getQueryDataSpy.mockClear();
+    act(() => {
+      hook.client.setQueryData(["unrelated", "whatsapp", "poll"], { unread: 3 });
+    });
+    expect(getQueryDataSpy).not.toHaveBeenCalled();
+  });
 });

@@ -1,12 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { ImportantNotice } from "@/shared/ui/ImportantNotice";
-import { toastError } from "@/shared/ui/sonner";
+import { toastError, toastInfo, toastSuccess } from "@/shared/ui/sonner";
 import type { ConnectWhatsAppNumberRequest, WhatsAppSignupConfigResponse } from "../../api/types";
 import { contactQueryKey, fetchContact } from "../api/numbers";
 import { MetaWindowNotice } from "../components/MetaWindowNotice";
@@ -39,13 +38,13 @@ export function useConnectNumber<TResponse>({ variant, connect, onConnected }: {
   function begin(config: WhatsAppSignupConfigResponse, companyId?: string | null) {
     setFailure(null);
     signup.start(config, (outcome) => {
-      if (outcome.kind === "cancelled") { toast.info(t("whatsapp:numbers.connect.cancelled")); return; }
+      if (outcome.kind === "cancelled") { toastInfo(t("whatsapp:numbers.connect.cancelled")); return; }
       if (outcome.kind === "error") { setFailure({ metaCode: outcome.errorCode }); return; }
       const request: ConnectWhatsAppNumberRequest = { code: outcome.code, phoneNumberId: outcome.phoneNumberId, wabaId: outcome.wabaId,
         coexistence: outcome.coexistence, ...(variant === "organization" ? { companyId: companyId ?? null } : {}) };
       mutation.mutate(request, {
         onSuccess: async () => {
-          toast.success(t("whatsapp:numbers.connect.connected"));
+          toastSuccess(t("whatsapp:numbers.connect.connected"));
           await onConnected();
         },
         onError: (error) => {

@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { useDialogFailure } from "@/shared/hooks/useDialogFailure";
 import { botQueryRoot } from "../api/bot";
 import type { BotData, BotPatch, BotSave } from "../lib/botModel";
@@ -14,7 +14,7 @@ export function useBotDialogSave<TBot extends BotData>(base: TBot, onSave: BotSa
   return {
     failure, clear, close, pending: save.isPending,
     submit: (patch: BotPatch) => save.mutate({ snapshot: base, patch }, {
-      onSuccess: () => { toast.success(t("bot.saved")); onClose(); },
+      onSuccess: () => { toastSuccess(t("bot.saved")); onClose(); },
       onError: fail,
     }),
   };

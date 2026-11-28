@@ -6,7 +6,7 @@ import { Power, ShieldCheck, UserRound } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { usePermissions } from "@/auth/usePermissions";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
 import type { CompanyMemberResponse, CompanyResponse, RoleResponse } from "@/shared/api/types";
@@ -42,7 +42,7 @@ function InvitationRowActions({ company, member, hidden, onRevoke }: { company: 
   const queryClient = useQueryClient();
   const action = useResourceAction<{ invitationId: string; email: string }>({ onError: (error) => toastActionError(error, t) });
   const resend = useIdempotentMutation(action.guarded((operation, key: string) => resendCompanyInvitation(company.id, operation.invitationId, key),
-    (_response, operation) => { toast.success(t("companies:messages.invitationResent", { email: operation.email })); void queryClient.invalidateQueries({ queryKey: companiesQueryRoot }); }),
+    (_response, operation) => { toastSuccess(t("companies:messages.invitationResent", { email: operation.email })); void queryClient.invalidateQueries({ queryKey: companiesQueryRoot }); }),
     { meta: action.meta, sameOperation: (previous, next) => previous.invitationId === next.invitationId });
   const send = (settled?: () => void) => {
     if (member.invitationId) resend.mutate({ invitationId: member.invitationId, email: member.email ?? member.displayName }, { onSettled: settled });
@@ -94,7 +94,7 @@ export function CompanyMembersTab({ company, list, roles }: {
       { status: member.membershipStatus === "Active" ? "Inactive" : "Active", version: member.version }),
     onSuccess: async (_result, member) => {
       setRemoveTarget(null);
-      toast.success(t(member.membershipStatus === "Active" ? "companies:messages.memberRemoved" : "companies:messages.memberRestored", { name: member.displayName }));
+      toastSuccess(t(member.membershipStatus === "Active" ? "companies:messages.memberRemoved" : "companies:messages.memberRestored", { name: member.displayName }));
       await Promise.all([queryClient.invalidateQueries({ queryKey: companiesQueryRoot }), queryClient.invalidateQueries({ queryKey: companyCandidateOptions(company.id).queryKeyRoot })]);
     },
     // La confirmación espera la respuesta y se cierra con ella, sea cual sea («Criterio · Diálogos»).
@@ -105,7 +105,7 @@ export function CompanyMembersTab({ company, list, roles }: {
     mutationFn: (member: CompanyMemberResponse) => revokeCompanyInvitation(company.id, member.invitationId ?? ""),
     onSuccess: async (_result, member) => {
       setRevokeTarget(null);
-      toast.success(t("companies:messages.invitationRevoked", { email: member.email ?? member.displayName }));
+      toastSuccess(t("companies:messages.invitationRevoked", { email: member.email ?? member.displayName }));
       await queryClient.invalidateQueries({ queryKey: companiesQueryRoot });
     },
     onError: (error) => { setRevokeTarget(null); toastActionError(error, t); },

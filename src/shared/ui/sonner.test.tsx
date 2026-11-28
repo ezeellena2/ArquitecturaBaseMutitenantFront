@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { toast, type ToasterProps } from "sonner";
 import { renderWithProviders } from "@/test/utils/renderWithProviders";
 import { asPhone } from "@/test/utils/phone";
-import { Toaster, toastDurations, toastError, toastErrorWithCode } from "./sonner";
+import { Toaster, toastDurations, toastError, toastErrorWithCode, toastInfo, toastSuccess, toastWarning } from "./sonner";
 
 const css = readFileSync(path.resolve(import.meta.dirname, "../../index.css"), "utf8");
 const phoneCss = css.slice(css.indexOf("/* En el teléfono, los avisos suben"), css.indexOf("@media (min-width: 768px)"));
@@ -195,5 +195,20 @@ describe("Toaster · Criterio v65", () => {
     expect(desktopCss).toMatch(/\.aviso-codigo \[data-button\] \{[^}]*grid-area: 2 \/ 2;[^}]*margin: -0.25rem 0 0;/);
     expect(desktopCss).toMatch(/\.aviso-codigo \[data-close-button\] \{[^}]*grid-area: 1 \/ 3;/);
     expect(css.slice(0, css.indexOf("@media (min-width: 768px)"))).not.toContain("aviso-codigo");
+  });
+
+  it("la fachada reenvía success, info y warning y fija permanencia cuando llevan acción", () => {
+    const success = vi.spyOn(toast, "success");
+    const info = vi.spyOn(toast, "info");
+    const warning = vi.spyOn(toast, "warning");
+    const action = { label: "Deshacer", onClick: vi.fn() };
+
+    toastSuccess("Guardado.");
+    toastInfo("Sin cambios.");
+    toastWarning("Revisá los datos.", { action });
+
+    expect(success).toHaveBeenCalledWith("Guardado.");
+    expect(info).toHaveBeenCalledWith("Sin cambios.");
+    expect(warning).toHaveBeenCalledWith("Revisá los datos.", { action, duration: Number.POSITIVE_INFINITY, closeButton: true });
   });
 });

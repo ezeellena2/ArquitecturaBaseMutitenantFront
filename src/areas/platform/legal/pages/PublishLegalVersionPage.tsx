@@ -6,7 +6,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { useController } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { z } from "zod";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
 import type { LegalDocumentKind, PlatformLegalDocumentGroupResponse } from "@/shared/api/types";
@@ -98,7 +98,7 @@ function LegalVersionEditor({ initialKind, cultures, documents }: { initialKind:
   const execute = (sent: LegalPublicationOperation, key: string) => action.guarded(
     (sent: LegalPublicationOperation, key: string) => publishLegalDocument({ kind: sent.kind, effectiveOn: sent.effectiveOn, contents: sent.contents }, key),
     (response, sent) => {
-      toast.success(t("platformLegal:published", { version: format.formatInteger(response.version), name: t(`enums:LegalDocumentKind.${sent.kind}`) }));
+      toastSuccess(t("platformLegal:published", { version: format.formatInteger(response.version), name: t(`enums:LegalDocumentKind.${sent.kind}`) }));
       choice.current = false; form.reset(); edit.allowNextNavigation(); void navigate("/plataforma/legales");
       void client.invalidateQueries({ queryKey: legalDocumentsQueryKey });
     })(sent, key);

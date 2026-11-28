@@ -6,7 +6,7 @@ import { Plus } from "lucide-react";
 import { Controller, useWatch } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
 import { useNavigation, useSearchParams } from "react-router";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { ApiError } from "@/shared/api/ApiError";
 import { AddLoginMethodDialog } from "@/shared/account/AddLoginMethodDialog";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
@@ -122,7 +122,7 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
       if (sent.request.keyAction !== "keep") { saved.hasKey = sent.request.keyAction === "replace"; saved.maskedKeySuffix = null; }
       setOwnRead((previous) => ({ replacedVersions: new Set([...(previous?.replacedVersions ?? []), sent.request.version!]), saved }));
       setChangingKey(false); setFailure(undefined);
-      toast.success(t("assistant:settings.saved"));
+      toastSuccess(t("assistant:settings.saved"));
       void client.invalidateQueries({ queryKey: settingsKey });
       // El Inicio muestra los modelos, el cupo y el plazo que se acaban de guardar.
       void client.invalidateQueries({ queryKey: assistantStateQueryKey(scope) });

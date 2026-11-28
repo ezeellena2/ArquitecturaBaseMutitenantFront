@@ -2,7 +2,7 @@ import { useMountedRef } from "@/shared/hooks/useMountedRef";
 import { useQueryClient, type UseQueryResult } from "@tanstack/react-query";
 import { useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { usePermissions } from "@/auth/usePermissions";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { ApiError } from "@/shared/api/ApiError";
@@ -107,7 +107,7 @@ export function OrganizationModulesTab({ organization, query, writes, onWrite, o
     }} onSuccess={(write) => {
       onWrite(confirmation.feature.key, write);
       client.setQueryData<PlatformFeatureResponse[]>(tenantFeaturesQueryKey(organization.id), (data) => data?.map((row) => row.key === confirmation.feature.key ? { ...row, ...write } : row));
-      toast.success(t(`platformTenants:modules.messages.${confirmation.action}`, { module: moduleName(confirmation.feature.key) })); void client.invalidateQueries({ queryKey: tenantsQueryRoot });
+      toastSuccess(t(`platformTenants:modules.messages.${confirmation.action}`, { module: moduleName(confirmation.feature.key) })); void client.invalidateQueries({ queryKey: tenantsQueryRoot });
     }} /> : null}
   </>;
 }
