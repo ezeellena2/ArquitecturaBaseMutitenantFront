@@ -890,6 +890,24 @@ describe("CatalogEditorPage, los campos (E13)", () => {
     ]));
   });
 
+  it("si otra persona guardó, la revisión dice qué cambió de cada campo (tipo y reglas) y de «En WhatsApp», aunque los nombres sean los mismos (O15)", async () => {
+    serve({ detail: conPlazo(), items: conValor("1500"),
+      put: () => HttpResponse.json({ code: "General.ConcurrencyConflict", status: 409, title: "Conflict" }, { status: 409 }) });
+    let reads = 0;
+    server.use(http.get(`${base}/c-motivos`, () => HttpResponse.json(reads++ === 0 ? conPlazo()
+      : conPlazo({ version: 8, fields: [{ ...plazo, type: "DecimalNumber", required: true }], presentation: { title: ["text"], description: ["field:f-plazo", "detail"] } }))));
+    const { user } = await openEditor();
+    await user.clear(textbox("Texto de Seguimiento"));
+    await user.paste("Seguimiento programado");
+    await user.click(saveButton());
+    const dialog = await screen.findByRole("dialog", { name: "Otra persona guardó el catálogo" });
+    await waitFor(() => expect(within(dialog).getAllByRole("listitem").map((row) => row.textContent)).toEqual([
+      "Campo «Plazo»Tus cambios: Número enteroLo guardado ahora: Número con decimales · Obligatorio",
+      "En WhatsApp · DescripciónTus cambios: DetalleLo guardado ahora: Plazo · Detalle",
+      "Opción 1 · TextoTus cambios: Seguimiento programadoLo guardado ahora: Seguimiento",
+    ]));
+  });
+
   it("SourceInUse al dar de baja no es un conflicto de versión: el editor queda editable, con su motivo en la franja (lección 2)", async () => {
     const detail = "No se puede dar de baja: lo usan campos de otros catálogos.";
     serve({ put: () => HttpResponse.json({ code: "Forms.Catalog.SourceInUse", status: 409, title: "Conflict", detail }, { status: 409 }) });

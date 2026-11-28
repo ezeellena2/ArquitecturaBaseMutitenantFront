@@ -291,6 +291,8 @@
       "option": "Opción {{n}}",
       "options": "Opciones",
       "fields": "Campos",
+      "field": "Campo «{{name}}»",
+      "presentation": { "title": "En WhatsApp · Título", "description": "En WhatsApp · Descripción" },
       "counts_one": "{{total}} · {{active}} activa",
       "counts_other": "{{total}} · {{active}} activas",
       "what": "Qué cambió",

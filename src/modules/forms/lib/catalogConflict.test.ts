@@ -31,6 +31,22 @@ describe("«Qué cambió» entre lo tuyo y lo guardado ahora (O15)", () => {
     ]);
   });
 
+  it("de los campos con el mismo nombre y orden, lo que cambió de cada uno (tipo, reglas, catálogo) y «En WhatsApp», de los dos lados", () => {
+    const precio = { id: "f-precio", name: "Precio" }, cuit = { id: "f-cuit", name: "CUIT" };
+    const changes = conflictChanges({ name: "Motivos", rows: [], total: 3, active: 3, freshItems: [], savedRow: () => undefined, freshDraft: draftOf,
+      fresh: fresh(),
+      fields: [{ ...precio, summary: "Texto" }, { ...cuit, summary: "Texto · Único" }, { id: null, name: "Nuevo", summary: "Texto" }],
+      freshFields: [{ ...precio, summary: "Número entero · Obligatorio" }, { ...cuit, summary: "Texto" }],
+      presentation: { yours: { title: ["text"], description: ["detail"] }, theirs: { title: ["text"], description: ["field:f-precio"] } },
+      placeName: (place, side) => place === "field:f-precio" ? `Precio (${side})` : place });
+    expect(changes.map((change) => [change.key, change.what, change.yours, change.theirs])).toEqual([
+      ["fields", { kind: "fields" }, { kind: "text", text: "Precio · CUIT · Nuevo" }, { kind: "text", text: "Precio · CUIT" }],
+      ["field:f-precio", { kind: "field", name: "Precio" }, { kind: "text", text: "Texto" }, { kind: "text", text: "Número entero · Obligatorio" }],
+      ["field:f-cuit", { kind: "field", name: "CUIT" }, { kind: "text", text: "Texto · Único" }, { kind: "text", text: "Texto" }],
+      ["presentation:description", { kind: "presentation", part: "description" }, { kind: "text", text: "detail" }, { kind: "text", text: "Precio (theirs)" }],
+    ]);
+  });
+
   it("el nombre y las cantidades, cuando cambian", () => {
     const changes = conflictChanges({ name: "Motivos de visita", rows: [], total: 3, active: 2, fresh: fresh({ itemCounts: { total: 3, active: 3 } }), freshItems: [],
       savedRow: () => undefined, freshDraft: draftOf });

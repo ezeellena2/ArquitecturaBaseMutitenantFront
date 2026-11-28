@@ -278,7 +278,8 @@ function SavedCatalogEditor({ id }: { id: string }) {
     {phone ? <PhonePreviewDialog options={presentationView.options} filters={filters} open={previewOpen} onOpenChange={setPreviewOpen} /> : null}
     {importing ? <ImportDialog catalog={saved} onClose={() => setImporting(false)} onCatalogChanged={() => { void editor.seeNew(); }} /> : null}
     <CatalogConflictDialog conflict={editor.conflict} name={editor.name} rows={editor.rows} total={editor.total} active={activeCount}
-      valueType={editor.valueType} savedRow={editor.savedRow} fields={editor.fields.fields} onContinue={editor.continueEditing} onSeeNew={() => { void seeNew(); }} />
+      valueType={editor.valueType} savedRow={editor.savedRow} fields={editor.fields.fields}
+      presentation={manual ? editor.presentation : undefined} onContinue={editor.continueEditing} onSeeNew={() => { void seeNew(); }} />
     <ConfirmDialog open={confirmDeactivate} onOpenChange={setConfirmDeactivate}
       title={t("forms:catalog.deactivateDialog.title", { name: saved.name })} description={t("forms:catalog.deactivateDialog.description")}
       confirmLabel={t("forms:catalog.actions.deactivate")} destructive pending={editor.activating} pendingLabel={t("forms:catalog.deactivating")}

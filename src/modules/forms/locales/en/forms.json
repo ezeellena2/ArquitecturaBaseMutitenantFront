@@ -291,6 +291,8 @@
       "option": "Option {{n}}",
       "options": "Options",
       "fields": "Fields",
+      "field": "Field “{{name}}”",
+      "presentation": { "title": "On WhatsApp · Title", "description": "On WhatsApp · Description" },
       "counts_one": "{{total}} · {{active}} active",
       "counts_other": "{{total}} · {{active}} active",
       "what": "What changed",

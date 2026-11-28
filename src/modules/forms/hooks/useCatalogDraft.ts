@@ -14,7 +14,7 @@ import type {
 } from "../api/types";
 import { catalogFieldErrors, catalogInvalidRows } from "../errors";
 import { fieldColumnsOf, fieldDraftsOf, fieldInputsOf, sameFieldsDraft, sortAfterFields, type CatalogFieldErrors, type CatalogFieldsDraft } from "../lib/catalogFields";
-import { normalizePresentation, placeKeys } from "../lib/catalogPresentation";
+import { defaultPresentation, normalizePresentation, placeKeys } from "../lib/catalogPresentation";
 import {
   catalogRows, changedFieldsOf, cleanEdits, fieldErrorKey, itemInputOf, positionOf, savedDraft, savedRowOf,
   type CatalogDraftState, type CatalogMove, type CatalogRowView, type ItemDraft, type ItemEdits, type NewItem, type RowError,
@@ -35,8 +35,6 @@ export interface CatalogDraftSnapshot {
 const emptyEdits: Readonly<Record<string, ItemEdits>> = {};
 const itemFields = { code: 1, text: 1, detail: 1, value: 1 } as const;
 const fieldParts: readonly (keyof CatalogFieldErrors)[] = ["name", "key", "type", "required"];
-/** «En WhatsApp» de un catálogo nuevo, y de uno dado de alta antes de la E13: el texto en el título y el detalle debajo (0060). */
-const defaultPresentation: FormCatalogPresentationDetail = { title: ["text"], description: ["detail"] };
 
 /**
  * Lo que el servidor rechazó de un campo al guardar (E13): el campo del modal, la parte (`type`, `required`…) y su texto, y, si

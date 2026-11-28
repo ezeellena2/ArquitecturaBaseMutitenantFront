@@ -12,6 +12,9 @@ import { displayValue, fieldValueText, readFieldValue, readValue } from "./catal
  */
 export const presentationSeparator = " · ";
 
+/** «En WhatsApp» de un catálogo nuevo, y de uno dado de alta antes de la E13: el texto en el título y el detalle debajo (0060). */
+export const defaultPresentation: FormCatalogPresentationDetail = { title: ["text"], description: ["detail"] };
+
 const fieldPrefix = "field:";
 
 /** Lo que lee cada lugar: el tipo del valor del catálogo y los campos activos guardados, en su orden. */

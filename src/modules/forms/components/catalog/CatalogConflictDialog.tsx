@@ -5,21 +5,22 @@ import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
-import type { FormCatalogItemRow, FormCatalogValueType } from "../../api/types";
+import type { FormCatalogItemRow, FormCatalogPresentationDetail, FormCatalogValueType } from "../../api/types";
 import type { CatalogConflict, CatalogRowView } from "../../hooks/useCatalogEditor";
 import { useCatalogFieldSources } from "../../hooks/useCatalogFieldSources";
-import { conflictChanges, type ConflictChange, type ConflictValue } from "../../lib/catalogConflict";
+import { conflictChanges, fieldSummary, type ConflictChange, type ConflictField, type ConflictValue } from "../../lib/catalogConflict";
 import { savedDraft } from "../../lib/catalogDraft";
-import type { CatalogFieldDraft } from "../../lib/catalogFields";
+import { fieldInputsOf, type CatalogFieldDraft } from "../../lib/catalogFields";
+import { defaultPresentation, fieldIdOfPlace, normalizePresentation, placeKeys } from "../../lib/catalogPresentation";
 import { fieldValueText, readFieldValue, type FieldValue } from "../../lib/catalogValues";
 
 /**
  * «Otra persona guardó el catálogo» (FRM-Catalogo, 138 y O15): las dos versiones lado a lado, con «Qué cambió» (el dato una
- * sola vez, en gris), lo tuyo y lo guardado ahora, solo lo distinto: el nombre, cada opción de la página que cambió de un lado
- * o del otro y las cantidades. En el teléfono, el dato ocupa su renglón y las dos versiones van debajo. Tus cambios se
+ * sola vez, en gris), lo tuyo y lo guardado ahora, solo lo distinto: el nombre, los campos (la lista y lo que cambió de cada
+ * uno), «En WhatsApp», cada opción de la página que cambió de un lado o del otro y las cantidades. En el teléfono, el dato ocupa su renglón y las dos versiones van debajo. Tus cambios se
  * conservan hasta que elijas: «Seguir editando» o «Ver lo nuevo».
  */
-export function CatalogConflictDialog({ conflict, name, rows, total, active, valueType, savedRow, fields = [], onContinue, onSeeNew }: {
+export function CatalogConflictDialog({ conflict, name, rows, total, active, valueType, savedRow, fields = [], presentation, onContinue, onSeeNew }: {
   conflict: CatalogConflict | null;
   name: string;
   rows: readonly CatalogRowView[];
@@ -27,8 +28,10 @@ export function CatalogConflictDialog({ conflict, name, rows, total, active, val
   active: number;
   valueType: FormCatalogValueType;
   savedRow: (key: string | undefined) => FormCatalogItemRow | undefined;
-  /** Tus campos activos (E13): la revisión dice si la lista cambió, y el valor de cada campo en cada opción. */
+  /** Tus campos activos (E13): la revisión dice si la lista cambió, qué cambió de cada uno y el valor de cada campo en cada opción. */
   fields?: readonly CatalogFieldDraft[];
+  /** Tu «En WhatsApp» (E13), en un catálogo a mano. */
+  presentation?: FormCatalogPresentationDetail;
   onContinue: () => void;
   onSeeNew: () => void;
 }) {
@@ -50,8 +53,23 @@ export function CatalogConflictDialog({ conflict, name, rows, total, active, val
     const read = readFieldValue(value, field.type, format, t);
     return read.error ? value : fieldValueText(read.canonical, field.type, format);
   };
+  // Cada campo con lo que dice, de los dos lados: lo tuyo como lo manda el `PUT` (el rango canónico) y lo guardado ahora.
+  const freshActive = (fresh.fields ?? []).filter((field) => field.isActive);
+  const yourInputs = fieldInputsOf({ fields, confirmedRemovals: [] }, format, t);
+  const yourFields = fields.map((field, index): ConflictField => ({ id: field.id, name: field.name, summary: fieldSummary({ ...field,
+    maxLength: yourInputs[index]?.maxLength, min: yourInputs[index]?.min, max: yourInputs[index]?.max }, format, t) }));
+  const freshFields = freshActive.map((field): ConflictField => ({ id: field.id, name: field.name, summary: fieldSummary(field, format, t) }));
+  const placeName = (place: string, side: "yours" | "theirs") => {
+    const fieldId = fieldIdOfPlace(place);
+    if (!fieldId) return t(`forms:catalog.columns.${place}`);
+    return (side === "yours" ? fields : freshActive).find((field) => field.id === fieldId)?.name ?? "";
+  };
+  const comparedPresentation = presentation ? {
+    yours: presentation,
+    theirs: normalizePresentation(fresh.presentation ?? defaultPresentation, placeKeys({ valueType, fields: freshActive })),
+  } : undefined;
   const changes = conflictChanges({ name, rows, total, active, fresh, freshItems, savedRow, freshDraft: (row) => savedDraft(row, valueType, format, fresh.fields),
-    fieldNames: fields.map((field) => field.name), fieldText });
+    fields: yourFields, freshFields, presentation: comparedPresentation, placeName, fieldText });
   const description = fresh.modifiedBy ? t("forms:catalog.conflict.byPerson", { name: fresh.modifiedBy }) : t("forms:catalog.conflict.bySomeone");
   const yoursTitle = t("forms:catalog.conflict.yours"), savedTitle = t("forms:catalog.conflict.saved");
 
@@ -60,6 +78,8 @@ export function CatalogConflictDialog({ conflict, name, rows, total, active, val
     if (what.kind === "name") return t("forms:catalog.conflict.name");
     if (what.kind === "counts") return t("forms:catalog.conflict.options");
     if (what.kind === "fields") return t("forms:catalog.conflict.fields");
+    if (what.kind === "field") return t("forms:catalog.conflict.field", { name: what.name });
+    if (what.kind === "presentation") return t(`forms:catalog.conflict.presentation.${what.part}`);
     if (what.number == null) return t("forms:catalog.newOption");
     if (what.fieldName !== undefined) return t("forms:catalog.conflict.optionField", { n: format.formatInteger(what.number), field: what.fieldName });
     return what.field
