@@ -183,6 +183,24 @@ describe("Catálogos", () => {
     } finally { restore(); }
   });
 
+  it("al limpiar unos filtros sin coincidencias, la barra sigue mientras carga la lista entera (KAN-141)", async () => {
+    serve();
+    let release = () => {};
+    const pending = new Promise<void>((resolve) => { release = resolve; });
+    server.use(http.get("/api/organization/forms/catalogs", async ({ request }) => {
+      const search = new URL(request.url).searchParams.get("search");
+      if (!search) await pending;
+      return HttpResponse.json(paged(search ? [] : catalogs));
+    }));
+    const { user } = mountForms(formsOwner, `${listPath}?search=herramientas`);
+    expect(await screen.findByText("Ningún catálogo coincide con los filtros.")).toBeVisible();
+    await user.click(screen.getAllByRole("button", { name: "Limpiar filtros" }).at(-1)!);
+    // Lo de antes queda a la vista mientras carga: no es «no hay catálogos», y la barra no se va.
+    expect(screen.getByRole("searchbox", { name: "Buscar por nombre" })).toBeInTheDocument();
+    release();
+    expect(await screen.findByRole("link", { name: "Proveedores" })).toBeVisible();
+  });
+
   it("a 390 px sin catálogos, la barra conserva la lupa y «Filtros», sin «Ordenar por» (M-FRM-Catalogos «Vacío», KAN-141)", async () => {
     const restore = asPhone();
     try {

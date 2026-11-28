@@ -50,8 +50,10 @@ export function CatalogsPage({ me }: ModuleContentProps) {
   const totals = counts.data;
   // Sin ningún catálogo no hay nada que buscar, filtrar ni ordenar: en la compu no va la barra (FRM-Catalogos «Vacío»); en el
   // teléfono quedan la lupa y «Filtros» arriba, sin «Ordenar por» (M-FRM-Catalogos «Vacío»). Lo dice la lista, que sin
-  // filtros cuenta todos: el resumen de `filter-counts` puede haber quedado viejo si su relectura falló.
-  const emptyList = !filtered && catalogs.data?.totalCount === 0;
+  // filtros cuenta todos: el resumen de `filter-counts` puede haber quedado viejo si su relectura falló. Tiene que ser la
+  // respuesta de la consulta sin búsqueda, que llega con 300 ms de debounce, y no la anterior que queda a la vista mientras
+  // carga: al limpiar unos filtros sin coincidencias, la barra no se va.
+  const emptyList = !filtered && !query.search && !catalogs.isPlaceholderData && catalogs.data?.totalCount === 0;
   // «7 catálogos · 6 activos» (262); sin ninguno, «Sin catálogos».
   const summary = totals ? totals.all === 0 ? t("forms:catalogs.summaryEmpty") : <>
     <span>{t("forms:catalogs.summaryTotal", countOf(format, totals.all))}</span><SublineSeparator />
