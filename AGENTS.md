@@ -4,7 +4,7 @@ SPA del multitenant. La arquitectura canónica está en [`docs/architecture/fron
 
 ## Antes de escribir código: el arnés
 
-**No inventes componentes, formatos, hooks ni textos que ya existen.** Para cada tema hay una ficha en [`docs/rules/`](docs/rules/README.md), y cada carpeta tiene un `AGENTS.md` corto que dice qué va ahí. Cómo funciona: [`docs/architecture/arnes.md`](docs/architecture/arnes.md).
+**No inventes componentes, formatos, hooks ni textos que ya existen.** Para cada tema hay una ficha en [`docs/rules/`](docs/rules/README.md), y cada carpeta tiene un `AGENTS.md` corto que dice qué va ahí. Cómo funciona: [`docs/architecture/arnes.md`](docs/architecture/arnes.md). Antes de armar utilidades locales de descarga, portapapeles, conflictos 409, plegado de texto o mapeo de errores en una feature o módulo, revisá `src/shared/` (`shared/lib/`, `shared/api/`, `shared/hooks/`, `shared/format/`, `shared/ui/`) para reutilizar o extender ahí la pieza común.
 
 | Si vas a… | Leé |
 |---|---|
