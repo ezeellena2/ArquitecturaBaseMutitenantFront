@@ -1,10 +1,9 @@
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState, type ReactNode } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router";
 import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage, isNotFoundError, toastActionError } from "@/shared/api/errorMessage";
-import { pageSizes, type PageSize } from "@/shared/api/pageSizes";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { useFormat } from "@/shared/format/useFormat";
@@ -24,15 +23,13 @@ import { toastError } from "@/shared/ui/sonner";
 import type { WhatsAppChatMessageResponse } from "../../api/types";
 import { conversationRefetchInterval, platformUntakenQueryKey, untakenQueryKey } from "../../api/untaken";
 import { addNote, chatsScopeQueryRoot, conversationQueryKey, fetchConversation, reviewMessage, sendMessage, takeConversation, transferConversation, type ChatsScope } from "../api/chats";
-import { chronological, composerState, isUntaken, lastInbound, phoneLabel, rowDescriptors } from "../lib/conversation";
+import { chronological, composerState, isUntaken, lastInbound, phoneLabel, pruneComposerFlags, rowDescriptors, type ComposerFlags } from "../lib/conversation";
+import { usePagedAccumulation } from "../lib/usePagedAccumulation";
 import { ChatAvatar } from "./ChatAvatar";
 import { ChatComposer, type ComposerNotice } from "./ChatComposer";
 import { MessageThread } from "./MessageThread";
 import { TemplateDialog } from "./TemplateDialog";
 import { TransferDropdown, TransferSheet, type TransferTarget } from "./TransferMenu";
-
-/** El hilo arranca con los 20 más recientes y «Ver mensajes anteriores» pide la página más grande que sigue. */
-const firstPageSize: PageSize = 20;
 
 /** Lo que puede abrir quien mira, además de atender: la ficha del contacto (CC02) o la cuenta de la persona (Plataforma). */
 export interface ConversationLinks {
@@ -61,17 +58,28 @@ export function ConversationView({ scope, id, links, back, phone }: {
   const client = useQueryClient();
   const navigate = useNavigate();
   const { hideBottomNav } = useAppChrome();
-  const [pageSize, setPageSize] = useState<PageSize>(firstPageSize);
-  // Lo que el back dijo al mandar y la fila todavía no refleja: hasta la relectura, el chat ya lo muestra.
-  const [flags, setFlags] = useState({ paymentRequired: false, windowClosed: false, readOnly: false });
+  const scopeId = `${scope.kind === "platform" ? "platform" : scope.inbox}:${id}`;
+  // Lo que el back dijo al mandar y la fila todavía no refleja: anclado a la conversación y al estado que rechazó, se
+  // despeja solo cuando el servidor trae la ventana abierta o el canal conectado de nuevo (KAN-93).
+  const [flagState, setFlagState] = useState<{ scopeId: string; flags: ComposerFlags }>({ scopeId, flags: {} });
+  const activeFlags = flagState.scopeId === scopeId ? flagState.flags : {};
   const [notice, setNotice] = useState<ComposerNotice | null>(null);
   const [templateOpen, setTemplateOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState<{ trigger: HTMLButtonElement | null } | null>(null);
-  const page = { page: 1, pageSize };
-  const query = useQuery({
-    queryKey: conversationQueryKey(scope, id, page), queryFn: ({ signal }) => fetchConversation(scope, id, page, signal),
-    refetchInterval: conversationRefetchInterval, placeholderData: keepPreviousData, meta: { silent: true },
+  const threadQuery = usePagedAccumulation({
+    resetKey: scopeId,
+    queryKey: (page, pageSize) => conversationQueryKey(scope, id, { page, pageSize }),
+    queryFn: (page, pageSize, signal) => fetchConversation(scope, id, { page, pageSize }, signal),
+    selectItems: (data) => data.messages.items,
+    hasNext: (data) => data.messages.hasNext === true,
+    refetchInterval: conversationRefetchInterval,
+    refetchIntervalInBackground: false,
+    meta: { silent: true },
   });
+
+  const currentRow = threadQuery.firstPage?.conversation;
+  const currentUpdateCount = threadQuery.firstPageUpdateCount;
+  const resolvedFlags = currentRow ? pruneComposerFlags(currentRow, activeFlags, currentUpdateCount) : activeFlags;
 
   // M-WA-Conversacion: en el teléfono el chat ocupa la pantalla, sin la barra de abajo.
   useEffect(() => {
@@ -79,6 +87,13 @@ export function ConversationView({ scope, id, links, back, phone }: {
     hideBottomNav(true);
     return () => hideBottomNav(false);
   }, [phone, hideBottomNav]);
+
+  const setFlags = (updater: (current: ComposerFlags) => ComposerFlags) =>
+    setFlagState((previous) => {
+      const base = previous.scopeId === scopeId ? previous.flags : {};
+      const pruned = currentRow ? pruneComposerFlags(currentRow, base, currentUpdateCount) : base;
+      return { scopeId, flags: updater(pruned) };
+    });
 
   const refresh = () => Promise.all([
     client.invalidateQueries({ queryKey: chatsScopeQueryRoot(scope) }),
@@ -94,12 +109,16 @@ export function ConversationView({ scope, id, links, back, phone }: {
         : apiErrorMessage(error, t));
       void refresh();
     } else if (error instanceof ApiError && error.code === "WhatsApp.Conversation.WindowClosed") {
-      setFlags((current) => ({ ...current, windowClosed: true }));
+      setFlags((current) => ({ ...current, windowClosed: { windowOpenUntilUtc: currentRow?.windowOpenUntilUtc ?? null } }));
       void refresh();
     } else if (error instanceof ApiError && error.code === "WhatsApp.Conversation.PaymentRequired") {
-      setFlags((current) => ({ ...current, paymentRequired: true }));
+      setFlags((current) => ({
+        ...current,
+        paymentRequired: { channelStatus: currentRow?.channel.status ?? "PaymentMissing", rejectedAt: currentUpdateCount },
+      }));
+      void refresh();
     } else if (error instanceof ApiError && error.code === "WhatsApp.Conversation.ReadOnly") {
-      setFlags((current) => ({ ...current, readOnly: true }));
+      setFlags((current) => ({ ...current, readOnly: { rejectedAt: currentUpdateCount } }));
       void refresh();
     } else toastActionError(error, t);
   }
@@ -126,13 +145,13 @@ export function ConversationView({ scope, id, links, back, phone }: {
     onError: (error) => { toastActionError(error, t); void refresh(); },
   });
 
-  const data = query.data;
+  const data = threadQuery.firstPage;
   if (!data) {
-    if (query.isError) {
-      const missing = isNotFoundError(query.error);
-      if (phone && !missing) return <LoadErrorPage back={back} screen={t(scope.kind === "platform" ? "chats.platform.title" : "chats.title")} onRetry={() => { void query.refetch(); }} />;
-      const empty = <EmptyState framed={false} title={apiErrorMessage(query.error, t)}
-        action={missing ? undefined : <Button type="button" variant="outline" onClick={() => { void query.refetch(); }}>{t("common:actions.retry")}</Button>} />;
+    if (threadQuery.isError) {
+      const missing = isNotFoundError(threadQuery.error);
+      if (phone && !missing) return <LoadErrorPage back={back} screen={t(scope.kind === "platform" ? "chats.platform.title" : "chats.title")} onRetry={() => { void threadQuery.refetchFirst(); }} />;
+      const empty = <EmptyState framed={false} title={apiErrorMessage(threadQuery.error, t)}
+        action={missing ? undefined : <Button type="button" variant="outline" onClick={() => { void threadQuery.refetchFirst(); }}>{t("common:actions.retry")}</Button>} />;
       return phone ? <Page title={t(scope.kind === "platform" ? "chats.platform.title" : "chats.title")} backTo={back}>{empty}</Page>
         : <section className="flex min-w-0 flex-1 items-center justify-center">{empty}</section>;
     }
@@ -142,16 +161,14 @@ export function ConversationView({ scope, id, links, back, phone }: {
   }
 
   const row = data.conversation;
-  const messages = chronological(data.messages.items);
+  const messages = chronological(threadQuery.items);
   const name = row.contactName ?? phoneLabel(format, row.displayNumber);
   const untaken = isUntaken(row);
-  const readOnly = row.readOnly || row.channel.status === "Disconnected" || flags.readOnly;
-  const state = composerState({ ...row, readOnly }, flags);
+  const state = composerState(row, resolvedFlags, currentUpdateCount);
+  const readOnly = state.kind === "readOnly";
   const descriptors = rowDescriptors(row, { untaken: t("chats.list.untaken"), linked: t("chats.header.linkedToAccount"), employee: t("chats.header.employee") });
   const contactPath = row.contactId && links.contact ? links.contact(row.contactId) : null;
   const accountPath = row.accountId && links.account ? links.account(row.accountId) : null;
-  const larger = pageSizes.find((size) => size > pageSize);
-  const earlier = data.messages.hasNext === true && larger !== undefined;
 
   const onSend = (text: string, done: () => void) => send.mutate({ text, done });
   const onNote = (text: string, done: () => void) => note.mutate({ text, done });
@@ -159,7 +176,7 @@ export function ConversationView({ scope, id, links, back, phone }: {
   const onTransfer = (target: TransferTarget, version: number) => transfer.mutate({ target, version });
 
   const thread = <MessageThread messages={messages} perspective={{ kind: "team" }} phone={phone} label={t("chats.thread.label", { name })}
-    hasEarlier={earlier} loadingEarlier={query.isFetching && query.isPlaceholderData} onLoadEarlier={() => { if (larger) setPageSize(larger); }}
+    hasEarlier={threadQuery.hasMore} loadingEarlier={threadQuery.isLoadingMore} onLoadEarlier={threadQuery.loadMore}
     review={{ onReview: (message) => review.mutate(message.id), pendingId: review.isPending ? review.variables : null }} />;
   const composer = <ChatComposer key={row.id} state={state} phone={phone} sendPending={send.isPending} notePending={note.isPending}
     onSend={onSend} onNote={onNote} onChooseTemplate={() => setTemplateOpen(true)} onExplain={setNotice} />;

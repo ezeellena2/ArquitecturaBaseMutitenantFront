@@ -1,7 +1,5 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Clock, Send, StickyNote } from "lucide-react";
-import { useState, type ReactNode } from "react";
-import { useForm } from "react-hook-form";
+import { useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { validationConstraints } from "@/shared/api/generated/validation";
@@ -14,7 +12,7 @@ import type { ComposerState } from "../lib/conversation";
 export type ComposerNotice = "window" | "readOnly" | "payment" | "paymentTemplate";
 
 const maxLength = validationConstraints.SendWhatsAppMessageHttpRequest.text.maxLength;
-const schema = z.object({ text: z.string().trim().min(1).max(maxLength) });
+const textSchema = z.string().trim().min(1).max(maxLength);
 
 /// La barra de abajo del chat (WA-Chats .w-escr y M-WA-Conversacion .ap-escr). Según el estado: el campo con «Enviar»;
 /// «Lo atiende …» si es de otra persona; «Pasaron 24 horas» con su ⓘ y «Elegir plantilla»; «Sin medio de pago» o
@@ -32,7 +30,12 @@ export function ChatComposer({ state, phone, sendPending, notePending, onSend, o
 }) {
   const { t } = useTranslation("whatsapp");
   const [noteMode, setNoteMode] = useState(false);
-  const form = useForm<{ text: string }>({ resolver: zodResolver(schema), defaultValues: { text: "" } });
+  // Borradores controlados y separados para mensaje y nota: si otra persona toma el chat o se cierra la ventana
+  // transitoriamente, desmontar el textarea (o escribir una nota interna) no borra ni mezcla el borrador del mensaje (KAN-93).
+  const [messageDraft, setMessageDraft] = useState("");
+  const [noteDraft, setNoteDraft] = useState("");
+  const noteDraftRef = useRef("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const bar = (children: ReactNode) => <div data-slot="chat-composer" className={cn("flex shrink-0 items-center gap-2 border-t border-[var(--borde)] bg-[var(--superficie)]",
     phone ? "sticky bottom-0 z-10 px-2.5 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))]" : "px-4 py-3")}>{children}</div>;
 
@@ -61,24 +64,48 @@ export function ChatComposer({ state, phone, sendPending, notePending, onSend, o
     <Button type="button" onClick={onChooseTemplate} className={phone ? "h-11 rounded-full px-4.5 text-[0.90625rem]" : undefined}>{t("chats.composer.chooseTemplate")}</Button></>);
   }
 
+  const draft = noteMode ? noteDraft : messageDraft;
+  const setDraft = (value: string) => {
+    if (noteMode) {
+      noteDraftRef.current = value;
+      setNoteDraft(value);
+    } else setMessageDraft(value);
+  };
   const pending = noteMode ? notePending : sendPending;
-  const submit = form.handleSubmit(({ text }) => {
+  function submit() {
+    const isNote = noteMode;
+    const sent = draft;
+    const parsed = textSchema.safeParse(sent);
+    if (!parsed.success) {
+      textareaRef.current?.focus();
+      return;
+    }
     // Se limpia solo si el campo sigue con lo que se mandó: lo que se escribió mientras salía no se pierde.
-    const draft = form.getValues("text");
-    const done = () => { if (form.getValues("text") === draft) { form.reset({ text: "" }); setNoteMode(false); } };
-    if (noteMode) onNote(text, done); else onSend(text, done);
-  }, () => form.setFocus("text"));
+    const done = () => {
+      if (isNote) {
+        if (noteDraftRef.current === sent) {
+          noteDraftRef.current = "";
+          setNoteDraft("");
+          setNoteMode(false);
+        }
+      } else {
+        setMessageDraft((current) => (current === sent ? "" : current));
+      }
+    };
+    if (isNote) onNote(parsed.data, done); else onSend(parsed.data, done);
+  }
   const label = noteMode ? t("chats.composer.saveNote") : t("chats.composer.send");
   const pendingLabel = noteMode ? t("chats.composer.savingNote") : t("chats.composer.sending");
   const placeholder = noteMode ? t(phone ? "chats.composer.notePlaceholderPhone" : "chats.composer.notePlaceholder")
     : t(phone ? "chats.composer.messagePlaceholderPhone" : "chats.composer.messagePlaceholder");
 
-  return <form onSubmit={(event) => { void submit(event); }} className="contents">{bar(<>
+  return <form onSubmit={(event) => { event.preventDefault(); submit(); }} className="contents">{bar(<>
     {noteButton}
-    <Textarea {...form.register("text")} rows={1} maxLength={maxLength} aria-label={noteMode ? t("chats.composer.note") : t("chats.composer.message")} placeholder={placeholder}
+    <Textarea ref={textareaRef} name={noteMode ? "note" : "message"} value={draft} onChange={(event) => setDraft(event.target.value)}
+      rows={1} maxLength={maxLength} aria-label={noteMode ? t("chats.composer.note") : t("chats.composer.message")} placeholder={placeholder}
       onKeyDown={(event) => {
         // Como en WhatsApp: Enter manda y Mayúsculas + Enter baja de renglón.
-        if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) { event.preventDefault(); void submit(); }
+        if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) { event.preventDefault(); submit(); }
       }}
       className={cn("max-h-32 min-h-10 flex-1 py-2.5 leading-[1.3]",
         phone ? "max-md:min-h-11 max-md:rounded-[1.375rem] max-md:px-4 max-md:py-2.75 max-md:text-[0.9375rem]" : "h-10",

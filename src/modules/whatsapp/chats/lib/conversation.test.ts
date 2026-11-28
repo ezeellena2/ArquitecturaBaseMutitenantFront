@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { WhatsAppChatMessageResponse, WhatsAppConversationRowResponse } from "../../api/types";
-import { chronological, composerState, initialsOf, lastInbound, rowAssignment, rowDescriptors, templatePreview, whatsappLink } from "./conversation";
+import { chronological, composerState, initialsOf, lastInbound, pruneComposerFlags, rowAssignment, rowDescriptors, templatePreview, whatsappLink } from "./conversation";
 
 const at = (id: string, createdAtUtc: string, direction: WhatsAppChatMessageResponse["direction"] = "Inbound"): WhatsAppChatMessageResponse =>
   ({ id, kind: "Text", direction, author: null, text: id, mediaKind: null, status: "Received", failureReason: null, createdAtUtc });
@@ -53,6 +53,38 @@ describe("estado del compositor", () => {
     expect(composerState(row(missing), none)).toEqual({ kind: "open" });
     expect(composerState(row({ ...missing, windowOpenUntilUtc: null }), none)).toEqual({ kind: "paymentRequired", reason: "template" });
     expect(composerState(row(), { paymentRequired: true, windowClosed: false })).toEqual({ kind: "paymentRequired", reason: "freeLimit" });
+  });
+
+  // KAN-93: las marcas locales de un 409 se despejan cuando el servidor trae la ventana nueva o el canal conectado.
+  it("windowClosed se limpia cuando llega una ventana futura nueva y sigue cerrado mientras siga la misma", () => {
+    const rejected = { windowClosed: { windowOpenUntilUtc: "2999-01-01T00:00:00Z" } };
+    expect(composerState(row({ windowOpenUntilUtc: "2999-01-01T00:00:00Z" }), rejected)).toEqual({ kind: "windowClosed" });
+    expect(composerState(row({ windowOpenUntilUtc: "2999-01-02T00:00:00Z" }), rejected)).toEqual({ kind: "open" });
+    expect(pruneComposerFlags(row({ windowOpenUntilUtc: "2999-01-02T00:00:00Z" }), rejected)).toEqual({});
+    expect(composerState(row({ windowOpenUntilUtc: "2999-01-01T00:00:00Z" }), { windowClosed: { windowOpenUntilUtc: null } })).toEqual({ kind: "open" });
+  });
+
+  it("paymentRequired se limpia cuando el canal sale de PaymentMissing y vuelve a Connected", () => {
+    const missing = row({ channel: { id: "n", displayNumber: "+5493515550200", status: "PaymentMissing" } });
+    const connected = row({ channel: { id: "n", displayNumber: "+5493515550200", status: "Connected" } });
+    const fromMissing = { paymentRequired: { channelStatus: "PaymentMissing" as const, rejectedAt: 1 } };
+    expect(composerState(missing, fromMissing, 1)).toEqual({ kind: "paymentRequired", reason: "freeLimit" });
+    expect(composerState(connected, fromMissing, 2)).toEqual({ kind: "open" });
+    expect(pruneComposerFlags(connected, fromMissing, 2)).toEqual({});
+
+    // Si el 409 ocurrió con caché vieja en Connected, bloquea hasta la siguiente lectura en Connected.
+    const fromStaleConnected = { paymentRequired: { channelStatus: "Connected" as const, rejectedAt: 1 } };
+    expect(composerState(connected, fromStaleConnected, 1)).toEqual({ kind: "paymentRequired", reason: "freeLimit" });
+    expect(composerState(missing, fromStaleConnected, 2)).toEqual({ kind: "paymentRequired", reason: "freeLimit" });
+    expect(composerState(connected, fromStaleConnected, 3)).toEqual({ kind: "open" });
+  });
+
+  it("readOnly local se limpia cuando una lectura posterior trae el chat editable y el canal conectado", () => {
+    const flag = { readOnly: { rejectedAt: 1 } };
+    expect(composerState(row(), flag, 1)).toEqual({ kind: "readOnly" });
+    expect(composerState(row({ readOnly: true }), flag, 2)).toEqual({ kind: "readOnly" });
+    expect(composerState(row(), flag, 2)).toEqual({ kind: "open" });
+    expect(pruneComposerFlags(row(), flag, 2)).toEqual({});
   });
 });
 

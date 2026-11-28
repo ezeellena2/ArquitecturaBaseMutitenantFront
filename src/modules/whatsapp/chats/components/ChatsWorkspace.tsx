@@ -1,4 +1,4 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useParams } from "react-router";
@@ -9,7 +9,6 @@ import { useFilters } from "@/shared/hooks/useFilters";
 import { usePagination } from "@/shared/hooks/usePagination";
 import { useQueryUpdate } from "@/shared/hooks/useQueryUpdate";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
-import { pageSizes } from "@/shared/api/pageSizes";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { EmptyState } from "@/shared/ui/EmptyState";
 import { FilterBar, type FilterBarFilter } from "@/shared/ui/FilterBar";
@@ -18,11 +17,12 @@ import { LoadMore } from "@/shared/ui/LoadMore";
 import { Page, SublineSeparator } from "@/shared/ui/Page";
 import { SegmentedControl } from "@/shared/ui/SegmentedControl";
 import { inboxPermission } from "../../access";
-import type { WhatsAppConversationFilter, WhatsAppConversationRowResponse } from "../../api/types";
-import { inboxRefetchInterval } from "../../api/untaken";
+import type { WhatsAppConversationFilter, WhatsAppConversationRowResponse, WhatsAppUntakenResponse } from "../../api/types";
+import { inboxRefetchInterval, platformUntakenQueryKey, untakenQueryKey } from "../../api/untaken";
 import { countOf } from "../../lib/values";
 import { conversationsQueryKey, fetchConversations, inboxTeamOptions, type ChatsScope, type ConversationsQuery, type InboxKey } from "../api/chats";
 import { chatTime, isUntaken, phoneLabel, rowAssignment } from "../lib/conversation";
+import { usePagedAccumulation } from "../lib/usePagedAccumulation";
 import { ChatAvatar } from "./ChatAvatar";
 import { ChatColumns, ConversationView, type ConversationLinks } from "./ConversationView";
 import { ConversationItem } from "./ConversationItem";
@@ -57,43 +57,62 @@ export function ChatsWorkspace({ me, variant }: { me: MeResponse; variant: Chats
   const pagination = usePagination();
   const inbox = inboxes.find((key) => key === filters.values.inbox) ?? inboxes[0] ?? "customers";
   const scope: ChatsScope = platform ? { kind: "platform" } : { kind: "organization", inbox };
+  const listScopeKey = scope.kind === "platform" ? "platform" : scope.inbox;
   const search = useDebouncedValue(pagination.search ?? "");
   const state = isState(filters.values.state) ? filters.values.state : undefined;
-  const request: ConversationsQuery = { page: pagination.page, pageSize: pagination.pageSize, search: search || undefined, teamId: filters.values.teamId, state };
+  const teamId = filters.values.teamId;
   // En el teléfono, con un chat abierto, la bandeja no se ve: no se lee ni se sondea hasta volver.
   const listVisible = !(phone && conversationId);
-  const list = useQuery({
-    queryKey: conversationsQueryKey(scope, request), queryFn: ({ signal }) => fetchConversations(scope, request, signal),
+  const listKey = JSON.stringify([listScopeKey, search, teamId ?? "", state ?? ""]);
+  const list = usePagedAccumulation({
+    resetKey: listKey,
+    queryKey: (page, pageSize) => {
+      const request: ConversationsQuery = { page, pageSize, search: search || undefined, teamId, state };
+      return conversationsQueryKey(scope, request);
+    },
+    queryFn: (page, pageSize, signal) => {
+      const request: ConversationsQuery = { page, pageSize, search: search || undefined, teamId, state };
+      return fetchConversations(scope, request, signal);
+    },
+    selectItems: (data) => data.conversations.items,
+    hasNext: (data) => data.conversations.hasNext === true,
+    enabled: listVisible,
+    refetchInterval: inboxRefetchInterval,
+    refetchIntervalInBackground: false,
     // Al cambiar de bandeja no se muestran las filas de la otra mientras llegan las nuevas.
-    placeholderData: (previous, previousQuery) => previousQuery?.queryKey[2] === conversationsQueryKey(scope, request)[2] ? keepPreviousData(previous) : undefined,
-    refetchInterval: inboxRefetchInterval, enabled: listVisible, meta: { silent: true, blocksView: true },
+    placeholderData: (previous, previousQuery) => previousQuery?.queryKey[2] === listScopeKey ? keepPreviousData(previous) : undefined,
+    meta: { silent: true, blocksView: true },
   });
-
-  // Como `usePagedQuery`: si la página quedó vacía con filas en otras, se va a la última que tiene.
-  const settled = list.isPlaceholderData ? undefined : list.data?.conversations;
-  const { page, pageSize, setPage, setPageSize } = pagination;
-  useEffect(() => {
-    if (!settled || settled.items.length !== 0 || settled.totalCount === 0) return;
-    const lastPage = Math.max(1, Math.ceil(settled.totalCount / pageSize));
-    if (lastPage !== page) setPage(lastPage);
-  }, [settled, page, pageSize, setPage]);
 
   // El filtro «Equipo» (CC14): los equipos de esta bandeja, para quien la atiende.
   const teams = useResourceOptions(inboxTeamOptions(scope), listVisible);
-  const teamId = filters.values.teamId;
   const links: ConversationLinks = platform
     ? me.effectivePermissions.platform.includes("platform.accounts.read") ? { account: (id) => `/plataforma/cuentas/${encodeURIComponent(id)}` } : {}
     : organization.includes(inboxPermission.customers) ? { contact: (id) => `/org/whatsapp/contactos/${encodeURIComponent(id)}` } : {};
+
+  const data = list.firstPage;
+  const counts = data?.counts;
+  const client = useQueryClient();
+  // Sincroniza el contador del menú con la bandeja ya cargada para evitar el sondeo duplicado (KAN-30).
+  useEffect(() => {
+    if (!counts || list.isPlaceholderData) return;
+    if (platform) {
+      client.setQueryData(platformUntakenQueryKey, counts.untaken);
+    } else {
+      client.setQueryData<WhatsAppUntakenResponse>(untakenQueryKey, (previous) => ({
+        customers: inbox === "customers" ? counts.untaken : (previous?.customers ?? null),
+        internal: inbox === "internal" ? counts.untaken : (previous?.internal ?? null),
+      }));
+    }
+  }, [client, counts, inbox, list.isPlaceholderData, platform]);
 
   const title = t(platform ? "chats.platform.title" : "chats.title");
   const back = { to: `${basePath}${location.search}`, label: t(platform ? "chats.platform.back" : "chats.back") };
   if (phone && conversationId) return <ConversationView key={conversationId} scope={scope} id={conversationId} links={links} back={back} phone />;
 
-  const data = list.data;
-  if (!data && list.isError) return <LoadErrorPage screen={title} onRetry={() => { void list.refetch(); }} />;
-  const rows = data?.conversations.items ?? [];
+  if (!data && list.isError) return <LoadErrorPage screen={title} onRetry={() => { void list.refetchFirst(); }} />;
+  const rows = list.items;
   const selectedId = conversationId ?? (phone ? undefined : rows[0]?.id);
-  const counts = data?.counts;
   // Los counts cuentan la bandeja entera, sin la búsqueda ni los filtros. Plataforma tiene una sola: todas las consultas
   // vienen en `customers` (`internal` llega en 0).
   const total = counts ? platform ? counts.customers : counts[inbox] : undefined;
@@ -114,11 +133,7 @@ export function ChatsWorkspace({ me, variant }: { me: MeResponse; variant: Chats
     },
   ];
   const conversationLink = (id: string) => `${conversationsPath}/${encodeURIComponent(id)}${location.search}`;
-  const loadMore = data?.conversations.hasNext ? <LoadMore hasMore isLoading={list.isFetching} onLoadMore={() => {
-    // Como «Cargar más» del teléfono: la página más grande que sigue; pasado el tamaño mayor, la página siguiente.
-    const larger = pageSizes.find((size) => size > pageSize);
-    if (larger) setPageSize(larger); else setPage(page + 1);
-  }} /> : null;
+  const loadMore = list.hasMore ? <LoadMore hasMore isLoading={list.isLoadingMore} onLoadMore={list.loadMore} /> : null;
 
   const inboxColumn = <>
     {inboxes.length > 1 ? <div className={phone ? "px-4 pt-1 pb-2" : "px-3 pt-3"}>

@@ -33,6 +33,15 @@ function message(overrides: Partial<WhatsAppChatMessageResponse> = {}): WhatsApp
     failureReason: null, createdAtUtc: "2026-10-12T13:39:00Z", ...overrides };
 }
 const paged = <T,>(items: T[]) => ({ items, page: 1, pageSize: 10, totalCount: items.length, totalPages: 1, hasPrevious: false, hasNext: false });
+function slicePage<T>(all: readonly T[], requestUrl: string) {
+  const params = new URL(requestUrl).searchParams;
+  const page = Number(params.get("page") ?? "1");
+  const pageSize = Number(params.get("pageSize") ?? "50");
+  const start = (page - 1) * pageSize;
+  const totalPages = Math.max(1, Math.ceil(all.length / pageSize));
+  return { items: all.slice(start, start + pageSize), page, pageSize, totalCount: all.length, totalPages, hasPrevious: page > 1, hasNext: page < totalPages };
+}
+const isoMinute = (n: number) => `2026-10-12T${String(10 + Math.floor(n / 60)).padStart(2, "0")}:${String(n % 60).padStart(2, "0")}:00Z`;
 function list(rows: WhatsAppConversationRowResponse[], counts = { customers: 5, internal: 2, untaken: 2 }): WhatsAppConversationListResponse {
   return { conversations: paged(rows), counts };
 }
@@ -505,6 +514,145 @@ describe("Chats de la organización", () => {
     expect(screen.getByRole("link", { name: "Volver a Chats" })).toBeVisible();
     expect(screen.getByRole("textbox", { name: "Mensaje" })).toBeVisible();
   });
+
+  // KAN-93: un 409 WindowClosed no deja la caja trabada si el contacto vuelve a escribir y abre una ventana futura nueva.
+  it("tras 409 WindowClosed, un refresco con una ventana futura nueva vuelve a habilitar la caja", async () => {
+    let current = row({ windowOpenUntilUtc: "2999-01-01T00:00:00Z" });
+    inbox(current);
+    server.use(
+      http.get(`${org}/:inbox/conversations`, () => HttpResponse.json(list([current]))),
+      http.get(`${org}/:inbox/conversations/:id`, () => HttpResponse.json(detail(current))),
+      http.post(`${org}/customers/conversations/c-martina/messages`, () => HttpResponse.json({ code: "WhatsApp.Conversation.WindowClosed" }, { status: 409 })),
+    );
+    const { user, client } = mountWhatsApp(whatsappOwner, "/org/whatsapp/chats");
+    await user.type(await screen.findByRole("textbox", { name: "Mensaje" }), "Hola{Enter}");
+    expect(await screen.findByText("Pasaron 24 horas")).toBeVisible();
+    expect(screen.queryByRole("textbox", { name: "Mensaje" })).not.toBeInTheDocument();
+
+    current = row({ windowOpenUntilUtc: "2999-01-02T00:00:00Z" });
+    await client.invalidateQueries();
+    const box = await screen.findByRole("textbox", { name: "Mensaje" });
+    expect(box).toBeVisible();
+    expect(box).toHaveValue("Hola");
+    expect(screen.queryByText("Pasaron 24 horas")).not.toBeInTheDocument();
+  });
+
+  // KAN-93: un 409 PaymentRequired deja de bloquear cuando el canal sale de PaymentMissing y vuelve a Connected.
+  it("tras 409 PaymentRequired, un refresco con el canal Connected vuelve a habilitar la caja", async () => {
+    let current = row({ channel: { id: "number-delta", displayNumber: "+5493515550200", status: "PaymentMissing" } });
+    inbox(current);
+    server.use(
+      http.get(`${org}/:inbox/conversations`, () => HttpResponse.json(list([current]))),
+      http.get(`${org}/:inbox/conversations/:id`, () => HttpResponse.json(detail(current))),
+      http.post(`${org}/customers/conversations/c-martina/messages`, () => HttpResponse.json({ code: "WhatsApp.Conversation.PaymentRequired" }, { status: 409 })),
+    );
+    const { user, client } = mountWhatsApp(whatsappOwner, "/org/whatsapp/chats");
+    await user.type(await screen.findByRole("textbox", { name: "Mensaje" }), "Hola{Enter}");
+    expect(await screen.findByText("Sin medio de pago")).toBeVisible();
+    expect(screen.queryByRole("textbox", { name: "Mensaje" })).not.toBeInTheDocument();
+
+    current = row({ channel: { id: "number-delta", displayNumber: "+5493515550200", status: "Connected" } });
+    await client.invalidateQueries();
+    expect(await screen.findByRole("textbox", { name: "Mensaje" })).toBeVisible();
+    expect(screen.queryByText("Sin medio de pago")).not.toBeInTheDocument();
+  });
+
+  // KAN-93: si otra persona toma el chat mientras se redacta, el borrador se conserva (incluso si se guarda una nota) y vuelve al recuperarlo.
+  it("conserva el borrador del mensaje si otra persona toma el chat y luego vuelve a estar disponible", async () => {
+    let current = row();
+    inbox(current);
+    server.use(
+      http.get(`${org}/:inbox/conversations`, () => HttpResponse.json(list([current]))),
+      http.get(`${org}/:inbox/conversations/:id`, () => HttpResponse.json(detail(current))),
+      http.post(`${org}/customers/conversations/c-martina/notes`, async ({ request }) => {
+        const body = await request.json() as { text: string };
+        return HttpResponse.json(message({ id: "m-note", kind: "Note", direction: "Outbound", author: "Lucía Fernández", text: body.text }), { status: 201 });
+      }),
+    );
+    const { user, client } = mountWhatsApp(whatsappOwner, "/org/whatsapp/chats");
+    const box = await screen.findByRole("textbox", { name: "Mensaje" });
+    await user.type(box, "Te confirmo el envío");
+
+    current = row({ assignee: { id: "tomas", name: "Tomás Acosta" }, assignedToMe: false });
+    await client.invalidateQueries();
+    expect(await screen.findByText("Lo atiende Tomás Acosta")).toBeVisible();
+    expect(screen.queryByRole("textbox", { name: "Mensaje" })).not.toBeInTheDocument();
+
+    // Escribir y guardar una nota interna mientras tanto no mezcla ni borra el borrador del mensaje.
+    await user.click(screen.getByRole("button", { name: "Nota interna" }));
+    const noteBox = screen.getByRole("textbox", { name: "Nota interna" });
+    expect(noteBox).toHaveValue("");
+    await user.type(noteBox, "Avisar a Tomás");
+    await user.click(screen.getByRole("button", { name: "Guardar nota" }));
+    await waitFor(() => expect(screen.queryByRole("textbox", { name: "Nota interna" })).not.toBeInTheDocument());
+
+    current = row({ assignee: { id: whatsappOwner.id, name: "Lucía Fernández" }, assignedToMe: true });
+    await client.invalidateQueries();
+    expect(await screen.findByRole("textbox", { name: "Mensaje" })).toHaveValue("Te confirmo el envío");
+  });
+
+  // KAN-28: el hilo acumula páginas sucesivas sin tope en 100 mensajes.
+  it("ver mensajes anteriores acumula páginas hasta mostrar los 150 mensajes del hilo", async () => {
+    const allMessages = Array.from({ length: 150 }, (_, index) => {
+      const number = 150 - index;
+      return message({ id: `m-${number}`, text: `Mensaje ${number}`, createdAtUtc: isoMinute(number - 1) });
+    });
+    const current = row();
+    inbox(current);
+    server.use(
+      http.get(`${org}/:inbox/conversations/:id`, ({ request }) =>
+        HttpResponse.json({ conversation: current, messages: slicePage(allMessages, request.url) })),
+    );
+    const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/chats");
+    const log = await screen.findByRole("log", { name: "Mensajes con Martina López" });
+    expect(await within(log).findByText("Mensaje 150")).toBeVisible();
+    expect(within(log).getByText("Mensaje 101")).toBeVisible();
+    expect(within(log).queryByText("Mensaje 1")).not.toBeInTheDocument();
+
+    await user.click(within(log).getByRole("button", { name: "Ver mensajes anteriores" }));
+    expect(await within(log).findByText("Mensaje 51")).toBeVisible();
+    expect(within(log).getByText("Mensaje 150")).toBeVisible();
+    expect(within(log).getByRole("button", { name: "Ver mensajes anteriores" })).toBeVisible();
+
+    await user.click(within(log).getByRole("button", { name: "Ver mensajes anteriores" }));
+    const oldest = await within(log).findByText("Mensaje 1");
+    const newest = within(log).getByText("Mensaje 150");
+    expect(oldest.compareDocumentPosition(newest) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(within(log).queryByRole("button", { name: "Ver mensajes anteriores" })).not.toBeInTheDocument();
+  });
+
+  // KAN-28: «Cargar más» en la bandeja acumula páginas sin reemplazar las primeras 100 conversaciones.
+  it("cargar más en la bandeja acumula las 150 conversaciones sin reemplazar las primeras", async () => {
+    const allRows = Array.from({ length: 150 }, (_, index) => {
+      const number = index + 1;
+      return row({ id: `c-${number}`, contactName: `Contacto ${number}`, lastMessageAtUtc: isoMinute(150 - number) });
+    });
+    inbox(allRows[0]);
+    server.use(
+      http.get(`${org}/:inbox/conversations`, ({ request }) =>
+        HttpResponse.json({ conversations: slicePage(allRows, request.url), counts: { customers: 150, internal: 0, untaken: 0 } })),
+      http.get(`${org}/:inbox/conversations/:id`, ({ params }) => {
+        const found = allRows.find((item) => item.id === params.id) ?? allRows[0];
+        return HttpResponse.json(detail(found));
+      }),
+    );
+    const { user } = mountWhatsApp(whatsappOwner, "/org/whatsapp/chats");
+    const ul = await screen.findByRole("list", { name: "Conversaciones" });
+    await waitFor(() => expect(within(ul).getAllByRole("listitem")).toHaveLength(50));
+    expect(within(ul).getByText("Contacto 1")).toBeVisible();
+
+    await user.click(screen.getByRole("button", { name: "Cargar más" }));
+    await waitFor(() => expect(within(ul).getAllByRole("listitem")).toHaveLength(100));
+    expect(within(ul).getByText("Contacto 1")).toBeVisible();
+    expect(within(ul).getByText("Contacto 100")).toBeVisible();
+
+    await user.click(screen.getByRole("button", { name: "Cargar más" }));
+    await waitFor(() => expect(within(ul).getAllByRole("listitem")).toHaveLength(150));
+    expect(within(ul).getByText("Contacto 1")).toBeVisible();
+    expect(within(ul).getByText("Contacto 100")).toBeVisible();
+    expect(within(ul).getByText("Contacto 150")).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Cargar más" })).not.toBeInTheDocument();
+  });
 });
 
 describe("Consultas de Plataforma", () => {
@@ -563,5 +711,32 @@ describe("Consultas de Plataforma", () => {
     mountWhatsApp({ ...operator, effectivePermissions: { ...operator.effectivePermissions, platform: ["platform.whatsapp.attend"] } }, "/plataforma/whatsapp");
     expect(await screen.findByRole("heading", { level: 2, name: "Lucía Fernández" })).toBeVisible();
     expect(screen.queryByRole("link", { name: "Ver la cuenta" })).not.toBeInTheDocument();
+  });
+
+  // KAN-28: «Cargar más» en Consultas de Plataforma también acumula más allá de 100 sin reemplazar las primeras.
+  it("cargar más acumula las 150 consultas de Plataforma sin reemplazar las primeras", async () => {
+    const allRows = Array.from({ length: 150 }, (_, index) => {
+      const number = index + 1;
+      return row({ id: `p-${number}`, inbox: null, accountId: `account-${number}`, contactName: `Consulta ${number}`, tags: [], contactId: null, lastMessageAtUtc: isoMinute(150 - number) });
+    });
+    server.use(
+      http.get(platform, ({ request }) => HttpResponse.json({ conversations: slicePage(allRows, request.url), counts: { customers: 150, internal: 0, untaken: 0 } })),
+      http.get(`${platform}/:id`, ({ params }) => {
+        const found = allRows.find((item) => item.id === params.id) ?? allRows[0];
+        return HttpResponse.json(detail(found));
+      }),
+      http.get("/api/platform/whatsapp/inbox-teams", () => HttpResponse.json(paged([]))),
+    );
+    const { user } = mountWhatsApp(whatsappOperator(), "/plataforma/whatsapp");
+    const ul = await screen.findByRole("list", { name: "Conversaciones" });
+    await waitFor(() => expect(within(ul).getAllByRole("listitem")).toHaveLength(50));
+
+    await user.click(screen.getByRole("button", { name: "Cargar más" }));
+    await waitFor(() => expect(within(ul).getAllByRole("listitem")).toHaveLength(100));
+    await user.click(screen.getByRole("button", { name: "Cargar más" }));
+    await waitFor(() => expect(within(ul).getAllByRole("listitem")).toHaveLength(150));
+    expect(within(ul).getByText("Consulta 1")).toBeVisible();
+    expect(within(ul).getByText("Consulta 150")).toBeVisible();
+    expect(screen.queryByRole("button", { name: "Cargar más" })).not.toBeInTheDocument();
   });
 });

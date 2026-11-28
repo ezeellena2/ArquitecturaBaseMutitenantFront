@@ -1,4 +1,5 @@
 import type { FormatState } from "@/shared/format/useFormat";
+import { parseUtcInstant } from "@/shared/time/parseUtcInstant";
 import { isPast } from "@/shared/time/serverClock";
 import type { WhatsAppChatMessageResponse, WhatsAppConversationRowResponse } from "../../api/types";
 
@@ -24,11 +25,95 @@ export type ComposerState =
   | { kind: "windowClosed" }
   | { kind: "open" };
 
-export function composerState(row: WhatsAppConversationRowResponse, flags: { paymentRequired: boolean; windowClosed: boolean }): ComposerState {
-  if (row.readOnly || row.channel.status === "Disconnected") return { kind: "readOnly" };
+/**
+ * Rechazos locales (409) del envío que todavía pueden no figurar en la fila cacheada, anclados al estado en que ocurrieron
+ * para que una relectura posterior del servidor que los resuelve los deje sin efecto automáticamente (KAN-93).
+ */
+export interface ComposerFlags {
+  /**
+   * `true` o el estado del canal + contador de lectura en que el back devolvió `PaymentRequired`.
+   * Se despeja cuando el canal pasa a `Connected` (saliendo de `PaymentMissing`, o en una lectura posterior al 409).
+   */
+  readonly paymentRequired?: boolean | {
+    readonly channelStatus: WhatsAppConversationRowResponse["channel"]["status"];
+    readonly rejectedAt?: number;
+  };
+  /**
+   * `true` o el `windowOpenUntilUtc` que tenía la fila cuando el back devolvió `WindowClosed` (`null` si no tenía).
+   * Se despeja automáticamente cuando llega una ventana futura posterior a la rechazada.
+   */
+  readonly windowClosed?: boolean | { readonly windowOpenUntilUtc: string | null };
+  /**
+   * `true` o el contador de lectura en que el back devolvió `ReadOnly`.
+   * Se despeja cuando una lectura posterior trae la conversación editable y el canal conectado.
+   */
+  readonly readOnly?: boolean | { readonly rejectedAt: number };
+}
+
+function isReadOnlyFlagActive(
+  row: WhatsAppConversationRowResponse,
+  flag: ComposerFlags["readOnly"],
+  updateCount?: number,
+): boolean {
+  if (!flag) return false;
+  if (flag === true) return true;
+  if (row.readOnly || row.channel.status === "Disconnected") return true;
+  return updateCount === undefined || updateCount <= flag.rejectedAt;
+}
+
+function isPaymentRequiredFlagActive(
+  row: WhatsAppConversationRowResponse,
+  flag: ComposerFlags["paymentRequired"],
+  updateCount?: number,
+): boolean {
+  if (!flag) return false;
+  if (flag === true) return true;
+  if (row.channel.status === "Connected") {
+    if (flag.channelStatus !== "Connected") return false;
+    return updateCount === undefined || flag.rejectedAt === undefined || updateCount <= flag.rejectedAt;
+  }
+  return true;
+}
+
+function isWindowClosedFlagActive(
+  row: WhatsAppConversationRowResponse,
+  flag: ComposerFlags["windowClosed"],
+): boolean {
+  if (!flag) return false;
+  if (flag === true) return true;
+  if (!row.windowOpenUntilUtc || isPast(row.windowOpenUntilUtc)) return true;
+  if (flag.windowOpenUntilUtc === null) return false;
+  return parseUtcInstant(row.windowOpenUntilUtc).getTime() <= parseUtcInstant(flag.windowOpenUntilUtc).getTime();
+}
+
+/** Retira las marcas locales ya resueltas por la fila del servidor para que no puedan reactivarse más adelante. */
+export function pruneComposerFlags(
+  row: WhatsAppConversationRowResponse,
+  flags: ComposerFlags,
+  updateCount?: number,
+): ComposerFlags {
+  const next: {
+    paymentRequired?: ComposerFlags["paymentRequired"];
+    windowClosed?: ComposerFlags["windowClosed"];
+    readOnly?: ComposerFlags["readOnly"];
+  } = {};
+  if (isPaymentRequiredFlagActive(row, flags.paymentRequired, updateCount)) next.paymentRequired = flags.paymentRequired;
+  if (isWindowClosedFlagActive(row, flags.windowClosed)) next.windowClosed = flags.windowClosed;
+  if (isReadOnlyFlagActive(row, flags.readOnly, updateCount)) next.readOnly = flags.readOnly;
+  return next;
+}
+
+export function composerState(
+  row: WhatsAppConversationRowResponse,
+  flags: ComposerFlags,
+  updateCount?: number,
+): ComposerState {
+  if (row.readOnly || row.channel.status === "Disconnected" || isReadOnlyFlagActive(row, flags.readOnly, updateCount))
+    return { kind: "readOnly" };
   if (row.assignee && !row.assignedToMe) return { kind: "takenByOther", name: row.assignee.name };
-  if (flags.paymentRequired) return { kind: "paymentRequired", reason: "freeLimit" };
-  if (flags.windowClosed || !row.windowOpenUntilUtc || isPast(row.windowOpenUntilUtc))
+  if (isPaymentRequiredFlagActive(row, flags.paymentRequired, updateCount))
+    return { kind: "paymentRequired", reason: "freeLimit" };
+  if (isWindowClosedFlagActive(row, flags.windowClosed) || !row.windowOpenUntilUtc || isPast(row.windowOpenUntilUtc))
     return row.channel.status === "PaymentMissing" ? { kind: "paymentRequired", reason: "template" } : { kind: "windowClosed" };
   return { kind: "open" };
 }

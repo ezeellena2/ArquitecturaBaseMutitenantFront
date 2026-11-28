@@ -1,9 +1,8 @@
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { keepPreviousData, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { apiErrorMessage, isNotFoundError, toastActionError } from "@/shared/api/errorMessage";
-import { pageSizes, type PageSize } from "@/shared/api/pageSizes";
 import { useFormat } from "@/shared/format/useFormat";
 import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 import { usePagination } from "@/shared/hooks/usePagination";
@@ -28,11 +27,11 @@ import { ChatColumns } from "../../chats/components/ConversationView";
 import { ConversationItem } from "../../chats/components/ConversationItem";
 import { MessageThread } from "../../chats/components/MessageThread";
 import { chatTime, chronological, phoneLabel, whatsappLink } from "../../chats/lib/conversation";
+import { usePagedAccumulation } from "../../chats/lib/usePagedAccumulation";
 import { countOf } from "../../lib/values";
 import { fetchPersonalConversation, fetchPersonalConversations, personalConversationQueryKey, personalConversationsQueryKey, personalMessagesQueryRoot, unlinkConversation } from "../api/messages";
 
 const basePath = "/mensajes";
-const firstPageSize: PageSize = 20;
 
 /// «Mensajes» del perfil personal (WA-Mensajes, M-WA-Mensajes y M-WA-Mensaje): las conversaciones de la persona con las
 /// organizaciones, vinculadas a su cuenta y de solo lectura. En la compu, la lista y la conversación lado a lado; en el
@@ -45,32 +44,27 @@ export function MessagesPage() {
   const location = useLocation();
   const pagination = usePagination();
   const search = useDebouncedValue(pagination.search ?? "");
-  const request = { page: pagination.page, pageSize: pagination.pageSize, search: search || undefined };
-  const list = useQuery({
-    queryKey: personalConversationsQueryKey(request), queryFn: ({ signal }) => fetchPersonalConversations(request, signal),
-    placeholderData: keepPreviousData, enabled: !(phone && conversationId), meta: { silent: true, blocksView: true },
+  const list = usePagedAccumulation({
+    resetKey: search,
+    queryKey: (page, pageSize) => personalConversationsQueryKey({ page, pageSize, search: search || undefined }),
+    queryFn: (page, pageSize, signal) => fetchPersonalConversations({ page, pageSize, search: search || undefined }, signal),
+    selectItems: (data) => data.items,
+    hasNext: (data) => data.hasNext === true,
+    enabled: !(phone && conversationId),
+    placeholderData: keepPreviousData,
+    meta: { silent: true, blocksView: true },
   });
-  const settled = list.isPlaceholderData ? undefined : list.data;
-  const { page, pageSize, setPage, setPageSize } = pagination;
-  useEffect(() => {
-    if (!settled || settled.items.length !== 0 || settled.totalCount === 0) return;
-    const lastPage = Math.max(1, Math.ceil(settled.totalCount / pageSize));
-    if (lastPage !== page) setPage(lastPage);
-  }, [settled, page, pageSize, setPage]);
 
   const title = t("personal.title");
   const back = { to: `${basePath}${location.search}`, label: t("personal.back") };
   if (phone && conversationId) return <PersonalConversation key={conversationId} id={conversationId} back={back} phone />;
-  const data = list.data;
-  if (!data && list.isError) return <LoadErrorPage screen={title} onRetry={() => { void list.refetch(); }} />;
+  const data = list.firstPage;
+  if (!data && list.isError) return <LoadErrorPage screen={title} onRetry={() => { void list.refetchFirst(); }} />;
 
-  const rows = data?.items ?? [];
+  const rows = list.items;
   const selectedId = conversationId ?? (phone ? undefined : rows[0]?.id);
   const none = data !== undefined && data.totalCount === 0 && !search;
-  const loadMore = data?.hasNext ? <LoadMore hasMore isLoading={list.isFetching} onLoadMore={() => {
-    const larger = pageSizes.find((size) => size > pageSize);
-    if (larger) setPageSize(larger); else setPage(page + 1);
-  }} /> : null;
+  const loadMore = list.hasMore ? <LoadMore hasMore isLoading={list.isLoadingMore} onLoadMore={list.loadMore} /> : null;
   const listColumn = <>
     <FilterBar label={t("personal.filters")} searchLabel={t("personal.search")} searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch}
       filters={[]} clearLabel={t("common:actions.clear")} onClear={() => pagination.setSearch("")}
@@ -105,13 +99,17 @@ function PersonalConversation({ id, back, phone }: { id: string; back: { to: str
   const format = useFormat();
   const navigate = useNavigate();
   const client = useQueryClient();
-  const [pageSize, setPageSize] = useState<PageSize>(firstPageSize);
   const [confirming, setConfirming] = useState<{ trigger: HTMLButtonElement | null } | null>(null);
   const menuTrigger = useRef<HTMLButtonElement>(null);
-  const pageRequest = { page: 1, pageSize };
-  const query = useQuery({
-    queryKey: personalConversationQueryKey(id, pageRequest), queryFn: ({ signal }) => fetchPersonalConversation(id, pageRequest, signal),
-    refetchInterval: conversationRefetchInterval, placeholderData: keepPreviousData, meta: { silent: true },
+  const threadQuery = usePagedAccumulation({
+    resetKey: id,
+    queryKey: (page, pageSize) => personalConversationQueryKey(id, { page, pageSize }),
+    queryFn: (page, pageSize, signal) => fetchPersonalConversation(id, { page, pageSize }, signal),
+    selectItems: (data) => data.messages.items,
+    hasNext: (data) => data.messages.hasNext === true,
+    refetchInterval: conversationRefetchInterval,
+    refetchIntervalInBackground: false,
+    meta: { silent: true },
   });
   const unlink = useMutation({
     mutationFn: () => unlinkConversation(id),
@@ -119,10 +117,10 @@ function PersonalConversation({ id, back, phone }: { id: string; back: { to: str
     onError: (error) => toastActionError(error, t),
   });
 
-  const data = query.data;
+  const data = threadQuery.firstPage;
   if (!data) {
-    if (query.isError && phone && !isNotFoundError(query.error)) return <LoadErrorPage back={back} screen={t("personal.title")} onRetry={() => { void query.refetch(); }} />;
-    const body = query.isError ? <EmptyState framed={false} title={apiErrorMessage(query.error, t)} />
+    if (threadQuery.isError && phone && !isNotFoundError(threadQuery.error)) return <LoadErrorPage back={back} screen={t("personal.title")} onRetry={() => { void threadQuery.refetchFirst(); }} />;
+    const body = threadQuery.isError ? <EmptyState framed={false} title={apiErrorMessage(threadQuery.error, t)} />
       : <p role="status" className="p-6 text-[var(--t2)]">{t("common:states.loading")}</p>;
     return phone ? <Page title={t("personal.title")} backTo={back} phoneBody="flush">{body}</Page> : <section className="flex min-w-0 flex-1 flex-col">{body}</section>;
   }
@@ -130,10 +128,9 @@ function PersonalConversation({ id, back, phone }: { id: string; back: { to: str
   const conversation: PersonalWhatsAppConversationResponse = data.conversation;
   const name = conversation.organizationName;
   const since = format.isLoading ? "" : t("personal.linkedSince", { date: format.formatDate(conversation.linkedAtUtc) });
-  const larger = pageSizes.find((size) => size > pageSize);
-  const thread = <MessageThread messages={chronological(data.messages.items)} perspective={{ kind: "person", organizationName: name }} phone={phone}
-    label={t("chats.thread.label", { name })} hasEarlier={data.messages.hasNext === true && larger !== undefined}
-    loadingEarlier={query.isFetching && query.isPlaceholderData} onLoadEarlier={() => { if (larger) setPageSize(larger); }} />;
+  const thread = <MessageThread messages={chronological(threadQuery.items)} perspective={{ kind: "person", organizationName: name }} phone={phone}
+    label={t("chats.thread.label", { name })} hasEarlier={threadQuery.hasMore}
+    loadingEarlier={threadQuery.isLoadingMore} onLoadEarlier={threadQuery.loadMore} />;
   const follow = <Button asChild><a href={whatsappLink(conversation.displayNumber)} target="_blank" rel="noreferrer">
     <WhatsAppIcon aria-hidden="true" className="size-4" />{t("personal.continueOnWhatsApp")}
   </a></Button>;
