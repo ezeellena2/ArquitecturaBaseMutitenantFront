@@ -16,12 +16,13 @@ export const isFieldColumn = (column: ImportGridColumn | null): column is Catalo
 export const gridColumnKey = (column: ImportGridColumn) => isFieldColumn(column) ? `field-${column.id}` : column;
 
 /**
- * Las columnas que se pegan o se importan, en el orden de la plantilla: el código y el texto, una por cada campo activo en el
- * orden del catálogo (antes del detalle, como en la tabla de opciones), el detalle y, en un catálogo tipado, el valor.
+ * Las columnas que se pegan o se importan, en el orden de la plantilla y de la exportación del servidor: el código, el texto, en
+ * un catálogo tipado el valor, una por cada campo activo en el orden del catálogo (antes del detalle, como en la tabla de
+ * opciones) y el detalle.
  */
 export function catalogImportColumns(valueType: FormCatalogValueType, fields: readonly FormCatalogFieldDetail[] = []): ImportGridColumn[] {
   const active = fields.filter((field) => field.isActive).map(({ id, key, name, type }): CatalogImportField => ({ id, key, name, type }));
-  return valueType === "Text" ? ["code", "text", ...active, "detail"] : ["code", "text", ...active, "detail", "value"];
+  return valueType === "Text" ? ["code", "text", ...active, "detail"] : ["code", "text", "value", ...active, "detail"];
 }
 
 // Lo que el back lee como encabezado del CSV de lo pegado, sea cual sea el idioma de la pantalla.
@@ -40,10 +41,8 @@ export const normalizeHeader = (text: string) =>
 const namesFixed = (normalized: string, column: CatalogImportColumn) =>
   headerNames[column].includes(normalized) || (column === "value" && typedValue.test(normalized));
 
-/**
- * Las columnas que puede nombrar un encabezado, de la más a la menos probable: una fija, un campo por su nombre y un campo por
- * su clave. Si una columna fija y un campo se llaman igual, el primer encabezado es la fija y el segundo, el campo.
- */
+/** Las columnas que puede nombrar un encabezado, de la más a la menos probable: una fija, un campo por su nombre y un campo por
+ *  su clave. */
 function columnsNamedBy(header: string, columns: readonly ImportGridColumn[]): ImportGridColumn[] {
   const normalized = normalizeHeader(header);
   if (!normalized) return [];
@@ -101,11 +100,26 @@ export interface PastedSheet {
   readonly rows: readonly (readonly string[])[];
 }
 
-// Con encabezados, cada columna pegada toma la primera que nombra y que ninguna anterior tomó; si no queda ninguna, es ajena.
+/**
+ * Con encabezados, como los lee el servidor: uno que es exactamente la clave de un campo es ese campo (así lo manda lo pegado);
+ * los demás toman la primera columna que nombran y que ninguno anterior tomó, y si no queda ninguna, son ajenos. Un encabezado
+ * que dice las dos cosas sigue el orden de la plantilla: el código, el texto y el valor van antes de los campos, y el detalle,
+ * después; por eso un campo «Detalle» toma el primero de dos encabezados «Detalle», y la columna del detalle, el segundo.
+ */
 function headedColumns(headers: readonly string[], columns: readonly ImportGridColumn[]): (ImportGridColumn | null)[] {
   const taken = new Set<ImportGridColumn>();
-  return headers.map((header) => {
-    const column = columnsNamedBy(header, columns).find((candidate) => !taken.has(candidate)) ?? null;
+  const named = headers.map((header): ImportGridColumn | null => {
+    const field = columns.filter(isFieldColumn).find((item) => item.key === header.trim() && !taken.has(item));
+    if (field) taken.add(field);
+    return field ?? null;
+  });
+  const namesDetail = headers.map((header) => namesFixed(normalizeHeader(header), "detail"));
+  return named.map((keyed, index) => {
+    if (keyed) return keyed;
+    const candidates = columnsNamedBy(headers[index], columns);
+    const fieldFirst = namesDetail[index] && namesDetail.slice(index + 1).some(Boolean);
+    const ordered = fieldFirst ? [...candidates.filter(isFieldColumn), ...candidates.filter((candidate) => !isFieldColumn(candidate))] : candidates;
+    const column = ordered.find((candidate) => !taken.has(candidate)) ?? null;
     if (column) taken.add(column);
     return column;
   });

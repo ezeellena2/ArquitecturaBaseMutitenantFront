@@ -21,7 +21,7 @@ describe("lo pegado en la grilla de importar (FRM-Catalogo-Importar)", () => {
   it("con encabezados, cada columna va a su lugar por su nombre, sin tildes ni mayúsculas, y esa fila no se importa", () => {
     const sheet = readPaste("Valor (decimal)\tTEXTO\tcódigo\nzona 1\t\n1,5\tNorte\tN1", decimal)!;
     expect(sheet.rows).toEqual([["zona 1", ""], ["1,5", "Norte", "N1"]]);
-    expect(sheet.columns.map((column) => [column.column, column.source])).toEqual([["code", 2], ["text", 1], ["detail", -1], ["value", 0]]);
+    expect(sheet.columns.map((column) => [column.column, column.source])).toEqual([["code", 2], ["text", 1], ["value", 0], ["detail", -1]]);
     expect(pastedCsv(sheet)).toBe('"Code","Text","Value"\r\n"","","zona 1"\r\n"N1","Norte","1,5"');
     expect(readPaste(" \n\t\n", text)).toBeNull();
   });
@@ -34,9 +34,15 @@ describe("lo pegado en la grilla de importar (FRM-Catalogo-Importar)", () => {
     const withFields = catalogImportColumns("Text", fields);
     const keys = (sheet: PastedSheet) => sheet.columns.map((column) => [column.column === null ? null : gridColumnKey(column.column), column.source]);
 
-    it("la grilla trae una columna por campo activo, en el orden del catálogo, antes del detalle (y del valor)", () => {
+    it("la grilla trae una columna por campo activo, en el orden del catálogo, después del valor y antes del detalle, como la plantilla", () => {
       expect(withFields.map(gridColumnKey)).toEqual(["code", "text", "field-f-cuit", "field-f-zona", "field-f-plazo", "detail"]);
-      expect(catalogImportColumns("DecimalNumber", fields).map(gridColumnKey)).toEqual(["code", "text", "field-f-cuit", "field-f-zona", "field-f-plazo", "detail", "value"]);
+      expect(catalogImportColumns("DecimalNumber", fields).map(gridColumnKey)).toEqual(["code", "text", "value", "field-f-cuit", "field-f-zona", "field-f-plazo", "detail"]);
+    });
+
+    it("sin encabezados, lo copiado de la plantilla de un catálogo tipado (Código, Texto, Valor, los campos y Detalle) cae en su columna", () => {
+      const sheet = readPaste("PRV-1\tBulones\t1,5\t30-71567890-2\tNorte\t30\tFerretería", catalogImportColumns("DecimalNumber", fields))!;
+      expect(keys(sheet)).toEqual([["code", 0], ["text", 1], ["value", 2], ["field-f-cuit", 3], ["field-f-zona", 4], ["field-f-plazo", 5], ["detail", 6]]);
+      expect(pastedCsv(sheet)).toBe('"Code","Text","Value","cuit","zona","plazo_de_pago","Detail"\r\n"PRV-1","Bulones","1,5","30-71567890-2","Norte","30","Ferretería"');
     });
 
     it("sin encabezados, los campos se llenan en el orden de la plantilla y viajan con su clave", () => {
@@ -59,6 +65,16 @@ describe("lo pegado en la grilla de importar (FRM-Catalogo-Importar)", () => {
       const sheet = readPaste("Código\tTexto\tCódigo\nPRV-1\tBulones\tA-1", columns)!;
       expect(keys(sheet)).toEqual([["code", 0], ["text", 1], ["field-f-cod", 2], ["detail", -1]]);
       expect(pastedCsv(sheet)).toBe('"Code","Text","codigo"\r\n"PRV-1","Bulones","A-1"');
+    });
+
+    it("un campo «Detalle» toma el primero de dos encabezados «Detalle», como en la plantilla, y solo, el encabezado es el detalle", () => {
+      const columns = catalogImportColumns("Text", [field("f-det", "detalle", "Detalle", "Text")]);
+      const sheet = readPaste("Código\tTexto\tDetalle\tDetail\nPRV-1\tBulones\tdel campo\tdel detalle", columns)!;
+      expect(keys(sheet)).toEqual([["code", 0], ["text", 1], ["field-f-det", 2], ["detail", 3]]);
+      expect(pastedCsv(sheet)).toBe('"Code","Text","detalle","Detail"\r\n"PRV-1","Bulones","del campo","del detalle"');
+      expect(keys(readPaste("Código\tTexto\tDetalle\nPRV-1\tBulones\tdel detalle", columns)!)).toEqual([["code", 0], ["text", 1], ["field-f-det", -1], ["detail", 2]]);
+      // Exactamente su clave es el campo, como lo lee el servidor.
+      expect(keys(readPaste("detalle\tDetalle\ndel campo\tdel detalle", columns)!)).toEqual([["code", -1], ["text", -1], ["field-f-det", 0], ["detail", 1]]);
     });
   });
 
