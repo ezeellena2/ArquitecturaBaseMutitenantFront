@@ -29,6 +29,8 @@ describe("las filas del borrador de un catálogo", () => {
     const state = { ...empty, edits: { "i-2": { code: "UNO" } }, serverErrors: { "i-1": { text: "Ya existe." } } };
     expect(rows(state, false)[0].errors).toEqual({ text: "Ya existe." });
     expect(rows(state, true)[1].errors.code).toBe("forms:catalog.errors.duplicateCode:1");
+    // La guardada que ya tenía el código no se marca: el repetido es de la que lo escribió.
+    expect(rows(state, true)[0].problems.code).toBeUndefined();
     const long = { ...empty, edits: { "i-1": { code: "X".repeat(41) } } };
     expect(rows(long, true)[0].errors.code).toBe("forms:catalog.errors.codeTooLong:40");
   });

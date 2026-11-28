@@ -14,7 +14,7 @@ import type {
 import { catalogFieldErrors } from "../errors";
 import {
   catalogRows, changedFieldsOf, cleanEdits, itemInputOf, positionOf, savedDraft, savedRowOf,
-  type CatalogDraftState, type CatalogMove, type CatalogRowView, type ItemDraft, type ItemEdits, type NewItem, type RowError,
+  type CatalogDraftState, type CatalogMove, type CatalogRowView, type ItemDraft, type ItemEdits, type ItemField, type NewItem, type RowError,
 } from "../lib/catalogDraft";
 import { catalogLimits } from "../lib/catalogLimits";
 import { codeFromText, editableValue, uniqueCode } from "../lib/catalogValues";
@@ -242,17 +242,22 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
     return false;
   }
 
-  /** Un valor que no se puede leer frena el guardado: queda marcado en su campo y el modal se abre en él (117). */
-  const unreadable = (list: readonly (typeof rows)[number][]) => list.some((row) => row.problems.value && !serverErrors[row.key]?.value);
+  /**
+   * Lo que frena el guardado sin preguntarle al servidor (117): un código repetido, un texto, un código o un detalle más largo
+   * que su tope, o un valor que no se puede leer. Queda marcado en su campo y el modal se abre en la primera con problemas. El
+   * texto repetido avisa sin frenar, y lo que rechazó el servidor no frena: se vuelve a mandar y él decide.
+   */
+  const blocked = (list: readonly (typeof rows)[number][]) =>
+    list.some((row) => (Object.keys(itemFields) as ItemField[]).some((field) => row.problems[field] && !serverErrors[row.key]?.[field]));
 
   /**
    * El `PUT` con solo lo que cambió (C3), siempre con el nombre, la versión e `isActive`, que el contrato exige: «Guardar
-   * cambios» manda el estado de ahora; «Dar de baja» y «Reactivar», el nuevo, con lo pendiente. `null` si un valor no se puede
-   * leer y queda marcado en su campo.
+   * cambios» manda el estado de ahora; «Dar de baja» y «Reactivar», el nuevo, con lo pendiente. `null` si algo lo frena y queda
+   * marcado en su campo.
    */
   function buildRequest(version: number | undefined, isActive: boolean, extra: Partial<UpdateFormCatalogRequest> = {}): UpdateFormCatalogRequest | null {
     const changed = rows.filter((row) => !row.pendingDelete && (row.isNew || edits[row.key]));
-    if (unreadable(changed)) {
+    if (blocked(changed)) {
       setErrorRound((round) => round + 1);
       return null;
     }
@@ -270,10 +275,10 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
     };
   }
 
-  /** Las opciones de un catálogo nuevo, para el `POST` de «Crear catálogo»; `null` si un valor no se puede leer. */
+  /** Las opciones de un catálogo nuevo, para el `POST` de «Crear catálogo»; `null` si algo las frena y queda marcado en su campo. */
   function createItems(): FormCatalogItemInput[] | null {
     setAttempted(true);
-    if (unreadable(rows)) {
+    if (blocked(rows)) {
       setErrorRound((round) => round + 1);
       return null;
     }

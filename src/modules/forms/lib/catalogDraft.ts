@@ -117,7 +117,9 @@ export function catalogRows(input: RowsInput): (CatalogRowView & { readonly prob
     if (draft.text.length > catalogLimits.itemText) errors.text = t("forms:catalog.errors.textTooLong", { n: catalogLimits.itemText });
     if (draft.code.length > catalogLimits.itemCode) errors.code = t("forms:catalog.errors.codeTooLong", { n: catalogLimits.itemCode });
     if (draft.detail.length > catalogLimits.itemDetail) errors.detail = t("forms:catalog.errors.detailTooLong", { n: catalogLimits.itemDetail });
-    if (draft.code.trim()) {
+    // El código repetido se marca en la opción que lo escribió (una nueva o con el código cambiado), no en la guardada que ya
+    // lo tenía, como lo marca el servidor: el modal se abre en ella (117).
+    if (draft.code.trim() && (!row || state.edits[key]?.code !== undefined)) {
       const other = others(key).find((item) => sameText(item.draft.code, draft.code));
       if (other?.row) errors.code ??= t("forms:catalog.errors.duplicateCode", { n: positionOf(state, other.row) });
     }

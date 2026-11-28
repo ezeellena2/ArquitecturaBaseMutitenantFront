@@ -165,6 +165,49 @@ describe("OptionsDialog (FRM-Catalogo-Opciones)", () => {
     expect(within(seguimiento).queryByTitle("Tiene un error")).not.toBeInTheDocument();
   });
 
+  it("un código repetido a la vista frena «Guardar cambios» sin mandar nada: el modal se abre en la opción que lo escribió, y la guardada que ya lo tenía no se marca", async () => {
+    const { user } = await openEditor();
+    await user.clear(textbox("Código de Venta nueva"));
+    await user.paste("SEG");
+    await user.click(saveButton());
+    const dialog = await screen.findByRole("dialog", { name: "Opciones de «Motivos de visita»" });
+    expect(within(within(dialog).getByRole("region", { name: "Opción 2 de 4" })).getByText("Ya está en la opción 1.")).toBeInTheDocument();
+    const [seguimiento, venta] = optionsOf(dialog);
+    expect(within(venta).getByTitle("Tiene un error")).toBeInTheDocument();
+    expect(within(seguimiento).queryByTitle("Tiene un error")).not.toBeInTheDocument();
+    expect(puts).toHaveLength(0);
+  });
+
+  it("un texto de más de 30 frena «Guardar cambios» sin mandar nada: el modal se abre en esa opción con su tope", async () => {
+    const { user } = await openEditor();
+    await user.clear(textbox("Texto de Reclamo"));
+    await user.paste("Reclamo por un equipo que no enciende");
+    await user.click(saveButton());
+    const dialog = await screen.findByRole("dialog", { name: "Opciones de «Motivos de visita»" });
+    expect(within(within(dialog).getByRole("region", { name: "Opción 3 de 4" })).getByText("Puede tener hasta 30 caracteres.")).toBeInTheDocument();
+    expect(puts).toHaveLength(0);
+  });
+
+  it("en el teléfono, un código repetido frena «Guardar cambios» y abre la lista con la opción marcada", async () => {
+    const restore = asPhone();
+    try {
+      const { user } = mountForms(formsOwner, path);
+      await user.click(await screen.findByRole("button", { name: "Editar Venta nueva" }));
+      const option = await screen.findByRole("dialog", { name: "Opción 2 de 4" });
+      await user.clear(within(option).getByRole("textbox", { name: "Código" }));
+      await user.paste("SEG");
+      await user.click(within(option).getByRole("button", { name: "Volver a la lista" }));
+      await user.click(within(await screen.findByRole("dialog", { name: "Opciones" })).getByRole("button", { name: "Listo" }));
+      await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+      await user.click(saveButton());
+      const list = await screen.findByRole("dialog", { name: "Opciones" });
+      const [seguimiento, venta] = optionsOf(list);
+      expect(within(venta).getByTitle("Tiene un error")).toBeInTheDocument();
+      expect(within(seguimiento).queryByTitle("Tiene un error")).not.toBeInTheDocument();
+      expect(puts).toHaveLength(0);
+    } finally { restore(); }
+  });
+
   it("el error de una celda describe su campo, y una nueva va con «—» sin número, tenue y «Sin dato» para el lector", async () => {
     serve(() => HttpResponse.json({
       code: "Forms.Catalog.DuplicateCode", status: 400, title: "Bad Request", errors: { "items.0.code": ["Ya está en la opción 1."] }, n: 1,
