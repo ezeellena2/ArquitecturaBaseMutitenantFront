@@ -139,6 +139,14 @@ describe("Catálogos", () => {
     expect(screen.getByRole("navigation", { name: "Paginado" })).toBeVisible();
     filtered.unmount();
 
+    // Si el resumen quedó en 0 (una relectura que falló) pero la lista trae catálogos, la barra sigue: manda la lista.
+    counts.mockImplementationOnce(() => HttpResponse.json({ all: 0, active: 0 }));
+    serve();
+    const stale = mountForms(formsOwner, listPath);
+    expect(await screen.findByRole("link", { name: "Proveedores" })).toBeVisible();
+    expect(screen.getByRole("searchbox", { name: "Buscar por nombre" })).toBeVisible();
+    stale.unmount();
+
     serve(() => HttpResponse.json({ status: 500, title: "Error" }, { status: 500 }));
     const failed = mountForms(formsOwner, listPath);
     expect(await screen.findByText("No pudimos cargar los catálogos.")).toBeVisible();
