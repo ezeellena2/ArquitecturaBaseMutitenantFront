@@ -7,16 +7,16 @@ import { choose } from "@/test/picker";
 import { asPhone } from "@/test/utils/phone";
 import type { FormCatalogItemRow, FormCatalogResponse, UpdateFormCatalogRequest } from "../../api/types";
 import { catalogLimits } from "../../lib/catalogLimits";
-import { formsOwner, mountForms } from "../../test/support";
+import { formsOwner, mountForms, withoutFields } from "../../test/support";
 
 const base = "/api/organization/forms/catalogs";
 const path = "/org/formularios/catalogos/c-motivos";
 const catalog: FormCatalogResponse = {
   id: "c-motivos", name: "Motivos de visita", description: "Por qué se visita a un cliente.", source: "Manual", valueType: "Text",
-  isActive: true, usable: true, canManage: true, itemCounts: { total: 4, active: 3 }, modifiedAtUtc: "2026-11-20T13:00:00Z", version: 7,
+  isActive: true, usable: true, canManage: true, itemCounts: { total: 4, active: 3 }, modifiedAtUtc: "2026-11-20T13:00:00Z", version: 7, ...withoutFields(),
 };
 const item = (id: string, position: number, text: string, code: string, extra: Partial<FormCatalogItemRow> = {}): FormCatalogItemRow =>
-  ({ id, position, text, code, detail: null, value: null, isActive: true, textRepeated: false, ...extra });
+  ({ id, position, text, code, detail: null, value: null, isActive: true, textRepeated: false, fields: {}, ...extra });
 // Tablero FRM-Catalogo-Opciones: cuatro opciones, «Cobranza» dada de baja.
 const motivos = [
   item("i-seg", 1, "Seguimiento", "SEG", { detail: "Visita programada a un cliente actual" }),

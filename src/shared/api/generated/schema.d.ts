@@ -10002,7 +10002,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Alta con Location: sin tipo, Text; Members con condiciones exige sampleMemberId. Devuelve el detalle y el mapa de ids de las opciones nuevas. */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Alta con Location: sin tipo, Text; Members con condiciones exige sampleMemberId. Uno a mano puede traer fields, que nacen sin valores, y presentation (E13). Devuelve el detalle y el mapa de ids de las opciones nuevas. */
         post: {
             parameters: {
                 query?: never;
@@ -10030,7 +10030,7 @@ export interface paths {
                         "application/json": components["schemas"]["FormCatalogCreatedResponse"];
                     };
                 };
-                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Forms.Catalog.SampleRequired; Forms.Catalog.FiltersInvalid; Forms.Catalog.SampleMemberNotFound; Forms.Catalog.SampleContactNotFound; Forms.Catalog.DuplicateCode; Forms.Catalog.ValueRequired; Forms.Catalog.ValueInvalid; Forms.Catalog.ItemTextTooLong; Forms.Catalog.ItemDetailTooLong */
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Forms.Catalog.SampleRequired; Forms.Catalog.FiltersInvalid; Forms.Catalog.SampleMemberNotFound; Forms.Catalog.SampleContactNotFound; Forms.Catalog.DuplicateCode; Forms.Catalog.ValueRequired; Forms.Catalog.ValueInvalid; Forms.Catalog.ItemTextTooLong; Forms.Catalog.ItemDetailTooLong; Forms.Catalog.TooManyFields; Forms.Catalog.FieldKeyDuplicate; Forms.Catalog.FieldInvalid; Forms.Catalog.PresentationInvalid */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -10202,7 +10202,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Detalle con los nombres de los roles y las empresas del filtro, la persona o el cliente de ejemplo, canManage, itemCounts y quién lo guardó por última vez. */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Detalle con los nombres de los roles y las empresas del filtro, la persona o el cliente de ejemplo, canManage, itemCounts y quién lo guardó por última vez. Desde la E13, fields (los campos en su orden, también los quitados, con valuesCount), presentation y presentationIssues ({count, examples}, hasta tres). */
         get: {
             parameters: {
                 query?: never;
@@ -10272,7 +10272,7 @@ export interface paths {
                 };
             };
         };
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Guarda todo junto con su versión (C3): items solo con lo nuevo o cambiado, moves, sort o deleteItems (hasta 500), que no se combinan entre sí. Devuelve la versión y el mapa de ids. */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Guarda todo junto con su versión (C3): items solo con lo nuevo o cambiado (con el delta de sus fields: ausente conserva y null limpia), moves, sort o deleteItems (hasta 500), que no se combinan entre sí. sort.column es Text, Code o el id de un campo activo guardado. fields es la lista entera de los campos activos si cambió, con id o localId; confirmedFieldRemovals, los campos con valores que se quitan; presentation, qué va en WhatsApp (E13). Devuelve la versión y los mapas de ids de las opciones y de los campos nuevos. */
         put: {
             parameters: {
                 query?: never;
@@ -10299,7 +10299,7 @@ export interface paths {
                         "application/json": components["schemas"]["FormCatalogUpdatedResponse"];
                     };
                 };
-                /** @description Bad Request; Validation.Failed; Forms.Catalog.SampleRequired; Forms.Catalog.FiltersInvalid; Forms.Catalog.SampleMemberNotFound; Forms.Catalog.SampleContactNotFound; Forms.Catalog.DuplicateCode; Forms.Catalog.ValueRequired; Forms.Catalog.ValueInvalid; Forms.Catalog.ItemTextTooLong; Forms.Catalog.ItemDetailTooLong */
+                /** @description Bad Request; Validation.Failed; Forms.Catalog.SampleRequired; Forms.Catalog.FiltersInvalid; Forms.Catalog.SampleMemberNotFound; Forms.Catalog.SampleContactNotFound; Forms.Catalog.DuplicateCode; Forms.Catalog.ValueRequired; Forms.Catalog.ValueInvalid; Forms.Catalog.ItemTextTooLong; Forms.Catalog.ItemDetailTooLong; Forms.Catalog.TooManyFields; Forms.Catalog.FieldKeyDuplicate; Forms.Catalog.FieldInvalid; Forms.Catalog.PresentationInvalid; Forms.Catalog.FieldRemovalNotConfirmed; Forms.Catalog.FieldTypeNotConvertible; Forms.Catalog.FieldValuesIncompatible; Forms.Catalog.FieldValuesMissing; Forms.Catalog.FieldValueInvalid; Forms.Catalog.FieldValueRequired; Forms.Catalog.FieldValueDuplicate */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -10335,7 +10335,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Conflict; General.ConcurrencyConflict; Forms.Catalog.WrongSource; Forms.Catalog.TooManyItems; Forms.Catalog.ItemInUse; Forms.Catalog.MoveOutOfRange; Forms.Catalog.Inactive */
+                /** @description Conflict; General.ConcurrencyConflict; Forms.Catalog.WrongSource; Forms.Catalog.TooManyItems; Forms.Catalog.ItemInUse; Forms.Catalog.MoveOutOfRange; Forms.Catalog.Inactive; Forms.Catalog.SourceInUse */
                 409: {
                     headers: {
                         [name: string]: unknown;
@@ -10380,7 +10380,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Opciones por posición, paginadas, con search y status (active, inactive o all). */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Opciones por posición, paginadas, con search y status (active, inactive o all), y ids repetido (hasta 100 y sin vacíos) para nombrar las opciones de una fuente. Cada opción trae fields (el valor canónico de cada campo por su id: número como texto, fecha yyyy-MM-dd, sí/no booleano y una fuente con el id de su opción) y presentationIssue (E13). */
         get: {
             parameters: {
                 query?: {
@@ -10388,6 +10388,7 @@ export interface paths {
                     PageSize?: 10 | 20 | 50 | 100;
                     Search?: string;
                     Status?: components["schemas"]["FormCatalogStatusFilter"];
+                    Ids?: string[];
                 };
                 header?: never;
                 path: {
@@ -10481,7 +10482,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Revisa el archivo o lo pegado (mode append al pegar, replace con un archivo) sin escribir: versión leída, SHA-256 y las cuatro listas paginadas con el page y el pageSize del pedido. De a una por persona (Busy) y con lugar en la organización y la instalación (429 TooManyAtOnce, con Retry-After). */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. Revisa el archivo o lo pegado (mode append al pegar, replace con un archivo) sin escribir: versión leída, SHA-256 y las cuatro listas paginadas con el page y el pageSize del pedido. Una columna por campo activo, por su nombre o su clave, con sus errores por fila y columna (Forms.Catalog.FieldValueInvalid, FieldValueRequired y FieldValueDuplicate, E13). De a una por persona (Busy) y con lugar en la organización y la instalación (429 TooManyAtOnce, con Retry-After). */
         post: {
             parameters: {
                 query?: never;
@@ -10741,7 +10742,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. XLSX con todas las opciones, activas y dadas de baja, con las columnas de la plantilla (C10). De a una por persona. */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. XLSX con todas las opciones, activas y dadas de baja, con las columnas de la plantilla (C10) y una por campo activo, como en pantalla (119). De a una por persona. */
         get: {
             parameters: {
                 query?: never;
@@ -10835,11 +10836,12 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. XLSX de la plantilla para el valueType pedido, sin barrera (C11). */
+        /** @description Catálogos de Formularios (E12). La organización sale del token; un catálogo ajeno o con forms apagada es 404. XLSX de la plantilla para el valueType pedido, sin barrera (C11); con catalogId, también las columnas de los campos activos de ese catálogo (E13), y uno ajeno o que no existe es 404. */
         get: {
             parameters: {
                 query?: {
                     ValueType?: components["schemas"]["FormCatalogValueType"];
+                    CatalogId?: string;
                 };
                 header?: never;
                 path?: never;
@@ -10883,7 +10885,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Not Found; Http.NotFound */
+                /** @description Not Found; Http.NotFound; Forms.Catalog.NotFound */
                 404: {
                     headers: {
                         [name: string]: unknown;
@@ -32046,7 +32048,8 @@ export interface components {
         };
         /**
          * @description El alta. Sin tipo, Text. Un catálogo a mano lleva sus opciones, con un id local cada una; uno de miembros o de contactos, sus
-         *     filtros y la persona (`sampleMemberId`) o el cliente (`sampleContactId`) de ejemplo, que se guarda en los filtros.
+         *     filtros y la persona (`sampleMemberId`) o el cliente (`sampleContactId`) de ejemplo, que se guarda en los filtros. Uno
+         *     a mano puede traer sus campos (E13), que nacen sin valores, y su presentación.
          */
         CreateFormCatalogHttpRequest: {
             name?: null | string;
@@ -32059,6 +32062,8 @@ export interface components {
             sampleMemberId?: null | string;
             /** Format: uuid */
             sampleContactId?: null | string;
+            fields?: null | components["schemas"]["FormCatalogFieldHttpInput"][];
+            presentation?: null | components["schemas"]["FormCatalogPresentationHttpInput"];
         };
         CreatePlatformTenantHttpRequest: {
             name?: null | string;
@@ -32203,6 +32208,62 @@ export interface components {
             catalog: components["schemas"]["FormCatalogResponse"];
             itemIdentityMap: components["schemas"]["FormCatalogItemIdentity"][];
         };
+        /**
+         * @description Un campo de las opciones (E13): su identidad, su clave fija, su nombre, su tipo y sus reglas. Guid? FormCatalogFieldDetail.SourceCatalogId y
+         *     string? FormCatalogFieldDetail.SourceCatalogName son el catálogo de «De un catálogo»; string? FormCatalogFieldDetail.Min y string? FormCatalogFieldDetail.Max, el límite de un
+         *     número (como texto, para no perder precisión) o de una fecha (`yyyy-MM-dd`); int FormCatalogFieldDetail.ValuesCount, las opciones con valor.
+         */
+        FormCatalogFieldDetail: {
+            /** Format: uuid */
+            id: string;
+            key: string;
+            name: string;
+            type: components["schemas"]["FormCatalogFieldType"];
+            /** Format: uuid */
+            sourceCatalogId?: null | string;
+            sourceCatalogName?: null | string;
+            required: boolean;
+            unique: boolean;
+            /** Format: int32 */
+            maxLength?: null | number;
+            min?: null | string;
+            max?: null | string;
+            isActive: boolean;
+            /** Format: int32 */
+            valuesCount: number;
+        };
+        /**
+         * @description Un campo de las opciones (E13): uno guardado con `id` o uno nuevo con `localId`; la clave queda fija al guardar, y
+         *     `min` y `max` van como texto canónico, un número o `yyyy-MM-dd`.
+         */
+        FormCatalogFieldHttpInput: {
+            /** Format: uuid */
+            id?: null | string;
+            localId?: null | string;
+            key?: null | string;
+            name?: null | string;
+            type?: null | components["schemas"]["FormCatalogFieldType"];
+            /** Format: uuid */
+            sourceCatalogId?: null | string;
+            required?: null | boolean;
+            unique?: null | boolean;
+            /** Format: int32 */
+            maxLength?: null | number;
+            min?: null | string;
+            max?: null | string;
+        };
+        /** @description El id del servidor de cada campo nuevo, por el id local con que lo mandó la pantalla (E13). */
+        FormCatalogFieldIdentity: {
+            localId: string;
+            /** Format: uuid */
+            fieldId: string;
+        };
+        /**
+         * @description El tipo de un campo de las opciones de un catálogo a mano (E13): texto, número entero o con decimales, fecha, sí/no o «De un
+         *     catálogo», que toma sus valores de las opciones de otro catálogo a mano activo de la misma organización.
+         * @enum {string}
+         */
+        FormCatalogFieldType: "Text" | "WholeNumber" | "DecimalNumber" | "Date" | "YesNo" | "Catalog";
         /** @description Solo lo que dice el resumen del listado («7 catálogos · 6 activos», 262). */
         FormCatalogFilterCountsResponse: {
             /** Format: int32 */
@@ -32295,7 +32356,11 @@ export interface components {
             /** Format: int32 */
             active: number;
         };
-        /** @description Una opción nueva (con `localId`) o cambiada (con `itemId`); el valor va como texto canónico (C6). */
+        /**
+         * @description Una opción nueva (con `localId`) o cambiada (con `itemId`); el valor va como texto canónico (C6). `fields` es el
+         *     delta de los valores de sus campos (E13), por la identidad del campo: ausente se conserva y `null` limpia; un número va
+         *     como texto, una fecha `yyyy-MM-dd`, sí/no como booleano y una fuente como la identidad de su opción.
+         */
         FormCatalogItemHttpInput: {
             /** Format: uuid */
             itemId?: null | string;
@@ -32305,6 +32370,9 @@ export interface components {
             detail?: null | string;
             value?: null | string;
             isActive?: null | boolean;
+            fields?: null | {
+                [key: string]: null | boolean | string;
+            };
         };
         /** @description El id del servidor de cada opción nueva, por el id local con que la mandó la pantalla. */
         FormCatalogItemIdentity: {
@@ -32314,7 +32382,10 @@ export interface components {
         };
         /**
          * @description Una opción de un catálogo a mano, por posición. string? FormCatalogItemRow.Value es el texto canónico del valor en un catálogo tipado (C6),
-         *     y bool FormCatalogItemRow.TextRepeated avisa que otra opción tiene el mismo texto, sin distinguir mayúsculas.
+         *     y bool FormCatalogItemRow.TextRepeated avisa que otra opción tiene el mismo texto, sin distinguir mayúsculas. Desde la E13,
+         *     IReadOnlyDictionary&lt;Guid, JsonElement&gt; FormCatalogItemRow.Fields lleva el valor canónico de cada campo con valor, por la identidad del campo (un número como texto, una fecha
+         *     `yyyy-MM-dd`, sí/no como booleano y una fuente como la identidad de su opción), y FormCatalogPresentationIssue? FormCatalogItemRow.PresentationIssue lo que no
+         *     entra en WhatsApp.
          */
         FormCatalogItemRow: {
             /** Format: uuid */
@@ -32327,11 +32398,14 @@ export interface components {
             position: number;
             isActive: boolean;
             textRepeated: boolean;
+            fields: {
+                [key: string]: boolean | string;
+            };
+            presentationIssue?: null | components["schemas"]["FormCatalogPresentationIssue"];
         };
-        /** @enum {null|string} */
-        FormCatalogItemSortColumn: "Text" | "Code" | null;
+        /** @description «Ordenar por…» (224): `column` es `Text`, `Code` o, desde la E13, la identidad de un campo activo guardado. */
         FormCatalogItemSortHttpInput: {
-            column?: null | components["schemas"]["FormCatalogItemSortColumn"];
+            column?: null | string;
             descending?: null | boolean;
         };
         /** @enum {null|string} */
@@ -32340,6 +32414,36 @@ export interface components {
             /** Format: uuid */
             itemId?: null | string;
             direction?: null | components["schemas"]["FormCatalogMoveDirection"];
+        };
+        /**
+         * @description Qué arma el título y la descripción de cada opción en WhatsApp (E13): cada uno es una lista de lugares, unidos con « · »; un
+         *     lugar es `text`, `code`, `value`, `detail` o `field:&lt;id&gt;`.
+         */
+        FormCatalogPresentationDetail: {
+            title: string[];
+            description: string[];
+        };
+        FormCatalogPresentationExample: {
+            /** Format: uuid */
+            itemId: string;
+            text: string;
+            issue: components["schemas"]["FormCatalogPresentationIssue"];
+        };
+        /** @description Qué arma el título y la descripción en WhatsApp (E13): `text`, `code`, `value`, `detail` o `field:&lt;id&gt;`. */
+        FormCatalogPresentationHttpInput: {
+            title?: null | string[];
+            description?: null | string[];
+        };
+        /**
+         * @description Lo que no entra en WhatsApp de una opción, según la presentación del catálogo (E13); se calcula al leer.
+         * @enum {string}
+         */
+        FormCatalogPresentationIssue: "TitleEmpty" | "TitleTooLong" | "DescriptionTooLong";
+        /** @description Cuántas opciones activas no entran en WhatsApp y hasta tres de ejemplo, en orden de posición (E13). */
+        FormCatalogPresentationIssues: {
+            /** Format: int32 */
+            count: number;
+            examples: components["schemas"]["FormCatalogPresentationExample"][];
         };
         /** @description La vista previa de unos filtros sin guardar: la persona de ejemplo con Members y el cliente de ejemplo con Contacts. */
         FormCatalogPreviewHttpRequest: {
@@ -32373,7 +32477,9 @@ export interface components {
         /**
          * @description El detalle de un catálogo. IReadOnlyList&lt;FormCatalogReference&gt;? FormCatalogResponse.Roles y IReadOnlyList&lt;FormCatalogReference&gt;? FormCatalogResponse.Companies traen el nombre de cada id que usa el filtro, así
          *     quien solo lo ve lo lee sin pedir esas listas; un id que ya no existe no viene. FormCatalogSample? FormCatalogResponse.Sample es la persona o el
-         *     cliente de ejemplo guardado en los filtros.
+         *     cliente de ejemplo guardado en los filtros. Desde la E13, IReadOnlyList&lt;FormCatalogFieldDetail&gt; FormCatalogResponse.Fields son los campos de las opciones en su orden,
+         *     también los quitados (vacío si no es a mano), FormCatalogPresentationDetail FormCatalogResponse.Presentation lo que arma el título y la descripción en WhatsApp, y
+         *     FormCatalogPresentationIssues FormCatalogResponse.PresentationIssues las opciones activas que no entran.
          */
         FormCatalogResponse: {
             /** Format: uuid */
@@ -32396,6 +32502,9 @@ export interface components {
             modifiedBy?: null | string;
             /** Format: uint32 */
             version: number;
+            fields: components["schemas"]["FormCatalogFieldDetail"][];
+            presentation: components["schemas"]["FormCatalogPresentationDetail"];
+            presentationIssues: components["schemas"]["FormCatalogPresentationIssues"];
         };
         /**
          * @description Una fila del listado. int? FormCatalogRow.OptionsCount: en uno a mano, todas sus opciones; en uno de miembros, los que cumplen los
@@ -32464,11 +32573,12 @@ export interface components {
         };
         /** @enum {null|string} */
         FormCatalogUnusableReason: "NoActiveOptions" | "SourceOutdated" | "ChannelUnavailable" | "RoleMissing" | "CompanyMissing" | null;
-        /** @description Guardar: la versión nueva del catálogo y el mapa de ids de las opciones nuevas (C3). */
+        /** @description Guardar: la versión nueva del catálogo y los mapas de ids de las opciones y de los campos nuevos (C3, E13). */
         FormCatalogUpdatedResponse: {
             /** Format: uint32 */
             version: number;
             itemIdentityMap: components["schemas"]["FormCatalogItemIdentity"][];
+            fieldIdentityMap: components["schemas"]["FormCatalogFieldIdentity"][];
         };
         /**
          * @description El tipo del valor de cada opción, fijo desde el alta; un catálogo con filtros es siempre FormCatalogValueType.Text (C6). Los números
@@ -34168,6 +34278,17 @@ export interface components {
             /** Format: int32 */
             n?: null | number;
             uses?: null | string[];
+            /** Format: int32 */
+            invalidCount?: null | number;
+            invalidRows?: null | {
+                /** Format: int32 */
+                position: number;
+                /** Format: uuid */
+                itemId: string;
+                text: string;
+                /** @enum {string} */
+                reason: "required" | "range" | "length" | "invalid";
+            }[];
         };
         PublicPageHttpResponse: {
             slug?: null | string;
@@ -34479,7 +34600,9 @@ export interface components {
         };
         /**
          * @description Guardar todo junto (C3): `items` lleva solo lo nuevo o cambiado; `isActive` es obligatorio; `moves`,
-         *     `sort` y `deleteItems` (hasta 500, sin repetir) no se combinan entre sí.
+         *     `sort` y `deleteItems` (hasta 500, sin repetir) no se combinan entre sí. Desde la E13, `fields` es la lista entera
+         *     de los campos activos si cambió, en su orden; `confirmedFieldRemovals`, los campos con valores que se quitan, y
+         *     `presentation`, qué va en WhatsApp.
          */
         UpdateFormCatalogHttpRequest: {
             name?: null | string;
@@ -34496,6 +34619,9 @@ export interface components {
             sampleMemberId?: null | string;
             /** Format: uuid */
             sampleContactId?: null | string;
+            fields?: null | components["schemas"]["FormCatalogFieldHttpInput"][];
+            presentation?: null | components["schemas"]["FormCatalogPresentationHttpInput"];
+            confirmedFieldRemovals?: null | string[];
         };
         /** @description Preferencias de la cuenta autenticada, nunca de un id recibido del cliente. */
         UpdateMeHttpRequest: {

@@ -4,7 +4,7 @@ import { conflictChanges } from "./catalogConflict";
 import type { CatalogRowView } from "./catalogDraft";
 
 const item = (id: string, position: number, text: string, extra: Partial<FormCatalogItemRow> = {}): FormCatalogItemRow =>
-  ({ id, position, text, code: id.toUpperCase(), detail: null, value: null, isActive: true, textRepeated: false, ...extra });
+  ({ id, position, text, code: id.toUpperCase(), detail: null, value: null, isActive: true, textRepeated: false, fields: {}, ...extra });
 const draftOf = (row: FormCatalogItemRow) => ({ code: row.code, text: row.text, detail: row.detail ?? "", value: row.value ?? "", isActive: row.isActive });
 const view = (row: FormCatalogItemRow, extra: Partial<CatalogRowView> = {}, draft: Partial<CatalogRowView["draft"]> = {}): CatalogRowView =>
   ({ key: row.id, itemId: row.id, number: row.position, draft: { ...draftOf(row), ...draft }, isNew: false, pendingDelete: false, textRepeated: false, errors: {}, canMoveUp: false, canMoveDown: false, ...extra });

@@ -13,7 +13,7 @@ import type {
   FormCatalogSourceResponse,
   UpdateFormCatalogRequest,
 } from "../api/types";
-import { formsOwner, mountForms } from "../test/support";
+import { formsOwner, mountForms, withoutFields } from "../test/support";
 
 const base = "/api/organization/forms/catalogs";
 const paged = <T,>(items: T[]) => ({ items, page: 1, pageSize: 10, totalCount: items.length, totalPages: 1, hasPrevious: false, hasNext: false });
@@ -33,7 +33,7 @@ const supervisores = (extra: Partial<FormCatalogResponse> = {}): FormCatalogResp
   ] },
   roles: [{ id: "r-sup", name: "Supervisor" }, { id: "r-jefe", name: "Jefe de obra" }], companies: [],
   sample: { id: "m-tomas", name: "Tomás Acosta", detail: "Delta S.A." },
-  isActive: true, usable: true, canManage: true, itemCounts: { total: 0, active: 0 }, modifiedAtUtc: "2026-11-20T13:00:00Z", version: 4, ...extra,
+  isActive: true, usable: true, canManage: true, itemCounts: { total: 0, active: 0 }, modifiedAtUtc: "2026-11-20T13:00:00Z", version: 4, ...withoutFields(), ...extra,
 });
 const three: FormCatalogPreviewResponse = { total: 3, exceedsLimit: false, options: [
   { text: "Florencia Fernández de la Fue…", detail: "Florencia Fernández de la Fuente · Delta Norte" },

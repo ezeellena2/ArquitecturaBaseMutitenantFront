@@ -11,7 +11,7 @@ const format = {
 } as unknown as FormatState;
 const t = (key: string, options?: Record<string, unknown>) => options?.n !== undefined ? `${key}:${String(options.n)}` : key;
 const saved = (id: string, position: number, text: string, code: string): FormCatalogItemRow =>
-  ({ id, position, text, code, detail: null, value: "1", isActive: true, textRepeated: false });
+  ({ id, position, text, code, detail: null, value: "1", isActive: true, textRepeated: false, fields: {} });
 const empty: CatalogDraftState = { edits: {}, added: [], deletes: new Set(), moves: [], positions: {}, sort: null, serverErrors: {} };
 const rows = (state: CatalogDraftState, showErrors: boolean) =>
   catalogRows({ pageRows: [saved("i-1", 1, "Uno", "UNO"), saved("i-2", 2, "Dos", "DOS")], extraRows: [], state, valueType: "WholeNumber", showErrors, format, t });

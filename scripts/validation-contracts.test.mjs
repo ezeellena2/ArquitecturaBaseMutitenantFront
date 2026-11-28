@@ -85,3 +85,36 @@ test("contracts:check rejects an exported example with an undeclared field or a 
     await assert.rejects(checkContracts({ source, target }, false), /422/);
   } finally { rmSync(directory, { recursive: true, force: true }); }
 });
+
+// E13: el valor de un campo de una opción es texto o sí/no (`type: ["boolean", "string"]`), y en el delta del `PUT`, también
+// `null`, que lo limpia. Un valor de varios tipos acepta cada uno de ellos y nada más.
+test("contracts:check validates a value of several types against each of them", async () => {
+  const directory = mkdtempSync(path.join(tmpdir(), "contract-examples-"));
+  try {
+    const source = path.join(directory, "openapi.json");
+    const target = path.join(directory, "schema.d.ts");
+    const schema = { openapi: "3.1.0", info: { title: "Fixture", version: "1" },
+      paths: { "/api/rows": { get: { responses: { 200: { description: "OK", content: { "application/json": { schema: { $ref: "#/components/schemas/Row" } } } } } } } },
+      components: { schemas: {
+        Row: { required: ["fields"], type: "object", properties: {
+          fields: { type: "object", additionalProperties: { type: ["boolean", "string"] } },
+          delta: { maxProperties: 100, type: ["null", "object"], additionalProperties: { type: ["null", "boolean", "string"] } } } } } } };
+    writeFileSync(source, JSON.stringify(schema));
+    await generateContracts({ source, target });
+    mkdirSync(path.join(directory, "examples"));
+    const write = (body) => writeFileSync(path.join(directory, "examples", "rows.json"), JSON.stringify({ examples: [{ name: "fila", method: "GET", path: "/api/rows", status: 200, body }] }));
+    const field = "0b6f3c5e-8a1d-4f2b-9c3e-5d7a1b2c3d4e";
+    write({ fields: { [field]: "12.50", other: true }, delta: { [field]: null, other: false, third: "2026-11-28" } });
+    await checkContracts({ source, target }, false);
+
+    // Un número no es ni texto ni sí/no: el número va como texto, para no perder precisión.
+    write({ fields: { [field]: 12.5 } });
+    await assert.rejects(checkContracts({ source, target }, false), /rows\.json.*fields/s);
+    // `null` vale solo donde el contrato lo dice: en el delta, no en lo leído.
+    write({ fields: { [field]: null } });
+    await assert.rejects(checkContracts({ source, target }, false), /rows\.json.*fields/s);
+    // Y el delta tiene su tope de claves.
+    write({ fields: {}, delta: Object.fromEntries(Array.from({ length: 101 }, (_, index) => [`f${index}`, "x"])) });
+    await assert.rejects(checkContracts({ source, target }, false), /rows\.json.*delta/s);
+  } finally { rmSync(directory, { recursive: true, force: true }); }
+});

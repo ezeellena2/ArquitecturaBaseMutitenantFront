@@ -395,6 +395,9 @@ export const validationConstraints = {
     },
     "items": {
       "maxItems": 10000
+    },
+    "fields": {
+      "maxItems": 20
     }
   },
   "CreatePlatformTenantHttpRequest": {
@@ -484,6 +487,28 @@ export const validationConstraints = {
       "maxItems": 10000
     }
   },
+  "FormCatalogFieldDetail": {
+    "maxLength": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "valuesCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    }
+  },
+  "FormCatalogFieldHttpInput": {
+    "key": {
+      "maxLength": 40
+    },
+    "name": {
+      "maxLength": 35
+    },
+    "maxLength": {
+      "minimum": 1,
+      "maximum": 300
+    }
+  },
   "FormCatalogFilterCountsResponse": {
     "all": {
       "minimum": -2147483648,
@@ -571,6 +596,31 @@ export const validationConstraints = {
       "maximum": 2147483647
     }
   },
+  "FormCatalogPresentationDetail": {
+    "title": {
+      "maxItems": 24
+    },
+    "description": {
+      "maxItems": 24
+    }
+  },
+  "FormCatalogPresentationHttpInput": {
+    "title": {
+      "maxItems": 24
+    },
+    "description": {
+      "maxItems": 24
+    }
+  },
+  "FormCatalogPresentationIssues": {
+    "count": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "examples": {
+      "maxItems": 3
+    }
+  },
   "FormCatalogPreviewResponse": {
     "options": {
       "maxItems": 200
@@ -586,6 +636,9 @@ export const validationConstraints = {
     },
     "companies": {
       "maxItems": 500
+    },
+    "fields": {
+      "maxItems": 100
     }
   },
   "FormCatalogRow": {
@@ -625,6 +678,9 @@ export const validationConstraints = {
   "FormCatalogUpdatedResponse": {
     "itemIdentityMap": {
       "maxItems": 10000
+    },
+    "fieldIdentityMap": {
+      "maxItems": 20
     }
   },
   "HomeCompanyCard": {
@@ -1742,6 +1798,13 @@ export const validationConstraints = {
     "n": {
       "minimum": -2147483648,
       "maximum": 2147483647
+    },
+    "invalidCount": {
+      "minimum": -2147483648,
+      "maximum": 2147483647
+    },
+    "invalidRows": {
+      "maxItems": 50
     }
   },
   "PublishedLegalDocumentResponse": {
@@ -1913,6 +1976,12 @@ export const validationConstraints = {
     },
     "deleteItems": {
       "maxItems": 500
+    },
+    "fields": {
+      "maxItems": 20
+    },
+    "confirmedFieldRemovals": {
+      "maxItems": 20
     }
   },
   "UpdateMeHttpRequest": {
@@ -2654,20 +2723,28 @@ export const schemaEnums = {
     "List",
     "Boolean"
   ],
+  "FormCatalogFieldType": [
+    "Text",
+    "WholeNumber",
+    "DecimalNumber",
+    "Date",
+    "YesNo",
+    "Catalog"
+  ],
   "FormCatalogImportMode": [
     "Append",
     "Replace",
-    null
-  ],
-  "FormCatalogItemSortColumn": [
-    "Text",
-    "Code",
     null
   ],
   "FormCatalogMoveDirection": [
     "Up",
     "Down",
     null
+  ],
+  "FormCatalogPresentationIssue": [
+    "TitleEmpty",
+    "TitleTooLong",
+    "DescriptionTooLong"
   ],
   "FormCatalogSource": [
     "Manual",

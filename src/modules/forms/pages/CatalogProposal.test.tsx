@@ -5,7 +5,7 @@ import { axe } from "vitest-axe";
 import type { AssistantProposalResponse } from "@/shared/api/types";
 import { server } from "@/test/mocks/server";
 import type { FormCatalogItemRow, FormCatalogResponse, UpdateFormCatalogRequest } from "../api/types";
-import { formsOwner, mountForms } from "../test/support";
+import { formsOwner, mountForms, withoutFields } from "../test/support";
 
 // FRM-Catalogo-Opciones-Propuesta y su M-: el editor abierto desde una propuesta del asistente (catalogoptions.edit@1).
 const base = "/api/organization/forms/catalogs";
@@ -13,10 +13,10 @@ const proposalUrl = "/api/organization/assistant/proposals/p-1";
 const path = "/org/formularios/catalogos/c-motivos?proposal=p-1";
 const catalog = (extra: Partial<FormCatalogResponse> = {}): FormCatalogResponse => ({
   id: "c-motivos", name: "Motivos de visita", description: "Por qué se visita a un cliente.", source: "Manual", valueType: "Text",
-  isActive: true, usable: true, canManage: true, itemCounts: { total: 4, active: 4 }, modifiedAtUtc: "2026-11-20T13:00:00Z", version: 7, ...extra,
+  isActive: true, usable: true, canManage: true, itemCounts: { total: 4, active: 4 }, modifiedAtUtc: "2026-11-20T13:00:00Z", version: 7, ...withoutFields(), ...extra,
 });
 const item = (id: string, position: number, text: string, code: string, detail: string): FormCatalogItemRow =>
-  ({ id, position, text, code, detail, value: null, isActive: true, textRepeated: false });
+  ({ id, position, text, code, detail, value: null, isActive: true, textRepeated: false, fields: {} });
 const motivos = [
   item("i-seg", 1, "Seguimiento", "SEG", "Visita programada a un cliente actual"),
   item("i-ven", 2, "Venta nueva", "VEN", "Primera visita a un cliente"),

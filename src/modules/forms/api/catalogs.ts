@@ -29,8 +29,11 @@ const base = "/api/organization/forms/catalogs";
 
 /** El listado: el orden de la URL (264), la búsqueda, el origen y el estado. */
 export type CatalogsQuery = PagedRequest & { source?: FormCatalogSourceFilter; status?: FormCatalogStatusFilter };
-/** Las opciones de un catálogo: de a páginas, con búsqueda y el estado; su orden es el del catálogo. */
-export type CatalogItemsQuery = Omit<PagedRequest, "sort"> & { status?: FormCatalogStatusFilter };
+/**
+ * Las opciones de un catálogo: de a páginas, con búsqueda y el estado; su orden es el del catálogo. `ids` (E13, hasta 100)
+ * trae solo esas, para nombrar las opciones de una fuente.
+ */
+export type CatalogItemsQuery = Omit<PagedRequest, "sort"> & { status?: FormCatalogStatusFilter; ids?: readonly string[] };
 
 /** Formularios cuelga de esta raíz; los catálogos, sus opciones y sus listas, de la suya: una escritura la invalida entera. */
 export const formsQueryRoot = ["forms"] as const;
@@ -60,7 +63,7 @@ export function fetchCatalogFilterCounts(signal?: AbortSignal): Promise<FormCata
   return api.get(`${base}/filter-counts`, { signal });
 }
 
-/** «Crear catálogo»: 201 con el detalle y el mapa de ids de las opciones nuevas. */
+/** «Crear catálogo»: 201 con el detalle y el mapa de ids de las opciones nuevas; uno a mano puede traer sus campos y su presentación (E13). */
 export function createCatalog(request: CreateFormCatalogRequest, idempotencyKey: string): Promise<FormCatalogCreatedResponse> {
   return api.post(base, request, { headers: { "Idempotency-Key": idempotencyKey } });
 }
@@ -69,13 +72,16 @@ export function fetchCatalog(id: string, signal?: AbortSignal): Promise<FormCata
   return api.get(catalogPath(id), { signal });
 }
 
-/** Guardar, «Dar de baja» y «Reactivar» mandan el mismo `PUT`, con la versión que se leyó. */
+/**
+ * Guardar, «Dar de baja» y «Reactivar» mandan el mismo `PUT`, con la versión que se leyó. Desde la E13 lleva también los
+ * campos, la presentación y el delta de los valores de cada opción, y responde el mapa de ids de los campos nuevos.
+ */
 export function updateCatalog(id: string, request: UpdateFormCatalogRequest): Promise<FormCatalogUpdatedResponse> {
   return api.put(catalogPath(id), request);
 }
 
-export function fetchCatalogItems(id: string, { page, pageSize, search, status }: CatalogItemsQuery, signal?: AbortSignal): Promise<PagedResultOfFormCatalogItemRow> {
-  return api.get(`${catalogPath(id)}/items?${toSearch({ page, pageSize, search, status })}`, { signal });
+export function fetchCatalogItems(id: string, { page, pageSize, search, status, ids }: CatalogItemsQuery, signal?: AbortSignal): Promise<PagedResultOfFormCatalogItemRow> {
+  return api.get(`${catalogPath(id)}/items?${toSearch({ page, pageSize, search, status, ids })}`, { signal });
 }
 
 /** La revisión de importar: el archivo (o lo pegado, como CSV), el modo, la versión y la página de sus listas. */
@@ -119,9 +125,9 @@ export function exportCatalog(id: string): Promise<Response> {
   return api.response(`${catalogPath(id)}/export`, { method: "GET" });
 }
 
-/** La plantilla `.xlsx` vacía del tipo del valor. */
-export function fetchCatalogTemplate(valueType: FormCatalogValueType): Promise<Response> {
-  return api.response(`${base}/template?${toSearch({ valueType })}`, { method: "GET" });
+/** La plantilla `.xlsx` vacía del tipo del valor; con `catalogId` (E13), también las columnas de los campos activos de ese catálogo. */
+export function fetchCatalogTemplate(valueType: FormCatalogValueType, catalogId?: string): Promise<Response> {
+  return api.response(`${base}/template?${toSearch({ valueType, catalogId })}`, { method: "GET" });
 }
 
 /** Las columnas de «Miembros» con sus operadores, para el editor de filtros. */

@@ -13,6 +13,7 @@ import { fixtureAuth } from "@/test/mocks/authContext";
 import { businessE6Admin } from "@/test/mocks/currentUsers";
 import { meHandlerFor } from "@/test/mocks/handlers";
 import { server } from "@/test/mocks/server";
+import type { FormCatalogResponse } from "../api/types";
 import type { FormsPermission } from "../registration";
 
 /** Alguien de la organización con Formularios prendido, los permisos de catálogos que se pidan y, si se pide, WhatsApp. */
@@ -24,6 +25,11 @@ export function formsMember(permissions: readonly FormsPermission[], features: r
 /** La Dueña: «Administrar catálogos» incluye «Ver catálogos» (260). */
 export const formsOwner = formsMember(["formcatalogs.read", "formcatalogs.manage"]);
 export const formsReader = formsMember(["formcatalogs.read"]);
+
+/** Lo que suma la E13 al detalle de un catálogo sin campos: la presentación por defecto, como la tiene un alta de antes (0060). */
+export function withoutFields(): Pick<FormCatalogResponse, "fields" | "presentation" | "presentationIssues"> {
+  return { fields: [], presentation: { title: ["text"], description: ["detail"] }, presentationIssues: { count: 0, examples: [] } };
+}
 
 /**
  * Monta la app entera en `path`, con las rutas, el marco y los providers reales, como `mountWhatsApp`. Los pedidos de la

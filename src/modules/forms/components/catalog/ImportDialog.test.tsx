@@ -6,15 +6,15 @@ import { axe } from "vitest-axe";
 import { server } from "@/test/mocks/server";
 import { choose, pickerName } from "@/test/picker";
 import type { FormCatalogImportErrorRow, FormCatalogImportPreviewResponse, FormCatalogItemRow, FormCatalogResponse } from "../../api/types";
-import { formsOwner, mountForms } from "../../test/support";
+import { formsOwner, mountForms, withoutFields } from "../../test/support";
 
 const base = "/api/organization/forms/catalogs";
 const catalog: FormCatalogResponse = {
   id: "c-prov", name: "Proveedores", source: "Manual", valueType: "Text", isActive: true, usable: true, canManage: true,
-  itemCounts: { total: 1097, active: 1097 }, modifiedAtUtc: "2026-11-20T13:00:00Z", version: 7,
+  itemCounts: { total: 1097, active: 1097 }, modifiedAtUtc: "2026-11-20T13:00:00Z", version: 7, ...withoutFields(),
 };
 const items: FormCatalogItemRow[] = [
-  { id: "i-1", position: 1, text: "Abrasivos del Sur", code: "PRV-0001", detail: "CUIT 30-71234567-1", value: null, isActive: true, textRepeated: false },
+  { id: "i-1", position: 1, text: "Abrasivos del Sur", code: "PRV-0001", detail: "CUIT 30-71234567-1", value: null, isActive: true, textRepeated: false, fields: {} },
 ];
 
 function paged<T>(rows: readonly T[], page: number, totalCount: number, pageSize = 10) {

@@ -2,12 +2,16 @@ import type { components as ApiComponents } from "@/shared/api/generated/schema"
 
 type ApiSchemas = ApiComponents["schemas"];
 
-// Alias de los tipos de los catálogos de Formularios (E12), del schema generado. Los pedidos llevan `Request` en lugar de `HttpRequest`.
+// Alias de los tipos de los catálogos de Formularios (E12, y sus campos y su presentación desde la E13), del schema generado. Los pedidos llevan `Request` en lugar de `HttpRequest`.
 export type CreateFormCatalogRequest = ApiSchemas["CreateFormCatalogHttpRequest"];
 export type FormCatalogColumnType = ApiSchemas["FormCatalogColumnType"];
 export type FormCatalogCondition = ApiSchemas["FormCatalogCondition"];
 export type FormCatalogConditionInput = ApiSchemas["FormCatalogConditionHttpInput"];
 export type FormCatalogCreatedResponse = ApiSchemas["FormCatalogCreatedResponse"];
+export type FormCatalogFieldDetail = ApiSchemas["FormCatalogFieldDetail"];
+export type FormCatalogFieldIdentity = ApiSchemas["FormCatalogFieldIdentity"];
+export type FormCatalogFieldInput = ApiSchemas["FormCatalogFieldHttpInput"];
+export type FormCatalogFieldType = ApiSchemas["FormCatalogFieldType"];
 export type FormCatalogFilterCountsResponse = ApiSchemas["FormCatalogFilterCountsResponse"];
 export type FormCatalogFilterSort = ApiSchemas["FormCatalogFilterSort"];
 export type FormCatalogFilterSortInput = ApiSchemas["FormCatalogFilterSortHttpInput"];
@@ -19,14 +23,23 @@ export type FormCatalogImportDeactivatedRow = ApiSchemas["FormCatalogImportDeact
 export type FormCatalogImportErrorRow = ApiSchemas["FormCatalogImportErrorRow"];
 export type FormCatalogImportMode = ApiSchemas["FormCatalogImportMode"];
 export type FormCatalogImportPreviewResponse = ApiSchemas["FormCatalogImportPreviewResponse"];
+/** Una fila de `invalidRows` de `FieldTypeNotConvertible` o `FieldValuesIncompatible` (E13): la posición, la opción, su texto y el motivo. */
+export type FormCatalogInvalidRow = NonNullable<ApiSchemas["ProblemDetails"]["invalidRows"]>[number];
+export type FormCatalogInvalidRowReason = FormCatalogInvalidRow["reason"];
 export type FormCatalogItemCounts = ApiSchemas["FormCatalogItemCounts"];
 export type FormCatalogItemInput = ApiSchemas["FormCatalogItemHttpInput"];
 export type FormCatalogItemIdentity = ApiSchemas["FormCatalogItemIdentity"];
 export type FormCatalogItemRow = ApiSchemas["FormCatalogItemRow"];
-export type FormCatalogItemSortColumn = ApiSchemas["FormCatalogItemSortColumn"];
 export type FormCatalogItemSortInput = ApiSchemas["FormCatalogItemSortHttpInput"];
+/** `sort.column` (224): `Text`, `Code` o, desde la E13, el id de un campo activo guardado. */
+export type FormCatalogItemSortColumn = NonNullable<FormCatalogItemSortInput["column"]>;
 export type FormCatalogMoveDirection = ApiSchemas["FormCatalogMoveDirection"];
 export type FormCatalogMoveInput = ApiSchemas["FormCatalogMoveHttpInput"];
+export type FormCatalogPresentationDetail = ApiSchemas["FormCatalogPresentationDetail"];
+export type FormCatalogPresentationExample = ApiSchemas["FormCatalogPresentationExample"];
+export type FormCatalogPresentationInput = ApiSchemas["FormCatalogPresentationHttpInput"];
+export type FormCatalogPresentationIssue = ApiSchemas["FormCatalogPresentationIssue"];
+export type FormCatalogPresentationIssues = ApiSchemas["FormCatalogPresentationIssues"];
 export type FormCatalogPreviewRequest = ApiSchemas["FormCatalogPreviewHttpRequest"];
 export type FormCatalogPreviewOption = ApiSchemas["FormCatalogPreviewOption"];
 export type FormCatalogPreviewResponse = ApiSchemas["FormCatalogPreviewResponse"];

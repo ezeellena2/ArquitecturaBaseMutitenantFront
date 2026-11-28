@@ -4,7 +4,7 @@ import type { FormCatalogItemRow } from "../api/types";
 import { findProposalTargets } from "./proposalTargets";
 
 const row = (n: number): FormCatalogItemRow =>
-  ({ id: `i-${n}`, position: n, text: `Opción ${n}`, code: `O${n}`, detail: null, value: null, isActive: true, textRepeated: false });
+  ({ id: `i-${n}`, position: n, text: `Opción ${n}`, code: `O${n}`, detail: null, value: null, isActive: true, textRepeated: false, fields: {} });
 const catalog = (total: number) => Array.from({ length: total }, (_, index) => row(index + 1));
 
 /** El servidor de mentira: busca por texto o da la página, de a 100 como mucho. */

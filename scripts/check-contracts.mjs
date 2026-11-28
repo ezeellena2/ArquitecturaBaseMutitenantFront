@@ -121,7 +121,11 @@ export function openApiToZod(openapi) {
     const types = Array.isArray(definition.type) ? definition.type : definition.type ? [definition.type] : [];
     const nullable = types.includes("null") || (Array.isArray(definition.enum) && definition.enum.includes(null));
     const [type, ...others] = types.filter((value) => value !== "null");
-    if (others.length) throw new Error(`Unsupported schema with several types: ${JSON.stringify(definition.type)}`);
+    // Varios tipos (el valor de un campo de una opción: texto o sí/no, E13): vale cualquiera de ellos, cada uno con sus topes.
+    if (others.length) {
+      const union = z.union([type, ...others].map((single) => convert({ ...definition, type: single })));
+      return nullable ? union.nullable() : union;
+    }
     const branches = definition.oneOf ?? definition.anyOf;
     if (branches && !definition.properties) {
       const options = branches.map(convert);
@@ -182,7 +186,11 @@ export function openApiToZod(openapi) {
     const extra = definition.additionalProperties;
     // `{ type: object }` sin campos (un IFormFile): cualquier objeto. Un diccionario: sus claves, con el esquema del valor.
     if (!definition.properties && (extra === undefined || extra === true)) return z.record(z.string(), z.unknown());
-    if (!definition.properties && typeof extra === "object") return z.record(z.string(), convert(extra));
+    if (!definition.properties && typeof extra === "object") {
+      const record = z.record(z.string(), convert(extra));
+      const max = definition.maxProperties;
+      return max === undefined ? record : record.refine((value) => Object.keys(value).length <= max, `Too many properties (more than ${max})`);
+    }
     const required = new Set(definition.required ?? []);
     const shape = Object.fromEntries(Object.entries(definition.properties ?? {})
       .map(([key, property]) => [key, required.has(key) ? convert(property) : convert(property).optional()]));

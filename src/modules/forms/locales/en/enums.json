@@ -21,5 +21,16 @@
     "ChannelUnavailable": "WhatsApp isn't available.",
     "RoleMissing": "A role in the filters no longer exists.",
     "CompanyMissing": "A company in the filters no longer exists."
+  },
+  "FormCatalogInvalidRowReason": {
+    "required": "It has no value.",
+    "range": "It's out of range.",
+    "length": "It has more characters than allowed.",
+    "invalid": "It isn't a valid value."
+  },
+  "FormCatalogPresentationIssue": {
+    "TitleEmpty": "The title is empty.",
+    "TitleTooLong": "It doesn't fit in the WhatsApp title.",
+    "DescriptionTooLong": "It doesn't fit in the WhatsApp description."
   }
 }

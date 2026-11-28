@@ -3,7 +3,7 @@ import type { FormCatalogItemRow } from "../api/types";
 import { catalogProposalDraft, catalogProposalFields, catalogProposalTargets, proposalKeyOf, proposalLocalId, toCatalogProposalRows } from "./proposal";
 
 const saved = (id: string, text: string, code: string, extra: Partial<FormCatalogItemRow> = {}): FormCatalogItemRow =>
-  ({ id, position: 1, text, code, detail: null, value: null, isActive: true, textRepeated: false, ...extra });
+  ({ id, position: 1, text, code, detail: null, value: null, isActive: true, textRepeated: false, fields: {}, ...extra });
 const rows = (options: { key: string; values: Record<string, unknown> }[]) => ({ fields: {}, lists: {}, rows: { options } });
 
 describe("la propuesta de las opciones de un catálogo (catalogoptions.edit@1)", () => {
