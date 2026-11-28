@@ -150,3 +150,16 @@ describe("la propuesta del asistente en el editor de un catálogo (FRM-Catalogo-
     expect(screen.queryByRole("textbox", { name: "Texto de Garantía" })).not.toBeInTheDocument();
   });
 });
+
+describe("la propuesta en el editor, lo que se ve (FRM-Catalogo-Opciones-Propuesta, verificación de la E12)", () => {
+  it("«Revisá» va adentro del campo de texto de la opción dudosa, junto a su contador", async () => {
+    serve();
+    await openProposal();
+    const warning = screen.getByText("Hay más de una opción parecida.");
+    const cell = warning.parentElement as HTMLElement;
+    const field = cell.querySelector("div.relative") as HTMLElement;
+    expect(within(field).getByRole("textbox")).toBeInTheDocument();
+    expect(within(field).getByText("Revisá")).toBeInTheDocument();
+    expect(within(field).getByText(/\/30$/)).toBeInTheDocument();
+  });
+});

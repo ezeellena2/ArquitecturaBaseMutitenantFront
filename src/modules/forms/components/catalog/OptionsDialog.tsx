@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { CircleAlert, Plus } from "lucide-react";
 import { useId, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useFormat } from "@/shared/format/useFormat";
@@ -8,7 +8,7 @@ import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { Button } from "@/shared/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
-import { AlertTriangleIcon, ChevronLeftIcon, TrashIcon } from "@/shared/ui/icons";
+import { ChevronLeftIcon, TrashIcon } from "@/shared/ui/icons";
 import { InfoTip } from "@/shared/ui/InfoTip";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
@@ -50,7 +50,8 @@ export function OptionField({ label, required, help, error, warning, below, chil
   const messageId = `${id}-message`, helpId = `${id}-help`;
   const message = error ?? warning;
   const describedBy = [help ? helpId : undefined, message ? messageId : undefined].filter(Boolean).join(" ") || undefined;
-  return <div className={cn("flex flex-col gap-1.5 md:grid md:grid-cols-[6.875rem_minmax(0,1fr)] md:gap-3 md:px-5 md:py-2.5", below ? "md:pt-0" : "md:border-t md:border-[var(--borde)]")}>
+  // La columna de los rótulos (.md-f): los 110 del tablero están en su escala; a tamaño real son 149, y «Valor (decimal) *» entra.
+  return <div className={cn("flex flex-col gap-1.5 md:grid md:grid-cols-[9.3125rem_minmax(0,1fr)] md:gap-3 md:px-5 md:py-2.5", below ? "md:pt-0" : "md:border-t md:border-[var(--borde)]")}>
     <span className="flex items-center gap-1 md:min-h-9">
       <Label id={`${id}-label`} htmlFor={id} className="gap-1! text-[0.78125rem] font-semibold text-[var(--t2)] max-md:text-[0.84375rem] max-md:leading-[normal]">
         {label}
@@ -171,8 +172,9 @@ export function OptionsDialog({ editor, opening, sourceItem, onClose }: {
     input.focus();
   };
 
-  const triangle = <span title={t("forms:catalog.optionsDialog.hasError")} className="inline-flex shrink-0 text-[var(--peligro)]">
-    <AlertTriangleIcon aria-hidden="true" className="size-3.5" />
+  // La marca de una opción con error (FRM-Catalogo-Opciones, .tri): el círculo con «!», de 18, en rojo.
+  const errorMark = <span title={t("forms:catalog.optionsDialog.hasError")} data-slot="option-error" className="inline-flex shrink-0 text-[var(--peligro)]">
+    <CircleAlert aria-hidden="true" className="size-4.5" strokeWidth={2} />
     <span className="sr-only">{t("forms:catalog.optionsDialog.hasError")}</span>
   </span>;
 
@@ -187,34 +189,40 @@ export function OptionsDialog({ editor, opening, sourceItem, onClose }: {
         className={cn("grid min-h-13 w-full grid-cols-[1.25rem_minmax(0,1fr)_4.5rem_4rem] items-center gap-x-2.5 border-b border-[var(--borde)] px-3 py-2 text-left text-[0.84375rem] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--foco)]",
           on && "bg-[var(--marca-t)] shadow-[inset_3px_0_0_var(--marca)]")}>
         <span className="text-center text-[0.8125rem] text-[var(--t3)] tabular-nums">{number(row)}</span>
-        <span className="flex min-w-0 items-center gap-1.5">{itemText(row)}{rowHasErrors(row) ? triangle : null}</span>
+        <span className="flex min-w-0 items-center gap-1.5">{itemText(row)}{rowHasErrors(row) ? errorMark : null}</span>
         <span className={cn("text-[0.78125rem] leading-[1.3]", row.pendingDelete ? "text-[var(--peligro)]" : "text-[var(--t2)]")}>
           {row.pendingDelete ? t("forms:catalog.deleteOnSave")
             : row.isNew ? <span className="rounded-[0.375rem] bg-[var(--alerta-t)] px-1.5 text-[0.71875rem] font-semibold text-[var(--alerta-tx)]">{t("forms:catalog.optionsDialog.newBadge")}</span>
               // Una de baja no se dice solo con el gris de su texto (accesibilidad): lo dice su estado.
               : row.draft.isActive ? null : t("forms:catalog.status.inactive")}
         </span>
-        <span className={cn("text-[0.78125rem] break-all", row.draft.code.trim() ? "font-mono text-[var(--t2)]" : "text-[var(--t3)]")}>
+        {/* Solo un código se parte donde haga falta; «Sin código» va entero, en una línea. */}
+        <span className={cn("text-[0.78125rem]", row.draft.code.trim() ? "font-mono text-[var(--t2)] break-all" : "whitespace-nowrap text-[var(--t3)]")}>
           {row.draft.code.trim() ? row.draft.code : t("forms:catalog.noCode")}
         </span>
       </button>
     </li>;
   };
 
-  const phoneItem = (row: CatalogRowView) => <li key={row.key} className="border-b border-[var(--borde)]">
-    <button type="button" onClick={() => select(row.key)} className="flex w-full items-start gap-2 px-4 py-3 text-left text-[0.90625rem] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--foco)]">
-      <span className="w-6 shrink-0 text-[var(--t3)] tabular-nums">{number(row)}</span>
-      <span className="flex min-w-0 flex-1 flex-col gap-1">
-        <span className="flex items-center gap-1.5">{itemText(row)}{rowHasErrors(row) ? triangle : null}</span>
-        <span className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-2 text-[0.8125rem]">
-          <span className="text-[var(--t3)]">{t("forms:catalog.columns.code")}</span>
-          <span className={row.draft.code.trim() ? "font-mono" : "text-[var(--t3)]"}>{row.draft.code.trim() ? row.draft.code : t("forms:catalog.noCode")}</span>
-          {typed && row.draft.value ? <><span className="text-[var(--t3)]">{t("forms:catalog.columns.value")}</span><span>{row.draft.value}</span></> : null}
-          {row.draft.detail.trim() ? <><span className="text-[var(--t3)]">{t("forms:catalog.columns.detail")}</span><span className="break-words">{row.draft.detail}</span></> : null}
-          {row.pendingDelete ? <><span className="text-[var(--t3)]">{t("forms:catalog.columns.status")}</span><span className="text-[var(--peligro)]">{t("forms:catalog.deleteOnSave")}</span></>
-            : !row.draft.isActive ? <><span className="text-[var(--t3)]">{t("forms:catalog.columns.status")}</span><span>{t("forms:catalog.status.inactive")}</span></> : null}
+  // M-FRM-Catalogo-Opciones, «La lista»: el número en un círculo y cada dato con su rótulo arriba («Código», «Detalle»), en
+  // columnas; la marca de error, al final de la fila. Las filas van en una tarjeta.
+  const datum = (name: string, value: ReactNode, className?: string) => <span className="flex min-w-0 flex-col">
+    <span className="text-[var(--t3)]">{name}</span><span className={cn("break-words", className)}>{value}</span>
+  </span>;
+  const phoneItem = (row: CatalogRowView) => <li key={row.key} className="border-t border-[var(--borde)] first:border-t-0">
+    <button type="button" onClick={() => select(row.key)} className="flex w-full items-start gap-3 px-3.5 py-3 text-left text-[0.9375rem] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--foco)]">
+      <span className="mt-px inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-[var(--s3)] text-[0.75rem] font-semibold text-[var(--t2)] tabular-nums">{number(row)}</span>
+      <span className="flex min-w-0 flex-1 flex-col gap-1.5">
+        {itemText(row)}
+        <span className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-[0.8125rem] leading-snug">
+          {datum(t("forms:catalog.columns.code"), row.draft.code.trim() ? row.draft.code : t("forms:catalog.noCode"), row.draft.code.trim() ? undefined : "text-[var(--t3)]")}
+          {typed && row.draft.value ? datum(t("forms:catalog.columns.value"), row.draft.value) : null}
+          {row.draft.detail.trim() ? datum(t("forms:catalog.columns.detail"), row.draft.detail) : null}
+          {row.pendingDelete ? datum(t("forms:catalog.columns.status"), t("forms:catalog.deleteOnSave"), "text-[var(--peligro)]")
+            : !row.draft.isActive ? datum(t("forms:catalog.columns.status"), t("forms:catalog.status.inactive")) : null}
         </span>
       </span>
+      {rowHasErrors(row) ? errorMark : null}
     </button>
   </li>;
 
@@ -337,7 +345,7 @@ export function OptionsDialog({ editor, opening, sourceItem, onClose }: {
           <span id={listId}>{listTitle}</span>
           <Button type="button" size="sm" variant="link" disabledReason={editor.full ? t("forms:catalog.reasons.full") : undefined} onClick={addOption}>{t("forms:catalog.actions.add")}</Button>
         </div>
-        <ul aria-labelledby={listId} className="border-t border-[var(--borde)]">{list.map(phoneItem)}</ul>
+        <ul aria-labelledby={listId} className="mx-4 overflow-hidden rounded-[0.875rem] shadow-[0_0_0_1px_var(--borde)]">{list.map(phoneItem)}</ul>
       </> : shown.pendingDelete ? pendingView(shown) : <div className="flex flex-col gap-3.5 px-4 py-3">
         {fields(shown)}
         <Button type="button" variant="link" className="self-start text-[var(--peligro)]" disabledReason={removeReason} onClick={removeSelected}>{t("forms:catalog.optionsDialog.remove")}</Button>

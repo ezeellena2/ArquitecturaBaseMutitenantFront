@@ -421,3 +421,40 @@ describe("Una columna por campo (E13)", () => {
     expect(screen.getByRole("checkbox", { name: "Activa: Aluminios Cuyo" })).toBeChecked();
   });
 });
+
+describe("OptionsDialog, lo que se ve (FRM-Catalogo-Opciones y M-FRM-Catalogo-Opciones, verificación de la E12)", () => {
+  it("«Sin código» va entero en su columna, la columna de rótulos mide 149 y la marca de error es el círculo con «!»", async () => {
+    serve(() => HttpResponse.json({
+      code: "Forms.Catalog.DuplicateCode", status: 400, title: "Bad Request", errors: { "items.0.code": ["Ya está en la opción 1."] }, n: 1,
+    }, { status: 400 }));
+    const { user } = await openEditor();
+    await user.clear(textbox("Código de Venta nueva"));
+    await user.paste("VTA");
+    await user.click(saveButton());
+    const dialog = await screen.findByRole("dialog", { name: "Opciones de «Motivos de visita»" });
+    const [, venta] = optionsOf(dialog);
+    expect(within(venta).getByTitle("Tiene un error").querySelector("svg")).toHaveClass("lucide-circle-alert", "size-4.5");
+    const label = within(dialog).getAllByText("Texto")[0].closest("div.md\\:grid");
+    expect(label).toHaveClass("md:grid-cols-[9.3125rem_minmax(0,1fr)]");
+    await user.click(within(dialog).getByRole("button", { name: "Agregar opción" }));
+    const noCode = within(dialog).getByText("Sin código");
+    expect(noCode).toHaveClass("whitespace-nowrap");
+    expect(noCode).not.toHaveClass("break-all");
+  });
+
+  it("en el teléfono, la lista va en una tarjeta, con el número en un círculo y «Código» arriba de su valor", async () => {
+    const restore = asPhone();
+    try {
+      const { user } = mountForms(formsOwner, path);
+      await user.click(await screen.findByRole("button", { name: "Editar Venta nueva" }));
+      const option = await screen.findByRole("dialog", { name: "Opción 2 de 4" });
+      await user.click(within(option).getByRole("button", { name: "Volver a la lista" }));
+      const dialog = await screen.findByRole("dialog", { name: "Opciones" });
+      const list = within(dialog).getByRole("list", { name: "Opciones" });
+      expect(list).toHaveClass("rounded-[0.875rem]");
+      const [seguimiento] = within(list).getAllByRole("button");
+      expect(within(seguimiento).getByText("1")).toHaveClass("rounded-full");
+      expect(within(seguimiento).getByText("Código").nextElementSibling).toHaveTextContent("SEG");
+    } finally { restore(); }
+  });
+});
