@@ -4,6 +4,7 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import { server } from "@/test/mocks/server";
 import { choose, pickerName } from "@/test/picker";
+import { asPhone } from "@/test/utils/phone";
 import type { FormCatalogItemRow, FormCatalogResponse, UpdateFormCatalogRequest } from "../api/types";
 import { formsOwner, formsReader, mountForms, withoutFields } from "../test/support";
 
@@ -425,7 +426,7 @@ describe("CatalogEditorPage: crear (idempotencia)", () => {
       return keys.length === 1 ? HttpResponse.error() : HttpResponse.json({ catalog: catalog(), itemIdentityMap: [] }, { status: 201 });
     }));
     const { user, router } = mountForms(formsOwner, "/org/formularios/catalogos/nuevo");
-    await user.type(await screen.findByRole("textbox", { name: /Nombre del catálogo/ }), "Motivos de visita");
+    await user.type(await screen.findByRole("textbox", { name: /^Nombre/ }), "Motivos de visita");
     await user.click(screen.getByRole("button", { name: "Crear catálogo" }));
     expect(await screen.findByText("No pudimos conectarnos. Revisá tu conexión.")).toBeVisible();
     await user.click(screen.getByRole("button", { name: "Crear catálogo" }));
@@ -444,11 +445,11 @@ describe("CatalogEditorPage: crear (idempotencia)", () => {
         : HttpResponse.json({ catalog: catalog(), itemIdentityMap: [] }, { status: 201 });
     }));
     const { user, router } = mountForms(formsOwner, "/org/formularios/catalogos/nuevo");
-    await user.click(await screen.findByRole("textbox", { name: /Nombre del catálogo/ }));
+    await user.click(await screen.findByRole("textbox", { name: /^Nombre/ }));
     await user.paste("Motivos");
     await user.click(screen.getByRole("button", { name: "Crear catálogo" }));
     expect(await screen.findByText("Ya hay un catálogo con ese nombre.")).toBeVisible();
-    await user.click(screen.getByRole("textbox", { name: /Nombre del catálogo/ }));
+    await user.click(screen.getByRole("textbox", { name: /^Nombre/ }));
     await user.paste(" de visita");
     await user.click(screen.getByRole("button", { name: "Crear catálogo" }));
     await waitFor(() => expect(router.state.location.pathname).toBe(path));
@@ -550,5 +551,62 @@ describe("CatalogEditorPage: los errores (errores.md)", () => {
     expect(screen.getByRole("textbox", { name: /^Nombre/ })).toHaveAttribute("maxLength", "60");
     expect(screen.getByRole("textbox", { name: /^Descripción/ })).toHaveAttribute("maxLength", "300");
     expect(screen.getByRole("textbox", { name: /^Descripción/ })).not.toHaveAttribute("placeholder");
+  });
+});
+
+describe("CatalogEditorPage, la banda y lo que la rodea (FRM-Catalogo y M-FRM-Catalogo, verificación de la E12)", () => {
+  it("las migas terminan en el nombre del catálogo y el estado lleva su punto de color", async () => {
+    await openEditor();
+    await waitFor(() => expect(screen.getByRole("navigation", { name: "Migas de pan" })).toHaveTextContent("Inicio/Gestión de formularios/Catálogos/Motivos de visita"));
+    const status = screen.getByText("Activo");
+    expect(status.parentElement?.querySelector("[data-slot=status-dot]")).toHaveClass("bg-[var(--punto-ok)]");
+  });
+
+  it("«No se puede usar» va en rojo, con su punto y su motivo en la (i)", async () => {
+    serve({ detail: catalog({ usable: false, unusableReason: "NoActiveOptions" }) });
+    await openEditor();
+    const status = screen.getByText("No se puede usar").closest("span.inline-flex");
+    expect(status).toHaveClass("text-[var(--peligro)]");
+    expect(status?.querySelector("[data-slot=status-dot]")).toHaveClass("bg-[var(--peligro)]");
+    expect(within(status as HTMLElement).getByRole("button", { name: "Más información sobre No se puede usar" })).toBeInTheDocument();
+  });
+
+  it("«Dar de baja» es una opción común del ⋮ y su confirmación es la roja", async () => {
+    const { user } = await openEditor();
+    await openMenu(user, "Acciones de Motivos de visita");
+    const deactivate = await screen.findByRole("menuitem", { name: /Dar de baja/ });
+    expect(deactivate).not.toHaveAttribute("data-variant", "destructive");
+    await user.click(deactivate);
+    const dialog = await screen.findByRole("dialog", { name: "¿Dar de baja «Motivos de visita»?" });
+    expect(within(dialog).getByRole("button", { name: "Dar de baja" })).toHaveClass("bg-[var(--peligro)]");
+  });
+
+  it("mientras carga, la banda tiene ‹ y el título, y abajo una zona con el aro", async () => {
+    server.use(http.get(`${base}/c-motivos`, () => new Promise<Response>(() => {})));
+    mountForms(formsOwner, path);
+    expect(await screen.findByRole("heading", { name: "Catálogo" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Volver a Catálogos" })).toBeInTheDocument();
+    const zone = document.querySelector<HTMLElement>("[data-slot=catalog-loading]");
+    expect(zone).not.toBeNull();
+    expect(within(zone!).getByRole("status")).toHaveTextContent("Cargando");
+  });
+
+  it("un catálogo nuevo rotula «Nombre», con «Nombre del catálogo» de ejemplo", async () => {
+    mountForms(formsOwner, "/org/formularios/catalogos/nuevo");
+    const name = await screen.findByRole("textbox", { name: /^Nombre/ });
+    expect(name).toHaveAttribute("placeholder", "Nombre del catálogo");
+    expect(screen.queryByText("Nombre del catálogo", { selector: "label, label *" })).not.toBeInTheDocument();
+  });
+
+  it("en el teléfono, «Así lo ve quien lo recibe» es el ojo de la barra y «El catálogo» tiene su título a la vista", async () => {
+    const restore = asPhone();
+    try {
+      mountForms(formsOwner, path);
+      const eye = await screen.findByRole("button", { name: "Así lo ve quien lo recibe" });
+      expect(eye.querySelector("svg")).not.toBeNull();
+      expect(eye).not.toHaveTextContent("Así lo ve quien lo recibe");
+      expect(screen.getByRole("heading", { name: "El catálogo" })).not.toHaveClass("sr-only");
+      expect(screen.getByText("Activo").parentElement?.querySelector("[data-slot=status-dot]")).toBeNull();
+    } finally { restore(); }
   });
 });

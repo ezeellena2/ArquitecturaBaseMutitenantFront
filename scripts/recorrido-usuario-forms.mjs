@@ -142,7 +142,7 @@ export async function startCatalog(page, { source = "Manual", valueType = "Text"
     assert.equal(await pickerButton(page, "Tipo de valor").count(), 0, "Uno con filtros no pide el tipo de valor.");
   }
   if (valueType !== "Text") await pick(page, page, "Tipo de valor", valueTypeLabels[valueType]);
-  await page.getByRole("textbox", { name: /^Nombre del catálogo/u }).fill(name);
+  await page.getByRole("textbox", { name: /^Nombre/u }).fill(name);
   if (description) await page.getByRole("textbox", { name: /^Descripción/u }).fill(description);
 }
 

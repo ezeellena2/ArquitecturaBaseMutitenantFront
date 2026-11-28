@@ -1,7 +1,8 @@
 import type { StatusTones } from "@/shared/format/statusTones";
 import { useFormat } from "@/shared/format/useFormat";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
-import { StatusBadge } from "@/shared/ui/format/StatusBadge";
+import { cn } from "@/shared/lib/utils";
+import { StatusBadge, StatusMark } from "@/shared/ui/format/StatusBadge";
 import { InfoTip } from "@/shared/ui/InfoTip";
 import type { FormCatalogRow } from "../../api/types";
 import { catalogStatus, type CatalogStatus } from "../../lib/catalogStatus";
@@ -17,6 +18,20 @@ export function CatalogStatusText({ catalog }: { catalog: FormCatalogRow }) {
   return <span className="inline-flex items-center gap-1.5">
     <StatusBadge tones={catalogStatusTones} value={status} />
     {reason ? <InfoTip standalone text={reason} title={reason} /> : null}
+  </span>;
+}
+
+/// El estado en la banda del editor (FRM-Catalogo, .bnd .res): en la compu, el punto y la palabra, «● No se puede usar» en
+/// rojo con su motivo en la (i); en la barra del teléfono (M-FRM-Catalogo), la palabra gris de la línea de abajo, sin punto.
+export function CatalogBandStatus({ catalog, phone }: { catalog: Pick<FormCatalogRow, "isActive" | "usable" | "unusableReason">; phone: boolean }) {
+  const format = useFormat();
+  const status = catalogStatus(catalog);
+  const text = format.formatEnum("FormCatalogStatus", status);
+  const reason = status === "Unusable" && catalog.unusableReason ? format.formatEnum("FormCatalogUnusableReason", catalog.unusableReason) : undefined;
+  return <span className={cn("inline-flex items-center gap-1.5 whitespace-nowrap", !phone && status === "Unusable" && "text-[var(--peligro)]")}>
+    {phone ? null : <StatusMark tones={catalogStatusTones} value={status} />}
+    {text}
+    {reason ? <InfoTip text={reason} title={text} /> : null}
   </span>;
 }
 

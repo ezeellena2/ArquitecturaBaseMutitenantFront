@@ -5,7 +5,7 @@ import { useAppChrome } from "./app/AppChrome";
 import { Button } from "./button";
 import { InfoTip } from "./InfoTip";
 
-type SectionPhone = "card" | "inset" | "untitled";
+type SectionPhone = "card" | "inset" | "untitled" | "loose";
 
 interface SectionProps {
   title: string;
@@ -21,7 +21,8 @@ interface SectionProps {
   /**
    * En el teléfono: `card` es una tarjeta blanca sobre gris (M-Pagina-Org, M-Usuario, M-Cuenta); `inset`, la tarjeta
    * dentro de una página blanca con margen (M-Configuracion, M-Rol); `untitled`, los campos sueltos sin título a la
-   * vista (los datos de M-Configuracion y M-Rol).
+   * vista (los datos de M-Configuracion y M-Rol); `loose`, el título gris arriba y los campos sueltos, sin tarjeta (M-FRM-Catalogo,
+   * «El catálogo»).
    */
   phone?: SectionPhone;
   children: ReactNode;
@@ -47,6 +48,10 @@ export function Section({ title, action, meta, help, phone = "card", children }:
   if (chrome.phone) {
     if (phone === "untitled") return <section aria-labelledby={id} className="flex flex-col">
       <h2 id={id} className="sr-only">{title}</h2>
+      {body}
+    </section>;
+    if (phone === "loose") return <section aria-labelledby={id} aria-describedby={describedBy} className="flex flex-col">
+      {titled(<h2 id={id} className="mt-1.5 mb-2 px-1 text-[0.84375rem] leading-[normal] font-semibold text-[var(--t2)]">{title}</h2>)}
       {body}
     </section>;
     return <section aria-labelledby={id} aria-describedby={describedBy} className="flex flex-col">
@@ -85,5 +90,5 @@ export function Section({ title, action, meta, help, phone = "card", children }:
 export function SectionFields({ className, children }: { className?: string; children: ReactNode }) {
   const { phone } = useAppChrome();
   const mode = useContext(SectionPhoneContext);
-  return <div className={cn(phone ? (mode === "untitled" ? "p-0" : "px-4 py-3.5") : "px-5 pt-4 pb-5", className)}>{children}</div>;
+  return <div className={cn(phone ? (mode === "untitled" || mode === "loose" ? "p-0" : "px-4 py-3.5") : "px-5 pt-4 pb-5", className)}>{children}</div>;
 }

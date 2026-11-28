@@ -199,7 +199,7 @@ describe("Catálogo con filtros (FRM-Catalogo-Filtros y FRM-Catalogo-Contactos)"
   it("sin persona de ejemplo, un catálogo de los miembros con condiciones no se crea (SampleRequired) ni pide la vista previa", async () => {
     const { user } = mountForms(formsOwner, "/org/formularios/catalogos/nuevo");
     await choose(user, "De dónde salen las opciones", /De los miembros/);
-    await user.type(screen.getByRole("textbox", { name: /Nombre del catálogo/ }), "Responsables de depósito");
+    await user.type(screen.getByRole("textbox", { name: /^Nombre/ }), "Responsables de depósito");
     await user.click(await screen.findByRole("button", { name: "Agregar condición" }));
     await choose(user, "Roles", "Supervisor");
     await user.keyboard("{Escape}");

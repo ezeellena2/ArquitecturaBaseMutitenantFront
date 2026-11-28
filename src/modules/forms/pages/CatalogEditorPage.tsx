@@ -1,4 +1,4 @@
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { Ban, RotateCcw } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -8,8 +8,11 @@ import { actionErrorMessage, isNotFoundError } from "@/shared/api/errorMessage";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { AssistantProposalChangesSection, AssistantProposalMark } from "@/shared/assistant-actions";
 import { useFormat } from "@/shared/format/useFormat";
+import { useBreadcrumbLeaf } from "@/shared/hooks/useBreadcrumbLeaf";
 import { useEditPage } from "@/shared/hooks/useEditPage";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
+import { AppIconButton } from "@/shared/ui/app/AppBar";
+import { AppBarTools } from "@/shared/ui/app/AppBarTools";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { Banner } from "@/shared/ui/Banner";
 import { Button } from "@/shared/ui/button";
@@ -17,18 +20,19 @@ import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
 import { Dialog, DialogBody, DialogContent, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { EmptyValue } from "@/shared/ui/format/EmptyValue";
 import { FormField } from "@/shared/ui/FormField";
-import { InfoTip } from "@/shared/ui/InfoTip";
+import { EyeIcon } from "@/shared/ui/icons";
 import { Input } from "@/shared/ui/input";
 import { LoadErrorPage } from "@/shared/ui/LoadErrorPage";
 import { NotFoundPage } from "@/shared/ui/NotFoundPage";
 import { Page } from "@/shared/ui/Page";
-import { PageLoading } from "@/shared/ui/PageLoading";
 import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
 import { Section, SectionFields } from "@/shared/ui/Section";
+import { Spinner } from "@/shared/ui/Spinner";
 import { Textarea } from "@/shared/ui/textarea";
 import { homeOf } from "@/tenancy/access";
 import { catalogsQueryRoot, createCatalog } from "../api/catalogs";
-import type { CreateFormCatalogRequest } from "../api/types";
+import type { CreateFormCatalogRequest, FormCatalogRow } from "../api/types";
+import { CatalogBandStatus } from "../components/catalog/CatalogCells";
 import { CatalogConflictDialog } from "../components/catalog/CatalogConflictDialog";
 import { CatalogOriginFields, type CatalogOrigin } from "../components/catalog/CatalogOriginFields";
 import { CatalogPreviewPhone } from "../components/catalog/CatalogPreviewPhone";
@@ -41,7 +45,6 @@ import { useCatalogEditor, type CatalogEditor, type CatalogSaveExtra } from "../
 import { useCatalogFilters, type CatalogFilters } from "../hooks/useCatalogFilters";
 import { useCatalogProposal, useCatalogProposalTargets } from "../hooks/useCatalogProposal";
 import { catalogLimits } from "../lib/catalogLimits";
-import { catalogStatus } from "../lib/catalogStatus";
 import { catalogsPath } from "../registration";
 
 /**
@@ -63,11 +66,11 @@ function previewOptions(editor: CatalogEditor) {
     .map((row) => ({ key: row.key, text: row.draft.text, detail: row.draft.detail || null }));
 }
 
-/** Al costado en la compu; en el teléfono, un diálogo desde la barra (M-FRM-Catalogo, «Así lo ve quien lo recibe»). */
+/** Al costado en la compu, suelto, sin caja (FRM-Catalogo); en el teléfono, un diálogo desde el ojo de la barra (M-FRM-Catalogo). */
 function PreviewAside({ editor }: { editor: CatalogEditor }) {
   const { t } = useTranslation("forms");
-  return <section aria-label={t("forms:catalog.preview.title")} className="flex flex-col gap-2.5 rounded-lg border border-[var(--borde)] bg-[var(--superficie)] p-4">
-    <h2 className="text-[0.875rem] font-semibold">{t("forms:catalog.preview.title")}</h2>
+  return <section aria-label={t("forms:catalog.preview.title")} className="flex flex-col gap-2.5">
+    <h2 className="text-[0.9375rem] font-semibold">{t("forms:catalog.preview.title")}</h2>
     <CatalogPreviewPhone options={previewOptions(editor)} />
   </section>;
 }
@@ -87,6 +90,30 @@ function PhonePreviewDialog({ editor, filters, open, onOpenChange }: { editor: C
 }
 
 /** «El catálogo» arriba y, con filtros, «Qué miembros entran» o «Qué contactos entran» debajo; la vista previa, al costado. */
+/** En el teléfono, «Así lo ve quien lo recibe» es el ojo de la barra, junto al ⋮ (M-FRM-Catalogo): el título entra entero. */
+function PreviewBarButton({ onOpen }: { onOpen: () => void }) {
+  const { t } = useTranslation("forms");
+  return <AppBarTools><AppIconButton label={t("forms:catalog.preview.title")} onClick={onOpen}><EyeIcon /></AppIconButton></AppBarTools>;
+}
+
+/** El nombre que ya trajo el listado, si se llegó desde ahí: la banda lo muestra mientras carga la ficha. */
+function listedName(queryClient: QueryClient, id: string): string | undefined {
+  for (const [, page] of queryClient.getQueriesData<{ items?: readonly FormCatalogRow[] }>({ queryKey: [...catalogsQueryRoot, "list"] })) {
+    const row = page?.items?.find((item) => item.id === id);
+    if (row) return row.name;
+  }
+  return undefined;
+}
+
+/** Mientras carga la ficha (FRM-Catalogo, «Cargando»): la banda con ‹ y el título, y abajo una zona con el aro. */
+function CatalogLoading({ id }: { id: string }) {
+  const { t } = useTranslation("forms");
+  const queryClient = useQueryClient();
+  return <Page title={listedName(queryClient, id) ?? t("forms:catalog.screen")} backTo={back(t)}>
+    <div data-slot="catalog-loading" className="flex min-h-40 items-center justify-center border-b border-[var(--borde)]"><Spinner /></div>
+  </Page>;
+}
+
 function CatalogColumns({ phone, editor, filters, editable, children }: { phone: boolean; editor: CatalogEditor; filters: CatalogFilters; editable: boolean; children: ReactNode }) {
   return <div className="grid gap-3.5 lg:grid-cols-[minmax(0,1fr)_20rem]">
     {filters.filtered ? <div className="flex min-w-0 flex-col gap-3.5">{children}<FiltersEditor filters={filters} editable={editable} /></div> : children}
@@ -101,6 +128,8 @@ function SavedCatalogEditor({ id }: { id: string }) {
   // La propuesta del asistente va antes del editor: las opciones guardadas que toca llegan al borrador por su consulta.
   const targets = useCatalogProposalTargets(id);
   const editor = useCatalogEditor(id, { extraRows: targets.rows });
+  // Las migas terminan en el nombre del catálogo, como en Rol y Usuario.
+  useBreadcrumbLeaf(editor.saved?.name);
   const [confirmDeactivate, setConfirmDeactivate] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [importing, setImporting] = useState(false);
@@ -124,7 +153,7 @@ function SavedCatalogEditor({ id }: { id: string }) {
     errorMessage: (error) => catalogFieldErrors(error).length ? null : actionErrorMessage(error, t),
   });
 
-  if (editor.catalog.isPending) return <PageLoading />;
+  if (editor.catalog.isPending) return <CatalogLoading id={id} />;
   // Solo sin nada que mostrar: si falla una relectura, la ficha sigue a la vista (errores).
   if (!saved) {
     return isNotFoundError(editor.catalog.error)
@@ -132,11 +161,8 @@ function SavedCatalogEditor({ id }: { id: string }) {
       : <LoadErrorPage onRetry={() => { void editor.catalog.refetch(); }} screen={t("forms:catalog.screen")} back={back(t)} />;
   }
 
-  const status = catalogStatus(saved);
   const editable = saved.canManage && saved.isActive;
   const manual = saved.source === "Manual";
-  const statusText = format.formatEnum("FormCatalogStatus", status);
-  const unusable = status === "Unusable" && saved.unusableReason ? format.formatEnum("FormCatalogUnusableReason", saved.unusableReason) : undefined;
   // Los filtros viajan solo si cambiaron: cambiar el nombre no vuelve a validarlos. `false`: falta la persona de ejemplo.
   const filtersExtra = (): CatalogSaveExtra | undefined | false => {
     const withFilters = filters.isDirty ? filters.request() : null;
@@ -173,25 +199,26 @@ function SavedCatalogEditor({ id }: { id: string }) {
       title={saved.name}
       titleAside={proposal.proposing ? <AssistantProposalMark /> : undefined}
       backTo={back(t)}
-      status={<span className="inline-flex items-center gap-1">{statusText}{unusable ? <InfoTip text={unusable} title={statusText} /> : null}</span>}
-      barAction={phone ? { label: t("forms:catalog.preview.title"), onClick: () => setPreviewOpen(true) } : undefined}
+      status={<CatalogBandStatus catalog={saved} phone={phone} />}
       actions={editable ? <>
         <Button type="button" variant="outline" onClick={discard}>{t("forms:catalog.discard")}</Button>
         <Button type="button" disabled={!isDirty} pending={editor.saving} pendingLabel={t("common:states.saving")} onClick={save}>{t("forms:catalog.save")}</Button>
       </> : undefined}
       moreActions={saved.canManage ? { label: t("forms:catalog.actions.catalogMore", { name: saved.name }), pending: editor.activating, items: [
         saved.isActive
-          ? { label: t("forms:catalog.actions.deactivate"), icon: Ban, destructive: true, onSelect: () => setConfirmDeactivate(true) }
+          // Una opción común del ⋮; el rojo va en su confirmación, que es la que da de baja (FRM-Catalogo).
+          ? { label: t("forms:catalog.actions.deactivate"), icon: Ban, onSelect: () => setConfirmDeactivate(true) }
           : { label: t("forms:catalog.actions.reactivateCatalog"), icon: RotateCcw, onSelect: () => { setActive(true); } },
       ] } : undefined}
     >
+      {phone ? <PreviewBarButton onOpen={() => setPreviewOpen(true)} /> : null}
       {edit.formError}
       {/* FRM-Catalogo-Opciones-Propuesta: si el catálogo cambió desde la propuesta, lo dice arriba; «Lo que cambia», arriba de
           todo, ya va sobre lo de ahora. */}
-      {proposal.changedSince ? <Banner tone="warning" className="max-md:mx-4 max-md:mt-4">{t("forms:catalog.proposal.changedSince", { name: saved.name })}</Banner> : null}
+      {proposal.changedSince ? <Banner tone="warning">{t("forms:catalog.proposal.changedSince", { name: saved.name })}</Banner> : null}
       {proposal.changeRows.length ? <AssistantProposalChangesSection rows={proposal.changeRows} /> : null}
       <CatalogColumns phone={phone} editor={editor} filters={filters} editable={editable}>
-        <Section title={t("forms:catalog.section")} phone="untitled">
+        <Section title={t("forms:catalog.section")} phone="loose">
           <SectionFields className="grid gap-3.5">
             {/* Uno con filtros es siempre de texto: dice solo de dónde salen (FRM-Catalogo-Filtros). */}
             <p className="text-[0.8125rem] text-[var(--t2)]">{manual ? `${format.formatEnum("FormCatalogSource", saved.source)} · ${format.formatEnum("FormCatalogValueType", saved.valueType)}` : format.formatEnum("FormCatalogSource", saved.source)}</p>
@@ -218,7 +245,7 @@ function SavedCatalogEditor({ id }: { id: string }) {
       valueType={editor.valueType} savedRow={editor.savedRow} onContinue={editor.continueEditing} onSeeNew={() => { void seeNew(); }} />
     <ConfirmDialog open={confirmDeactivate} onOpenChange={setConfirmDeactivate}
       title={t("forms:catalog.deactivateDialog.title", { name: saved.name })} description={t("forms:catalog.deactivateDialog.description")}
-      confirmLabel={t("forms:catalog.actions.deactivate")} pending={editor.activating} pendingLabel={t("forms:catalog.deactivating")}
+      confirmLabel={t("forms:catalog.actions.deactivate")} destructive pending={editor.activating} pendingLabel={t("forms:catalog.deactivating")}
       onConfirm={() => { if (!setActive(false, () => setConfirmDeactivate(false))) setConfirmDeactivate(false); }} />
   </>;
 }
@@ -285,19 +312,20 @@ function NewCatalogEditor() {
 
   return <>
     <Page title={t("forms:catalogs.new")} backTo={back(t)} banner={edit.banner}
-      barAction={phone ? { label: t("forms:catalog.preview.title"), onClick: () => setPreviewOpen(true) } : undefined}
       actions={<>
         <Button type="button" variant="outline" onClick={() => { void navigate(catalogsPath); }}>{t("common:actions.cancel")}</Button>
         <Button type="button" pending={create.isPending} pendingLabel={t("forms:catalog.creating")} onClick={submit}>{t("forms:catalog.create")}</Button>
       </>}
     >
+      {phone ? <PreviewBarButton onOpen={() => setPreviewOpen(true)} /> : null}
       {edit.formError}
       <CatalogColumns phone={phone} editor={editor} filters={filters} editable>
-        <Section title={t("forms:catalog.section")} phone="untitled">
+        <Section title={t("forms:catalog.section")} phone="loose">
           <SectionFields className="grid gap-3.5">
             <CatalogOriginFields value={origin} onChange={changeOrigin} />
-            <FormField label={t("forms:catalog.fields.newName")} required error={editor.nameError}>
-              <Input value={editor.name} maxLength={catalogLimits.name} onChange={(event) => editor.setName(event.target.value)} autoComplete="off" />
+            {/* «Nombre», como en la ficha guardada; «Nombre del catálogo» es el texto de ejemplo del campo (FRM-Catalogo). */}
+            <FormField label={t("forms:catalog.fields.name")} required error={editor.nameError}>
+              <Input value={editor.name} maxLength={catalogLimits.name} placeholder={t("forms:catalog.fields.newName")} onChange={(event) => editor.setName(event.target.value)} autoComplete="off" />
             </FormField>
             <FormField label={t("forms:catalog.fields.description")}>
               <Textarea value={editor.description} maxLength={catalogLimits.description} onChange={(event) => editor.setDescription(event.target.value)} />

@@ -62,6 +62,16 @@ describe("Section", () => {
     expect(screen.getByText("Nombre").parentElement).not.toHaveClass("rounded-[0.875rem]");
   });
 
+  // Tablero M-FRM-Catalogo: «El catálogo» con su título gris a la vista y los campos sueltos, sin tarjeta.
+  it("en el teléfono, con el título a la vista y los campos sueltos, no los mete en una tarjeta", () => {
+    render(<AppChromeProvider value={phone}><Section title="El catálogo" phone="loose"><SectionFields><p>{"Nombre"}</p></SectionFields></Section></AppChromeProvider>);
+
+    expect(screen.getByRole("heading", { name: "El catálogo" })).not.toHaveClass("sr-only");
+    expect(screen.getByRole("heading", { name: "El catálogo" })).toHaveClass("text-[var(--t2)]");
+    expect(screen.getByText("Nombre").parentElement).toHaveClass("p-0");
+    expect(screen.getByText("Nombre").parentElement?.parentElement).not.toHaveClass("rounded-[0.875rem]");
+  });
+
   it("en la compu, lo que cuenta la caja va gris a la derecha del título", () => {
     render(<Section title="Permisos" meta="1 de 2 elegidos"><p>{"Miembros"}</p></Section>);
 

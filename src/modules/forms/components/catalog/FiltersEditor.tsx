@@ -97,14 +97,15 @@ export function FiltersEditor({ filters, editable }: { filters: CatalogFilters; 
 
   if (phone) {
     return <>
-      <Section title={title} action={editable ? {
+      {/* M-FRM-Catalogo-Filtros: los títulos y las tarjetas van alineados con Nombre y Descripción, dentro del margen de la página. */}
+      <Section title={title} phone="inset" action={editable ? {
         label: t("forms:catalog.filters.addCondition"), disabledReason: maxReason,
         onClick: () => { const condition = filters.newCondition(); if (condition) setEditing({ condition, isNew: true }); },
       } : undefined}>
         {columnsFailure ? <div className="px-4 py-3">{columnsFailure}</div> : null}
         <div className="flex flex-col divide-y divide-[var(--borde)]">{conditions}</div>
       </Section>
-      <Section title={t("forms:catalog.filters.otherOptions")}>{settings}</Section>
+      <Section title={t("forms:catalog.filters.otherOptions")} phone="inset">{settings}</Section>
       {editing ? <EditConditionDialog filters={filters} initial={editing.condition} returnFocusTo={editing.trigger} onClose={() => setEditing(null)}
         onDone={(condition) => {
           if (editing.isNew) filters.appendCondition(condition);
