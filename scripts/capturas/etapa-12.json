@@ -22277,8 +22277,8 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Estado",
-            "exact": false,
+            "name": "Estado De baja",
+            "exact": true,
             "within": {
               "role": "dialog",
               "name": "Opciones de «Motivos de visita»"
@@ -25487,8 +25487,8 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Estado",
-            "exact": false,
+            "name": "Estado De baja",
+            "exact": true,
             "within": {
               "role": "dialog",
               "name": "Opción 4 de 4"
@@ -25714,8 +25714,8 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Estado",
-            "exact": false,
+            "name": "Estado De baja",
+            "exact": true,
             "within": {
               "role": "dialog",
               "name": "Opción 4 de 4"
@@ -26950,13 +26950,12 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Orden",
-            "exact": false,
+            "name": "Orden De la A a la Z",
+            "exact": true,
             "within": {
               "role": "dialog",
               "name": "Ordenar las opciones"
-            },
-            "nth": 0
+            }
           },
           {
             "type": "click",
@@ -29509,13 +29508,12 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Orden",
-            "exact": false,
+            "name": "Orden De la A a la Z",
+            "exact": true,
             "within": {
               "role": "dialog",
               "name": "Ordenar las opciones"
-            },
-            "nth": 0
+            }
           },
           {
             "type": "click",
@@ -29766,13 +29764,12 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Orden",
-            "exact": false,
+            "name": "Orden De la A a la Z",
+            "exact": true,
             "within": {
               "role": "dialog",
               "name": "Ordenar las opciones"
-            },
-            "nth": 0
+            }
           },
           {
             "type": "click",
@@ -31193,8 +31190,8 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Desde",
-            "exact": false,
+            "name": "Desde Subir un archivo",
+            "exact": true,
             "within": {
               "role": "dialog",
               "name": "Importar opciones a «Proveedores»"
@@ -32375,8 +32372,8 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Desde",
-            "exact": false,
+            "name": "Desde Subir un archivo",
+            "exact": true,
             "within": {
               "role": "dialog",
               "name": "Importar opciones a «Proveedores»"
@@ -32667,8 +32664,8 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Desde",
-            "exact": false,
+            "name": "Desde Subir un archivo",
+            "exact": true,
             "within": {
               "role": "dialog",
               "name": "Importar opciones a «Proveedores»"
@@ -32970,8 +32967,8 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Desde",
-            "exact": false,
+            "name": "Desde Subir un archivo",
+            "exact": true,
             "within": {
               "role": "dialog",
               "name": "Importar opciones a «Proveedores»"
@@ -33274,8 +33271,8 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Desde",
-            "exact": false,
+            "name": "Desde Subir un archivo",
+            "exact": true,
             "within": {
               "role": "dialog",
               "name": "Importar opciones a «Proveedores»"
@@ -50864,8 +50861,8 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Valor",
-            "exact": false,
+            "name": "Valor Supervisor, Jefe de obra",
+            "exact": true,
             "within": {
               "role": "dialog",
               "name": "Editar condición"
@@ -51295,8 +51292,8 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Valor",
-            "exact": false,
+            "name": "Valor Supervisor, Jefe de obra",
+            "exact": true,
             "within": {
               "role": "dialog",
               "name": "Editar condición"
@@ -52113,8 +52110,8 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Etiquetas",
-            "exact": false
+            "name": "Etiquetas Mayorista",
+            "exact": true
           },
           {
             "type": "click",
@@ -52526,8 +52523,8 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Etiquetas",
-            "exact": false
+            "name": "Etiquetas Mayorista",
+            "exact": true
           }
         ],
         "readySelector": "[role=\"listbox\"]",
@@ -52926,8 +52923,8 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Cliente",
-            "exact": false
+            "name": "Cliente Sin cliente",
+            "exact": true
           }
         ],
         "readySelector": "[role=\"listbox\"]",
@@ -55241,8 +55238,8 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Etiquetas",
-            "exact": false
+            "name": "Etiquetas Mayorista",
+            "exact": true
           },
           {
             "type": "click",
@@ -56462,8 +56459,8 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Valor",
-            "exact": false,
+            "name": "Valor Mayorista",
+            "exact": true,
             "within": {
               "role": "dialog",
               "name": "Editar condición"
@@ -56896,8 +56893,8 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Valor",
-            "exact": false,
+            "name": "Valor Mayorista",
+            "exact": true,
             "within": {
               "role": "dialog",
               "name": "Editar condición"
@@ -58934,8 +58931,8 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Valor",
-            "exact": false,
+            "name": "Valor Mayorista",
+            "exact": true,
             "within": {
               "role": "dialog",
               "name": "Editar condición"
@@ -59345,8 +59342,8 @@
           {
             "type": "click",
             "role": "button",
-            "name": "Valor",
-            "exact": false,
+            "name": "Valor Mayorista",
+            "exact": true,
             "within": {
               "role": "dialog",
               "name": "Editar condición"

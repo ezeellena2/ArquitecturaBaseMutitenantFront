@@ -186,6 +186,11 @@ const click = (name, role = "button", extra = {}) => ({ type: "click", role, nam
 const clickIn = (within, name, role = "button", extra = {}) => click(name, role, { within, ...extra });
 /** La pieza para elegir (262): su botón se llama con su rótulo y lo elegido, así que se busca por el comienzo. */
 const piece = (label, extra = {}) => ({ type: "click", role: "button", name: label, exact: false, ...extra });
+/**
+ * La pieza por su nombre entero, el rótulo y lo elegido («Estado De baja»), exacto: así no la confunde la (i) de su campo
+ * («Más información sobre Estado») ni otra pieza que tenga ese texto elegido («Detalle Etiquetas»).
+ */
+const pick = (label, chosen, extra = {}) => click(`${label} ${chosen}`, "button", extra);
 const choose = (name) => ({ type: "click", role: "option", name, exact: false });
 /** Cierra la lista de una pieza de varios con Esc, desde la opción que se eligió. */
 const closeList = (name) => ({ type: "press", role: "option", name, exact: false, key: "Escape" });
@@ -337,7 +342,7 @@ function optionsStates() {
       clickIn(newOptionsOfMotivos, "Agregar opción")], ready.dialog, { readyTexts: ["Garantía", "Nueva opción"] }),
     base("Editar una opción", [click("Editar Venta nueva")], ready.dialog, { readyText: "Opción 2 de 4" }),
     base("Una opción dada de baja", [click("Editar Cobranza")], ready.dialog, { readyText: "Opción 4 de 4" }),
-    base("Elegir el estado", [click("Editar Cobranza"), piece("Estado", { within: optionsOfMotivos })], ready.listbox, { readyText: "Activa" }),
+    base("Elegir el estado", [click("Editar Cobranza"), pick("Estado", "De baja", { within: optionsOfMotivos })], ready.listbox, { readyText: "Activa" }),
     base("Una opción por borrar", [click("Editar Reclamo"), clickIn(optionsOfMotivos, "Quitar opción"), clickIn({ role: "alertdialog", name: "¿Borrar «Reclamo»?" }, "Borrar opción")],
       ready.dialog, { readyText: "Restaurar" }),
     base("Código repetido", [fill("Código de Venta nueva", "SEG"), click("Guardar cambios")], ready.dialog, { readyText: "Ya está en la opción 1." }),
@@ -358,7 +363,7 @@ function phoneOptionsStates() {
     base("La lista con errores", withError, ready.dialog, { readyText: "Tiene un error" }),
     base("Una opción nueva", [click("Agregar opción")], ready.dialog, { readyText: "Nueva opción" }),
     base("Una opción guardada", [click("Editar Venta nueva")], ready.dialog, { readyText: "Opción 2 de 4" }),
-    base("Elegir el estado", [click("Editar Cobranza"), piece("Estado", { within: dialog("Opción 4 de 4") })], ready.listbox, { readyText: "Activa" }),
+    base("Elegir el estado", [click("Editar Cobranza"), pick("Estado", "De baja", { within: dialog("Opción 4 de 4") })], ready.listbox, { readyText: "Activa" }),
     base("Código repetido", [...withError, click("Venta nueva", "button", { exact: false, within: dialog("Opciones") })], ready.dialog, { readyText: "Ya está en la opción 1." }),
   ];
 }
@@ -367,7 +372,7 @@ function phoneOptionsStates() {
 function sortStates(phone) {
   const path = editorPath("c-motivos");
   const base = (name, actions, readySelector, extra = {}) => state(name, path, motivosEditor(extra.responses ?? []), actions, readySelector, { ...extra, responses: undefined });
-  const byCode = [...sortMenu, piece("Columna", { within: sortDialog }), choose("Código"), piece("Orden", { within: sortDialog, nth: 0 }), choose("De la Z a la A")];
+  const byCode = [...sortMenu, piece("Columna", { within: sortDialog }), choose("Código"), pick("Orden", "De la A a la Z", { within: sortDialog }), choose("De la Z a la A")];
   const pending = [...sortMenu, clickIn(sortDialog, "Ordenar")];
   const sorted = [...motivosItems].sort((a, b) => a.text.localeCompare(b.text, "es")).map((row, index) => ({ ...row, position: index + 1 }));
   const common = [
@@ -398,13 +403,13 @@ function importStates() {
     { ...extra, responses: undefined });
   const reviewed = (overrides) => [api("POST", previewPath, importReview(overrides))];
   const review = [...open, upload, clickIn(box, "Revisar")];
-  const paste = [...open, piece("Desde", { within: box }), choose("Pegar desde Excel")];
+  const paste = [...open, pick("Desde", "Subir un archivo", { within: box }), choose("Pegar desde Excel")];
   const pasted = "Código\tTexto\tDetalle\nPRV-1098\tBulones Mar del Plata\tCUIT 30-71567890-2\nPRV-1099\tCerámicos Neuquén\t\nPRV-1100\tChapas del Litoral\tCUIT 33-70123456-9";
   const foreign = "Código\tTexto\tDetalle\tRubro\nPRV-1098\tBulones Mar del Plata\tCUIT 30-71567890-2\tBulones\nPRV-1099\tCerámicos Neuquén\t\tCerámicos";
   const applyButton = "Aplicar sin las 12 filas con errores";
   return [
     base("Elegir un archivo", open, ready.dialog, { readyText: "Ningún archivo elegido" }),
-    base("Elegir desde dónde", [...open, piece("Desde", { within: box })], ready.listbox, { readyText: "Pegar desde Excel" }),
+    base("Elegir desde dónde", [...open, pick("Desde", "Subir un archivo", { within: box })], ready.listbox, { readyText: "Pegar desde Excel" }),
     base("Revisar sin archivo", [...open, clickIn(box, "Revisar")], ready.dialog, { readyText: "Elegí un archivo." }),
     base("Archivo elegido", [...open, upload], ready.dialog, { readyText: "proveedores.xlsx" }),
     base("Archivo que no sirve", review, ready.dialog, { readyText: "El archivo no es un XLSX ni un CSV en UTF-8.", responses: [api("POST", previewPath,
@@ -455,7 +460,7 @@ function filtersStates(phone) {
       base("Ninguna opción", [], ready.dialog, { actionsAt: preview, readyText: "Ninguna opción", preview: noneFound }),
       base("Más de 200", [], ready.dialog, { actionsAt: preview, readyText: "y 212 opciones más", preview: { ...three, total: 215, exceedsLimit: true } }),
       missing,
-      base("Elegir los roles", [card, piece("Valor", { within: edit })], ready.listbox, { readyText: "Auditor" }),
+      base("Elegir los roles", [card, pick("Valor", "Supervisor, Jefe de obra", { within: edit })], ready.listbox, { readyText: "Auditor" }),
     ];
   }
   const changed = [piece("Comparación", { nth: 0 }), choose("no tiene ninguno de")];
@@ -490,10 +495,10 @@ function contactsStates(phone) {
     const edit = dialog("Editar condición");
     return [
       base("Sin cambios", [], ready.main, { readyText: "tiene alguna de" }),
-      base("Con cambios", [card, piece("Valor", { within: edit }), choose("Minorista"), closeList("Minorista"), clickIn(edit, "Listo")], ready.main, { readyText: "Mayorista, Minorista" }),
+      base("Con cambios", [card, pick("Valor", "Mayorista", { within: edit }), choose("Minorista"), closeList("Minorista"), clickIn(edit, "Listo")], ready.main, { readyText: "Mayorista, Minorista" }),
       base("Acciones de una condición", [menu("Acciones de la condición Etiqueta")], ready.menu, { readyText: "Quitar condición" }),
       base("Editar una condición", [card], ready.dialog, { readyText: "Editar condición" }),
-      base("Elegir etiquetas", [card, piece("Valor", { within: edit })], ready.listbox, { readyText: "Minorista" }),
+      base("Elegir etiquetas", [card, pick("Valor", "Mayorista", { within: edit })], ready.listbox, { readyText: "Minorista" }),
       base("Así lo ve quien lo recibe", [], ready.dialog, { actionsAt: preview, readyText: "Almacén Don Pepe" }),
       base("Elegir a quién", [], ready.listbox, { actionsAt: (width) => [...preview(width), piece("Cliente", { within: previewDialog })], readyText: "Ferretería Norte" }),
       base("Actualizando", [], '[aria-label="Actualizando la vista previa"]', { ...updating, actionsAt: preview }),
@@ -502,12 +507,12 @@ function contactsStates(phone) {
       noWhatsApp,
     ];
   }
-  const changed = [piece("Etiquetas"), choose("Minorista"), closeList("Minorista")];
+  const changed = [pick("Etiquetas", "Mayorista"), choose("Minorista"), closeList("Minorista")];
   return [
     base("Sin cambios", [], ready.main, { readyText: "Almacén Don Pepe" }),
     base("Con cambios", changed, ready.main, { readyText: "Mayorista, Minorista" }),
-    base("Elegir etiquetas", [piece("Etiquetas")], ready.listbox, { readyText: "Minorista" }),
-    base("Elegir a quién", [piece("Cliente")], ready.listbox, { readyText: "Ferretería Norte" }),
+    base("Elegir etiquetas", [pick("Etiquetas", "Mayorista")], ready.listbox, { readyText: "Minorista" }),
+    base("Elegir a quién", [pick("Cliente", "Sin cliente")], ready.listbox, { readyText: "Ferretería Norte" }),
     base("Actualizando", [], '[aria-label="Actualizando la vista previa"]', updating),
     base("Ninguna opción", [], ready.main, { readyText: "Ninguna opción", preview: noneFound }),
     base("Más de 200", [], ready.main, { readyText: "y 212 opciones más", preview: { ...contactsThree, total: 215, exceedsLimit: true } }),
