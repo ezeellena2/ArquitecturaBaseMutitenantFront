@@ -82,15 +82,16 @@ export function CatalogFieldForm({ field, list, catalogId, editing }: {
       {(control) => field.id === null
         ? <Input {...control} value={field.key} autoComplete="off" spellCheck={false} maxLength={catalogFieldLimits.key} className="font-mono"
           placeholder={t("forms:catalog.fieldsDialog.keyPlaceholder")} onChange={(event) => editing.editKey(field, event.target.value)} />
+        // El campo del teléfono lleva 14 de relleno (Input): el candado va a 14 y la clave, después de él, como la lupa de «Buscar opción».
         : <span className="relative flex">
-          <span role="img" aria-label={t("forms:catalog.fieldsDialog.keyLocked")} className="pointer-events-none absolute top-1/2 left-3 flex -translate-y-1/2 text-[var(--t3)]">
+          <span role="img" aria-label={t("forms:catalog.fieldsDialog.keyLocked")} className="pointer-events-none absolute top-1/2 left-3 flex -translate-y-1/2 text-[var(--t3)] max-md:left-3.5">
             <LockIcon className="size-3.5" />
           </span>
-          <Input {...control} value={field.key} readOnly className="bg-[var(--s2)] pl-8 font-mono text-[var(--t2)]" />
+          <Input {...control} value={field.key} readOnly className="bg-[var(--s2)] pl-8 font-mono text-[var(--t2)] max-md:pl-10" />
         </span>}
     </OptionField>
     <OptionField label={t("forms:catalog.fieldsDialog.labels.type")} required error={field.errors?.type}>
-      {(control) => <Picker id={control.id} aria-describedby={control["aria-describedby"]} aria-invalid={control["aria-invalid"]} className="md:max-w-60"
+      {(control) => <Picker id={control.id} aria-describedby={control["aria-describedby"]} aria-invalid={control["aria-invalid"]}
         value={field.type} onChange={(type) => editing.editType(field, type as FormCatalogFieldType)}
         options={catalogFieldTypes.map((type) => ({ value: type, label: format.formatEnum("FormCatalogFieldType", type) }))} />}
     </OptionField>

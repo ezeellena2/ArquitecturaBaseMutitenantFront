@@ -14,7 +14,10 @@ import { catalogFieldLimits, fieldInPresentation, type CatalogFieldDraft, type C
 import { CatalogFieldForm, CatalogFieldRead } from "./CatalogFieldForm";
 import { DesktopFieldsList, PhoneFieldsList } from "./CatalogFieldsList";
 
-/** Quitar un campo guardado, en el mismo diálogo (nunca uno sobre otro): con valores, pide marcar la confirmación. */
+/**
+ * Quitar un campo guardado: en la compu, en el mismo diálogo; en el teléfono, en su hoja sobre la pantalla del campo. Con valores,
+ * pide marcar la confirmación.
+ */
 function RemoveFieldQuestion({ field, presentation, confirmed, descriptionId, onConfirmedChange, onAnswer }: {
   field: CatalogFieldDraft;
   presentation?: FormCatalogPresentationDetail | null;
@@ -46,7 +49,7 @@ function RemoveFieldQuestion({ field, presentation, confirmed, descriptionId, on
  * El modal «Campos de …» de un catálogo a mano (FRM-Catalogo-Campos y M-FRM-Catalogo-Campos, 125), igual al de opciones: a la
  * izquierda la lista (`CatalogFieldsList`), con ↑ ↓ en el elegido; a la derecha el campo (`CatalogFieldForm`). Escribe en una
  * copia (`useCatalogFieldsDialog`): «Listo» la deja en el catálogo (`onDone`) y, si hay un campo nuevo, avisa que se guarde el
- * catálogo para cargarle valores; «Cancelar», Esc o la ✕ la descartan. Quitar uno guardado pregunta en el mismo diálogo. En el
+ * catálogo para cargarle valores; «Cancelar», Esc o la ✕ la descartan. Quitar uno guardado pregunta (`RemoveFieldQuestion`). En el
  * teléfono ocupa la pantalla: la lista y, al tocar un campo, el campo con «Volver a la lista». Quien solo lee ve los mismos
  * datos, sin editar.
  */
@@ -163,15 +166,30 @@ export function CatalogFieldsDialog({ catalogId, catalogName, value, removedKeys
   </>;
 
   const asking = removing !== null;
-  return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
-    <DialogContent ref={content} size={asking ? "sm" : "default"} role={asking ? "alertdialog" : "dialog"} showCloseButton={!asking && !phone}
+  const question = removing ? <RemoveFieldQuestion field={removing} presentation={presentation} confirmed={dialog.confirmed} descriptionId={questionId}
+    onConfirmedChange={dialog.setConfirmed} onAnswer={dialog.answer} /> : null;
+  // La ✕ y Escape de la pregunta son «Cancelar»: vuelve al campo sin cerrar «Campos de …». Quitarlo se deshace sin guardar el
+  // catálogo, así que la pregunta lleva su ✕ (FRM-Catalogo-Campos y M-FRM-Catalogo-Campos, «Quitar un campo»).
+  const closeQuestion = (open: boolean) => { if (!open) dialog.answer(false); };
+
+  // M-FRM-Catalogo-Campos: la pantalla del campo sigue debajo y la pregunta sube en su hoja, encima.
+  if (phone) {
+    return <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
+      <DialogContent ref={content} showCloseButton={false} onCloseAutoFocus={restoreFocus} onOpenAutoFocus={readOnly ? undefined : focusName}
+        className="max-md:inset-0 max-md:flex max-md:h-dvh max-md:max-h-none max-md:flex-col max-md:rounded-none [&>[data-slot=dialog-handle]]:hidden">
+        {phoneScreen}
+        {question ? <Dialog open onOpenChange={closeQuestion}>
+          <DialogContent size="sm" role="alertdialog" aria-describedby={questionId}>{question}</DialogContent>
+        </Dialog> : null}
+      </DialogContent>
+    </Dialog>;
+  }
+  // En la compu, la pregunta toma el lugar del modal, en el mismo diálogo.
+  return <Dialog open onOpenChange={(open) => { if (!open) { if (asking) dialog.answer(false); else onClose(); } }}>
+    <DialogContent ref={content} size={asking ? "sm" : "default"} role={asking ? "alertdialog" : "dialog"}
       aria-describedby={asking ? questionId : undefined} onCloseAutoFocus={restoreFocus} onOpenAutoFocus={readOnly ? undefined : focusName}
-      onEscapeKeyDown={(event) => { if (asking) { event.preventDefault(); dialog.answer(false); } }}
-      className={asking ? undefined : phone
-        ? "max-md:inset-0 max-md:flex max-md:h-dvh max-md:max-h-none max-md:flex-col max-md:rounded-none [&>[data-slot=dialog-handle]]:hidden"
-        : "md:max-w-220"}>
-      {removing ? <RemoveFieldQuestion field={removing} presentation={presentation} confirmed={dialog.confirmed} descriptionId={questionId}
-        onConfirmedChange={dialog.setConfirmed} onAnswer={dialog.answer} /> : phone ? phoneScreen : desktop}
+      className={asking ? undefined : "md:max-w-220"}>
+      {question ?? desktop}
     </DialogContent>
   </Dialog>;
 }

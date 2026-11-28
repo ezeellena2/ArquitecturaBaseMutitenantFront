@@ -192,6 +192,25 @@ describe("CatalogFieldsDialog (FRM-Catalogo-Campos)", () => {
     expect(result.done).toEqual([{ fields: [zona], confirmedRemovals: ["f-cuit"] }]);
   });
 
+  it("la ✕ de la pregunta de quitar es «Cancelar»: vuelve al campo sin cerrar «Campos de …» (FRM-Catalogo-Campos, «Quitar un campo»)", async () => {
+    const { user, result } = mount();
+    await within(dialog()).findByText("2 de 20");
+    await user.click(within(items()[1]!).getAllByRole("button")[0]!);
+    await user.click(within(dialog()).getByRole("button", { name: "Quitar campo" }));
+    const question = screen.getByRole("alertdialog", { name: "Quitar «Zona»" });
+    await user.click(within(question).getByRole("button", { name: "Cerrar" }));
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+    expect(within(dialog()).getByRole("region", { name: "Campo 2 de 2" })).toBeInTheDocument();
+    expect(names()).toEqual(["CUIT", "Zona"]);
+    expect(result.closed).toBe(0);
+  });
+
+  it("«Tipo» tiene el ancho de los demás campos (FRM-Catalogo-Campos)", async () => {
+    mount();
+    const field = await within(dialog()).findByRole("region", { name: "Campo 1 de 2" });
+    expect(within(field).getByRole("button", { name: pickerName("Tipo") }).className).not.toMatch(/max-w-/);
+  });
+
   it("el combo del catálogo abre con los primeros a mano activos, busca adentro de la lista y cerrado dice solo el catálogo (262)", async () => {
     const { user, result } = mount();
     await user.click(within(items()[1]!).getAllByRole("button")[0]!);
@@ -267,6 +286,35 @@ describe("CatalogFieldsDialog (FRM-Catalogo-Campos)", () => {
       await user.click(screen.getByRole("button", { name: "Volver a la lista" }));
       expect(screen.getByRole("dialog", { name: "Campos" })).toBeInTheDocument();
       expect(await axe(screen.getByRole("dialog"))).toHaveNoViolations();
+    });
+
+    it("la clave guardada empieza después del candado: el campo del teléfono lleva 14 de relleno", async () => {
+      const { user } = mount({ phone: true });
+      const screenDialog = screen.getByRole("dialog", { name: "Campos" });
+      await user.click(within(within(screenDialog).getAllByRole("listitem")[0]!).getByRole("button"));
+      expect(screen.getByRole("textbox", { name: "Clave" })).toHaveClass("pl-8", "max-md:pl-10");
+      expect(screen.getByRole("img", { name: "No cambia: el campo ya está guardado" })).toHaveClass("left-3", "max-md:left-3.5");
+    });
+
+    it("quitar pregunta en una hoja sobre la pantalla del campo, con su ✕, que vuelve al campo (M-FRM-Catalogo-Campos, «Quitar un campo»)", async () => {
+      const { user, result } = mount({ phone: true });
+      const screenDialog = screen.getByRole("dialog", { name: "Campos" });
+      await user.click(within(within(screenDialog).getAllByRole("listitem")[1]!).getByRole("button"));
+      await user.click(screen.getByRole("button", { name: "Quitar campo" }));
+      const question = screen.getByRole("alertdialog", { name: "Quitar «Zona»" });
+      // La pantalla «Campo 2 de 2» sigue debajo de la hoja.
+      expect(screen.getByText("Campo 2 de 2")).toBeInTheDocument();
+      expect(screen.getByDisplayValue("Zona")).toBeInTheDocument();
+      expect(within(question).getByRole("button", { name: "Quitar el campo" })).toBeInTheDocument();
+      await user.click(within(question).getByRole("button", { name: "Cerrar" }));
+      expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+      expect(screen.getByRole("dialog", { name: "Campo 2 de 2" })).toBeInTheDocument();
+      // Confirmar la quita deja la lista sin el campo, en la misma pantalla.
+      await user.click(screen.getByRole("button", { name: "Quitar campo" }));
+      await user.click(within(screen.getByRole("alertdialog", { name: "Quitar «Zona»" })).getByRole("button", { name: "Quitar el campo" }));
+      expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+      expect(screen.queryByDisplayValue("Zona")).not.toBeInTheDocument();
+      expect(result.closed).toBe(0);
     });
   });
 });
