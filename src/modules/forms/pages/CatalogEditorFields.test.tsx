@@ -79,3 +79,51 @@ describe("los valores de los campos fuera de su celda (E13)", () => {
     expect(within(row).getByText("2.500,5")).toBeInTheDocument();
   });
 });
+
+describe("el encabezado de Opciones con campos (FRM-Catalogo-13 y M-FRM-Catalogo-13)", () => {
+  it("en la compu, «+ Agregar campos · 2» como «+ Agregar opción»; con un campo rechazado, solo el número va en rojo", async () => {
+    let puts = 0;
+    server.use(http.put(`${base}/c-motivos`, () => {
+      puts++;
+      return HttpResponse.json({ status: 400, code: "Forms.Catalog.FieldTypeNotConvertible", traceId: "t",
+        errors: { "fields.0.type": ["1 opción tiene un valor que no es un número entero."] }, invalidCount: 1,
+        invalidRows: [{ position: 1, itemId: "i-seg", text: "Seguimiento", reason: "invalid" }] }, { status: 400 });
+    }));
+    const { user } = mountForms(formsOwner, path);
+    const fieldsButton = await screen.findByRole("button", { name: "Agregar campos · 2" });
+    expect(fieldsButton.querySelector("svg")).not.toBeNull();
+    expect(screen.getByRole("button", { name: "Agregar opción" }).querySelector("svg")).not.toBeNull();
+    await user.click(fieldsButton);
+    const dialog = await screen.findByRole("dialog", { name: "Campos de «Motivos de visita»" });
+    await user.click(within(dialog).getByRole("button", { name: pickerName("Tipo") }));
+    await user.click(await screen.findByRole("option", { name: "Número entero" }));
+    await user.click(within(dialog).getByRole("button", { name: "Listo" }));
+    await user.click(screen.getByRole("button", { name: "Guardar cambios" }));
+    await waitFor(() => expect(puts).toBe(1));
+    expect(await screen.findByText("«Alta» · Tipo: 1 opción tiene un valor que no es un número entero.")).toBeInTheDocument();
+    const rejected = screen.getByRole("button", { name: "Agregar campos · 2" });
+    expect(rejected).not.toHaveClass("text-[var(--peligro)]");
+    expect(rejected.querySelector("[data-rejected]")).toHaveClass("text-[var(--peligro)]", "bg-[var(--peligro-t)]");
+  });
+
+  describe("en el teléfono", () => {
+    let restore: () => void = () => {};
+    beforeEach(() => { restore = asPhone(); });
+    afterEach(() => restore());
+
+    it("debajo del título, «Agregar opción» y «Agregar campos · 2», dos botones iguales y sin «+», y «Columnas» a todo el ancho antes de la búsqueda", async () => {
+      mountForms(formsOwner, path);
+      const fieldsButton = await screen.findByRole("button", { name: "Agregar campos · 2" });
+      const add = screen.getByRole("button", { name: "Agregar opción" });
+      expect(add.parentElement).toBe(fieldsButton.parentElement);
+      for (const button of [add, fieldsButton]) {
+        expect(button).toHaveClass("h-11", "border-[var(--borde2)]");
+        expect(button.querySelector("svg")).toBeNull();
+      }
+      const columns = screen.getByRole("button", { name: /Columnas/ });
+      expect(columns).toHaveClass("w-full", "h-11");
+      const search = screen.getByRole("searchbox", { name: "Buscar opción" });
+      expect(columns.compareDocumentPosition(search) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    });
+  });
+});

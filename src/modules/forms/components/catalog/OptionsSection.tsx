@@ -37,8 +37,8 @@ import { OptionsDialog, type OptionsDialogOpening } from "./OptionsDialog";
  * «Opciones» de un catálogo a mano (FRM-Catalogo y M-FRM-Catalogo). En la compu, la caja con el encabezado arena: «+ Agregar
  * opción», «Importar» y «Exportar» de contorno y el ⋮ con la plantilla, «Ordenar por…» y los códigos que faltan; debajo,
  * «Buscar opción», la franja de las elegidas y la tabla editable, con la selección, el Estado como casilla y ↑ ↓ ✎ 🗑 a la
- * vista; «Restaurar» y «Reactivar», en el ⋮ de la fila (261). En el teléfono, el título gris con el enlace «Agregar opción» y
- * la lista en una tarjeta; lo demás va en el ⋮ de la banda (`useOptionsActions`). Con solo `formcatalogs.read` o dado de
+ * vista; «Restaurar» y «Reactivar», en el ⋮ de la fila (261). En el teléfono, el título gris con «Agregar opción» y «Agregar
+ * campos · N» debajo, dos botones iguales, y la lista en una tarjeta; lo demás va en el ⋮ de la banda (`useOptionsActions`). Con solo `formcatalogs.read` o dado de
  * baja, la tabla de lectura. Un movimiento o un orden pendiente es una franja suelta, arriba de la caja. Lo apagado dice por
  * qué (116). «Agregar opción» y ✎ abren el modal de opciones; si guardar encuentra un error, se abre en la primera con
  * problemas (117). Con una propuesta del asistente, `rowReview` marca «Revisá» adentro del texto de cada opción dudosa, con su
@@ -100,24 +100,30 @@ export function OptionsSection({ editor, editable, isNew, actions, onImport, row
   const moveReason = editor.deletes.size ? t("forms:catalog.reasons.deletePending") : editor.sort ? t("forms:catalog.reasons.sortPending") : undefined;
   const fullReason = editor.full ? t("forms:catalog.reasons.full") : undefined;
 
-  // «Agregar campos · N» cuenta los activos y se pone en rojo si el servidor rechazó uno; quien solo lee ve «Campos», si hay.
+  // «+ Agregar campos · N» (FRM-Catalogo-13, .k-cont) cuenta los activos, y si el servidor rechazó uno, el número va en rojo;
+  // quien solo lee ve «Campos», si hay. En el teléfono, sin el «+», como «Agregar opción» a su lado (M-FRM-Catalogo-13).
   const fieldCount = editor.fields.fields.length;
   const fieldsRejected = editor.fields.fields.some((field) => Object.values(field.errors ?? {}).some(Boolean));
+  const phoneButton = "h-11 px-3.5 text-[0.875rem] font-semibold";
   const fieldsButton = editable || fieldCount > 0
-    ? <Button type="button" size="sm" variant="outline" onClick={() => setFieldsDialog({ initialKey: null })}
-      aria-label={t(editable ? "forms:catalog.fieldsButton.addLabel" : "forms:catalog.fieldsButton.readLabel", { n: format.formatInteger(fieldCount) })}
-      className={cn(fieldsRejected && "border-[var(--peligro)] text-[var(--peligro)]")}>
+    ? <Button type="button" size="sm" variant="outline" onClick={() => setFieldsDialog({ initialKey: null })} className={cn(phone && phoneButton)}
+      aria-label={t(editable ? "forms:catalog.fieldsButton.addLabel" : "forms:catalog.fieldsButton.readLabel", { n: format.formatInteger(fieldCount) })}>
+      {editable && !phone ? <Plus aria-hidden="true" className="size-4" /> : null}
       {t(editable ? "forms:catalog.fieldsButton.add" : "forms:catalog.fieldsButton.read")}
-      {fieldCount ? <span aria-hidden="true" className="rounded-full bg-[var(--s3)] px-1.5 text-[0.71875rem] font-semibold tabular-nums">{format.formatInteger(fieldCount)}</span> : null}
+      {fieldCount ? <span aria-hidden="true" data-rejected={fieldsRejected || undefined}
+        className={cn("rounded-full px-1.5 text-[0.71875rem] font-semibold tabular-nums", fieldsRejected ? "bg-[var(--peligro-t)] text-[var(--peligro)]" : "bg-[var(--s3)] text-[var(--t2)]")}>
+        {format.formatInteger(fieldCount)}</span> : null}
     </Button> : null;
 
   const header = phone
-    // M-FRM-Catalogo: el título gris y, a la derecha, el enlace «Agregar opción»; lo demás va en el ⋮ de la banda.
-    ? <div className="mt-1.5 mb-2 flex flex-wrap items-center justify-end gap-x-3 gap-y-1 px-1 leading-[normal]">
-      <h2 id={titleId} className="mr-auto text-[0.84375rem] font-semibold text-[var(--t2)]">{t("forms:catalog.options")}</h2>
-      {fieldsButton}
-      {editable ? <Button type="button" variant="link" onClick={openAdd} disabledReason={fullReason}
-        className="text-[0.90625rem] font-semibold text-[var(--marca-tx)] disabled:opacity-45">{t("forms:catalog.actions.add")}</Button> : null}
+    // M-FRM-Catalogo-13: el título gris y, debajo, «Agregar opción» y «Agregar campos · N», dos botones iguales; lo demás va
+    // en el ⋮ de la banda.
+    ? <div className="mt-1.5 mb-2.5 flex flex-col gap-2 leading-[normal]">
+      <h2 id={titleId} className="px-1 text-[0.84375rem] font-semibold text-[var(--t2)]">{t("forms:catalog.options")}</h2>
+      {editable || fieldsButton ? <div className="flex flex-wrap gap-2">
+        {editable ? <Button type="button" size="sm" variant="outline" onClick={openAdd} disabledReason={fullReason} className={phoneButton}>{t("forms:catalog.actions.add")}</Button> : null}
+        {fieldsButton}
+      </div> : null}
     </div>
     // FRM-Catalogo: el encabezado arena de las cajas, como «El catálogo»; el único botón principal es «Guardar cambios».
     : <header className="flex min-h-10 flex-wrap items-center gap-1.5 border-b border-[var(--borde-cab)] bg-[var(--cab)] py-1 pr-1 pl-4">
@@ -169,16 +175,20 @@ export function OptionsSection({ editor, editable, isNew, actions, onImport, row
 
   // Sin opciones guardadas no hay qué buscar (FRM-Catalogo, «Sin opciones»): queda solo «Todavía no hay opciones.».
   const searchable = !isNew && ((saved?.itemCounts.total ?? 0) > 0 || editor.searching);
-  const searchBox = searchable ? <div className="relative min-w-0 max-w-[22rem] flex-1">
+  const searchBox = searchable ? <div className="relative min-w-0 max-w-[22rem] flex-1 max-md:max-w-none">
     <Search aria-hidden="true" className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-[var(--t3)] max-md:left-3.5" />
     {/* El campo del teléfono lleva 14 de relleno (input): la lupa va a 14 y el texto, después de ella. */}
     <Input type="search" aria-label={t("forms:catalog.search")} placeholder={t("forms:catalog.search")} value={editor.searchInput}
       onChange={(event) => editor.setSearchInput(event.target.value)} className="pl-8 max-md:pl-10" />
   </div> : null;
-  // «Columnas» al lado de la búsqueda, con una casilla por campo: las columnas fijas siempre se ven (262).
+  // «Columnas» al lado de la búsqueda, con una casilla por campo: las columnas fijas siempre se ven (262). En el teléfono
+  // (M-FRM-Catalogo-13, .k-coltel), a todo el ancho debajo de los botones, con la flecha a la derecha, y la búsqueda debajo.
   const columnsMenu = fieldColumns.length ? <ColumnsMenu hidden={hidden} onHiddenChange={setHidden}
+    className={phone ? "h-11 w-full justify-between rounded-[0.625rem] border-[var(--borde2)] px-3.5 text-[0.875rem] text-[var(--t1)]" : undefined}
     columns={fieldColumns.map((column) => ({ id: column.field.localKey, label: column.field.name || t("forms:catalog.fieldsDialog.noName") }))} /> : null;
-  const toolbar = searchBox || columnsMenu ? <div className={cn("flex flex-wrap items-center gap-2", phone ? "mb-3" : "mx-4 my-3")}>{searchBox}{columnsMenu}</div> : null;
+  const toolbar = !searchBox && !columnsMenu ? null : phone
+    ? <div className="mb-3 flex flex-col gap-2.5">{columnsMenu}{searchBox}</div>
+    : <div className="mx-4 my-3 flex flex-wrap items-center gap-2">{searchBox}{columnsMenu}</div>;
 
   const label = (row: CatalogRowView) => row.draft.text.trim() || t("forms:catalog.newOption");
   // El error de una celda describe su campo (aria-describedby), como en FormField (accesibilidad).
