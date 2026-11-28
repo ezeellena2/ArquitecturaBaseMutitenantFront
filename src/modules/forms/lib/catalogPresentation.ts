@@ -2,7 +2,7 @@ import type { FormatState } from "@/shared/format/useFormat";
 import type { FormCatalogFieldType, FormCatalogItemRow, FormCatalogPresentationDetail, FormCatalogPresentationIssue, FormCatalogValueType } from "../api/types";
 import type { ItemDraft } from "./catalogDraft";
 import { catalogLimits } from "./catalogLimits";
-import { displayValue, fieldValueText, readFieldValue, readValue } from "./catalogValues";
+import { displayValue, fieldDraftText, fieldValueText, readValue } from "./catalogValues";
 
 /**
  * «En WhatsApp» de un catálogo a mano (E13): qué arma el título y la descripción de cada opción. Cada uno es una lista de
@@ -107,9 +107,6 @@ export function draftPlaceText(draft: ItemDraft, source: PresentationSource, for
     const field = source.fields.find((item) => item.id === fieldIdOfPlace(place));
     if (!field) return "";
     const value = draft.fields?.[field.id] ?? null;
-    const read = readFieldValue(value, field.type, format, ignoreErrors);
-    if (read.error) return typeof value === "string" ? value : "";
-    const canonical = read.canonical;
-    return fieldValueText(canonical, field.type, format, typeof canonical === "string" ? source.sourceItem?.(canonical)?.text : undefined);
+    return fieldDraftText(value, field.type, format, typeof value === "string" ? source.sourceItem?.(value)?.text : undefined);
   };
 }

@@ -15,7 +15,7 @@ import { catalogItemsQueryRoot, fetchCatalogItems } from "../../api/catalogs";
 import type { FormCatalogFieldDetail, FormCatalogItemRow, FormCatalogRow } from "../../api/types";
 import type { CatalogSourceItem } from "../../hooks/useCatalogFieldSources";
 import { catalogStatus, type CatalogStatus } from "../../lib/catalogStatus";
-import { fieldValueText, type FieldValue } from "../../lib/catalogValues";
+import { fieldDraftText, type FieldValue } from "../../lib/catalogValues";
 
 /// Tableros FRM-Catalogos y M-FRM-Catalogos: activo en verde, de baja en gris y «No se puede usar» en rojo, con su motivo
 /// en la (i). La palabra sale de `enums.FormCatalogStatus`, que no es un enum del contrato: lo arma `catalogStatus`.
@@ -131,9 +131,10 @@ export function LockedFieldValue({ reason, label, id, describedBy }: { reason: s
   </>;
 }
 
-/// El valor guardado de un campo, como se lee en la tabla de lectura y en el teléfono; sin valor, «—» (formatos).
+/// El valor de un campo en el borrador de una opción (como se escribe en su celda), como se lee en la tabla de lectura y en el
+/// teléfono; sin valor, «—» (formatos).
 export function FieldValueText({ field, value, sourceItem }: { field: FormCatalogFieldDetail; value: FieldValue; sourceItem?: CatalogSourceItem }) {
   const format = useFormat();
-  const text = fieldValueText(value, field.type, format, typeof value === "string" ? sourceItem?.(value)?.text : undefined);
+  const text = fieldDraftText(value, field.type, format, typeof value === "string" ? sourceItem?.(value)?.text : undefined);
   return text ? <span className="break-words">{text}</span> : <EmptyValue />;
 }

@@ -79,6 +79,17 @@ export function fieldValueText(raw: string | boolean | null | undefined, type: F
   return type === "WholeNumber" || type === "DecimalNumber" || type === "Date" ? displayValue(raw, type, format) : raw;
 }
 
+/**
+ * Lo escrito en un campo del borrador, como se lee en la tabla de lectura, en el teléfono y en «Por ejemplo»: leído con el tipo
+ * en que está escrito y formateado como se guardaría («1500» se ve «1.500»; «12/03/2021», igual); lo que todavía no se puede
+ * leer, como está escrito. El borrador ya viene con la región del idioma: nunca se formatea como si fuera el canónico.
+ */
+export function fieldDraftText(value: FieldValue, type: FormCatalogFieldType, format: FormatState, sourceText?: string): string {
+  const read = readFieldValue(value, type, format, (key) => key);
+  if (read.error) return typeof value === "string" ? value : "";
+  return fieldValueText(read.canonical, type, format, sourceText);
+}
+
 /** Dos textos o dos códigos iguales, sin mirar mayúsculas ni espacios de los costados. */
 export const sameText = (a: string, b: string) => a.trim().toLocaleLowerCase() === b.trim().toLocaleLowerCase();
 

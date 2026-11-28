@@ -100,8 +100,11 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
   // Los campos cuyos valores se cargan, se validan y viajan: guardados, activos en el borrador y con el mismo tipo y catálogo.
   // El valor pendiente de uno que se quitó o cambió de tipo no viaja ni frena, y vuelve si el campo queda como estaba.
   const writableFields = fieldColumnsOf(fields, savedFieldDetails).flatMap((column) => column.editable && column.detail ? [column.detail] : []);
-  // Lo que puede ir a WhatsApp: los campos activos guardados que siguen en el borrador (uno nuevo todavía no tiene identidad).
-  const presentationFields = fields.fields.flatMap((field) => field.id ? [{ id: field.id, name: field.name, type: field.type }] : []);
+  // Lo que puede ir a WhatsApp: los campos activos guardados que siguen en el borrador (uno nuevo todavía no tiene identidad),
+  // con el tipo guardado, que es en el que están escritos sus valores: uno al que el borrador le cambió el tipo queda grisado
+  // hasta guardar, y «Por ejemplo» dice lo que tiene («Capital»), nunca la identidad de su opción.
+  const presentationFields = fields.fields.flatMap((field) => field.id
+    ? [{ id: field.id, name: field.name, type: savedFieldDetails.find((saved) => saved.id === field.id)?.type ?? field.type }] : []);
   const presentationKeys = placeKeys({ valueType, fields: presentationFields });
   const savedPresentation = normalizePresentation(saved?.presentation ?? defaultPresentation, presentationKeys);
   const presentation = presentationDraft ? normalizePresentation(presentationDraft, presentationKeys) : savedPresentation;
