@@ -8,10 +8,19 @@ import { cn } from "@/shared/lib/utils";
 import { InfoTip } from "@/shared/ui/InfoTip";
 import { SegmentedControl } from "@/shared/ui/SegmentedControl";
 import { Skeleton } from "@/shared/ui/skeleton";
-import type { FormCatalogPreviewResponse } from "../../api/types";
+import type { FormCatalogPresentationIssue, FormCatalogPreviewResponse } from "../../api/types";
 import { catalogLimits } from "../../lib/catalogLimits";
 
-export interface PreviewOption { readonly key: string; readonly text: string; readonly detail?: string | null }
+/**
+ * Una opción como la ve WhatsApp: en un catálogo a mano, el título y la descripción que arma «En WhatsApp» (E13), y lo que no
+ * entra (`buildPresentation`), que se marca en rojo.
+ */
+export interface PreviewOption {
+  readonly key: string;
+  readonly text: string;
+  readonly detail?: string | null;
+  readonly issue?: FormCatalogPresentationIssue | null;
+}
 
 /** Hasta cuántas se eligen con «Varias» en la vista previa (FRM-Catalogo, «Vista previa con varias»). */
 const multipleMax = 3;
@@ -40,8 +49,8 @@ export function CatalogPreviewPhone({ options, withSwitch = true }: { options: r
           {options.map((option) => <li key={option.key}>
             <label className="flex items-start gap-2.5 border-b border-[var(--borde)] px-3 py-2">
               <span className="min-w-0 flex-1">
-                <span className="block break-words">{option.text}</span>
-                {option.detail ? <span className="block break-words text-[var(--t3)]">{option.detail}</span> : null}
+                <span className={cn("block break-words", option.issue === "TitleTooLong" && "text-[var(--peligro)]")}>{option.text}</span>
+                {option.detail ? <span className={cn("block break-words", option.issue === "DescriptionTooLong" ? "text-[var(--peligro)]" : "text-[var(--t3)]")}>{option.detail}</span> : null}
               </span>
               {/* Se marcan con el mouse y con el teclado, igual (accesibilidad). */}
               {multiple

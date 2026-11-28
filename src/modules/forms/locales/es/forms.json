@@ -230,6 +230,24 @@
       "moreHelp": "Con estos filtros hay {{total}} opciones, y WhatsApp muestra hasta {{max}}.",
       "error": "No pudimos actualizar la vista previa."
     },
+    "presentation": {
+      "section": "En WhatsApp",
+      "title": "Título · hasta {{n}} caracteres",
+      "description": "Descripción · hasta {{n}}",
+      "noDescription": "Sin descripción",
+      "titleNeedsOne": "El título no puede quedar vacío.",
+      "example": "Por ejemplo",
+      "issues": {
+        "TitleTooLong_one": "{{n}} opción supera los {{max}} caracteres del título.",
+        "TitleTooLong_other": "{{n}} opciones superan los {{max}} caracteres del título.",
+        "DescriptionTooLong_one": "{{n}} opción supera los {{max}} caracteres de la descripción.",
+        "DescriptionTooLong_other": "{{n}} opciones superan los {{max}} caracteres de la descripción.",
+        "TitleEmpty_one": "{{n}} opción queda sin título.",
+        "TitleEmpty_other": "{{n}} opciones quedan sin título.",
+        "mixed_one": "{{n}} opción no entra en WhatsApp.",
+        "mixed_other": "{{n}} opciones no entran en WhatsApp."
+      }
+    },
     "optionsDialog": {
       "title": "Opciones de «{{name}}»",
       "titleNew": "Opciones nuevas de «{{name}}»",
