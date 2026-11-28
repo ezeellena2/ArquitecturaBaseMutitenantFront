@@ -138,6 +138,13 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
       if (!current[key]) return current;
       return { ...current, [key]: Object.fromEntries(Object.entries(current[key]).filter(([field]) => !cleared.includes(field))) };
     });
+    // Lo mismo con la marca de `invalidRows`: el valor nuevo se lee en la pantalla (uno ilegible frena) y el servidor decide.
+    const editedFieldIds = Object.keys(patch.fields ?? {});
+    if (editedFieldIds.length) setFieldIssue((current) => {
+      const fieldId = current?.invalid ? fields.fields.find((field) => field.localKey === current.localKey)?.id : undefined;
+      if (!current?.invalid || !fieldId || !editedFieldIds.includes(fieldId)) return current;
+      return { ...current, invalid: { ...current.invalid, rows: current.invalid.rows.filter((row) => row.itemId !== key) } };
+    });
     const merged = (base: ItemEdits | undefined): ItemEdits =>
       ({ ...base, ...patch, ...(patch.fields ? { fields: { ...base?.fields, ...patch.fields } } : {}) });
     if (added.some((item) => item.localId === key)) {

@@ -373,6 +373,33 @@ describe("Una columna por campo (E13)", () => {
     expect(provPuts[0].items).toEqual([expect.objectContaining({ itemId: "i-ace", fields: { "f-plazo": "123456789012345678" } })]);
   });
 
+  it("corregir el valor de una opción de invalidRows borra su marca, y uno que no se puede leer frena sin mandar null", async () => {
+    serveProveedores(() => provPuts.length === 1
+      ? HttpResponse.json({ status: 400, code: "Forms.Catalog.FieldValuesIncompatible", traceId: "t", errors: { "fields.2.unique": ["1 opción repite el valor."] },
+        invalidCount: 1, invalidRows: [{ position: 1, itemId: "i-abr", text: "Abrasivos del Sur", reason: "invalid" }] }, { status: 400 })
+      : HttpResponse.json({ version: 8, itemIdentityMap: [], fieldIdentityMap: [] }));
+    const { user } = await openProveedores();
+    await user.click(screen.getByRole("button", { name: "Agregar campos · 3" }));
+    const fieldsDialog = await screen.findByRole("dialog", { name: "Campos de «Proveedores»" });
+    await user.click(within(fieldsDialog).getByRole("button", { name: /Plazo de pago/ }));
+    await user.click(within(fieldsDialog).getByRole("checkbox", { name: "Único" }));
+    await user.click(within(fieldsDialog).getByRole("button", { name: "Listo" }));
+    await user.click(saveButton());
+    await waitFor(() => expect(provPuts).toHaveLength(1));
+    const plazo = () => textbox("Plazo de pago de Abrasivos del Sur");
+    await waitFor(() => expect(plazo()).toHaveAccessibleDescription(/No es un valor válido\./));
+
+    await user.clear(plazo());
+    await user.paste("45");
+    expect(plazo()).not.toHaveAccessibleDescription(/No es un valor válido\./);
+    await user.clear(plazo());
+    await user.paste("1.500");
+    await user.click(saveButton());
+    const dialog = await screen.findByRole("dialog", { name: "Opciones de «Proveedores»" });
+    expect(within(dialog).getByRole("textbox", { name: "Plazo de pago" })).toHaveAccessibleDescription(/Se puede leer de dos maneras/);
+    expect(provPuts).toHaveLength(1);
+  });
+
   it("borrar una opción que es valor de otro catálogo dice «No se puede borrar: la usa otra opción.», en lugar del texto genérico", async () => {
     serveProveedores(() => HttpResponse.json({ status: 409, code: "Forms.Catalog.ItemInUse", traceId: "t",
       errors: { "deleteItems.0": ["No se puede borrar porque se usa. Podés darla de baja."] }, uses: ["options"] }, { status: 409 }));
