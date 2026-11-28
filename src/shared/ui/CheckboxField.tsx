@@ -30,7 +30,8 @@ const showOnly = (event: MouseEvent) => event.preventDefault();
 /// La fila es la del selector de permisos del tablero ("Roles · Editar un rol"): se ilumina entera al pasar el
 /// mouse, así que tiene que marcarse entera al hacerle clic. Para eso el `after` de la etiqueta se estira sobre
 /// toda la fila; la (i) de la ayuda queda afuera del `<label>`, encima, para que su texto sea la descripción y no
-/// parte del nombre accesible.
+/// parte del nombre accesible. La casilla va en su capa, encima de ese `after` (como en `PermissionPicker`): el puntero
+/// da en ella y no en la etiqueta que la cubre.
 ///
 /// Apagada con su motivo (211), responde la fila entera: el envoltorio del cuadradito se estira sobre ella, como la
 /// etiqueta de una casilla encendida, y es el que abre el motivo, que se ancla en el cuadradito. La casilla queda con
@@ -64,8 +65,9 @@ export function CheckboxField({
       onCheckedChange={(value) => onCheckedChange(value === true)}
       onClick={off ? showOnly : undefined}
       // Sin marcar, el borde tenue casi no se ve sobre blanco: una casilla vacía tiene que
-      // leerse como algo que se puede marcar, como la del tablero. Apagada con motivo, el puntero lo recibe su envoltorio.
-      className={cn("mt-px border-[var(--t2)]", off && "pointer-events-none")}
+      // leerse como algo que se puede marcar, como la del tablero. Va encima del `after` de la etiqueta; apagada con motivo,
+      // el puntero lo recibe su envoltorio.
+      className={cn("relative z-[1] mt-px border-[var(--t2)]", off && "pointer-events-none")}
     />
   );
 

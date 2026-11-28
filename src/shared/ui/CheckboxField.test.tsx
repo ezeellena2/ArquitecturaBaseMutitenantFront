@@ -22,6 +22,18 @@ describe("CheckboxField", () => {
     expect(onCheckedChange).toHaveBeenCalledWith(true);
   });
 
+  it("la casilla va encima de su etiqueta, que cubre la fila: el puntero da en ella, y tocar la etiqueta también la marca", async () => {
+    const onCheckedChange = vi.fn();
+    renderWithProviders(<CheckboxField label="Sin incluir a quien lo recibe" help="Nadie se elige a sí mismo." checked onCheckedChange={onCheckedChange} />);
+
+    // jsdom no apila capas: se mira que la etiqueta cubra la fila y que la casilla tenga su capa encima (FRM-03 del E2E real).
+    const label = screen.getByText("Sin incluir a quien lo recibe", { selector: "label" });
+    expect(label).toHaveClass("after:absolute", "after:inset-0");
+    expect(screen.getByRole("checkbox", { name: "Sin incluir a quien lo recibe" })).toHaveClass("relative", "z-[1]");
+    await userEvent.click(label);
+    expect(onCheckedChange).toHaveBeenCalledWith(false);
+  });
+
   // 116: la ayuda va en la (i) al final de la etiqueta, sin línea debajo, y es la descripción de la casilla.
   it("describes the checkbox with the help of its (i), without a line below", () => {
     const { container } = renderWithProviders(
