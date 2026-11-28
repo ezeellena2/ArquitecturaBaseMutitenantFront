@@ -31,21 +31,24 @@ import { Spinner } from "@/shared/ui/Spinner";
 import { Textarea } from "@/shared/ui/textarea";
 import { homeOf } from "@/tenancy/access";
 import { catalogsQueryRoot, createCatalog } from "../api/catalogs";
-import type { CreateFormCatalogRequest, FormCatalogRow } from "../api/types";
+import type { CreateFormCatalogRequest, FormCatalogPresentationIssues, FormCatalogRow } from "../api/types";
 import { CatalogBandStatus } from "../components/catalog/CatalogCells";
 import { CatalogConflictDialog } from "../components/catalog/CatalogConflictDialog";
 import { CatalogOriginFields, type CatalogOrigin } from "../components/catalog/CatalogOriginFields";
-import { CatalogPreviewPhone, PreviewOptionsCard } from "../components/catalog/CatalogPreviewPhone";
+import { CatalogPreviewPhone, PreviewOptionsCard, type PreviewOption } from "../components/catalog/CatalogPreviewPhone";
 import { FiltersEditor } from "../components/catalog/FiltersEditor";
 import { FiltersPreview } from "../components/catalog/FiltersPreview";
 import { ImportDialog } from "../components/catalog/ImportDialog";
 import { OptionsSection } from "../components/catalog/OptionsSection";
+import { PresentationEditor } from "../components/catalog/PresentationEditor";
 import { catalogFieldErrors, isCatalogConflict } from "../errors";
 import { useCatalogEditor, type CatalogEditor, type CatalogSaveExtra } from "../hooks/useCatalogEditor";
+import { useCatalogFieldSources } from "../hooks/useCatalogFieldSources";
 import { useCatalogFilters, type CatalogFilters } from "../hooks/useCatalogFilters";
 import { useCatalogProposal, useCatalogProposalTargets } from "../hooks/useCatalogProposal";
 import { useOptionsActions } from "../hooks/useOptionsActions";
 import { catalogLimits } from "../lib/catalogLimits";
+import { draftPlaceText, presentedOption, type PresentationSource } from "../lib/catalogPresentation";
 import { catalogsPath } from "../registration";
 
 /**
@@ -62,31 +65,54 @@ export function CatalogEditorPage() {
 
 const back = (t: (key: string) => string) => ({ to: catalogsPath, label: t("forms:catalog.backToList") });
 
-function previewOptions(editor: CatalogEditor) {
-  return editor.rows.filter((row) => row.draft.isActive && !row.pendingDelete && row.draft.text.trim())
-    .map((row) => ({ key: row.key, text: row.draft.text, detail: row.draft.detail || null }));
+/** Un rechazo que se ve debajo de lo que lo causó (un dato, una opción, un campo o «En WhatsApp»); el tope de campos, en la franja. */
+const shownInPlace = (error: unknown) => catalogFieldErrors(error).some((item) => item.field !== "fields");
+
+const noIssues: FormCatalogPresentationIssues = { count: 0, examples: [] };
+
+/**
+ * Lo que ve quien lo recibe, armado con «En WhatsApp» (E13): el título y la descripción de cada opción activa del borrador, como
+ * los arma el servidor, con lo que no entra marcado; y lo que dice cada lugar en la primera, para «Por ejemplo».
+ */
+function useCatalogPresentationView(editor: CatalogEditor) {
+  const format = useFormat();
+  const sourceItem = useCatalogFieldSources(editor.saved?.fields ?? [], editor.rows);
+  const source: PresentationSource = { valueType: editor.valueType, fields: editor.presentationFields, sourceItem };
+  const shown = editor.rows.filter((row) => row.draft.isActive && !row.pendingDelete);
+  const options: PreviewOption[] = shown.filter((row) => row.draft.text.trim())
+    .map((row) => presentedOption(row.key, editor.presentation, draftPlaceText(row.draft, source, format)));
+  const first = shown[0];
+  return { options, example: first ? draftPlaceText(first.draft, source, format) : null };
+}
+
+/** «En WhatsApp», debajo de «El catálogo» en uno a mano (FRM-Catalogo-13): en solo lectura, apagado. */
+function CatalogPresentation({ editor, editable, issues, example }: {
+  editor: CatalogEditor; editable: boolean; issues: FormCatalogPresentationIssues; example: ReturnType<typeof useCatalogPresentationView>["example"];
+}) {
+  return <PresentationEditor value={editor.presentation} onChange={editor.setPresentation} valueType={editor.valueType} fields={editor.presentationFields}
+    example={example} issues={issues} editable={editable} error={editor.presentationError} />;
 }
 
 /** Al costado en la compu, suelto, sin caja (FRM-Catalogo); en el teléfono, un diálogo desde el ojo de la barra (M-FRM-Catalogo). */
-function PreviewAside({ editor }: { editor: CatalogEditor }) {
+function PreviewAside({ options }: { options: readonly PreviewOption[] }) {
   const { t } = useTranslation("forms");
   return <section aria-label={t("forms:catalog.preview.title")} className="flex flex-col gap-2.5">
     <h2 className="text-[0.9375rem] font-semibold">{t("forms:catalog.preview.title")}</h2>
-    <CatalogPreviewPhone options={previewOptions(editor)} />
+    <CatalogPreviewPhone options={options} />
   </section>;
 }
 
 /** En el teléfono, «Así lo ve quien lo recibe» se abre desde el ojo de la barra: la lista de opciones en una tarjeta, sin el
  * marco del teléfono (M-FRM-Catalogo); con filtros, con la persona o el cliente de ejemplo arriba (M-FRM-Catalogo-Filtros y
  * M-FRM-Catalogo-Contactos). */
-function PhonePreviewDialog({ editor, filters, open, onOpenChange }: { editor: CatalogEditor; filters: CatalogFilters; open: boolean; onOpenChange: (open: boolean) => void }) {
+function PhonePreviewDialog({ options, filters, open, onOpenChange }: { options: readonly PreviewOption[]; filters: CatalogFilters; open: boolean; onOpenChange: (open: boolean) => void }) {
   const { t } = useTranslation("forms");
   // Se abre desde la barra, no desde un DialogTrigger: al cerrar, el foco vuelve a ese botón (formularios).
   const restoreFocus = useRestoreFocusOnClose(open);
   return <Dialog open={open} onOpenChange={onOpenChange}>
     <DialogContent aria-describedby={undefined} onCloseAutoFocus={restoreFocus}>
       <DialogHeader><DialogTitle>{t("forms:catalog.preview.title")}</DialogTitle></DialogHeader>
-      <DialogBody>{filters.filtered ? <FiltersPreview filters={filters} bare /> : <PreviewOptionsCard options={previewOptions(editor)} />}</DialogBody>
+      <DialogBody>{filters.filtered ? <FiltersPreview filters={filters} bare /> : <PreviewOptionsCard options={options} />}</DialogBody>
     </DialogContent>
   </Dialog>;
 }
@@ -116,10 +142,14 @@ function CatalogLoading({ id }: { id: string }) {
   </Page>;
 }
 
-function CatalogColumns({ phone, editor, filters, editable, children }: { phone: boolean; editor: CatalogEditor; filters: CatalogFilters; editable: boolean; children: ReactNode }) {
+/** «El catálogo» arriba y, debajo, «En WhatsApp» (a mano) o los filtros; la vista previa, al costado de los dos (FRM-Catalogo-13). */
+function CatalogColumns({ phone, options, filters, editable, below, children }: {
+  phone: boolean; options: readonly PreviewOption[]; filters: CatalogFilters; editable: boolean; below?: ReactNode; children: ReactNode;
+}) {
   return <div className="grid gap-3.5 lg:grid-cols-[minmax(0,1fr)_20rem]">
-    {filters.filtered ? <div className="flex min-w-0 flex-col gap-3.5">{children}<FiltersEditor filters={filters} editable={editable} /></div> : children}
-    {phone ? null : filters.filtered ? <FiltersPreview filters={filters} /> : <PreviewAside editor={editor} />}
+    {filters.filtered ? <div className="flex min-w-0 flex-col gap-3.5">{children}<FiltersEditor filters={filters} editable={editable} /></div>
+      : below ? <div className="flex min-w-0 flex-col gap-3.5">{children}{below}</div> : children}
+    {phone ? null : filters.filtered ? <FiltersPreview filters={filters} /> : <PreviewAside options={options} />}
   </div>;
 }
 
@@ -141,6 +171,7 @@ function SavedCatalogEditor({ id }: { id: string }) {
   const editableNow = Boolean(saved?.canManage && saved.isActive);
   const optionsActions = useOptionsActions(editor, { editable: editableNow, isNew: false });
   const proposal = useCatalogProposal(editor, targets);
+  const presentationView = useCatalogPresentationView(editor);
   const isDirty = editor.isDirty || (editableNow && filters.isDirty);
   // El 409 se lee en la revisión lado a lado; si lo guardado ahora no se pudo leer, en el cartel de siempre.
   const conflictInDialog = isCatalogConflict(editor.saveError) && !editor.conflictUnreadable;
@@ -153,7 +184,7 @@ function SavedCatalogEditor({ id }: { id: string }) {
     onSeeNew: () => { void seeNew(); },
     onContinueEditing: editor.continueEditing,
     // Un error de un campo va debajo de lo que lo causó; el resto, en la franja.
-    errorMessage: (error) => catalogFieldErrors(error).length ? null : actionErrorMessage(error, t),
+    errorMessage: (error) => shownInPlace(error) ? null : actionErrorMessage(error, t),
   });
 
   if (editor.catalog.isPending) return <CatalogLoading id={id} />;
@@ -221,7 +252,8 @@ function SavedCatalogEditor({ id }: { id: string }) {
           todo, ya va sobre lo de ahora. */}
       {proposal.changedSince ? <Banner tone="warning">{t("forms:catalog.proposal.changedSince", { name: saved.name })}</Banner> : null}
       {proposal.changeRows.length ? <AssistantProposalChangesSection rows={proposal.changeRows} /> : null}
-      <CatalogColumns phone={phone} editor={editor} filters={filters} editable={editable}>
+      <CatalogColumns phone={phone} options={presentationView.options} filters={filters} editable={editable}
+        below={manual ? <CatalogPresentation editor={editor} editable={editable} issues={saved.presentationIssues} example={presentationView.example} /> : undefined}>
         <Section title={t("forms:catalog.section")} phone="loose">
           <SectionFields className="grid gap-3.5">
             {/* Uno con filtros es siempre de texto: dice solo de dónde salen (FRM-Catalogo-Filtros). */}
@@ -243,10 +275,10 @@ function SavedCatalogEditor({ id }: { id: string }) {
       {manual ? <OptionsSection editor={editor} editable={editable} isNew={false} actions={optionsActions} onImport={() => setImporting(true)} rowReview={proposal.rowReview} /> : null}
     </Page>
     {edit.leaveDialog}
-    {phone ? <PhonePreviewDialog editor={editor} filters={filters} open={previewOpen} onOpenChange={setPreviewOpen} /> : null}
+    {phone ? <PhonePreviewDialog options={presentationView.options} filters={filters} open={previewOpen} onOpenChange={setPreviewOpen} /> : null}
     {importing ? <ImportDialog catalog={saved} onClose={() => setImporting(false)} onCatalogChanged={() => { void editor.seeNew(); }} /> : null}
     <CatalogConflictDialog conflict={editor.conflict} name={editor.name} rows={editor.rows} total={editor.total} active={activeCount}
-      valueType={editor.valueType} savedRow={editor.savedRow} onContinue={editor.continueEditing} onSeeNew={() => { void seeNew(); }} />
+      valueType={editor.valueType} savedRow={editor.savedRow} fields={editor.fields.fields} onContinue={editor.continueEditing} onSeeNew={() => { void seeNew(); }} />
     <ConfirmDialog open={confirmDeactivate} onOpenChange={setConfirmDeactivate}
       title={t("forms:catalog.deactivateDialog.title", { name: saved.name })} description={t("forms:catalog.deactivateDialog.description")}
       confirmLabel={t("forms:catalog.actions.deactivate")} destructive pending={editor.activating} pendingLabel={t("forms:catalog.deactivating")}
@@ -266,6 +298,7 @@ function NewCatalogEditor() {
   const editor = useCatalogEditor(undefined, { newValueType: origin.valueType });
   const optionsActions = useOptionsActions(editor, { editable: true, isNew: true });
   const filters = useCatalogFilters({ source: origin.source, canManage: true, error: editor.saveError, sampleRequiredMessage: t("forms:catalog.errors.sampleRequired") });
+  const presentationView = useCatalogPresentationView(editor);
   // Ninguna elección se descarta en silencio (162): otro origen o tipo pregunta antes, con lo que se va.
   const lostBy = (next: CatalogOrigin) => ({
     options: origin.source === "Manual" && (next.source !== "Manual" || next.valueType !== origin.valueType) ? editor.rows.length : 0,
@@ -287,11 +320,12 @@ function NewCatalogEditor() {
   const create = useIdempotentMutation((request: CreateFormCatalogRequest, key: string) => createCatalog(request, key),
     { sameOperation: (previous, next) => JSON.stringify(previous) === JSON.stringify(next) });
   const edit = useEditPage({
-    isDirty: editor.name.trim() !== "" || editor.description.trim() !== "" || editor.rows.length > 0 || filters.draft.conditions.length > 0,
+    isDirty: editor.name.trim() !== "" || editor.description.trim() !== "" || editor.rows.length > 0 || filters.draft.conditions.length > 0
+      || editor.fieldsDirty || editor.presentationDirty,
     error: editor.saveError,
     onSeeNew: () => undefined,
     onContinueEditing: () => undefined,
-    errorMessage: (error) => catalogFieldErrors(error).length ? null : actionErrorMessage(error, t),
+    errorMessage: (error) => shownInPlace(error) ? null : actionErrorMessage(error, t),
   });
   const manual = origin.source === "Manual";
 
@@ -303,8 +337,9 @@ function NewCatalogEditor() {
     if (!named || !sampled) return;
     const items = manual ? editor.createItems() : [];
     if (!items) return;
+    // Uno a mano lleva también sus campos y «En WhatsApp», si se eligieron (E13).
     create.mutate({ name: editor.name, description: editor.description.trim() || null, source: origin.source, valueType: origin.valueType, items,
-      ...(manual ? {} : filters.request()) }, {
+      ...(manual ? editor.fieldsRequest() : filters.request()) }, {
       onSuccess: (result) => {
         toast.success(t("forms:catalog.saved"));
         void queryClient.invalidateQueries({ queryKey: catalogsQueryRoot });
@@ -324,7 +359,8 @@ function NewCatalogEditor() {
     >
       {phone ? <PreviewBarButton onOpen={() => setPreviewOpen(true)} /> : null}
       {edit.formError}
-      <CatalogColumns phone={phone} editor={editor} filters={filters} editable>
+      <CatalogColumns phone={phone} options={presentationView.options} filters={filters} editable
+        below={manual ? <CatalogPresentation editor={editor} editable issues={noIssues} example={presentationView.example} /> : undefined}>
         <Section title={t("forms:catalog.section")} phone="loose">
           <SectionFields className="grid gap-3.5">
             <CatalogOriginFields value={origin} onChange={changeOrigin} />
@@ -341,7 +377,7 @@ function NewCatalogEditor() {
       {manual ? <OptionsSection editor={editor} editable isNew actions={optionsActions} /> : null}
     </Page>
     {edit.leaveDialog}
-    {phone ? <PhonePreviewDialog editor={editor} filters={filters} open={previewOpen} onOpenChange={setPreviewOpen} /> : null}
+    {phone ? <PhonePreviewDialog options={presentationView.options} filters={filters} open={previewOpen} onOpenChange={setPreviewOpen} /> : null}
     <ConfirmDialog open={pendingOrigin !== null} onOpenChange={(open) => { if (!open) setPendingOrigin(null); }}
       title={pendingOrigin ? t("forms:catalog.originChange.title", { to: pendingOrigin.source !== origin.source
         ? format.formatEnum("FormCatalogSource", pendingOrigin.source) : format.formatEnum("FormCatalogValueType", pendingOrigin.valueType) }) : ""}

@@ -1,7 +1,7 @@
 import { keepPreviousData, useQueries } from "@tanstack/react-query";
 import { catalogItemsQueryRoot, fetchCatalogItems } from "../api/catalogs";
 import type { FormCatalogFieldDetail, FormCatalogItemRow } from "../api/types";
-import type { CatalogRowView } from "../lib/catalogDraft";
+import type { ItemDraft } from "../lib/catalogDraft";
 
 /** Las opciones que se nombran de una vez: `ids` del listado de opciones admite hasta 100 (`maxItems` del contrato, E13). */
 const maxIds = 100;
@@ -11,7 +11,7 @@ const maxIds = 100;
  * identidad (`ids`), también las dadas de baja, una vez por catálogo fuente, para decir su texto y si está de baja. Un valor
  * guardado que apunta a una opción dada de baja se conserva y se ve así (lección 1).
  */
-export function useCatalogFieldSources(fields: readonly FormCatalogFieldDetail[], rows: readonly CatalogRowView[]) {
+export function useCatalogFieldSources(fields: readonly FormCatalogFieldDetail[], rows: readonly { readonly draft: Pick<ItemDraft, "fields"> }[]) {
   const sources = fields.filter((field) => field.isActive && field.type === "Catalog" && field.sourceCatalogId);
   const queries = useQueries({
     queries: sources.map((field) => {

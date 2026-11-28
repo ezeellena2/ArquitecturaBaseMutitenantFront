@@ -1,7 +1,10 @@
 import { validationConstraints } from "@/shared/api/generated/validation";
 import type { FormatState } from "@/shared/format/useFormat";
-import type { FormCatalogFieldDetail, FormCatalogFieldType, FormCatalogItemSortInput, FormCatalogPresentationDetail, FormCatalogValueType } from "../api/types";
-import { editableValue } from "./catalogValues";
+import type {
+  FormCatalogFieldDetail, FormCatalogFieldIdentity, FormCatalogFieldInput, FormCatalogFieldType, FormCatalogItemSortInput, FormCatalogPresentationDetail,
+  FormCatalogValueType,
+} from "../api/types";
+import { editableValue, readValue } from "./catalogValues";
 
 const field = validationConstraints.FormCatalogFieldHttpInput;
 
@@ -73,6 +76,53 @@ export function fieldDraftsOf(details: readonly FormCatalogFieldDetail[], format
     };
   });
   return { fields, confirmedRemovals: [] };
+}
+
+/** El rango como viaja: canónico; lo que no se puede leer va como está escrito, así lo rechaza el servidor (lección 4). */
+function rangeInput(written: string, valueType: FormCatalogValueType | null, format: FormatState, t: (key: string) => string): string | null {
+  if (!valueType || written.trim() === "") return null;
+  const read = readValue(written, valueType, format, t);
+  return read.error ? written : read.canonical;
+}
+
+/**
+ * La lista entera de los campos del `PUT` o del `POST` (E13), en su orden: uno guardado con su `id`, uno nuevo con su `localId`.
+ * El largo va solo en un texto, el rango en un número o una fecha y el catálogo en uno «De un catálogo».
+ */
+export function fieldInputsOf(draft: CatalogFieldsDraft, format: FormatState, t: (key: string) => string): FormCatalogFieldInput[] {
+  return draft.fields.map((field) => {
+    const valueType = rangeValueType(field.type);
+    const length = field.type === "Text" && field.maxLength.trim() !== "" ? Number(field.maxLength) : null;
+    return {
+      ...(field.id ? { id: field.id } : { localId: field.localKey }),
+      key: field.key, name: field.name, type: field.type,
+      sourceCatalogId: field.type === "Catalog" ? field.sourceCatalogId : null,
+      required: field.required, unique: field.unique,
+      maxLength: length !== null && Number.isFinite(length) ? length : null,
+      min: rangeInput(field.min, valueType, format, t), max: rangeInput(field.max, valueType, format, t),
+    };
+  });
+}
+
+/**
+ * Los campos como quedan guardados, para la caché de la ficha mientras se relee: los del borrador con el `id` que respondió el
+ * servidor (`fieldIdentityMap`), y los guardados que se quitaron, como quitados.
+ */
+export function savedFieldsAfter(inputs: readonly FormCatalogFieldInput[], identities: readonly FormCatalogFieldIdentity[],
+  saved: readonly FormCatalogFieldDetail[], sourceNames: (id: string | null) => string | null): FormCatalogFieldDetail[] {
+  const active = inputs.flatMap((input): FormCatalogFieldDetail[] => {
+    const id = input.id ?? identities.find((identity) => identity.localId === input.localId)?.fieldId;
+    if (!id) return [];
+    const before = saved.find((field) => field.id === id);
+    const sourceCatalogId = input.sourceCatalogId ?? null;
+    return [{
+      id, key: input.key ?? "", name: input.name ?? "", type: input.type ?? "Text", sourceCatalogId, sourceCatalogName: sourceNames(sourceCatalogId),
+      required: input.required ?? false, unique: input.unique ?? false, maxLength: input.maxLength ?? null, min: input.min ?? null, max: input.max ?? null,
+      isActive: true, valuesCount: before?.valuesCount ?? 0,
+    }];
+  });
+  const removed = saved.filter((field) => !active.some((item) => item.id === field.id)).map((field) => ({ ...field, isActive: false }));
+  return [...active, ...removed];
 }
 
 /** Un campo nuevo: Texto y opcional, sin nombre ni clave (nace opcional, 130). */

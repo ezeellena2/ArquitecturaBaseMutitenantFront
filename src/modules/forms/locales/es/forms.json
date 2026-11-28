@@ -290,6 +290,7 @@
       "name": "Nombre",
       "option": "Opción {{n}}",
       "options": "Opciones",
+      "fields": "Campos",
       "counts_one": "{{total}} · {{active}} activa",
       "counts_other": "{{total}} · {{active}} activas",
       "what": "Qué cambió",

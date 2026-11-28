@@ -8,8 +8,8 @@ import {
 } from "@/shared/assistant-actions";
 import { catalogProposalTargetsQueryKey, fetchCatalogItems } from "../api/catalogs";
 import {
-  catalogProposalAction, catalogProposalBase, catalogProposalDraft, catalogProposalFields, catalogProposalTargets, proposalKeyOf,
-  toCatalogProposalRows,
+  catalogProposalAction, catalogProposalBase, catalogProposalDraft, catalogProposalFields, catalogProposalRowsOf, catalogProposalTargets,
+  proposalKeyOf,
 } from "../lib/proposal";
 import { findProposalTargets } from "../lib/proposalTargets";
 import { catalogQueryOptions } from "./useCatalogData";
@@ -51,8 +51,11 @@ export function useCatalogProposal(editor: CatalogEditor, { forThisCatalog, targ
   // Cada opción que cambia o se quita tiene que estar a la vista; si no se encontró, la propuesta no se abre.
   const found = touched !== undefined && targets.every((target) => touched.some((row) => row.id === target.itemId));
   const base = useMemo(() => found && touched ? catalogProposalBase(touched) : undefined, [found, touched]);
-  const fields = useMemo(() => catalogProposalFields(valueType), [valueType]);
-  const proposal = useAssistantProposal(catalogProposalAction, toCatalogProposalRows, base, fields);
+  // Los campos activos del catálogo son columnas de la fila (E13): el contrato y la lectura se arman una vez por catálogo.
+  const savedFields = saved?.fields;
+  const fields = useMemo(() => catalogProposalFields(valueType, savedFields ?? []), [valueType, savedFields]);
+  const toRows = useMemo(() => catalogProposalRowsOf(savedFields ?? []), [savedFields]);
+  const proposal = useAssistantProposal(catalogProposalAction, toRows, base, fields);
   const draft = useMemo(() => proposal.status === "ready" && touched ? catalogProposalDraft(proposal.formValues, touched, valueType) : undefined,
     [proposal, touched, valueType]);
   const proposing = forThisCatalog && proposal.status === "ready" && draft ? { ...proposal, draft } : undefined;
@@ -70,10 +73,13 @@ export function useCatalogProposal(editor: CatalogEditor, { forThisCatalog, targ
 
   // «Cambia»: «Detalle de Venta nueva», con lo que cambió y el texto guardado de la opción.
   const savedText = (row: CatalogRowView) => editor.savedRow(row.itemId)?.text ?? row.draft.text;
+  // Lo que cambió de una opción: sus columnas fijas y, por su nombre, cada campo cuyo valor cambia (E13).
+  const changedNames = (row: CatalogRowView) => [
+    ...editor.changedFields(row.key).map((field) => t(`forms:catalog.proposal.fields.${field}`)),
+    ...Object.keys(editor.edits[row.key]?.fields ?? {}).flatMap((id) => savedFields?.find((field) => field.id === id)?.name ?? []),
+  ];
   const changedLabel = (row: CatalogRowView) => {
-    const sentence = t("forms:catalog.proposal.changed", {
-      fields: editor.changedFields(row.key).map((field) => t(`forms:catalog.proposal.fields.${field}`)), option: savedText(row),
-    });
+    const sentence = t("forms:catalog.proposal.changed", { fields: changedNames(row), option: savedText(row) });
     return sentence.charAt(0).toLocaleUpperCase() + sentence.slice(1);
   };
   const item = (row: CatalogRowView, label: string): AssistantProposalChangeItem => ({ key: row.key, label, review: Boolean(doubtOf(row)) });
@@ -81,7 +87,7 @@ export function useCatalogProposal(editor: CatalogEditor, { forThisCatalog, targ
   const changeRows: AssistantProposalChangeRow[] = proposing ? [{
     key: "options",
     added: editor.rows.filter((row) => row.isNew).map((row) => item(row, row.draft.text.trim() || t("forms:catalog.newOption"))),
-    changed: editor.rows.filter((row) => !row.isNew && !row.pendingDelete && editor.changedFields(row.key).length > 0).map((row) => item(row, changedLabel(row))),
+    changed: editor.rows.filter((row) => !row.isNew && !row.pendingDelete && changedNames(row).length > 0).map((row) => item(row, changedLabel(row))),
     removed: editor.rows.filter((row) => row.pendingDelete).map((row) => item(row, savedText(row))),
   }] : [];
   const changedSince = Boolean(proposing && saved && proposing.proposal.baseVersion != null && proposing.proposal.baseVersion !== saved.version);

@@ -370,7 +370,7 @@ export function OptionsSection({ editor, editable, isNew, actions, onImport, row
   const dialogs = <>
     {dialog ? <OptionsDialog editor={editor} opening={dialog} sourceItem={sourceItem} onClose={() => setDialog(null)} /> : null}
     {fieldsDialog ? <CatalogFieldsDialog catalogId={saved?.id ?? null} catalogName={editor.name} value={editor.fields} removedKeys={editor.removedFieldKeys}
-      presentation={saved?.presentation} readOnly={!editable} initialKey={fieldsDialog.initialKey} onDone={editor.setFields} onClose={() => setFieldsDialog(null)} /> : null}
+      presentation={editor.presentation} readOnly={!editable} initialKey={fieldsDialog.initialKey} onDone={editor.setFields} onClose={() => setFieldsDialog(null)} /> : null}
     {actions.sortDialog}
     <ConfirmDialog open={deleting !== null} onOpenChange={(open) => { if (!open) setDeleting(null); }}
       title={t("forms:catalog.deleteDialog.title", { option: deleting ? label(deleting) : "" })} description={t("forms:catalog.deleteDialog.description")}

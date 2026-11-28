@@ -142,6 +142,28 @@ describe("la propuesta del asistente en el editor de un catálogo (FRM-Catalogo-
     expect(screen.getByRole("textbox", { name: "Detalle de Venta nueva" })).toHaveValue("Primera visita a un cliente");
   });
 
+  // E13: cada campo activo del catálogo es una columna de la fila, con su clave como nombre (spec 13, «Acciones del asistente»).
+  it("una propuesta con un campo se ve entera: su columna en la nueva y en la que cambia, «Lo que cambia» con el campo, y viaja en el PUT", async () => {
+    const plazo = { id: "f-plazo", key: "plazo", name: "Plazo de pago", type: "WholeNumber" as const, required: false, unique: false, isActive: true, valuesCount: 0 };
+    serve(proposal({ values: [
+      { field: "options", value: { op: "add", key: "GAR", row: { code: "GAR", text: "Garantía", plazo: 30 } } },
+      { field: "options", value: { op: "change", key: "i-ven", row: { plazo: 1500 } }, label: "Venta nueva" },
+    ] }), catalog({ fields: [plazo] }));
+    const { user, container } = await openProposal();
+    expect(screen.getByRole("textbox", { name: "Plazo de pago de Garantía" })).toHaveValue("30");
+    expect(screen.getByRole("textbox", { name: "Plazo de pago de Venta nueva" })).toHaveValue("1500");
+    const [added, changed] = changes().getAllByRole("cell");
+    expect(added).toHaveTextContent("Garantía");
+    expect(changed).toHaveTextContent("Plazo de pago de Venta nueva");
+    expect(await axe(container)).toHaveNoViolations();
+    await user.click(saveButton());
+    await waitFor(() => expect(puts).toHaveLength(1));
+    expect(puts[0].items).toEqual([
+      { itemId: "i-ven", code: "VEN", text: "Venta nueva", detail: "Primera visita a un cliente", value: null, isActive: true, fields: { "f-plazo": "1500" } },
+      { localId: "proposal-GAR", code: "GAR", text: "Garantía", detail: null, value: null, isActive: true, fields: { "f-plazo": "30" } },
+    ]);
+  });
+
   it("una propuesta de otro catálogo no se abre: el editor sigue como siempre", async () => {
     serve(proposal({ target: { id: "c-otro", label: "Otro", version: 1 } }));
     mountForms(formsOwner, path);

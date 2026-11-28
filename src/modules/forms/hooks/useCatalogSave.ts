@@ -3,8 +3,11 @@ import { useState } from "react";
 import {
   catalogConflictQueryKey, catalogItemsQueryRoot, catalogQueryKey, catalogsQueryRoot, fetchCatalog, fetchCatalogItems, updateCatalog,
 } from "../api/catalogs";
-import type { FormCatalogItemRow, FormCatalogResponse, PagedResultOfFormCatalogItemRow, UpdateFormCatalogRequest } from "../api/types";
+import type {
+  FormCatalogFieldIdentity, FormCatalogItemRow, FormCatalogResponse, PagedResultOfFormCatalogItemRow, UpdateFormCatalogRequest,
+} from "../api/types";
 import { isCatalogConflict } from "../errors";
+import { savedFieldsAfter } from "../lib/catalogFields";
 import type { CatalogData } from "./useCatalogData";
 import type { CatalogDraft } from "./useCatalogDraft";
 
@@ -57,12 +60,18 @@ export function useCatalogSave(id: string | undefined, data: CatalogData, draft:
 
   // Después de guardar: lo guardado pasa a la caché de la ficha y de cada página o búsqueda leída, no solo de la que se ve: lo
   // cambiado en otra página o antes de buscar se ve con su valor nuevo al volver, sin pasar por el viejo mientras se relee.
+  // Desde la E13, también los campos (con el id que respondió el servidor para cada nuevo) y «En WhatsApp», hasta que la
+  // relectura traiga lo demás (los valores contados y lo que no entra).
   function keepSavedInView(request: UpdateFormCatalogRequest, nextVersion: number, view: Partial<FormCatalogResponse>, rows = draft.rows,
-    edits = draft.edits, deletes = draft.deletes) {
+    edits = draft.edits, deletes = draft.deletes, identities: readonly FormCatalogFieldIdentity[] = [], fields = draft.fields) {
     if (!saved) return;
+    const sourceName = (id: string | null) => fields.fields.find((field) => field.sourceCatalogId === id)?.sourceCatalogName ?? null;
     queryClient.setQueryData<FormCatalogResponse>(catalogQueryKey(saved.id), {
       ...saved, name: request.name ?? saved.name, description: request.description ?? null, isActive: request.isActive ?? saved.isActive,
-      version: nextVersion, ...view,
+      version: nextVersion,
+      ...(request.fields ? { fields: savedFieldsAfter(request.fields, identities, saved.fields, sourceName) } : {}),
+      ...(request.presentation ? { presentation: { title: [...(request.presentation.title ?? [])], description: [...(request.presentation.description ?? [])] } } : {}),
+      ...view,
     });
     queryClient.setQueriesData<PagedResultOfFormCatalogItemRow>({ queryKey: catalogItemsQueryRoot(saved.id) }, (current) => current && {
       ...current,
@@ -70,7 +79,10 @@ export function useCatalogSave(id: string | undefined, data: CatalogData, draft:
         const shown = rows.find((item) => item.key === row.id);
         if (!shown || !edits[row.id]) return { ...row, position: draft.positionOf(row) };
         const input = draft.itemInput(shown);
-        return { ...row, position: draft.positionOf(row), code: input.code ?? row.code, text: input.text ?? row.text, detail: input.detail ?? null, value: input.value ?? null, isActive: input.isActive ?? row.isActive };
+        // El delta de los campos: `null` limpia y lo ausente se conserva.
+        const values = Object.fromEntries(Object.entries({ ...row.fields, ...input.fields }).filter((entry): entry is [string, string | boolean] => entry[1] != null));
+        return { ...row, position: draft.positionOf(row), code: input.code ?? row.code, text: input.text ?? row.text, detail: input.detail ?? null, value: input.value ?? null,
+          isActive: input.isActive ?? row.isActive, fields: values };
       }),
     });
   }
@@ -87,10 +99,10 @@ export function useCatalogSave(id: string | undefined, data: CatalogData, draft:
     const request = draft.buildRequest(version, isActive, extra?.request);
     if (!request) return false;
     // Lo que se ve al mandar: lo guardado se arma con esto aunque entre más tarde.
-    const { rows, edits, deletes } = draft;
+    const { rows, edits, deletes, fields } = draft;
     mutation.mutate(request, {
       onSuccess: (result) => {
-        keepSavedInView(request, result.version, extra?.view ?? {}, rows, edits, deletes);
+        keepSavedInView(request, result.version, extra?.view ?? {}, rows, edits, deletes, result.fieldIdentityMap ?? [], fields);
         setVersion(result.version);
         draft.reset();
         void queryClient.invalidateQueries({ queryKey: catalogsQueryRoot });

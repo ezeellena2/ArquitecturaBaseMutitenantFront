@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
+import { createFormatters } from "@/shared/format/formatters";
+import type { FormatState } from "@/shared/format/useFormat";
+import { referenceDataFixture } from "@/test/mocks/handlers";
+import type { FormCatalogFieldDetail } from "../api/types";
 import {
-  fieldInPresentation, fieldUsingKey, freeKey, keyFromName, newFieldDraft, sameFieldsDraft, sortAfterFields, sortKindOf, sortOrderKey, typedKey,
-  type CatalogFieldDraft,
+  fieldInPresentation, fieldInputsOf, fieldUsingKey, freeKey, keyFromName, newFieldDraft, sameFieldsDraft, savedFieldsAfter, sortAfterFields, sortKindOf,
+  sortOrderKey, typedKey, type CatalogFieldDraft,
 } from "./catalogFields";
 
 const field = (id: string | null, key: string, name = key): CatalogFieldDraft => ({ ...newFieldDraft(), localKey: id ?? `local-${key}`, id, key, name });
@@ -61,5 +65,33 @@ describe("catalogFields", () => {
     const a = { fields: [field("f-cuit", "cuit")], confirmedRemovals: [] };
     expect(sameFieldsDraft(a, { fields: [{ ...a.fields[0]!, errors: { key: "x" } }], confirmedRemovals: [] })).toBe(true);
     expect(sameFieldsDraft(a, { fields: [{ ...a.fields[0]!, name: "CUIT" }], confirmedRemovals: [] })).toBe(false);
+  });
+
+  // E13 · F5: lo que viaja en el PUT o el POST, y cómo queda la ficha guardada mientras se relee.
+  const esAR = { ...createFormatters({ referenceData: referenceDataFixture("es-AR"), culture: "es-AR", timeZone: "UTC", translate: (key: string) => key }),
+    isLoading: false } as unknown as FormatState;
+  const t = (key: string) => key;
+
+  it("la lista entera viaja en su orden: el guardado por su id, el nuevo por su id local; el largo, el rango y la fuente, solo en su tipo", () => {
+    const plazo = { ...field("f-plazo", "plazo", "Plazo"), type: "WholeNumber" as const, min: "1.500", max: "12", maxLength: "40" };
+    const zona = { ...field(null, "zona", "Zona"), type: "Catalog" as const, sourceCatalogId: "c-zonas", maxLength: "40" };
+    const cuit = { ...field(null, "cuit", "CUIT"), maxLength: "13", sourceCatalogId: "c-otro" };
+    expect(fieldInputsOf({ fields: [plazo, zona, cuit], confirmedRemovals: [] }, esAR, t)).toEqual([
+      // «1.500» no se lee (207): va como está escrito y lo rechaza el servidor (lección 4).
+      { id: "f-plazo", key: "plazo", name: "Plazo", type: "WholeNumber", sourceCatalogId: null, required: false, unique: false, maxLength: null, min: "1.500", max: "12" },
+      { localId: "local-zona", key: "zona", name: "Zona", type: "Catalog", sourceCatalogId: "c-zonas", required: false, unique: false, maxLength: null, min: null, max: null },
+      { localId: "local-cuit", key: "cuit", name: "CUIT", type: "Text", sourceCatalogId: null, required: false, unique: false, maxLength: 13, min: null, max: null },
+    ]);
+  });
+
+  it("guardado, el nuevo toma el id que respondió el servidor y el que no sigue queda quitado", () => {
+    const saved: FormCatalogFieldDetail[] = [
+      { id: "f-plazo", key: "plazo", name: "Plazo", type: "WholeNumber", required: false, unique: false, isActive: true, valuesCount: 7 },
+      { id: "f-viejo", key: "viejo", name: "Viejo", type: "Text", required: false, unique: false, isActive: true, valuesCount: 2 },
+    ];
+    const after = savedFieldsAfter([{ id: "f-plazo", key: "plazo", name: "Plazo de pago", type: "WholeNumber" }, { localId: "l-1", key: "cuit", name: "CUIT", type: "Text" }],
+      [{ localId: "l-1", fieldId: "f-cuit" }], saved, () => null);
+    expect(after.map((item) => [item.id, item.name, item.isActive, item.valuesCount])).toEqual([
+      ["f-plazo", "Plazo de pago", true, 7], ["f-cuit", "CUIT", true, 0], ["f-viejo", "Viejo", false, 2]]);
   });
 });

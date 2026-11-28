@@ -5,7 +5,7 @@ import { axe } from "vitest-axe";
 import { server } from "@/test/mocks/server";
 import { choose, pickerName } from "@/test/picker";
 import { asPhone } from "@/test/utils/phone";
-import type { FormCatalogItemRow, FormCatalogResponse, UpdateFormCatalogRequest } from "../api/types";
+import type { FormCatalogFieldDetail, FormCatalogItemRow, FormCatalogResponse, UpdateFormCatalogRequest } from "../api/types";
 import { formsOwner, formsReader, mountForms, withoutFields } from "../test/support";
 
 const base = "/api/organization/forms/catalogs";
@@ -386,7 +386,8 @@ describe("CatalogEditorPage (FRM-Catalogo)", () => {
   it("con solo formcatalogs.read: la tabla de lectura, sin casillas ni guardar, con Exportar", async () => {
     serve({ detail: catalog({ canManage: false }) });
     mountForms(formsReader, path);
-    expect(await screen.findByText("Seguimiento")).toBeInTheDocument();
+    // «Seguimiento» también es «Por ejemplo» de «En WhatsApp» (E13).
+    expect((await screen.findAllByText("Seguimiento")).length).toBeGreaterThan(0);
     expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
     expect(screen.queryByRole("textbox", { name: "Texto de Seguimiento" })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Guardar cambios" })).not.toBeInTheDocument();
@@ -710,7 +711,8 @@ describe("CatalogEditorPage, «Opciones» (FRM-Catalogo y M-FRM-Catalogo, verifi
     const restore = asPhone();
     try {
       const { user } = mountForms(formsOwner, path);
-      const name = await screen.findByText("Seguimiento");
+      // La de la lista; «Seguimiento» también es «Por ejemplo» de «En WhatsApp» (E13).
+      const name = (await screen.findAllByText("Seguimiento")).find((node) => node.closest("li"))!;
       const region = options();
       expect(within(region).getByRole("button", { name: "Agregar opción" })).not.toHaveClass("bg-[var(--marca)]");
       expect(within(region).queryByRole("button", { name: "Exportar" })).not.toBeInTheDocument();
@@ -796,5 +798,91 @@ describe("CatalogEditorPage, «Así lo ve quien lo recibe» (FRM-Catalogo y M-FR
       expect(within(dialog).getByText("Visita programada a un cliente actual")).toBeInTheDocument();
       expect(within(dialog).queryByRole("group", { name: "Cómo se elige" })).not.toBeInTheDocument();
     } finally { restore(); }
+  });
+});
+
+// E13 · F5 (FRM-Catalogo-13 y su teléfono): el editor con los campos, «En WhatsApp», el guardado, el conflicto y la lectura.
+describe("CatalogEditorPage, los campos (E13)", () => {
+  const plazo: FormCatalogFieldDetail = { id: "f-plazo", key: "plazo", name: "Plazo", type: "WholeNumber", required: false, unique: false, isActive: true, valuesCount: 1 };
+  const conPlazo = (extra: Partial<FormCatalogResponse> = {}) => catalog({ fields: [plazo], ...extra });
+  const conValor = (value: string) => motivos.map((row) => row.id === "i-seg" ? { ...row, fields: { "f-plazo": value } } : row);
+
+  it("«En WhatsApp» va debajo de «El catálogo»; elegir la descripción la arma en la vista previa y viaja sola en el PUT", async () => {
+    serve({ detail: conPlazo(), items: conValor("1500") });
+    const { user } = await openEditor();
+    await user.click(await screen.findByRole("button", { name: pickerName("Descripción · hasta 300") }));
+    await user.click(await screen.findByRole("option", { name: /^Plazo/ }));
+    await user.keyboard("{Escape}");
+    expect(screen.getAllByText("1.500 · Visita programada a un cliente actual").length).toBeGreaterThan(0);
+    await user.click(saveButton());
+    await waitFor(() => expect(puts).toHaveLength(1));
+    expect(puts[0].presentation).toEqual({ title: ["text"], description: ["field:f-plazo", "detail"] });
+    expect(puts[0].fields).toBeUndefined();
+    expect(puts[0].items).toBeUndefined();
+  });
+
+  it("un campo nuevo viaja con su id local y, guardado, su columna se carga", async () => {
+    serve({ put: () => HttpResponse.json({ version: 8, itemIdentityMap: [], fieldIdentityMap: [{ localId: puts[0]?.fields?.[0]?.localId ?? "", fieldId: "f-cuit" }] }) });
+    const cuit: FormCatalogFieldDetail = { id: "f-cuit", key: "cuit", name: "CUIT", type: "Text", required: false, unique: false, isActive: true, valuesCount: 0 };
+    server.use(http.get(`${base}/c-motivos`, () => HttpResponse.json(puts.length ? catalog({ version: 8, fields: [cuit] }) : catalog())));
+    const { user } = await openEditor();
+    // Sin campos, «Agregar campos» abre en uno nuevo.
+    await user.click(screen.getByRole("button", { name: /^Agregar campos/ }));
+    const dialog = await screen.findByRole("dialog", { name: "Campos de «Motivos de visita»" });
+    await user.paste("CUIT");
+    await user.click(within(dialog).getByRole("button", { name: "Listo" }));
+    await user.click(saveButton());
+    await waitFor(() => expect(puts).toHaveLength(1));
+    expect(puts[0].fields).toEqual([{ localId: expect.stringMatching(/^local-/) as string, key: "cuit", name: "CUIT", type: "Text", sourceCatalogId: null,
+      required: false, unique: false, maxLength: null, min: null, max: null }]);
+    expect(puts[0].confirmedFieldRemovals).toBeUndefined();
+    expect(await screen.findByRole("textbox", { name: "CUIT de Seguimiento" })).toBeEnabled();
+  });
+
+  it("si otra persona guardó, la revisión dice también los campos y el valor de un campo en cada opción (O15)", async () => {
+    serve({ detail: conPlazo(), items: () => paged(conValor(puts.length ? "30" : "1500")),
+      put: () => HttpResponse.json({ code: "General.ConcurrencyConflict", status: 409, title: "Conflict" }, { status: 409 }) });
+    let reads = 0;
+    server.use(http.get(`${base}/c-motivos`, () => HttpResponse.json(reads++ === 0 ? conPlazo() : conPlazo({ version: 8, fields: [{ ...plazo, name: "Plazo de pago" }] }))));
+    const { user } = await openEditor();
+    await user.clear(textbox("Texto de Seguimiento"));
+    await user.paste("Seguimiento programado");
+    await user.click(saveButton());
+    const dialog = await screen.findByRole("dialog", { name: "Otra persona guardó el catálogo" });
+    await waitFor(() => expect(within(dialog).getAllByRole("listitem").map((row) => row.textContent)).toEqual([
+      "CamposTus cambios: PlazoLo guardado ahora: Plazo de pago",
+      "Opción 1 · TextoTus cambios: Seguimiento programadoLo guardado ahora: Seguimiento",
+      "Opción 1 · Plazo de pagoTus cambios: 1.500Lo guardado ahora: 30",
+    ]));
+  });
+
+  it("SourceInUse al dar de baja no es un conflicto de versión: el editor queda editable, con su motivo en la franja (lección 2)", async () => {
+    const detail = "No se puede dar de baja: lo usan campos de otros catálogos.";
+    serve({ put: () => HttpResponse.json({ code: "Forms.Catalog.SourceInUse", status: 409, title: "Conflict", detail }, { status: 409 }) });
+    const { user } = await openEditor();
+    await openMenu(user, "Acciones de Motivos de visita");
+    await user.click(await screen.findByRole("menuitem", { name: /Dar de baja/ }));
+    await user.click(within(await screen.findByRole("dialog", { name: "¿Dar de baja «Motivos de visita»?" })).getByRole("button", { name: "Dar de baja" }));
+    expect(await screen.findByText(detail)).toBeInTheDocument();
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(screen.queryByText("Otra persona cambió esto mientras lo editabas.")).not.toBeInTheDocument();
+    expect(textbox("Texto de Seguimiento")).toBeEnabled();
+    await user.clear(textbox("Texto de Seguimiento"));
+    await user.paste("Seguimiento programado");
+    expect(saveButton()).toBeEnabled();
+  });
+
+  it("con solo formcatalogs.read: «Campos», la columna de cada campo en la tabla de lectura y «En WhatsApp» apagado", async () => {
+    serve({ detail: conPlazo({ canManage: false }), items: conValor("1500") });
+    mountForms(formsReader, path);
+    // «Seguimiento» también es «Por ejemplo» de «En WhatsApp» (E13).
+    expect((await screen.findAllByText("Seguimiento")).length).toBeGreaterThan(0);
+    expect(screen.getByRole("button", { name: "Campos · 1" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^Agregar campos/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("columnheader", { name: "Plazo" })).toBeInTheDocument();
+    expect(screen.getByText("1.500")).toBeInTheDocument();
+    expect(screen.queryByRole("textbox", { name: "Plazo de Seguimiento" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: pickerName("Título · hasta 30 caracteres") })).toBeDisabled();
+    expect(screen.getByRole("button", { name: pickerName("Descripción · hasta 300") })).toBeDisabled();
   });
 });

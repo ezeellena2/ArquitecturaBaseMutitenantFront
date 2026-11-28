@@ -7,18 +7,20 @@ import type {
   FormCatalogItemRow,
   FormCatalogItemSortInput,
   FormCatalogMoveDirection,
+  FormCatalogPresentationDetail,
   FormCatalogResponse,
   FormCatalogValueType,
   UpdateFormCatalogRequest,
 } from "../api/types";
 import { catalogFieldErrors, catalogInvalidRows } from "../errors";
-import { fieldDraftsOf, sameFieldsDraft, sortAfterFields, type CatalogFieldErrors, type CatalogFieldsDraft } from "../lib/catalogFields";
+import { fieldDraftsOf, fieldInputsOf, sameFieldsDraft, sortAfterFields, type CatalogFieldErrors, type CatalogFieldsDraft } from "../lib/catalogFields";
+import { normalizePresentation, placeKeys } from "../lib/catalogPresentation";
 import {
   catalogRows, changedFieldsOf, cleanEdits, fieldErrorKey, itemInputOf, positionOf, savedDraft, savedRowOf,
   type CatalogDraftState, type CatalogMove, type CatalogRowView, type ItemDraft, type ItemEdits, type NewItem, type RowError,
 } from "../lib/catalogDraft";
 import { catalogLimits } from "../lib/catalogLimits";
-import { codeFromText, editableValue, uniqueCode } from "../lib/catalogValues";
+import { codeFromText, editableValue, fieldDraftValue, uniqueCode, type FieldValue } from "../lib/catalogValues";
 import type { CatalogProposalDraft } from "../lib/proposal";
 
 /** Las opciones del borrador como estaban al abrir el modal de opciones: «Cancelar» o Esc las devuelven así (117). */
@@ -33,6 +35,8 @@ export interface CatalogDraftSnapshot {
 const emptyEdits: Readonly<Record<string, ItemEdits>> = {};
 const itemFields = { code: 1, text: 1, detail: 1, value: 1 } as const;
 const fieldParts: readonly (keyof CatalogFieldErrors)[] = ["name", "key", "type", "required"];
+/** «En WhatsApp» de un catálogo nuevo, y de uno dado de alta antes de la E13: el texto en el título y el detalle debajo (0060). */
+const defaultPresentation: FormCatalogPresentationDetail = { title: ["text"], description: ["detail"] };
 
 /**
  * Lo que el servidor rechazó de un campo al guardar (E13): el campo del modal, la parte (`type`, `required`…) y su texto, y, si
@@ -75,6 +79,9 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
   // Los campos (E13), cuando «Listo» del modal «Campos de …» los cambió; si no, los guardados.
   const [fieldsDraft, setFieldsDraft] = useState<CatalogFieldsDraft | null>(null);
   const [fieldIssue, setFieldIssue] = useState<CatalogFieldIssue | null>(null);
+  // «En WhatsApp» (E13), cuando se cambió; si no, el guardado. Y lo que rechazó el servidor de ella (`PresentationInvalid`).
+  const [presentationDraft, setPresentationDraft] = useState<FormCatalogPresentationDetail | null>(null);
+  const [presentationError, setPresentationError] = useState<string | undefined>(undefined);
   const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
   const [serverErrors, setServerErrors] = useState<Readonly<Record<string, RowError>>>({});
   // Las guardadas que el borrador cambió o borra, como se leyeron: desde otra página o con otra búsqueda siguen a la vista,
@@ -92,6 +99,11 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
   const savedFieldDetails = saved?.fields ?? [];
   const savedFields = fieldDraftsOf(savedFieldDetails, format);
   const fields = fieldsDraft ?? savedFields;
+  // Lo que puede ir a WhatsApp: los campos activos guardados que siguen en el borrador (uno nuevo todavía no tiene identidad).
+  const presentationFields = fields.fields.flatMap((field) => field.id ? [{ id: field.id, name: field.name, type: field.type }] : []);
+  const presentationKeys = placeKeys({ valueType, fields: presentationFields });
+  const savedPresentation = normalizePresentation(saved?.presentation ?? defaultPresentation, presentationKeys);
+  const presentation = presentationDraft ? normalizePresentation(presentationDraft, presentationKeys) : savedPresentation;
   const state: CatalogDraftState = { edits, added, deletes, moves, positions, sort, serverErrors };
   const otherRows = [...extraRows, ...Object.values(touched).filter((row) => !extraRows.some((item) => item.id === row.id))];
   const invalidValues = invalidValuesOf(fieldIssue);
@@ -101,10 +113,11 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
   const remember = (row: FormCatalogItemRow) => setTouched((current) => current[row.id] === row ? current : { ...current, [row.id]: row });
 
   const fieldsDirty = fieldsDraft !== null;
+  const presentationDirty = presentationDraft !== null;
   const currentName = name ?? saved?.name ?? "";
   const currentDescription = description ?? saved?.description ?? "";
   const itemsDirty = Object.keys(edits).length > 0 || added.length > 0 || deletes.size > 0 || moves.length > 0 || sort !== null;
-  const isDirty = itemsDirty || fieldsDirty || (saved ? currentName !== saved.name || currentDescription !== (saved.description ?? "") : false);
+  const isDirty = itemsDirty || fieldsDirty || presentationDirty || (saved ? currentName !== saved.name || currentDescription !== (saved.description ?? "") : false);
   const total = (saved?.itemCounts.total ?? 0) + added.length - deletes.size;
 
   /** Las opciones de `invalidRows` que se ven, con su motivo en la celda del campo; un campo nuevo no tiene valores. */
@@ -180,6 +193,13 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
     setFieldIssue(null);
   }
 
+  /** «En WhatsApp»: lo elegido queda en el borrador; volver a lo guardado lo deja sin cambios. */
+  function setPresentation(next: FormCatalogPresentationDetail) {
+    const normalized = normalizePresentation(next, presentationKeys);
+    setPresentationDraft(JSON.stringify(normalized) === JSON.stringify(savedPresentation) ? null : normalized);
+    setPresentationError(undefined);
+  }
+
   function discardMoves() {
     setMoves([]);
     setPositions({});
@@ -237,13 +257,19 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
     setEdits((current) => {
       const next = { ...current };
       for (const [key, patch] of Object.entries(draft.changes)) {
-        const { value, ...rest } = patch;
-        next[key] = { ...next[key], ...rest, ...(value !== undefined ? { value: editableValue(value, valueType, format) } : {}) };
+        const { value, fields: values, ...rest } = patch;
+        next[key] = { ...next[key], ...rest, ...(value !== undefined ? { value: editableValue(value, valueType, format) } : {}),
+          ...(values ? { fields: { ...next[key]?.fields, ...editableFields(values) } } : {}) };
       }
       return next;
     });
-    setAdded((current) => [...current, ...draft.added.map((item) => ({ ...item, value: editableValue(item.value, valueType, format) }))]);
+    setAdded((current) => [...current, ...draft.added.map((item) => ({ ...item, value: editableValue(item.value, valueType, format), fields: editableFields(item.fields) }))]);
     setDeletes((current) => new Set([...current, ...draft.deletes]));
+  }
+
+  /** Los valores de los campos de la propuesta, canónicos, como se escriben en su celda (el número con la región del idioma). */
+  function editableFields(values: Readonly<Record<string, FieldValue>>): Record<string, FieldValue> {
+    return Object.fromEntries(Object.entries(values).map(([id, raw]) => [id, fieldDraftValue(raw, savedFieldDetails.find((field) => field.id === id)?.type, format)]));
   }
 
   /** Quita las opciones del borrador (otro origen o tipo en un catálogo nuevo, después de preguntar), sin tocar el nombre. */
@@ -267,6 +293,8 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
     setSort(null);
     setFieldsDraft(null);
     setFieldIssue(null);
+    setPresentationDraft(null);
+    setPresentationError(undefined);
     setSelected(new Set());
     setServerErrors({});
     setNameError(undefined);
@@ -318,7 +346,20 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
       ...(moves.length ? { moves: [...moves] } : {}),
       ...(sort ? { sort } : {}),
       ...(deletes.size ? { deleteItems: [...deletes] } : {}),
+      ...fieldsRequest(),
       ...extra,
+    };
+  }
+
+  /**
+   * Los campos y «En WhatsApp», solo si cambiaron (E13): la lista entera de los campos, con los quitados con valores que se
+   * confirmaron, y la presentación elegida. Va en el `PUT` y en el `POST` de uno nuevo.
+   */
+  function fieldsRequest(): Pick<UpdateFormCatalogRequest, "fields" | "confirmedFieldRemovals" | "presentation"> {
+    return {
+      ...(fieldsDraft ? { fields: fieldInputsOf(fieldsDraft, format, t) } : {}),
+      ...(fieldsDraft?.confirmedRemovals.length ? { confirmedFieldRemovals: [...fieldsDraft.confirmedRemovals] } : {}),
+      ...(presentationDraft ? { presentation } : {}),
     };
   }
 
@@ -346,8 +387,10 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
     const fieldErrors: Record<string, CatalogFieldErrors> = {};
     let issue: CatalogFieldIssue | null = null;
     const uses = error instanceof ApiError && Array.isArray(error.problem.uses) ? (error.problem.uses as unknown[]).filter((use): use is string => typeof use === "string") : [];
+    let rejectedPresentation: string | undefined;
     for (const fieldError of catalogFieldErrors(error)) {
       if (fieldError.list === null && fieldError.field === "name") setNameError(fieldError.message);
+      if (fieldError.field === "presentation") rejectedPresentation ??= fieldError.message;
       if (fieldError.index === null) continue;
       // Un campo del modal «Campos de …» (E13): su error va en su parte, y el primero se dice arriba de la tabla.
       if (fieldError.list === "fields") {
@@ -371,6 +414,7 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
     }
     setServerErrors(next);
     setFieldIssue(issue);
+    setPresentationError(rejectedPresentation);
     setFieldsDraft((current) => current && { ...current, fields: current.fields.map((field) => ({ ...field, errors: fieldErrors[field.localKey] })) });
     if (Object.keys(next).length) setErrorRound((round) => round + 1);
   }
@@ -398,6 +442,12 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
     fieldsDirty,
     setFields,
     fieldIssue,
+    presentation,
+    presentationFields,
+    presentationDirty,
+    setPresentation,
+    presentationError,
+    fieldsRequest,
     /** Las claves de los campos quitados: una nueva que choca con ellas suma un número. */
     removedFieldKeys: (saved?.fields ?? []).filter((field) => !field.isActive).map((field) => field.key),
     selected,

@@ -9,7 +9,7 @@ const draftOf = (row: FormCatalogItemRow) => ({ code: row.code, text: row.text, 
 const view = (row: FormCatalogItemRow, extra: Partial<CatalogRowView> = {}, draft: Partial<CatalogRowView["draft"]> = {}): CatalogRowView =>
   ({ key: row.id, itemId: row.id, number: row.position, draft: { ...draftOf(row), ...draft }, isNew: false, pendingDelete: false, textRepeated: false, errors: {}, canMoveUp: false, canMoveDown: false, ...extra });
 const fresh = (extra: Partial<FormCatalogResponse> = {}) => ({ id: "c", name: "Motivos", source: "Manual", valueType: "Text", isActive: true, usable: true, canManage: true,
-  itemCounts: { total: 3, active: 3 }, modifiedAtUtc: "2026-11-27T12:00:00Z", version: 8, ...extra }) as FormCatalogResponse;
+  itemCounts: { total: 3, active: 3 }, modifiedAtUtc: "2026-11-27T12:00:00Z", version: 8, fields: [], ...extra }) as FormCatalogResponse;
 
 describe("«Qué cambió» entre lo tuyo y lo guardado ahora (O15)", () => {
   const seg = item("seg", 1, "Seguimiento"), ven = item("ven", 2, "Venta"), rec = item("rec", 3, "Reclamo");
