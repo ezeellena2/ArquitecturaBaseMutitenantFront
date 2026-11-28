@@ -206,6 +206,12 @@ export const codeEmailText = (eml) => plainTextBody(eml) ?? "";
 const escapeRegExp = (text) => text.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
 
 /**
+ * El título del Inicio de la organización ya cargado: en la compu, «Inicio»; en el teléfono (M-Inicio-Org, PhoneHome), el
+ * nombre de la organización debajo de «Hola». En el teléfono, «Inicio» se ve solo mientras carga: no sirve para esperarlo.
+ */
+export const loadedHomeHeading = (phone, organization) => phone ? organization : "Inicio";
+
+/**
  * Los pasos, cada uno una función que devuelve lo que pasó. El recorrido los corre en orden con su registro; en la puerta,
  * el conductor de la I3 los corre de a uno sobre el mismo entorno aislado para probarlos a mano.
  * `ctx`: las pestañas (`page` de la organización y `platformPage` del operador), el ancho, el entorno aislado (`env`, con
@@ -713,7 +719,7 @@ export function base12bSteps(ctx) {
     // F7: salir en una pestaña cierra la sesión en las demás de ese lado (BroadcastChannel).
     "11": async () => {
       await asOwner("/org");
-      await heading(page, phone ? "Inicio" : "Inicio");
+      await heading(page, loadedHomeHeading(phone, organization));
       const other = await page.context().newPage();
       await other.setViewportSize(page.viewportSize());
       try {

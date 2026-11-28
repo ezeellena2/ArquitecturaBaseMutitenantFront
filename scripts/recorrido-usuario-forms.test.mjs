@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import { EventEmitter } from "node:events";
 import { test } from "node:test";
+import { factorKeeper } from "./platform-factor-real.mjs";
 import {
-  apiResponse, catalogsApi, catalogsRoute, csv, formsDefinitions, formsManualChecks, formsModuleName, nextPreview, optionText, pastedReasons,
+  apiResponse, catalogsApi, catalogsRoute, csv, enableModule, formsDefinitions, formsManualChecks, formsModuleName, nextPreview, optionText, pastedReasons,
   reviewCounts, runFormsJourney, sourceLabels, tsv, valueTypeLabels, visitReasons,
 } from "./recorrido-usuario-forms.mjs";
 
@@ -86,7 +87,7 @@ test("el recorrido corre los dos pasos en orden, en la pestaña de la organizaci
   const recorded = [];
   const record = async (id, width, getPage, action) => { recorded.push([id, getPage().name, typeof action, width]); };
   await runFormsJourney({ page, platformPage: { name: "plataforma" }, width: 390, base, record, signOut: async () => {}, login: async () => {},
-    owner: "e2e-recorrido-empresa@example.test", organization: "Recorrido 390" });
+    owner: "e2e-recorrido-empresa@example.test", organization: "Recorrido 390", operator: "e2e-a1-operator@example.test" });
   assert.deepEqual(recorded, [["FRM-01", "organización", "function", 390], ["FRM-02", "organización", "function", 390]]);
 });
 
@@ -95,9 +96,69 @@ test("sin la pestaña de Plataforma o sin las sesiones del recorrido, Catálogos
   const page = new Proxy({}, { get: (_, name) => { touched.push(String(name)); return () => {}; } });
   const record = async () => { touched.push("record"); };
   const journey = { page, platformPage: page, width: 1440, base, record, signOut: async () => {}, login: async () => {},
-    owner: "e2e-recorrido-empresa@example.test", organization: "Recorrido 1440" };
+    owner: "e2e-recorrido-empresa@example.test", organization: "Recorrido 1440", operator: "e2e-a3-operator@example.test" };
   await assert.rejects(runFormsJourney({ ...journey, platformPage: undefined }), /Plataforma/u);
   await assert.rejects(runFormsJourney({ ...journey, owner: undefined }), /la Dueña/u);
+  await assert.rejects(runFormsJourney({ ...journey, operator: undefined }), /operador/u);
   await assert.rejects(runFormsJourney({ ...journey, login: undefined }), /sesiones/u);
   assert.deepEqual(touched, []);
+});
+
+/**
+ * Una pestaña de Plataforma de mentira para «Prender»: el `PUT` del módulo responde lo que diga `replies`, en orden; el
+ * primero sale con el clic en «Prender» y el siguiente, con «Confirmar» de «Confirmá que sos vos», como la repetición del front.
+ */
+function modulePage(replies) {
+  const page = new EventEmitter();
+  const log = [];
+  const respond = () => {
+    const [status, body] = replies.shift();
+    const reply = { url: () => "https://localtest.me:5174/api/platform/tenants/7d1c2b9a-3f4e-4a5b-8c6d-0e1f2a3b4c5d/features/forms",
+      status: () => status, json: async () => body, request: () => ({ method: () => "PUT" }) };
+    setTimeout(() => page.emit("response", reply), 5);
+  };
+  let reauthOpen = false;
+  const locator = (path) => ({
+    path, first: () => locator(path), nth: (index) => locator(`${path}[${index}]`), filter: () => locator(path),
+    getByRole: (role, options = {}) => locator(`${path} ${role}:${options.name ?? ""}`), locator: (css) => locator(`${path} ${css}`),
+    count: async () => path.includes("group:Código") ? 6 : 1,
+    fill: async () => { log.push(`fill ${path}`); },
+    waitFor: async ({ state } = {}) => { log.push(`wait ${path} ${state ?? "visible"}`); if (path.includes("Confirmá que sos vos") && state !== "hidden") assert.ok(reauthOpen); },
+    click: async () => {
+      log.push(`click ${path}`);
+      if (path.endsWith("button:Prender")) { respond(); reauthOpen = replies.length > 0; }
+      if (path.endsWith("button:Confirmar")) { reauthOpen = false; respond(); }
+    },
+  });
+  Object.assign(page, {
+    log, goto: async () => {}, keyboard: { press: async () => {} },
+    getByRole: (role, options = {}) => locator(`${role}:${options.name ?? ""}`),
+    addLocatorHandler: async () => { log.push("confirma sola"); }, removeLocatorHandler: async () => { log.push("deja de confirmar sola"); },
+    waitForResponse: (matcher, { timeout = 2_000 } = {}) => new Promise((resolve, reject) => {
+      const timer = setTimeout(() => { page.off("response", listener); reject(new Error("timeout")); }, timeout);
+      timer.unref();
+      const listener = (reply) => { if (matcher(reply)) { clearTimeout(timer); page.off("response", listener); resolve(reply); } };
+      page.on("response", listener);
+    }),
+  });
+  page.off = page.removeListener;
+  return page;
+}
+
+test("Prender un módulo con la prueba del ingreso vencida confirma «Confirmá que sos vos» y espera la repetición del PUT", async () => {
+  const operator = "e2e-a3-operator@example.test";
+  factorKeeper.remember(operator, "JBSWY3DPEHPK3PXP");
+  const tenantId = "7d1c2b9a-3f4e-4a5b-8c6d-0e1f2a3b4c5d";
+  const page = modulePage([[403, { code: "Auth.Platform.ReauthenticationRequired" }], [200, {}]]);
+  assert.equal(await enableModule(page, base, tenantId, formsModuleName, "Recorrido de Catálogos a 1440.", operator), true);
+  assert.ok(page.log.some((line) => line.endsWith("button:Confirmar")), "Confirma con el código del autenticador.");
+  assert.equal(page.log.at(-2), "confirma sola", "La pestaña vuelve a confirmar sola lo que siga.");
+
+  const fresh = modulePage([[200, {}]]);
+  assert.equal(await enableModule(fresh, base, tenantId, formsModuleName, "Recorrido de Catálogos a 1440.", operator), true);
+  assert.ok(!fresh.log.some((line) => line.includes("Confirmá que sos vos")), "Con la prueba vigente no pide confirmar.");
+
+  const other = modulePage([[403, { code: "Auth.Forbidden" }]]);
+  await assert.rejects(enableModule(other, base, tenantId, formsModuleName, "Recorrido de Catálogos a 1440.", operator), /prueba del ingreso vencida/u);
+  await assert.rejects(enableModule(modulePage([]), base, tenantId, formsModuleName, "Sin operador."), /correo del operador/u);
 });

@@ -26,6 +26,9 @@ export const formsE2ECases = [
   ["FRM-05", "Volumen: 10.000 opciones; buscar, guardar una y exportar, cada lectura con su EXPLAIN"],
 ];
 
+/** El operador de Plataforma que prende los módulos (el del asistente real a 1440). */
+const operatorEmail = "e2e-a1-operator@example.test";
+
 /** Los números de la fixture de WhatsApp de este E2E: el del escenario que conecta el número y uno por contacto. */
 export const formsPhones = { scenario: "+5491134567890", nora: "+5491134567891", hugo: "+5491134567892", unnamed: "+5491134567893", lucas: "+5491134567894" };
 
@@ -238,7 +241,7 @@ export function formsE2ESteps({ page, platformPage, browser, env, tenantId, name
       return `Con la persona de ejemplo «${sample}»: una opción con la casilla, dos sin ella y ninguna con el rol sin nadie; se guardó con su persona y la casilla.`;
     },
     "FRM-04": async () => {
-      await enableModule(platformPage, base, tenantId, "WhatsApp", "E2E de Catálogos: los contactos de Clientes.");
+      await enableModule(platformPage, base, tenantId, "WhatsApp", "E2E de Catálogos: los contactos de Clientes.", operatorEmail);
       const control = await env.whatsapp.begin(names.scenario, formsPhones.scenario);
       await control("orgNumber", { tenantId });
       const write = async (phone, profileName) => {
@@ -250,7 +253,9 @@ export function formsE2ESteps({ page, platformPage, browser, env, tenantId, name
       await write(formsPhones.hugo, names.hugo);
       await write(formsPhones.unnamed);
       assert.equal((await contactByPhone(page, formsPhones.nora)).name, names.nora, "Sin nombre, el contacto toma el de su perfil (81).");
+      // C14: el contacto sin nombre ni perfil no se ofrece aunque tenga la etiqueta; entran Nora y Hugo.
       await tagContact(page, formsPhones.nora, names.tag);
+      await tagContact(page, formsPhones.hugo, names.tag);
       await tagContact(page, formsPhones.unnamed, names.tag);
 
       await openCatalogs(page, base);
@@ -259,8 +264,9 @@ export function formsE2ESteps({ page, platformPage, browser, env, tenantId, name
       await page.getByRole("button", { name: "Agregar condición", exact: true }).click();
       const tagged = await nextPreview(page, () => toggleMany(page, page, "Etiquetas", names.tag),
         (request) => request.filters?.conditions?.[0]?.values?.[0] === names.tag);
-      assert.equal(tagged.body.total, 2, "Con la etiqueta, los dos contactos que la tienen.");
+      assert.equal(tagged.body.total, 2, "Con la etiqueta, los dos contactos con nombre; el que no tiene nombre ni perfil no se ofrece (C14).");
       assert.ok(tagged.body.options.some((option) => option.text === names.nora), "Nora se ve por su nombre.");
+      assert.ok(tagged.body.options.some((option) => option.text === names.hugo), "Hugo se ve por su nombre.");
       const created = await createCatalog(page);
       const fragments = phoneFragments(formsPhones);
       const main = await page.getByRole("main").innerText();
@@ -273,10 +279,10 @@ export function formsE2ESteps({ page, platformPage, browser, env, tenantId, name
       await tagContact(page, formsPhones.lucas, names.tag);
       const [preview] = await Promise.all([page.waitForResponse(apiResponse("POST", `${catalogsApi}/previews`)), page.reload()]);
       const reread = await preview.json();
-      assert.equal(reread.total, 3, "El contacto nuevo con la etiqueta entra al catálogo.");
+      assert.equal(reread.total, 3, "El contacto nuevo con la etiqueta entra al catálogo; el que no tiene nombre ni perfil sigue afuera (C14).");
       await page.getByRole("group", { name: "Así lo ve quien lo recibe", exact: true }).getByText(names.lucas, { exact: true }).waitFor();
       assert.equal(created.source, "Contacts");
-      return "Clientes mayoristas lista los dos contactos con la etiqueta, Nora por el nombre de su perfil, sin teléfonos; un contacto nuevo que escribió sin nombre entró con el de su perfil.";
+      return "Clientes mayoristas lista los dos contactos con nombre que tienen la etiqueta, Nora por el nombre de su perfil, sin teléfonos ni el contacto sin nombre ni perfil; un contacto nuevo que escribió sin nombre entró con el de su perfil.";
     },
     "FRM-05": async () => {
       await openCatalogs(page, base);
@@ -329,9 +335,9 @@ export async function runFormsRealE2E({ build = false, cases = formsE2ECases.map
       page.setDefaultTimeout(30_000); platformPage.setDefaultTimeout(30_000);
       await page.goto(new URL("/alive", baseUrl).href);
       await assistantLogin(page, env, baseUrl, env.businessEmail, "business");
-      await assistantLogin(platformPage, env, baseUrl, "e2e-a1-operator@example.test", "platform");
+      await assistantLogin(platformPage, env, baseUrl, operatorEmail, "platform");
       const { tenantId } = await sessionOf(page);
-      assert.ok(await enableModule(platformPage, baseUrl, tenantId, formsModuleName, "E2E de Catálogos (E12)."), "Formularios llega apagado y Plataforma lo prende.");
+      assert.ok(await enableModule(platformPage, baseUrl, tenantId, formsModuleName, "E2E de Catálogos (E12).", operatorEmail), "Formularios llega apagado y Plataforma lo prende.");
       const names = formsNames(Date.now().toString(36).slice(-6));
       const steps = formsE2ESteps({ page, platformPage, browser, env, tenantId, names, downloads });
       for (const id of cases) {

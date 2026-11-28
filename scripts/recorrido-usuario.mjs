@@ -618,7 +618,7 @@ async function runWidth({ width, context, env, record, output, signal }) {
   // Acciones del asistente (I3 de su plan): las seis acciones con el modelo falso, con la misma Dueña y su organización.
   await runAccionesJourney({ page, platformPage, width, env, base: baseUrl, record, signOut, login, owner: businessEmail, organization });
   // Catálogos (E12, verificación): Plataforma prende Formularios y la Dueña arma uno a mano y uno de los miembros con filtros.
-  await runFormsJourney({ page, platformPage, width, base: baseUrl, record, signOut, login, owner: businessEmail, organization });
+  await runFormsJourney({ page, platformPage, width, base: baseUrl, record, signOut, login, owner: businessEmail, organization, operator });
   // Salida real de la sesión de Plataforma, sin tocar cookies a mano entre recorridos.
   await platformPage.setViewportSize(viewport(1440)); await signOut(platformPage, "Plataforma");
   await platformPage.close(); await page.close();

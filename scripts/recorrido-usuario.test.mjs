@@ -13,8 +13,8 @@ import { awaitHomePastNotice, base12Definitions, base12ManualChecks, bellLabel, 
   whileHeld, workingButtonProblems, workingButtonState } from "./recorrido-usuario-base12.mjs";
 import { base12bDefinitions, base12bManualChecks, base12bPlatformCaptures, chatDeliveryOrder, chatPhones, dailyEmailLimitProblems, dailyEmailLimitText,
   dailyLimitProblems, decodeMimeWords, deliveryWords, emailDeliveryReasons, emptiesLast, invitationDeliveryOrder, invitationQuotaOrders, isJoinedPercent,
-  isMonthRange, isReviewedLine, keyUnreadableText, resendUncertainText, runBase12bJourney, screenWaitProblems, senderNameOf, uncertainChatReason,
-  waitInHours } from "./recorrido-usuario-base12b.mjs";
+  isMonthRange, isReviewedLine, keyUnreadableText, loadedHomeHeading, resendUncertainText, runBase12bJourney, screenWaitProblems, senderNameOf,
+  uncertainChatReason, waitInHours } from "./recorrido-usuario-base12b.mjs";
 import { readFileSync } from "node:fs";
 
 test("la selección de ancho conserva el recorrido completo por defecto y permite sólo un ancho vigente", () => {
@@ -698,6 +698,11 @@ test("la segunda parte corre sus quince pasos en orden y captura en la pestaña 
     assert.equal(target, base12bPlatformCaptures.has(id.slice(5)) ? "plataforma" : "organización", id);
     assert.equal(action, "function", id);
   }
+});
+
+test("el Inicio cargado se espera por su título: «Inicio» en la compu y el nombre de la organización en el teléfono (B12B-11)", () => {
+  assert.equal(loadedHomeHeading(false, "Recorrido 1440 ab12cd34"), "Inicio");
+  assert.equal(loadedHomeHeading(true, "Recorrido 390 ab12cd34"), "Recorrido 390 ab12cd34");
 });
 
 test("el mes va como rango del primero al último día, y el porcentaje va pegado", () => {

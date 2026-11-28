@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { assistantApi } from "./assistant-real-ui.mjs";
 import { pickerButton } from "./e2e-pieza.mjs";
+import { confirmRecentAuthentication, confirmRecentAuthenticationWhenAsked, stopConfirmingRecentAuthentication } from "./platform-factor-real.mjs";
 
 // Catálogos en el recorrido de usuario (E12, verificación): `armar-un-catalogo` y `catalogo-con-filtros`, los dos recorridos
 // del lienzo (docs/design/recorridos). Van después de las acciones del asistente, en las mismas pestañas: arrancan y terminan
@@ -76,10 +77,13 @@ export async function toggleMany(page, scope, label, option) {
 
 /**
  * Prende un módulo para la organización, como Plataforma por la pantalla: Organización › Módulos › ⋮ › «Prender», con motivo.
- * `platformPage` tiene la sesión de un operador. Si ya estaba prendido, no hace nada.
+ * `platformPage` tiene la sesión de `operatorEmail`. Si ya estaba prendido, no hace nada. Prender pide la prueba reciente del
+ * ingreso (`platform.tenants.manage`, 10 minutos): si venció, el back responde 403 `Auth.Platform.ReauthenticationRequired`, el
+ * front abre «Confirmá que sos vos» y, confirmada, repite el `PUT`; acá se espera esa repetición, como en el E9.
  */
-export async function enableModule(platformPage, base, tenantId, moduleName, reason) {
+export async function enableModule(platformPage, base, tenantId, moduleName, reason, operatorEmail) {
   assert.match(String(tenantId ?? ""), /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iu, "La organización es un id.");
+  assert.match(String(operatorEmail ?? ""), /@/u, "Prender un módulo necesita el correo del operador, por si pide «Confirmá que sos vos».");
   await platformPage.goto(new URL(`/plataforma/organizaciones/${tenantId}?tab=modules`, base).href);
   await platformPage.getByRole("tab", { name: /^Módulos/u }).click();
   await platformPage.getByRole("button", { name: `Acciones de ${moduleName}`, exact: true }).first().click();
@@ -91,12 +95,26 @@ export async function enableModule(platformPage, base, tenantId, moduleName, rea
     return false;
   }
   await enable.click();
-  const dialog = platformPage.getByRole("dialog");
+  const dialog = platformPage.getByRole("dialog").filter({ has: platformPage.getByRole("textbox", { name: /Motivo/u }) });
   await dialog.getByRole("textbox", { name: /Motivo/u }).fill(reason);
   const feature = moduleName === formsModuleName ? "forms" : moduleName === "WhatsApp" ? "whatsapp" : null;
   assert.ok(feature, "El módulo es Formularios o WhatsApp.");
-  await act(platformPage, apiResponse("PUT", `/api/platform/tenants/${tenantId}/features/${feature}`),
-    () => dialog.getByRole("button", { name: "Prender", exact: true }).click(), { status: 200 });
+  const matcher = apiResponse("PUT", `/api/platform/tenants/${tenantId}/features/${feature}`);
+  // La confirmación va a mano: la que se hace sola (completeOperatorFactor) corre recién en la acción siguiente.
+  await stopConfirmingRecentAuthentication(platformPage);
+  try {
+    let response = await act(platformPage, matcher, () => dialog.getByRole("button", { name: "Prender", exact: true }).click());
+    if (response.status() === 403) {
+      const replay = platformPage.waitForResponse((reply) => matcher(reply) && reply.status() !== 403, { timeout: 60_000 });
+      void replay.catch(() => {});
+      assert.equal((await response.json()).code, "Auth.Platform.ReauthenticationRequired", "Un 403 al prender es la prueba del ingreso vencida.");
+      await confirmRecentAuthentication(platformPage, operatorEmail);
+      response = await replay;
+    }
+    assert.equal(response.status(), 200, `PUT ${new URL(response.url()).pathname} respondió ${response.status()}.`);
+  } finally {
+    await confirmRecentAuthenticationWhenAsked(platformPage, operatorEmail);
+  }
   await dialog.waitFor({ state: "hidden" });
   return true;
 }
@@ -298,7 +316,7 @@ export async function pickSample(page, scope, label, name) {
 /**
  * Los pasos, cada uno una función que devuelve lo que pasó. `ctx`: la pestaña de la organización (`page`), la de Plataforma
  * con su operador (`platformPage`), el ancho, la base, las sesiones del recorrido (`login(email, access, target)`, `signOut`)
- * y la Dueña (`owner`) con su organización (`organization`).
+ * la Dueña (`owner`) con su organización (`organization`) y el correo del operador (`operator`).
  */
 export function formsSteps(ctx) {
   const { page, platformPage, width, base, owner, organization } = ctx;
@@ -320,7 +338,7 @@ export function formsSteps(ctx) {
     ({ tenantId } = await sessionOf(page));
     // La Dueña se registró solo con su correo: con su nombre es la persona de ejemplo del catálogo de miembros.
     ownerName = await ensureDisplayName(page, "Dueña", `Recorrido ${width}`);
-    await enableModule(platformPage, base, tenantId, formsModuleName, `Recorrido de Catálogos a ${width}.`);
+    await enableModule(platformPage, base, tenantId, formsModuleName, `Recorrido de Catálogos a ${width}.`, ctx.operator);
   };
 
   return {
@@ -395,8 +413,8 @@ export function formsSteps(ctx) {
 export async function runFormsJourney(ctx) {
   assert.ok(ctx?.platformPage && ctx.page && typeof ctx.base === "object", "Catálogos necesita la pestaña de la organización y la de Plataforma.");
   assert.ok([ctx.record, ctx.login, ctx.signOut].every((value) => typeof value === "function")
-    && [ctx.owner, ctx.organization].every((value) => typeof value === "string" && value.length > 0),
-    "Catálogos sigue al recorrido: necesita sus sesiones, la Dueña y su organización.");
+    && [ctx.owner, ctx.organization, ctx.operator].every((value) => typeof value === "string" && value.length > 0),
+    "Catálogos sigue al recorrido: necesita sus sesiones, la Dueña, su organización y el operador.");
   const steps = formsSteps(ctx);
   for (const { id } of formsDefinitions) {
     const key = id.slice("FRM-".length);
