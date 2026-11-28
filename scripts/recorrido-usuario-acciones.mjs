@@ -79,6 +79,16 @@ export function proposalIdOf(href, base) {
   return id;
 }
 
+/**
+ * Cómo nombra la propuesta a una persona de Usuarios (B6): por su nombre si lo cargó, con su correo aparte, que la distingue de otra
+ * que se llame igual; si no, por su correo, que entonces no se repite. Usuarios pone el correo como `displayName` de quien no tiene
+ * nombre, así que un `displayName` no alcanza para saber si lo cargó.
+ */
+export function memberAsProposed(row) {
+  const named = Boolean(row.displayName) && row.displayName !== row.email;
+  return { label: named ? row.displayName : row.email, detail: named ? [["Correo", row.email]] : [] };
+}
+
 const escapeRegExp = (text) => text.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
 const pause = (ms) => new Promise((resolve) => { setTimeout(resolve, ms); });
 
@@ -288,8 +298,7 @@ export function accionesSteps(ctx) {
     assert.ok(row?.memberId, "La persona quedó en Usuarios.");
     // Como la nombra la propuesta: por su nombre si lo cargó, y si no por su correo, que entonces no se repite (B6).
     memberId = row.memberId;
-    memberLabel = row.displayName || names.member;
-    memberDetail = row.displayName ? [["Correo", names.member]] : [];
+    ({ label: memberLabel, detail: memberDetail } = memberAsProposed(row));
   };
   // La pestaña de la persona en su asistente; la primera vez prepara su cupo y acepta el aviso.
   let memberReady = false;

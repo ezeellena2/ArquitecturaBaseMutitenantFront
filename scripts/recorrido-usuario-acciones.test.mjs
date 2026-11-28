@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
-  accionesDefinitions, accionesManualChecks, accionesNames, accionesRoles, actionMarker, actionMessage, notProposedReply, proposalIdOf,
-  proposedReply, runAccionesJourney,
+  accionesDefinitions, accionesManualChecks, accionesNames, accionesRoles, actionMarker, actionMessage, memberAsProposed, notProposedReply,
+  proposalIdOf, proposedReply, runAccionesJourney,
 } from "./recorrido-usuario-acciones.mjs";
 
 const base = new URL("https://localtest.me:5174/");
@@ -54,6 +54,15 @@ test("la persona puede invitar y usar el asistente, pero no tiene lo de los role
   const held = new Set([names.assistant, names.inviter, names.hr, names.depot].flatMap((name) => roles.get(name)));
   for (const name of [names.audit, names.wholesale]) assert.ok(roles.get(name).every((code) => !held.has(code)), name);
   assert.equal(new Set(accionesRoles(names).map(([name]) => name)).size, 7);
+});
+
+// Usuarios pone el correo como `displayName` de quien no cargó su nombre (OrganizationUserService): la tarjeta la nombra por su
+// correo y no suma «Correo», que repetiría lo mismo (B6); con nombre, el correo la distingue de otra que se llame igual.
+test("la propuesta nombra a la persona por su nombre con su correo aparte, y sin nombre solo por su correo", () => {
+  const email = "persona@ejemplo.com";
+  assert.deepEqual(memberAsProposed({ email, displayName: email }), { label: email, detail: [] });
+  assert.deepEqual(memberAsProposed({ email, displayName: "" }), { label: email, detail: [] });
+  assert.deepEqual(memberAsProposed({ email, displayName: "Ana Pérez" }), { label: "Ana Pérez", detail: [["Correo", email]] });
 });
 
 test("la tarjeta abre su pantalla con el id de la propuesta y nada más", () => {
