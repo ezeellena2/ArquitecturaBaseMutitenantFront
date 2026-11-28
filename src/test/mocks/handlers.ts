@@ -1,8 +1,8 @@
 import { http, HttpResponse, type RequestHandler } from "msw";
 import type { ReferenceData } from "@/shared/referenceData/referenceData";
 import type { MeResponse } from "@/shared/api/types";
-import { platformPermissionsFixture } from "./platformPermissions";
-import { platformWhatsAppSettingsFixture } from "./platformSettings";
+import { platformPermissionsFixture } from "./platformPermissions.ts";
+import { platformWhatsAppSettingsFixture } from "./platformSettings.ts";
 
 export function meHandlerFor(user: MeResponse): RequestHandler {
   return http.get("/api/me", () => HttpResponse.json(user));

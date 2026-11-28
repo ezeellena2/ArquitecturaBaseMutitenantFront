@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
@@ -42,6 +42,17 @@ test("un caso del teléfono pasa a 320 con sus datos y pasos, y se compara con e
     assert.throws(() => validateManifest(manifest({ ...narrow, viewport: { width: 320, height: 568 } }), canvas), /viewport no aprobado/);
     assert.throws(() => validateManifest(manifest({ ...phone, viewport: { width: 375, height: 844 } }), canvas), /viewport no aprobado/);
   } finally { rmSync(canvas, { recursive: true, force: true }); }
+});
+
+// Sin respuesta preparada, la captura sirve `/api/me` y `/api/reference-data` con los mocks de src, cargados en Node: un import
+// relativo sin extensión (`./platformPermissions`) los rompe con ERR_MODULE_NOT_FOUND y la galería se cae en su primer caso.
+test("lo que la captura carga de src en Node se importa: los datos de referencia y las personas de prueba", async () => {
+  const source = readFileSync(new URL("./capturar-etapa.mjs", import.meta.url), "utf8");
+  const modules = [...source.matchAll(/import\("(\.\.\/src\/[^"]+)"\)/gu)].map((match) => match[1]);
+  assert.ok(modules.includes("../src/test/mocks/handlers.ts"), "La captura sirve los datos de referencia desde handlers.ts.");
+  for (const module of modules) await import(new URL(module, import.meta.url).href);
+  const { referenceDataFixture } = await import("../src/test/mocks/handlers.ts");
+  assert.equal(referenceDataFixture("en-US").currencies[0].name, "Argentine Peso");
 });
 
 // La base de una etapa tiene su galería (scripts/capturas/etapa-base-12.json, en docs/design/capturas/etapa-base-12/).
