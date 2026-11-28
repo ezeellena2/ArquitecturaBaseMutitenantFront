@@ -15,6 +15,7 @@ import { Dialog, DialogBody, DialogContent, DialogDescription, DialogFooter, Dia
 import { FormField } from "@/shared/ui/FormField";
 import { IconButton } from "@/shared/ui/IconButton";
 import { CloseIcon, TrashIcon } from "@/shared/ui/icons";
+import { InfoTip } from "@/shared/ui/InfoTip";
 import { Input } from "@/shared/ui/input";
 import { Picker, type PickerOption } from "@/shared/ui/Picker";
 import { RowActions } from "@/shared/ui/RowActions";
@@ -129,6 +130,9 @@ export function FiltersEditor({ filters, editable }: { filters: CatalogFilters; 
   </Section>;
 }
 
+/** El valor de «Sin detalle» en la pieza. */
+const noDetail = "none";
+
 /** «Texto de cada opción» (siempre el nombre), «Detalle» y «Orden»: en la compu, tres en fila; en el teléfono, sus filas. */
 function SettingsFields({ filters, editable, phone }: { filters: CatalogFilters; editable: boolean; phone: boolean }) {
   const { t } = useTranslation("forms");
@@ -147,9 +151,10 @@ function SettingsFields({ filters, editable, phone }: { filters: CatalogFilters;
     // Siempre el nombre: no se elige, así que va apagado, como todo lo que no se edita (A11).
     { label: t("forms:catalog.filters.optionText"), picker: <Picker trigger={trigger} label={phone ? t("forms:catalog.filters.optionText") : undefined} disabled
       value="name" options={[{ value: "name", label: detailLabel(t, "name") }]} onChange={() => undefined} /> },
+    // «Sin detalle» lleva un valor propio, no "": la pieza toma "" por «nada elegido» y no lo tildaría.
     { label: t("forms:catalog.filters.detail"), picker: <Picker trigger={trigger} label={phone ? t("forms:catalog.filters.detail") : undefined} disabled={disabled}
-      value={draft.detail ?? ""} first={{ value: "", label: t("forms:catalog.filters.noDetail") }} options={detailOptions}
-      onChange={(detail) => filters.setDetail(detail || null)} /> },
+      value={draft.detail ?? noDetail} first={{ value: noDetail, label: t("forms:catalog.filters.noDetail") }} options={detailOptions}
+      onChange={(detail) => filters.setDetail(detail === noDetail ? null : detail)} /> },
     { label: t("forms:catalog.filters.sort"), picker: <Picker trigger={trigger} label={phone ? t("forms:catalog.filters.sort") : undefined} disabled={disabled}
       value={draft.sort ? `${draft.sort.column}:${draft.sort.descending ? "desc" : "asc"}` : null} options={sortOptions}
       onChange={(value) => { const [column, direction] = value.split(":"); filters.setSort({ column: column!, descending: direction === "desc" }); }} /> },
@@ -207,27 +212,39 @@ function conditionError(filters: CatalogFilters, condition: ConditionDraft, t: T
   return filters.conditionErrors[condition.key];
 }
 
-/** Una condición en el teléfono: la columna, y su comparación y su valor; al tocarla, «Editar condición». */
+/**
+ * Una condición en el teléfono (M-FRM-Catalogo-Filtros): la columna y, debajo, dos columnas con su rótulo arriba del valor,
+ * «Comparación» y «Valor»; al tocarla, «Editar condición». Un rol o una empresa que ya no existe se ve en rojo, con una (i)
+ * roja debajo que dice qué hacer.
+ */
 function ConditionCard({ filters, condition, editable, onEdit }: { filters: CatalogFilters; condition: ConditionDraft; editable: boolean; onEdit: (trigger?: HTMLElement | null) => void }) {
   const { t } = useTranslation("forms");
   const error = conditionError(filters, condition, t);
   const name = columnLabel(t, condition.column);
-  const body = <span className="flex min-w-0 flex-1 flex-col gap-0.5 text-left">
-    <span className="font-medium">{name}</span>
-    <span className="flex flex-wrap gap-x-3 text-[0.8125rem]">
-      <span><span className="text-[var(--t3)]">{t("forms:catalog.filters.operator")} </span>{operatorLabel(t, condition.column, condition.operator)}</span>
-      <span className={cn(error && "text-[var(--peligro)]")}><span className="text-[var(--t3)]">{t("forms:catalog.filters.value")} </span>{conditionValuesText(filters, condition, t)}</span>
-    </span>
-    {error ? <span role="alert" className="text-[0.78125rem] text-[var(--peligro)]">{error}</span> : null}
+  const valueText = conditionValuesText(filters, condition, t);
+  const datum = (label: string, value: string, danger = false) => <span className="min-w-0">
+    <span className="block text-[0.8125rem] text-[var(--t3)]">{label}</span>
+    <span className={cn("block break-words text-[0.90625rem]", danger && "text-[var(--peligro)]")}>{value}</span>
   </span>;
-  if (!editable) return <div className="flex items-center gap-2 px-4 py-3">{body}</div>;
-  return <div className="flex items-center gap-2 px-4 py-3">
-    <button type="button" className="flex min-w-0 flex-1" onClick={() => onEdit()}>{body}</button>
-    <RowActions label={t("forms:catalog.filters.conditionMore", { column: name })} title={t("forms:catalog.filters.conditionTitle", { column: name })} actions={[
+  const body = <span className="flex min-w-0 flex-1 flex-col gap-1 text-left">
+    <span className="text-[0.9375rem] font-semibold">{name}</span>
+    <span className="grid grid-cols-2 gap-x-3 leading-snug">
+      {datum(t("forms:catalog.filters.operator"), operatorLabel(t, condition.column, condition.operator))}
+      {datum(t("forms:catalog.filters.value"), valueText, Boolean(error))}
+    </span>
+  </span>;
+  const errorTip = error ? <span className="grid grid-cols-2 gap-x-3"><span /><span><InfoTip text={error} title={valueText} className="text-[var(--peligro)]" /></span></span> : null;
+  return <div className="flex items-start gap-2 px-4 py-3">
+    <div className="flex min-w-0 flex-1 flex-col gap-1">
+      {editable ? <button type="button" className="flex min-w-0 flex-1" onClick={() => onEdit()}>{body}</button> : body}
+      {errorTip}
+    </div>
+    {editable ? <RowActions label={t("forms:catalog.filters.conditionMore", { column: name })} title={t("forms:catalog.filters.conditionTitle", { column: name })} actions={[
       { label: t("forms:catalog.filters.edit"), accessibleName: t("forms:catalog.filters.edit"), icon: Pencil, onSelect: onEdit },
-      { label: t("forms:catalog.filters.removeCondition"), accessibleName: t("forms:catalog.filters.removeCondition"), icon: TrashIcon, destructive: true,
+      // «Quitar», como en la hoja del tablero; el nombre para el lector sigue diciendo qué se quita.
+      { label: t("forms:catalog.filters.remove"), accessibleName: t("forms:catalog.filters.removeCondition"), icon: TrashIcon, destructive: true,
         onSelect: () => filters.removeCondition(condition.key) },
-    ]} />
+    ]} /> : null}
   </div>;
 }
 
@@ -328,7 +345,7 @@ function ReferenceValues({ id, filters, condition, editable, invalid, labeled, o
   const [open, setOpen] = useState(false);
   const query = useResourceOptions(condition.column === "role" ? memberRoleOptions : memberCompanyOptions, open && editable);
   const missing = filters.missingValues(condition);
-  return <Picker id={id} multiple label={labeled ? undefined : valuesLabel(t, condition.column)} disabled={!editable} aria-invalid={invalid || missing.length > 0}
+  return <Picker id={id} multiple label={labeled ? undefined : valuesLabel(t, condition.column)} listTitle={valuesLabel(t, condition.column)} disabled={!editable} aria-invalid={invalid || missing.length > 0}
     className={cn(missing.length > 0 && "text-[var(--peligro)]")}
     value={condition.values} remote={query.remote} onOpenChange={setOpen}
     options={query.items.map((reference) => ({ value: reference.id, label: reference.name }))}
@@ -345,7 +362,7 @@ function TagValues({ id, condition, editable, invalid, labeled, onChange }: Valu
   const { t } = useTranslation("forms");
   const [open, setOpen] = useState(false);
   const query = useResourceOptions(contactTagOptions, open && editable);
-  return <Picker id={id} multiple label={labeled ? undefined : valuesLabel(t, condition.column)} disabled={!editable} aria-invalid={invalid}
+  return <Picker id={id} multiple label={labeled ? undefined : valuesLabel(t, condition.column)} listTitle={valuesLabel(t, condition.column)} disabled={!editable} aria-invalid={invalid}
     value={condition.values} remote={query.remote} onOpenChange={setOpen}
     options={query.items.map((tag) => ({ value: tag.name, label: tag.name }))}
     selectedOptions={condition.values.map((tag) => ({ value: tag, label: tag }))}

@@ -22,6 +22,8 @@ interface PickerBase {
   /** El nombre del campo: nombra el botón y la lista, y es el título de la lista en el teléfono. Adentro de un `FormField`
    * no hace falta: la pieza se nombra con su etiqueta (`<id>-label`). */
   label?: string;
+  /** El título de la lista en el teléfono cuando no es el rótulo del campo: «Etiquetas» en el campo «Valor» de una condición. */
+  listTitle?: string;
   options: readonly PickerOption[];
   /** Lo que dice el campo, en gris, mientras no hay nada elegido («Sin zona», «Elegí un rol»). */
   placeholder?: string;
@@ -128,7 +130,7 @@ export function Picker(props: PickerProps) {
     const index = rows.findIndex((row) => row.selected);
     setActive(index >= 0 ? index : rows.findIndex((row) => !row.disabled));
     setPicked(values);
-    setTitle(props.label ?? labelText(fieldLabelId));
+    setTitle(props.listTitle ?? props.label ?? labelText(fieldLabelId));
     setOpen(true);
     props.onOpenChange?.(true);
   }

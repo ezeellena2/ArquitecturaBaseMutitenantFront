@@ -41,14 +41,11 @@ test("cada estado de cada tablero está una vez por ancho, como caso o como pend
   assert.equal(new Set(entries.map((entry) => entry.id)).size, entries.length, "Los ids no se repiten.");
 });
 
-test("a 320 va lo mismo que a 390, salvo abrir la vista previa, que a 320 está en el ⋮ de la barra", () => {
+test("a 320 va lo mismo que a 390, también abrir la vista previa, que es el ojo de la barra en los dos anchos", () => {
   for (const narrow of gallery.cases.filter((entry) => entry.viewport.width === 320)) {
     const phone = gallery.cases.find((entry) => entry.id === narrow.id.replace(/-320$/u, ""));
     assert.ok(phone && phone.viewport.width === 390, narrow.id);
-    const opensPreview = phone.app.actions.some((action) => action.name === "Así lo ve quien lo recibe" && action.role === "button");
-    if (!opensPreview) { assert.deepEqual(narrow.app, phone.app, narrow.id); continue; }
-    assert.ok(narrow.app.actions.some((action) => action.type === "press" && /^Acciones de /u.test(action.name)), narrow.id);
-    assert.ok(narrow.app.actions.some((action) => action.role === "menuitem" && action.name === "Así lo ve quien lo recibe"), narrow.id);
+    assert.deepEqual(narrow.app, phone.app, narrow.id);
   }
 });
 
@@ -78,4 +75,13 @@ test("el id de un caso es el tablero y el estado, sin acentos ni signos, y a 320
 test("lo que la app no puede mostrar sin la etapa siguiente queda pendiente, con su motivo", () => {
   assert.deepEqual(gallery.pending.map((entry) => entry.id), ["frm-catalogo-opciones-propuesta-con-la-columna-de-un-campo"]);
   assert.match(gallery.pending[0].reason, /E13/u);
+});
+
+test("«Sin opciones» llega como el tablero: «No se puede usar» por no tener opciones activas", () => {
+  for (const id of ["frm-catalogo-sin-opciones", "m-frm-catalogo-sin-opciones", "m-frm-catalogo-sin-opciones-320"]) {
+    const entry = gallery.cases.find((candidate) => candidate.id === id);
+    const detail = entry?.app.responses.find((response) => response.method === "GET" && response.path === "/api/organization/forms/catalogs/c-motivos");
+    assert.equal(detail?.body.usable, false, id);
+    assert.equal(detail?.body.unusableReason, "NoActiveOptions", id);
+  }
 });

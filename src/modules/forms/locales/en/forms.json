@@ -439,6 +439,7 @@
         "confirm": "Change"
       },
       "addCondition": "Add condition",
+      "remove": "Remove",
       "removeCondition": "Remove condition",
       "conditionsMax": "It reached 10 conditions, the maximum.",
       "conditionMore": "{{column}} condition actions",

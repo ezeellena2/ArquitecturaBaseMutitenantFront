@@ -8755,12 +8755,6 @@
             "role": "button",
             "name": "Varias",
             "exact": true
-          },
-          {
-            "type": "click",
-            "role": "button",
-            "name": "Elegí una opción",
-            "exact": false
           }
         ],
         "readySelector": "input[type=\"checkbox\"]",
@@ -10712,8 +10706,8 @@
               "companies": null,
               "sample": null,
               "isActive": true,
-              "usable": true,
-              "unusableReason": null,
+              "usable": false,
+              "unusableReason": "NoActiveOptions",
               "canManage": true,
               "itemCounts": {
                 "total": 0,
@@ -17348,7 +17342,7 @@
           {
             "type": "press",
             "role": "button",
-            "name": "Más acciones de las opciones",
+            "name": "Acciones de Motivos de visita",
             "exact": true,
             "key": "Enter"
           }
@@ -17566,7 +17560,7 @@
           {
             "type": "press",
             "role": "button",
-            "name": "Más acciones de las opciones",
+            "name": "Acciones de Motivos de visita",
             "exact": true,
             "key": "Enter"
           }
@@ -17789,7 +17783,7 @@
           }
         ],
         "readySelector": "[role=\"dialog\"]",
-        "readyText": "Una opción",
+        "readyText": "Visita programada a un cliente actual",
         "responses": [
           {
             "method": "GET",
@@ -17999,21 +17993,14 @@
         "now": "2026-11-24T14:00:00Z",
         "actions": [
           {
-            "type": "press",
-            "role": "button",
-            "name": "Acciones de Motivos de visita",
-            "exact": true,
-            "key": "Enter"
-          },
-          {
             "type": "click",
-            "role": "menuitem",
+            "role": "button",
             "name": "Así lo ve quien lo recibe",
             "exact": true
           }
         ],
         "readySelector": "[role=\"dialog\"]",
-        "readyText": "Una opción",
+        "readyText": "Visita programada a un cliente actual",
         "responses": [
           {
             "method": "GET",
@@ -18232,7 +18219,7 @@
           {
             "type": "click",
             "role": "menuitem",
-            "name": "Dar de baja",
+            "name": "Dar de baja el catálogo",
             "exact": true
           }
         ],
@@ -18456,7 +18443,7 @@
           {
             "type": "click",
             "role": "menuitem",
-            "name": "Dar de baja",
+            "name": "Dar de baja el catálogo",
             "exact": true
           }
         ],
@@ -19314,8 +19301,8 @@
               "companies": null,
               "sample": null,
               "isActive": true,
-              "usable": true,
-              "unusableReason": null,
+              "usable": false,
+              "unusableReason": "NoActiveOptions",
               "canManage": true,
               "itemCounts": {
                 "total": 0,
@@ -19483,8 +19470,8 @@
               "companies": null,
               "sample": null,
               "isActive": true,
-              "usable": true,
-              "unusableReason": null,
+              "usable": false,
+              "unusableReason": "NoActiveOptions",
               "canManage": true,
               "itemCounts": {
                 "total": 0,
@@ -20947,7 +20934,7 @@
         "readySelector": "main",
         "readyTexts": [
           "Seguimiento",
-          "Exportar"
+          "Cobranza"
         ],
         "responses": [
           {
@@ -21158,7 +21145,7 @@
         "readySelector": "main",
         "readyTexts": [
           "Seguimiento",
-          "Exportar"
+          "Cobranza"
         ],
         "responses": [
           {
@@ -28563,7 +28550,7 @@
           {
             "type": "press",
             "role": "button",
-            "name": "Más acciones de las opciones",
+            "name": "Acciones de Motivos de visita",
             "exact": true,
             "key": "Enter"
           },
@@ -28787,7 +28774,7 @@
           {
             "type": "press",
             "role": "button",
-            "name": "Más acciones de las opciones",
+            "name": "Acciones de Motivos de visita",
             "exact": true,
             "key": "Enter"
           },
@@ -29011,7 +28998,7 @@
           {
             "type": "press",
             "role": "button",
-            "name": "Más acciones de las opciones",
+            "name": "Acciones de Motivos de visita",
             "exact": true,
             "key": "Enter"
           },
@@ -29245,7 +29232,7 @@
           {
             "type": "press",
             "role": "button",
-            "name": "Más acciones de las opciones",
+            "name": "Acciones de Motivos de visita",
             "exact": true,
             "key": "Enter"
           },
@@ -29479,7 +29466,7 @@
           {
             "type": "press",
             "role": "button",
-            "name": "Más acciones de las opciones",
+            "name": "Acciones de Motivos de visita",
             "exact": true,
             "key": "Enter"
           },
@@ -29735,7 +29722,7 @@
           {
             "type": "press",
             "role": "button",
-            "name": "Más acciones de las opciones",
+            "name": "Acciones de Motivos de visita",
             "exact": true,
             "key": "Enter"
           },
@@ -29991,7 +29978,7 @@
           {
             "type": "press",
             "role": "button",
-            "name": "Más acciones de las opciones",
+            "name": "Acciones de Motivos de visita",
             "exact": true,
             "key": "Enter"
           },
@@ -30225,7 +30212,7 @@
           {
             "type": "press",
             "role": "button",
-            "name": "Más acciones de las opciones",
+            "name": "Acciones de Motivos de visita",
             "exact": true,
             "key": "Enter"
           },
@@ -30465,7 +30452,7 @@
           {
             "type": "press",
             "role": "button",
-            "name": "Más acciones de las opciones",
+            "name": "Acciones de Motivos de visita",
             "exact": true,
             "key": "Enter"
           }
@@ -30689,7 +30676,7 @@
           {
             "type": "press",
             "role": "button",
-            "name": "Más acciones de las opciones",
+            "name": "Acciones de Motivos de visita",
             "exact": true,
             "key": "Enter"
           }
@@ -41156,7 +41143,7 @@
           {
             "type": "fill",
             "role": "textbox",
-            "name": "Nombre del catálogo",
+            "name": "Nombre",
             "value": "Responsables de depósito",
             "exact": false
           },
@@ -44136,7 +44123,7 @@
           }
         ],
         "readySelector": "[role=\"menu\"]",
-        "readyText": "Quitar condición",
+        "readyText": "Quitar",
         "responses": [
           {
             "method": "GET",
@@ -44558,7 +44545,7 @@
           }
         ],
         "readySelector": "[role=\"menu\"]",
-        "readyText": "Quitar condición",
+        "readyText": "Quitar",
         "responses": [
           {
             "method": "GET",
@@ -46235,15 +46222,8 @@
         "now": "2026-11-24T14:00:00Z",
         "actions": [
           {
-            "type": "press",
-            "role": "button",
-            "name": "Acciones de Supervisores",
-            "exact": true,
-            "key": "Enter"
-          },
-          {
             "type": "click",
-            "role": "menuitem",
+            "role": "button",
             "name": "Así lo ve quien lo recibe",
             "exact": true
           }
@@ -47094,15 +47074,8 @@
         "now": "2026-11-24T14:00:00Z",
         "actions": [
           {
-            "type": "press",
-            "role": "button",
-            "name": "Acciones de Supervisores",
-            "exact": true,
-            "key": "Enter"
-          },
-          {
             "type": "click",
-            "role": "menuitem",
+            "role": "button",
             "name": "Así lo ve quien lo recibe",
             "exact": true
           },
@@ -47956,15 +47929,8 @@
         "now": "2026-11-24T14:00:00Z",
         "actions": [
           {
-            "type": "press",
-            "role": "button",
-            "name": "Acciones de Supervisores",
-            "exact": true,
-            "key": "Enter"
-          },
-          {
             "type": "click",
-            "role": "menuitem",
+            "role": "button",
             "name": "Así lo ve quien lo recibe",
             "exact": true
           }
@@ -48795,15 +48761,8 @@
         "now": "2026-11-24T14:00:00Z",
         "actions": [
           {
-            "type": "press",
-            "role": "button",
-            "name": "Acciones de Supervisores",
-            "exact": true,
-            "key": "Enter"
-          },
-          {
             "type": "click",
-            "role": "menuitem",
+            "role": "button",
             "name": "Así lo ve quien lo recibe",
             "exact": true
           }
@@ -49631,15 +49590,8 @@
         "now": "2026-11-24T14:00:00Z",
         "actions": [
           {
-            "type": "press",
-            "role": "button",
-            "name": "Acciones de Supervisores",
-            "exact": true,
-            "key": "Enter"
-          },
-          {
             "type": "click",
-            "role": "menuitem",
+            "role": "button",
             "name": "Así lo ve quien lo recibe",
             "exact": true
           }
@@ -56479,7 +56431,7 @@
             "exact": true,
             "within": {
               "role": "dialog",
-              "name": "Valor"
+              "name": "Etiquetas"
             }
           },
           {
@@ -56916,7 +56868,7 @@
             "exact": true,
             "within": {
               "role": "dialog",
-              "name": "Valor"
+              "name": "Etiquetas"
             }
           },
           {
@@ -57332,7 +57284,7 @@
           }
         ],
         "readySelector": "[role=\"menu\"]",
-        "readyText": "Quitar condición",
+        "readyText": "Quitar",
         "responses": [
           {
             "method": "GET",
@@ -57733,7 +57685,7 @@
           }
         ],
         "readySelector": "[role=\"menu\"]",
-        "readyText": "Quitar condición",
+        "readyText": "Quitar",
         "responses": [
           {
             "method": "GET",
@@ -60150,15 +60102,8 @@
         "now": "2026-11-24T14:00:00Z",
         "actions": [
           {
-            "type": "press",
-            "role": "button",
-            "name": "Acciones de Clientes",
-            "exact": true,
-            "key": "Enter"
-          },
-          {
             "type": "click",
-            "role": "menuitem",
+            "role": "button",
             "name": "Así lo ve quien lo recibe",
             "exact": true
           }
@@ -60967,15 +60912,8 @@
         "now": "2026-11-24T14:00:00Z",
         "actions": [
           {
-            "type": "press",
-            "role": "button",
-            "name": "Acciones de Clientes",
-            "exact": true,
-            "key": "Enter"
-          },
-          {
             "type": "click",
-            "role": "menuitem",
+            "role": "button",
             "name": "Así lo ve quien lo recibe",
             "exact": true
           },
@@ -61787,15 +61725,8 @@
         "now": "2026-11-24T14:00:00Z",
         "actions": [
           {
-            "type": "press",
-            "role": "button",
-            "name": "Acciones de Clientes",
-            "exact": true,
-            "key": "Enter"
-          },
-          {
             "type": "click",
-            "role": "menuitem",
+            "role": "button",
             "name": "Así lo ve quien lo recibe",
             "exact": true
           }
@@ -62584,15 +62515,8 @@
         "now": "2026-11-24T14:00:00Z",
         "actions": [
           {
-            "type": "press",
-            "role": "button",
-            "name": "Acciones de Clientes",
-            "exact": true,
-            "key": "Enter"
-          },
-          {
             "type": "click",
-            "role": "menuitem",
+            "role": "button",
             "name": "Así lo ve quien lo recibe",
             "exact": true
           }
@@ -63378,15 +63302,8 @@
         "now": "2026-11-24T14:00:00Z",
         "actions": [
           {
-            "type": "press",
-            "role": "button",
-            "name": "Acciones de Clientes",
-            "exact": true,
-            "key": "Enter"
-          },
-          {
             "type": "click",
-            "role": "menuitem",
+            "role": "button",
             "name": "Así lo ve quien lo recibe",
             "exact": true
           }

@@ -205,9 +205,12 @@ const optionsOfMotivos = dialog("Opciones de «Motivos de visita»");
 const newOptionsOfMotivos = dialog("Opciones nuevas de «Motivos de visita»");
 const sortDialog = dialog("Ordenar las opciones");
 const importDialog = (name = "Proveedores") => dialog(`Importar opciones a «${name}»`);
-const sortMenu = [menu("Más acciones de las opciones"), click("Ordenar por…", "menuitem")];
-/** «Así lo ve quien lo recibe» del teléfono: en la barra a 390 y, a 320, en el ⋮ de la barra (Page, barInSheet). */
-const openPreview = (width, more) => width === 320 ? [menu(more), click("Así lo ve quien lo recibe", "menuitem")] : [click("Así lo ve quien lo recibe")];
+/** El ⋮ con «Ordenar por…»: en la compu, el de «Opciones»; en el teléfono, el de la banda (M-FRM-Catalogo, «Más acciones»). */
+const moreMenu = (phone) => menu(phone ? "Acciones de Motivos de visita" : "Más acciones de las opciones");
+const sortMenuOf = (phone) => [moreMenu(phone), click("Ordenar por…", "menuitem")];
+const sortMenu = sortMenuOf(false);
+/** «Así lo ve quien lo recibe» del teléfono: el ojo de la barra, también a 320 (M-FRM-Catalogo). */
+const openPreview = () => [click("Así lo ve quien lo recibe")];
 const previewDialog = dialog("Así lo ve quien lo recibe");
 
 // ── Estados ─────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -274,7 +277,7 @@ function catalogStates() {
     base("Acciones del catálogo", [menu("Acciones de Motivos de visita")], ready.menu, { readyText: "Dar de baja" }),
     base("Varias elegidas", [click("Elegir Seguimiento", "checkbox", { force: true }), click("Elegir Venta nueva", "checkbox", { force: true })], ready.main, { readyText: "2 elegidas" }),
     base("Vista previa abierta", [click("Elegí una opción", "button", { exact: false })], 'input[type="radio"]'),
-    base("Vista previa con varias", [click("Varias"), click("Elegí una opción", "button", { exact: false })], 'input[type="checkbox"]', { readyText: "Elegí hasta 3" }),
+    base("Vista previa con varias", [click("Varias")], 'input[type="checkbox"]', { readyText: "Elegí hasta 3" }),
     base("Guardando", [...edited, click("Guardar cambios")], ready.main, { readyText: "Guardando…", hang: { path: `${catalogs}/c-motivos`, method: "PUT" } }),
     base("Guardado", [...edited, click("Guardar cambios")], ready.main, { readyText: saved, responses: [putOk("c-motivos")] }),
     base("No se guardó", [...edited, click("Guardar cambios")], ready.main, { readyText: "Algo salió mal. Probá de nuevo en un rato.",
@@ -285,7 +288,8 @@ function catalogStates() {
     base("Dar de baja el catálogo", [menu("Acciones de Motivos de visita"), click("Dar de baja", "menuitem")], ready.dialog, { readyText: "Sus opciones dejan de poder elegirse." }),
     state("De baja", path, editorResponses({ ...motivos, isActive: false }, motivosItems), [], ready.main, { readyTexts: ["Seguimiento", "De baja"] }),
     state("De baja: acciones", path, editorResponses({ ...motivos, isActive: false }, motivosItems), [menu("Acciones de Motivos de visita")], ready.menu, { readyText: "Reactivar" }),
-    state("Sin opciones", path, editorResponses({ ...motivos, itemCounts: { total: 0, active: 0 } }, []), [], ready.main, { readyText: "Todavía no hay opciones." }),
+    state("Sin opciones", path, editorResponses({ ...motivos, usable: false, unusableReason: "NoActiveOptions", itemCounts: { total: 0, active: 0 } }, []), [], ready.main,
+      { readyText: "Todavía no hay opciones." }),
     state("1.097 opciones", editorPath("c-prov"), editorResponses(proveedores, proveedoresItems), [], 'input[aria-label="Texto de Abrasivos del Sur"]'),
     state("10.000 opciones", editorPath("c-articulos"), editorResponses(articulos, articulosItems), [], 'input[aria-label="Texto de Adhesivo epoxi"]'),
     state("Con tipo de valor", recargoPath, recargoEditor(), [], 'input[aria-label="Valor de Capital"]'),
@@ -321,14 +325,15 @@ function phoneCatalogStates() {
     base("Se borra al guardar", deleteReclamo, ready.main, { readyText: "Se borra al guardar" }),
     base("Restaurar una opción", [...deleteReclamo, menu("Acciones de Reclamo")], ready.menu, { readyText: "Restaurar" }),
     base("Reactivar una opción", [menu("Acciones de Cobranza")], ready.menu, { readyText: "Reactivar" }),
-    base("Más acciones", [menu("Más acciones de las opciones")], ready.menu, { readyText: "Descargar la plantilla" }),
-    base("Así lo ve quien lo recibe", [], ready.dialog, { actionsAt: (width) => openPreview(width, "Acciones de Motivos de visita"), readyText: "Una opción" }),
-    base("Dar de baja el catálogo", [menu("Acciones de Motivos de visita"), click("Dar de baja", "menuitem")], ready.dialog, { readyText: "Sus opciones dejan de poder elegirse." }),
+    base("Más acciones", [moreMenu(true)], ready.menu, { readyText: "Descargar la plantilla" }),
+    base("Así lo ve quien lo recibe", openPreview(), ready.dialog, { readyText: "Visita programada a un cliente actual" }),
+    base("Dar de baja el catálogo", [menu("Acciones de Motivos de visita"), click("Dar de baja el catálogo", "menuitem")], ready.dialog, { readyText: "Sus opciones dejan de poder elegirse." }),
     base("Guardado", [...editReclamo, click("Guardar cambios")], ready.main, { readyText: saved, responses: [putOk("c-motivos")] }),
-    state("Sin opciones", path, editorResponses({ ...motivos, itemCounts: { total: 0, active: 0 } }, []), [], ready.main, { readyText: "Todavía no hay opciones." }),
+    state("Sin opciones", path, editorResponses({ ...motivos, usable: false, unusableReason: "NoActiveOptions", itemCounts: { total: 0, active: 0 } }, []), [], ready.main,
+      { readyText: "Todavía no hay opciones." }),
     state("Nuevo catálogo", `${listPath}/nuevo`, newEditor(), [], ready.main, { readyText: "De dónde salen las opciones" }),
     state("Nuevo: de dónde salen", `${listPath}/nuevo`, newEditor(), [piece("De dónde salen las opciones")], ready.listbox, { readyText: "Se arma sola con los contactos de Clientes, por etiqueta." }),
-    state("Solo lectura", path, editorResponses({ ...motivos, canManage: false }, motivosItems), [], ready.main, { readyTexts: ["Seguimiento", "Exportar"], me: meOf({ manage: false }) }),
+    state("Solo lectura", path, editorResponses({ ...motivos, canManage: false }, motivosItems), [], ready.main, { readyTexts: ["Seguimiento", "Cobranza"], me: meOf({ manage: false }) }),
   ];
 }
 
@@ -372,6 +377,7 @@ function phoneOptionsStates() {
 function sortStates(phone) {
   const path = editorPath("c-motivos");
   const base = (name, actions, readySelector, extra = {}) => state(name, path, motivosEditor(extra.responses ?? []), actions, readySelector, { ...extra, responses: undefined });
+  const sortMenu = sortMenuOf(phone);
   const byCode = [...sortMenu, piece("Columna", { within: sortDialog }), choose("Código"), pick("Orden", "De la A a la Z", { within: sortDialog }), choose("De la Z a la A")];
   const pending = [...sortMenu, clickIn(sortDialog, "Ordenar")];
   const sorted = [...motivosItems].sort((a, b) => a.text.localeCompare(b.text, "es")).map((row, index) => ({ ...row, position: index + 1 }));
@@ -381,7 +387,7 @@ function sortStates(phone) {
     base("Por código, de la Z a la A", byCode, ready.dialog, { readyText: "De la Z a la A" }),
     base("Orden pendiente", pending, ready.main, { readyText: "Se ordenará por «Texto», de la A a la Z, al guardar." }),
   ];
-  const moves = base("Con movimientos: apagado", [click("Bajar Seguimiento"), menu("Más acciones de las opciones")], ready.menu, { readyText: "Primero descartá los cambios de posición." });
+  const moves = base("Con movimientos: apagado", [click("Bajar Seguimiento"), moreMenu(phone)], ready.menu, { readyText: "Primero descartá los cambios de posición." });
   if (phone) return [...common, moves];
   return [...common,
     base("Cambiar el orden pendiente", [...pending, ...sortMenu, piece("Columna", { within: sortDialog }), choose("Código")], ready.dialog, { readyText: "Código" }),
@@ -452,7 +458,7 @@ function filtersStates(phone) {
     return [
       base("Sin cambios", [], ready.main, { readyText: "Supervisor, Jefe de obra" }),
       base("Con cambios", [card, piece("Comparación", { within: edit }), choose("no tiene ninguno de"), clickIn(edit, "Listo")], ready.main, { readyText: "no tiene ninguno de" }),
-      base("Acciones de una condición", [menu("Acciones de la condición Rol")], ready.menu, { readyText: "Quitar condición" }),
+      base("Acciones de una condición", [menu("Acciones de la condición Rol")], ready.menu, { readyText: "Quitar" }),
       base("Editar una condición", [card], ready.dialog, { readyText: "Editar condición" }),
       base("Así lo ve quien lo recibe", [], ready.dialog, { actionsAt: preview, readyText: "Martín Paz" }),
       base("Elegir a quién", [], ready.listbox, { actionsAt: (width) => [...preview(width), piece("Persona", { within: previewDialog })], readyText: "Paula Méndez" }),
@@ -474,7 +480,7 @@ function filtersStates(phone) {
     missing,
     state("Nuevo catálogo", `${listPath}/nuevo`, newEditor(), [piece("De dónde salen las opciones"), choose("De los miembros")], ready.main, { readyText: "Qué miembros entran" }),
     state("Crear sin persona", `${listPath}/nuevo`, newEditor(), [piece("De dónde salen las opciones"), choose("De los miembros"),
-      { ...fill("Nombre del catálogo", "Responsables de depósito"), exact: false }, click("Agregar condición"), piece("Roles"), choose("Supervisor"), closeList("Supervisor"),
+      { ...fill("Nombre", "Responsables de depósito"), exact: false }, click("Agregar condición"), piece("Roles"), choose("Supervisor"), closeList("Supervisor"),
       click("Crear catálogo")], ready.main, { readyText: "Elegí una persona." }),
     base("Guardado", [...changed, click("Guardar cambios")], ready.main, { readyText: saved, responses: [putOk("c-sup", 5)] }),
     base("Elegir los roles", [piece("Roles")], ready.listbox, { readyText: "Auditor" }),
@@ -496,9 +502,9 @@ function contactsStates(phone) {
     return [
       base("Sin cambios", [], ready.main, { readyText: "tiene alguna de" }),
       // En el teléfono, varias se marcan en la hoja de la pieza y las aplica su «Listo (N)»; Esc las descartaría.
-      base("Con cambios", [card, pick("Valor", "Mayorista", { within: edit }), choose("Minorista"), clickIn(dialog("Valor"), "Listo (2)"), clickIn(edit, "Listo")], ready.main,
+      base("Con cambios", [card, pick("Valor", "Mayorista", { within: edit }), choose("Minorista"), clickIn(dialog("Etiquetas"), "Listo (2)"), clickIn(edit, "Listo")], ready.main,
         { readyText: "Mayorista, Minorista" }),
-      base("Acciones de una condición", [menu("Acciones de la condición Etiqueta")], ready.menu, { readyText: "Quitar condición" }),
+      base("Acciones de una condición", [menu("Acciones de la condición Etiqueta")], ready.menu, { readyText: "Quitar" }),
       base("Editar una condición", [card], ready.dialog, { readyText: "Editar condición" }),
       base("Elegir etiquetas", [card, pick("Valor", "Mayorista", { within: edit })], ready.listbox, { readyText: "Minorista" }),
       base("Así lo ve quien lo recibe", [], ready.dialog, { actionsAt: preview, readyText: "Almacén Don Pepe" }),

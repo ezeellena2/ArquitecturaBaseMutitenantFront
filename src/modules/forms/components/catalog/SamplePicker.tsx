@@ -36,6 +36,9 @@ export function SampleMemberPicker({ filters }: { filters: CatalogFilters }) {
   </FormField>;
 }
 
+/** El valor de «Sin cliente» en la pieza: no "", que la pieza toma por «nada elegido» y no lo tildaría. */
+const noContact = "none";
+
 /** «Cliente», que puede quedar «Sin cliente»: la vista previa de los contactos no lo necesita. */
 export function SampleContactPicker({ filters }: { filters: CatalogFilters }) {
   const { t } = useTranslation("forms");
@@ -43,12 +46,12 @@ export function SampleContactPicker({ filters }: { filters: CatalogFilters }) {
   const contacts = useResourceOptions(sampleContactOptions, open);
   const chosen = filters.sample;
   return <FormField label={t("forms:catalog.sample.contact")} error={filters.sampleError}>
-    <Picker value={chosen?.id ?? ""} remote={contacts.remote} onOpenChange={setOpen}
-      first={{ value: "", label: t("forms:catalog.sample.noContact") }}
+    <Picker value={chosen?.id ?? noContact} remote={contacts.remote} onOpenChange={setOpen}
+      first={{ value: noContact, label: t("forms:catalog.sample.noContact") }}
       options={contacts.items.map((contact) => ({ value: contact.contactId, label: contact.name }))}
       selectedOptions={chosen ? [{ value: chosen.id, label: chosen.name }] : []}
       onChange={(id) => {
-        if (!id) { filters.setSample(null); return; }
+        if (id === noContact) { filters.setSample(null); return; }
         const contact = contacts.knownItems.find((item) => item.contactId === id);
         if (contact) filters.setSample({ id: contact.contactId, name: contact.name, detail: null });
       }} />

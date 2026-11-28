@@ -301,3 +301,56 @@ describe("Catálogo con filtros, la vista previa (FRM-Catalogo-Filtros y M-FRM-C
     } finally { restore(); }
   });
 });
+
+describe("Catálogo con filtros, las piezas y las condiciones (FRM-Catalogo-Filtros y M-FRM-Catalogo-*, verificación de la E12)", () => {
+  const clientes = () => supervisores({ id: "c-cli", name: "Clientes", source: "Contacts", roles: null, companies: null, sample: null,
+    filters: { sourceVersion: 1, excludeRecipient: false, detail: null, sort: { column: "name", descending: false }, conditions: [{ column: "tags", operator: "hasAny", values: ["Mayorista"] }] } });
+
+  it("«Sin cliente» y «Sin detalle» se tildan en su lista cuando son lo elegido", async () => {
+    serve({ detail: clientes() });
+    const { user } = mountForms(formsOwner, "/org/formularios/catalogos/c-cli");
+    await user.click(await screen.findByRole("button", { name: pickerName("Cliente") }));
+    expect(await screen.findByRole("option", { name: /Sin cliente/ })).toHaveAttribute("aria-selected", "true");
+    await user.keyboard("{Escape}");
+    await user.click(screen.getByRole("button", { name: pickerName("Detalle") }));
+    expect(await screen.findByRole("option", { name: /Sin detalle/ })).toHaveAttribute("aria-selected", "true");
+  });
+
+  it("en el teléfono, la tarjeta de una condición pone «Comparación» y «Valor» arriba de su valor, y su hoja dice «Quitar»", async () => {
+    const restore = asPhone();
+    try {
+      const { user } = mountForms(formsOwner, "/org/formularios/catalogos/c-sup");
+      const value = await screen.findByText("Supervisor, Jefe de obra");
+      expect(value.previousElementSibling).toHaveTextContent("Valor");
+      expect(screen.getAllByText("Comparación")[0].nextElementSibling).toHaveTextContent("tiene alguno de");
+      await user.click(screen.getByRole("button", { name: "Acciones de la condición Rol" }));
+      const sheet = await screen.findByRole("menu", { name: "Acciones de la condición Rol" });
+      expect(within(sheet).getAllByRole("menuitem").map((item) => item.textContent)).toEqual(["Editar", "Quitar"]);
+    } finally { restore(); }
+  });
+
+  it("en el teléfono, la lista de los valores de una condición se titula con la columna, «Roles» o «Etiquetas»", async () => {
+    const restore = asPhone();
+    try {
+      const { user } = mountForms(formsOwner, "/org/formularios/catalogos/c-sup");
+      await user.click(await screen.findByText("Supervisor, Jefe de obra"));
+      const dialog = await screen.findByRole("dialog", { name: "Editar condición" });
+      await user.click(within(dialog).getByRole("button", { name: pickerName("Valor") }));
+      expect(await screen.findByRole("heading", { name: "Roles" })).toBeInTheDocument();
+    } finally { restore(); }
+  });
+
+  it("en el teléfono, un rol que ya no existe dice «Rol no disponible» en rojo con una (i) roja, sin la frase debajo", async () => {
+    serve({ detail: supervisores({ id: "c-resp", name: "Responsables de obra", usable: false, unusableReason: "RoleMissing",
+      roles: [], filters: { ...supervisores().filters!, conditions: [{ column: "role", operator: "hasAny", values: ["r-borrado"] }] } }) });
+    const restore = asPhone();
+    try {
+      mountForms(formsOwner, "/org/formularios/catalogos/c-resp");
+      expect(await screen.findByText("Rol no disponible")).toHaveClass("text-[var(--peligro)]");
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+      const tip = screen.getByRole("button", { name: "Más información sobre Rol no disponible" });
+      expect(tip).toHaveClass("text-[var(--peligro)]");
+      expect(tip).toHaveAccessibleDescription("Ese rol ya no existe. Elegí otro.");
+    } finally { restore(); }
+  });
+});
