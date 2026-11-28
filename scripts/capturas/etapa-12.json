@@ -56473,11 +56473,14 @@
             "exact": false
           },
           {
-            "type": "press",
-            "role": "option",
-            "name": "Minorista",
-            "exact": false,
-            "key": "Escape"
+            "type": "click",
+            "role": "button",
+            "name": "Listo (2)",
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Valor"
+            }
           },
           {
             "type": "click",
@@ -56907,11 +56910,14 @@
             "exact": false
           },
           {
-            "type": "press",
-            "role": "option",
-            "name": "Minorista",
-            "exact": false,
-            "key": "Escape"
+            "type": "click",
+            "role": "button",
+            "name": "Listo (2)",
+            "exact": true,
+            "within": {
+              "role": "dialog",
+              "name": "Valor"
+            }
           },
           {
             "type": "click",

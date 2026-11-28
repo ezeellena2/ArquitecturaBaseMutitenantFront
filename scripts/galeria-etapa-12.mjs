@@ -495,7 +495,9 @@ function contactsStates(phone) {
     const edit = dialog("Editar condición");
     return [
       base("Sin cambios", [], ready.main, { readyText: "tiene alguna de" }),
-      base("Con cambios", [card, pick("Valor", "Mayorista", { within: edit }), choose("Minorista"), closeList("Minorista"), clickIn(edit, "Listo")], ready.main, { readyText: "Mayorista, Minorista" }),
+      // En el teléfono, varias se marcan en la hoja de la pieza y las aplica su «Listo (N)»; Esc las descartaría.
+      base("Con cambios", [card, pick("Valor", "Mayorista", { within: edit }), choose("Minorista"), clickIn(dialog("Valor"), "Listo (2)"), clickIn(edit, "Listo")], ready.main,
+        { readyText: "Mayorista, Minorista" }),
       base("Acciones de una condición", [menu("Acciones de la condición Etiqueta")], ready.menu, { readyText: "Quitar condición" }),
       base("Editar una condición", [card], ready.dialog, { readyText: "Editar condición" }),
       base("Elegir etiquetas", [card, pick("Valor", "Mayorista", { within: edit })], ready.listbox, { readyText: "Minorista" }),
