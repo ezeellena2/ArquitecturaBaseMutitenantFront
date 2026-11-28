@@ -121,14 +121,31 @@ describe("Catálogos", () => {
     const view = mountForms(formsOwner, listPath);
     expect(await screen.findByText("Todavía no hay catálogos.")).toBeVisible();
     expect(await screen.findByText("Sin catálogos")).toBeVisible();
+    // KAN-141: sin catálogos no se ven buscador, filtros ni pie «0 de 0».
+    expect(screen.queryByRole("searchbox", { name: "Buscar por nombre" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("navigation", { name: "Paginado" })).not.toBeInTheDocument();
+    expect(screen.queryByText("0 de 0")).not.toBeInTheDocument();
     view.unmount();
 
     serve((url) => url.searchParams.get("search") ? [] : catalogs);
     const filtered = mountForms(formsOwner, `${listPath}?search=herramientas`);
     expect(await screen.findByText("Ningún catálogo coincide con los filtros.")).toBeVisible();
+    // Sin coincidencias conserva la barra de filtros para limpiar, pero sin pie «0 de 0».
+    expect(screen.getByRole("searchbox", { name: "Buscar por nombre" })).toBeVisible();
+    expect(screen.queryByRole("navigation", { name: "Paginado" })).not.toBeInTheDocument();
+    expect(screen.queryByText("0 de 0")).not.toBeInTheDocument();
     await filtered.user.click(screen.getAllByRole("button", { name: "Limpiar filtros" }).at(-1)!);
     expect(await screen.findByRole("link", { name: "Proveedores" })).toBeVisible();
+    expect(screen.getByRole("navigation", { name: "Paginado" })).toBeVisible();
     filtered.unmount();
+
+    // Si el resumen quedó en 0 (una relectura que falló) pero la lista trae catálogos, la barra sigue: manda la lista.
+    counts.mockImplementationOnce(() => HttpResponse.json({ all: 0, active: 0 }));
+    serve();
+    const stale = mountForms(formsOwner, listPath);
+    expect(await screen.findByRole("link", { name: "Proveedores" })).toBeVisible();
+    expect(screen.getByRole("searchbox", { name: "Buscar por nombre" })).toBeVisible();
+    stale.unmount();
 
     serve(() => HttpResponse.json({ status: 500, title: "Error" }, { status: 500 }));
     const failed = mountForms(formsOwner, listPath);
@@ -163,6 +180,37 @@ describe("Catálogos", () => {
       expect(screen.getByRole("button", { name: "Filtros de catálogos" })).toBeVisible();
       expect(screen.getByRole("link", { name: "Nuevo catálogo" })).toHaveAttribute("href", `${listPath}/nuevo`);
       expect(await axe(container)).toHaveNoViolations();
+    } finally { restore(); }
+  });
+
+  it("al limpiar unos filtros sin coincidencias, la barra sigue mientras carga la lista entera (KAN-141)", async () => {
+    serve();
+    let release = () => {};
+    const pending = new Promise<void>((resolve) => { release = resolve; });
+    server.use(http.get("/api/organization/forms/catalogs", async ({ request }) => {
+      const search = new URL(request.url).searchParams.get("search");
+      if (!search) await pending;
+      return HttpResponse.json(paged(search ? [] : catalogs));
+    }));
+    const { user } = mountForms(formsOwner, `${listPath}?search=herramientas`);
+    expect(await screen.findByText("Ningún catálogo coincide con los filtros.")).toBeVisible();
+    await user.click(screen.getAllByRole("button", { name: "Limpiar filtros" }).at(-1)!);
+    // Lo de antes queda a la vista mientras carga: no es «no hay catálogos», y la barra no se va.
+    expect(screen.getByRole("searchbox", { name: "Buscar por nombre" })).toBeInTheDocument();
+    release();
+    expect(await screen.findByRole("link", { name: "Proveedores" })).toBeVisible();
+  });
+
+  it("a 390 px sin catálogos, la barra conserva la lupa y «Filtros», sin «Ordenar por» (M-FRM-Catalogos «Vacío», KAN-141)", async () => {
+    const restore = asPhone();
+    try {
+      counts.mockImplementationOnce(() => HttpResponse.json({ all: 0, active: 0 }));
+      serve(() => []);
+      mountForms(formsOwner, listPath);
+      expect(await screen.findByText("Todavía no hay catálogos.")).toBeVisible();
+      expect(screen.getByRole("button", { name: "Buscar por nombre" })).toBeVisible();
+      expect(screen.getByRole("button", { name: "Filtros de catálogos" })).toBeVisible();
+      expect(screen.queryByRole("button", { name: /^Ordenar por/ })).not.toBeInTheDocument();
     } finally { restore(); }
   });
 });
