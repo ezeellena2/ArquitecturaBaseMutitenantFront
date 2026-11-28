@@ -28,7 +28,7 @@ src/
 │   ├── personal/           Inicio y Mi cuenta; features B2C del producto
 │   ├── business/           administración de organización y empresas
 │   └── platform/           backoffice
-├── modules/                módulos quitables, hoy assistant/
+├── modules/                módulos quitables, hoy assistant/, whatsapp/ y forms/
 ├── shared/
 │   ├── modules/            contratos neutrales de registro y contribución
 │   ├── api/                httpClient, QueryClient, errores y tipos
@@ -179,9 +179,8 @@ El test vive junto al código; [tests](../rules/tests.md) define fixtures, aisla
 
 ## 5. Cierre
 
-Commiteá cada cambio coherente con tests focales y lint; tsc se verifica al terminar la tarea.
-La puerta completa pasa una sola vez: build, lint, suite, contrato, E2E real, detector,
-galería de lo nuevo o cambiado y recorrido. Tras un arreglo se corre solo lo afectado.
+Commiteá cada cambio coherente con tests focales, `tsc -b` y lint de lo tocado («Código primero»).
+Cada etapa tiene dos hitos: **«Código listo»** (revisión, build, lint, suite completa y contrato) y **«Verificada»** (contrato, E2E real, detector, galería de lo nuevo o cambiado y recorrido). Tras un arreglo se corre solo lo afectado.
 Las salidas quedan en .local/ y el plan contiene la tabla final.
 No se hacen corridas de estabilidad ni revisiones independientes por tarea.
 Las [reglas de trabajo](../../AGENTS.md#forma-de-trabajo) gobiernan el cierre.
