@@ -1,5 +1,5 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider, QueryObserver } from "@tanstack/react-query";
+import { focusManager, QueryClient, QueryClientProvider, QueryObserver } from "@tanstack/react-query";
 import { HttpResponse, http } from "msw";
 import { StrictMode, type PropsWithChildren } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -7,6 +7,7 @@ import { server } from "@/test/mocks/server";
 import { resetHttpClient } from "@/shared/api/httpClient";
 import type { AssistantConversationResponse, AssistantMessageResponse, AssistantStateResponse, AssistantTurnResultResponse } from "@/modules/assistant/api/types";
 import { assistantConversationQueryKey, type AssistantScope } from "../api/assistant";
+import { assistantPollBackoffMs, waitForAssistantTerminal } from "./assistantLifetime";
 import { useAssistantRuntime } from "./useAssistantRuntime";
 
 const scope: AssistantScope = { access: "business", tenantId: "org", userId: "user" };
@@ -54,7 +55,7 @@ function stream() {
   return { body, event: (event: string, data: unknown) => controller.enqueue(new TextEncoder().encode(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`)), close: () => controller.close() };
 }
 const start = { turnId: "turn", userMessageId: "u", assistantMessageId: "a", conversationVersion: 4 };
-afterEach(() => { vi.useRealTimers(); resetHttpClient(); });
+afterEach(() => { focusManager.setFocused(undefined); vi.useRealTimers(); resetHttpClient(); });
 
 describe("páginas cronológicas del runtime", () => {
   it("notifica la admisión al recibir 2xx antes de start y no la repite al reconciliar", async () => {
@@ -242,13 +243,15 @@ describe("Assistant runtime HTTP + Query + SDK", () => {
     expect(hook.result.current.canSend).toBe(false);
     expect(hook.result.current.isPending).toBe(true);
     expect(hook.result.current.runtime.thread.getState().messages.map((item) => item.id)).toEqual([]);
+    // Backoff creciente (KAN-30): el segundo sondeo espera 2 s, no 1 s.
     await act(async () => { await vi.advanceTimersByTimeAsync(1_000); });
-    await act(async () => { await vi.advanceTimersByTimeAsync(10); });
+    expect(reads).toBe(1);
+    await act(async () => { await vi.advanceTimersByTimeAsync(1_010); });
     expect(reads).toBe(2);
     expect(hook.result.current.canStop).toBe(false);
     expect(hook.result.current.isPending).toBe(false);
     expect(hook.result.current.canSend).toBe(true);
-    await act(async () => { await vi.advanceTimersByTimeAsync(2_000); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(5_000); });
     expect(reads).toBe(2);
     hook.unmount();
   });
@@ -1048,5 +1051,200 @@ describe("Assistant runtime HTTP + Query + SDK", () => {
     expect(hook.result.current.detail.data?.messages.items.map((item) => item.id)).toEqual(["old"]);
     expect(hook.result.current.state.data?.quickQueries).toEqual([quick]);
     hook.unmount();
+  });
+});
+
+describe("sondeo incremental y espera creciente del runtime (KAN-30)", () => {
+  it("en una conversación de 3 páginas pide las páginas cerradas una sola vez durante los ticks del sondeo", async () => {
+    const page0Items = Array.from({ length: 50 }, (_, i) => message(`p0-${i}`, i % 2 ? "assistant" : "user"));
+    const page1Items = Array.from({ length: 50 }, (_, i) => message(`p1-${i}`, i % 2 ? "assistant" : "user"));
+    let tailStep = 0;
+    const requestedCursors: string[] = [];
+    const buildPage = (items: AssistantMessageResponse[], hasMore: boolean, nextCursor: string | undefined, activeTurnId: string | null, version: number): AssistantConversationResponse => ({
+      conversation: { ...conversation().conversation, version },
+      messages: { items, hasMore, ...(nextCursor ? { nextCursor } : {}) },
+      activeTurnId,
+    });
+    const page0 = buildPage(page0Items, true, "page-2", "turn-pending", 3);
+    const page1 = buildPage(page1Items, true, "page-3", "turn-pending", 3);
+
+    const hook = setup(state, false, page0);
+    server.use(http.get("/api/organization/assistant/conversations/chat", ({ request }) => {
+      const cursor = new URL(request.url).searchParams.get("cursor") ?? "root";
+      requestedCursors.push(cursor);
+      if (cursor === "root") return HttpResponse.json(page0);
+      if (cursor === "page-2") return HttpResponse.json(page1);
+      if (cursor === "page-3") {
+        // En el segundo tick la página 3 se llena y abre una página 4; la página 3 pasa a cerrada.
+        if (tailStep >= 2) {
+          const filled = Array.from({ length: 50 }, (_, i) => message(`p2-${i}`, i % 2 ? "assistant" : "user"));
+          return HttpResponse.json(buildPage(filled, true, "page-4", tailStep >= 4 ? null : "turn-pending", 3 + tailStep));
+        }
+        return HttpResponse.json(buildPage(
+          [message("p2-0", "user"), message("p2-1", "assistant", "Generating", `Parcial ${tailStep}`)],
+          false,
+          undefined,
+          "turn-pending",
+          3 + tailStep,
+        ));
+      }
+      if (cursor === "page-4") {
+        const done = tailStep >= 4;
+        return HttpResponse.json(buildPage(
+          [message("p3-0", "assistant", done ? "Complete" : "Generating", done ? "Final" : "Siguiendo")],
+          false,
+          undefined,
+          done ? null : "turn-pending",
+          3 + tailStep,
+        ));
+      }
+      return HttpResponse.json({ code: "Assistant.Runtime.InvalidCursor" }, { status: 400 });
+    }));
+
+    await waitFor(() => expect(hook.result.current.messages).toHaveLength(102));
+    expect(requestedCursors).toEqual(["root", "page-2", "page-3"]);
+
+    vi.useFakeTimers();
+    await act(async () => { await hook.result.current.detail.refetch(); });
+    // El refetch mientras está pendiente solo pide la cola (page-3), nunca root ni page-2.
+    expect(requestedCursors.filter((cursor) => cursor === "root")).toHaveLength(1);
+    expect(requestedCursors.filter((cursor) => cursor === "page-2")).toHaveLength(1);
+    expect(requestedCursors.at(-1)).toBe("page-3");
+
+    // Tick 1 (+1 s): sigue en page-3.
+    tailStep = 1;
+    await act(async () => { await vi.advanceTimersByTimeAsync(assistantPollBackoffMs[0] + 10); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(10); });
+    expect(hook.result.current.messages.at(-1)?.text).toBe("Parcial 1");
+    expect(requestedCursors.filter((cursor) => cursor === "root")).toHaveLength(1);
+    expect(requestedCursors.filter((cursor) => cursor === "page-2")).toHaveLength(1);
+
+    // Tick 2 (+2 s): page-3 cierra y abre page-4; en 1 s todavía no dispara.
+    tailStep = 2;
+    const beforeTick2 = requestedCursors.length;
+    await act(async () => { await vi.advanceTimersByTimeAsync(1_000); });
+    expect(requestedCursors).toHaveLength(beforeTick2);
+    await act(async () => { await vi.advanceTimersByTimeAsync(1_010); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(10); });
+    expect(hook.result.current.messages).toHaveLength(151);
+    expect(hook.result.current.messages.at(-1)?.id).toBe("p3-0");
+    const page3ReadsAfterClose = requestedCursors.filter((cursor) => cursor === "page-3").length;
+
+    // Tick 3 (+3 s): page-3 ya quedó cerrada y solo pide page-4.
+    tailStep = 3;
+    await act(async () => { await vi.advanceTimersByTimeAsync(assistantPollBackoffMs[2] + 10); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(10); });
+    expect(requestedCursors.filter((cursor) => cursor === "page-3")).toHaveLength(page3ReadsAfterClose);
+    expect(requestedCursors.at(-1)).toBe("page-4");
+
+    // Tick 4 (+5 s): termina y deja de sondear.
+    tailStep = 4;
+    await act(async () => { await vi.advanceTimersByTimeAsync(assistantPollBackoffMs[3] + 10); });
+    await act(async () => { await vi.advanceTimersByTimeAsync(10); });
+    expect(hook.result.current.isPending).toBe(false);
+    expect(hook.result.current.detail.data?.activeTurnId).toBeNull();
+    expect(hook.result.current.detail.data?.conversation.version).toBe(7);
+    expect(hook.result.current.messages).toHaveLength(151);
+    expect(new Set(hook.result.current.messages.map((item) => item.id)).size).toBe(151);
+    expect(hook.result.current.messages.at(-1)?.status).toBe("Complete");
+    expect(requestedCursors.filter((cursor) => cursor === "root")).toHaveLength(1);
+    expect(requestedCursors.filter((cursor) => cursor === "page-2")).toHaveLength(1);
+
+    const totalAfterTerminal = requestedCursors.length;
+    await act(async () => { await vi.advanceTimersByTimeAsync(10_000); });
+    expect(requestedCursors).toHaveLength(totalAfterTerminal);
+    hook.unmount();
+  });
+
+  it("aplica backoff 1 s → 2 s → 3 s → 5 s tope y no sondea con la pestaña en segundo plano", async () => {
+    const pending = { ...conversation([message("u", "user"), message("a", "assistant", "Generating", "")]), activeTurnId: "durable-turn" };
+    const hook = setup(state, false, pending);
+    await waitFor(() => expect(hook.result.current.isPending).toBe(true));
+
+    vi.useFakeTimers();
+    await act(async () => { await hook.result.current.detail.refetch(); });
+    let reads = 0;
+    server.use(http.get("/api/organization/assistant/conversations/chat", () => {
+      reads++;
+      return HttpResponse.json(pending);
+    }));
+
+    // 1 s → 2 s → 3 s → 5 s → 5 s (tope).
+    await act(async () => { await vi.advanceTimersByTimeAsync(900); });
+    expect(reads).toBe(0);
+    await act(async () => { await vi.advanceTimersByTimeAsync(110); });
+    expect(reads).toBe(1);
+
+    await act(async () => { await vi.advanceTimersByTimeAsync(1_900); });
+    expect(reads).toBe(1);
+    await act(async () => { await vi.advanceTimersByTimeAsync(110); });
+    expect(reads).toBe(2);
+
+    await act(async () => { await vi.advanceTimersByTimeAsync(2_900); });
+    expect(reads).toBe(2);
+    await act(async () => { await vi.advanceTimersByTimeAsync(110); });
+    expect(reads).toBe(3);
+
+    await act(async () => { await vi.advanceTimersByTimeAsync(4_900); });
+    expect(reads).toBe(3);
+    await act(async () => { await vi.advanceTimersByTimeAsync(110); });
+    expect(reads).toBe(4);
+
+    await act(async () => { await vi.advanceTimersByTimeAsync(4_900); });
+    expect(reads).toBe(4);
+    await act(async () => { await vi.advanceTimersByTimeAsync(110); });
+    expect(reads).toBe(5);
+
+    // Con la pestaña inactiva (refetchIntervalInBackground: false), no dispara ningún pedido.
+    focusManager.setFocused(false);
+    await act(async () => { await vi.advanceTimersByTimeAsync(20_000); });
+    expect(reads).toBe(5);
+    hook.unmount();
+  });
+
+  it("waitForAssistantTerminal aplica backoff creciente y no sondea en segundo plano", async () => {
+    vi.useFakeTimers();
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const controller = new AbortController();
+    const pending = { ...conversation([message("u", "user"), message("a", "assistant", "Generating", "")]), activeTurnId: "turn-1" };
+    const complete = conversation([message("u", "user"), terminal.message]);
+    let reads = 0;
+    let done = false;
+
+    const promise = waitForAssistantTerminal(
+      client,
+      assistantConversationQueryKey(scope, "chat"),
+      async () => {
+        reads++;
+        return done ? complete : pending;
+      },
+      controller.signal,
+    );
+
+    await vi.advanceTimersByTimeAsync(0);
+    expect(reads).toBe(1);
+
+    // Primer reintento a 1 s.
+    await vi.advanceTimersByTimeAsync(900);
+    expect(reads).toBe(1);
+    await vi.advanceTimersByTimeAsync(110);
+    expect(reads).toBe(2);
+
+    // Segundo reintento a 2 s.
+    await vi.advanceTimersByTimeAsync(1_900);
+    expect(reads).toBe(2);
+    await vi.advanceTimersByTimeAsync(110);
+    expect(reads).toBe(3);
+
+    // Pestaña en segundo plano: no sondea aunque pasen 15 s.
+    focusManager.setFocused(false);
+    await vi.advanceTimersByTimeAsync(15_000);
+    expect(reads).toBe(3);
+
+    // Al volver a foco y completar, resuelve con el estado terminal.
+    done = true;
+    focusManager.setFocused(true);
+    await vi.advanceTimersByTimeAsync(assistantPollBackoffMs[2] + 100);
+    await expect(promise).resolves.toEqual(complete);
   });
 });

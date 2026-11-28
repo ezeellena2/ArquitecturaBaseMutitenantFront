@@ -8,8 +8,29 @@ import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { parseUtcInstant } from "@/shared/time/parseUtcInstant";
 import { assistantConversationQueryKey, assistantQueryKeyRoot, assistantStateQueryKey, fetchAssistantConversation, fetchAssistantState, sendAssistantMessageResponse, stopAssistantTurn, type AssistantScope } from "../api/assistant";
 import { decodeAssistantStream } from "../api/stream";
-import { AssistantLifetime, isAssistantConversationPending, waitForAssistantTerminal } from "./assistantLifetime";
+import { AssistantLifetime, assistantPollDelay, isAssistantConversationPending, waitForAssistantTerminal } from "./assistantLifetime";
 import { beginAssistantTurn, isAssistantTurnPending, reduceAssistantTurn, type AssistantTurnState } from "./assistantTurnState";
+
+interface ClosedAssistantPages {
+  readonly firstPage: AssistantConversationResponse;
+  readonly closedItems: readonly AssistantMessageResponse[];
+  readonly tailCursor: string;
+  readonly closedCursors: readonly string[];
+}
+
+function closedPageNextCursor(page: AssistantConversationResponse): string | null {
+  if (!page.messages.hasMore || !page.messages.nextCursor) return null;
+  if (page.messages.items.some((message) => message.status === "Generating")) return null;
+  return page.messages.nextCursor;
+}
+
+function isDetailPending(
+  conversation: AssistantConversationResponse | undefined,
+  messages: readonly AssistantMessageResponse[] | undefined,
+): boolean {
+  return isAssistantConversationPending(conversation)
+    || (messages?.some((message) => message.status === "Generating") ?? false);
+}
 
 interface SendOperation {
   operationId: string;
@@ -63,6 +84,7 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
   const turnKey = useMemo(() => [...root, "turn", conversationId] as const, [root, conversationId]);
   const detailKey = useMemo(() => assistantConversationQueryKey(identity, conversationId ?? ""), [identity, conversationId]);
   const messagesKey = useMemo(() => [...root, "messages", conversationId] as const, [root, conversationId]);
+  const closedPagesKey = useMemo(() => [...root, "closedPages", conversationId] as const, [root, conversationId]);
   // Cada activación es un ciclo nuevo: una operación vieja nunca revive con el módulo.
   const lifetime = useMemo(() => new AssistantLifetime(client, [...root, "lifetime", conversationId, enabled]), [client, root, conversationId, enabled]);
   const active = useSyncExternalStore(lifetime.subscribe, lifetime.getSnapshot, lifetime.getSnapshot) && enabled;
@@ -74,6 +96,7 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
   const readerRef = useRef<{ controller: AbortController; operation: SendOperation } | null>(null);
   const lastOperation = useRef<SendOperation | null>(null);
   const flightRef = useRef<SendOperation | null>(null);
+  const pollAttemptRef = useRef(0);
   // Los callbacks de UI no van en variables de MutationCache; vencen con su
   // dueño y sólo sobreviven un error de red para el Retry del mismo POST.
   const admissions = useRef(new Map<string, { lifetime: AssistantLifetime; callback: () => void }>());
@@ -81,6 +104,7 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
   const stopBeforeStart = useRef<{ resolve: () => void; reject: (error: unknown) => void } | null>(null);
   useEffect(() => {
     const ownedAdmissions = admissions.current;
+    pollAttemptRef.current = 0;
     if (enabled) lifetime.attach();
     else lifetime.close();
     return () => {
@@ -88,6 +112,7 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
       for (const [id, admission] of ownedAdmissions) if (admission.lifetime === lifetime) ownedAdmissions.delete(id);
       client.removeQueries({ queryKey: turnKey, exact: true });
       client.removeQueries({ queryKey: messagesKey, exact: true });
+      client.removeQueries({ queryKey: closedPagesKey, exact: true });
       const privateDetail = client.getQueryCache().find({ queryKey: detailKey, exact: true });
       // Otro consumidor activo de la misma ficha conserva su caché. El módulo
       // quita su ficha al salir; no toca otra conversación ni otro scope.
@@ -95,13 +120,14 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
       stopBeforeStart.current?.reject(new DOMException("", "AbortError"));
       stopBeforeStart.current = null;
     };
-  }, [client, lifetime, turnKey, detailKey, messagesKey, root, conversationId, enabled]);
+  }, [client, lifetime, turnKey, detailKey, messagesKey, closedPagesKey, root, conversationId, enabled]);
   useEffect(() => {
     if (active) return;
     admissions.current.clear();
     lastOperation.current = null;
     flightRef.current = null;
     readerRef.current = null;
+    pollAttemptRef.current = 0;
     stopBeforeStart.current?.reject(new DOMException("", "AbortError"));
     stopBeforeStart.current = null;
   }, [active]);
@@ -110,39 +136,122 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
   const pendingMutations = Number(sendAction.isPending) + Number(stopAction.isPending);
   const localSendOwner = (ownerLifetime: AssistantLifetime) => lastOperation.current?.lifetime === ownerLifetime ? lastOperation.current : undefined;
 
-  const readDetail = async (id: string, querySignal: AbortSignal, ownerLifetime = lifetime, requestScope = identity) => {
+  const readDetail = async (
+    id: string,
+    querySignal: AbortSignal,
+    ownerLifetime = lifetime,
+    requestScope = identity,
+    incremental = false,
+  ): Promise<AssistantConversationResponse> => {
     const controller = ownerLifetime.controller();
+    const operationRoot = assistantQueryKeyRoot(requestScope);
+    const operationMessagesKey = [...operationRoot, "messages", id] as const;
+    const operationClosedPagesKey = [...operationRoot, "closedPages", id] as const;
     try {
       const signal = AbortSignal.any([controller.signal, querySignal]);
-      const result = await fetchAssistantConversation(requestScope, id, {}, signal);
+      const fetchCursorPage = async (cursor: string): Promise<AssistantConversationResponse> => {
+        const next = await client.fetchQuery({
+          queryKey: assistantConversationQueryKey(requestScope, id, { cursor }),
+          staleTime: 0,
+          queryFn: async ({ signal: pageSignal }) => {
+            const combined = AbortSignal.any([signal, pageSignal]);
+            const page = await fetchAssistantConversation(requestScope, id, { cursor }, combined);
+            combined.throwIfAborted();
+            ownerLifetime.assertActive();
+            return page;
+          },
+          meta: { silent: true },
+        });
+        signal.throwIfAborted();
+        ownerLifetime.assertActive();
+        return next;
+      };
+
+      const cached = incremental ? client.getQueryData<ClosedAssistantPages>(operationClosedPagesKey) : undefined;
+      if (cached) {
+        try {
+          const cursors = new Set<string>([...cached.closedCursors, cached.tailCursor]);
+          let page = await fetchCursorPage(cached.tailCursor);
+          const tailPages: Array<{ cursor: string; page: AssistantConversationResponse }> = [{ cursor: cached.tailCursor, page }];
+          while (page.messages.hasMore && page.messages.nextCursor) {
+            const cursor = page.messages.nextCursor;
+            if (cursors.has(cursor)) throw new ApiError(502, { code: "Assistant.Runtime.InvalidCursor" });
+            cursors.add(cursor);
+            page = await fetchCursorPage(cursor);
+            tailPages.push({ cursor, page });
+          }
+          // Si la cola creció y cerró páginas nuevas, avanzamos el cursor cerrado para no volver a pedirlas.
+          let closedItems: readonly AssistantMessageResponse[] = cached.closedItems;
+          const closedCursors = [...cached.closedCursors];
+          let tailCursor = cached.tailCursor;
+          for (const entry of tailPages) {
+            const next = closedPageNextCursor(entry.page);
+            if (!next) break;
+            closedItems = [...closedItems, ...entry.page.messages.items];
+            closedCursors.push(entry.cursor);
+            tailCursor = next;
+          }
+          if (tailCursor !== cached.tailCursor) {
+            client.setQueryData<ClosedAssistantPages>(operationClosedPagesKey, {
+              firstPage: cached.firstPage,
+              closedItems,
+              tailCursor,
+              closedCursors,
+            });
+          }
+          const unique = new Map([
+            ...cached.closedItems,
+            ...tailPages.flatMap((entry) => entry.page.messages.items),
+          ].map((message) => [message.id, message]));
+          client.setQueryData(operationMessagesKey, [...unique.values()]);
+          const latestPage = tailPages.at(-1)!.page;
+          return { ...cached.firstPage, conversation: latestPage.conversation, activeTurnId: latestPage.activeTurnId };
+        } catch (error) {
+          // Si el cursor guardado dejó de ser válido (400), limpiamos las páginas cerradas y releemos desde el inicio.
+          if (!(error instanceof ApiError) || error.status !== 400) throw error;
+          client.removeQueries({ queryKey: operationClosedPagesKey, exact: true });
+        }
+      }
+
+      const firstPage = await fetchAssistantConversation(requestScope, id, {}, signal);
       signal.throwIfAborted();
       ownerLifetime.assertActive();
       // El contrato ordena desde el primer mensaje. Cada página es un DTO real;
       // la proyección para el SDK es una lista aparte y nunca sustituye la ficha.
-      const pages = [result];
+      const pages: AssistantConversationResponse[] = [firstPage];
       const cursors = new Set<string>();
-      let page = result;
+      let page = firstPage;
       while (page.messages.hasMore && page.messages.nextCursor) {
         const cursor = page.messages.nextCursor;
         if (cursors.has(cursor)) throw new ApiError(502, { code: "Assistant.Runtime.InvalidCursor" });
         cursors.add(cursor);
-        page = await client.fetchQuery({
-          queryKey: assistantConversationQueryKey(requestScope, id, { cursor }), staleTime: 0,
-          queryFn: async ({ signal: pageSignal }) => {
-            const combined = AbortSignal.any([signal, pageSignal]);
-            const next = await fetchAssistantConversation(requestScope, id, { cursor }, combined);
-            combined.throwIfAborted();
-            ownerLifetime.assertActive();
-            return next;
-          }, meta: { silent: true },
-        });
-        signal.throwIfAborted();
-        ownerLifetime.assertActive();
+        page = await fetchCursorPage(cursor);
         pages.push(page);
       }
+      const closedItems: AssistantMessageResponse[] = [];
+      const closedCursors: string[] = [];
+      let tailCursor: string | null = null;
+      for (const current of pages) {
+        const next = closedPageNextCursor(current);
+        if (!next) break;
+        closedItems.push(...current.messages.items);
+        if (tailCursor !== null) closedCursors.push(tailCursor);
+        tailCursor = next;
+      }
+      if (tailCursor !== null) {
+        client.setQueryData<ClosedAssistantPages>(operationClosedPagesKey, {
+          firstPage,
+          closedItems,
+          tailCursor,
+          closedCursors,
+        });
+      } else {
+        client.removeQueries({ queryKey: operationClosedPagesKey, exact: true });
+      }
       const unique = new Map(pages.flatMap((item) => item.messages.items).map((message) => [message.id, message]));
-      client.setQueryData([...assistantQueryKeyRoot(requestScope), "messages", id], [...unique.values()]);
-      return result;
+      client.setQueryData(operationMessagesKey, [...unique.values()]);
+      const latestPage = pages.at(-1)!;
+      return { ...firstPage, conversation: latestPage.conversation, activeTurnId: latestPage.activeTurnId };
     } finally { ownerLifetime.release(controller); }
   };
 
@@ -165,10 +274,40 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
     queryKey: detailKey,
     staleTime: 0,
     enabled: active && conversationId !== null && state.data?.noticeAccepted === true,
-    queryFn: ({ signal }) => readDetail(conversationId!, signal),
-    refetchInterval: (query) => isAssistantConversationPending(query.state.data) ? 1_000 : false,
+    queryFn: async ({ signal }) => {
+      const previousDetail = client.getQueryData<AssistantConversationResponse>(detailKey);
+      const previousMessages = client.getQueryData<AssistantMessageResponse[]>(messagesKey);
+      const wasPending = isDetailPending(previousDetail, previousMessages);
+      const data = await readDetail(conversationId!, signal, lifetime, identity, wasPending);
+      const nextMessages = client.getQueryData<AssistantMessageResponse[]>(messagesKey);
+      if (isDetailPending(data, nextMessages)) {
+        pollAttemptRef.current = wasPending ? pollAttemptRef.current + 1 : 0;
+      } else {
+        pollAttemptRef.current = 0;
+      }
+      return data;
+    },
+    refetchInterval: (query) => {
+      if (reconciliationControllers.current.size > 0) return false;
+      const messages = client.getQueryData<AssistantMessageResponse[]>(messagesKey);
+      if (!isDetailPending(query.state.data, messages)) return false;
+      return assistantPollDelay(pollAttemptRef.current);
+    },
+    refetchIntervalInBackground: false,
     meta: { blocksView: true, silent: true },
   });
+  const exposedDetail = useMemo(() => new Proxy(detail, {
+    get(target, prop) {
+      if (prop === "refetch") {
+        const refetch: typeof target.refetch = (...args) => {
+          pollAttemptRef.current = -1;
+          return target.refetch(...args);
+        };
+        return refetch;
+      }
+      return Reflect.get(target, prop, target);
+    },
+  }), [detail]);
 
   async function reconcile(operation: SendOperation | StopOperation, signal: AbortSignal): Promise<AssistantConversationResponse> {
     const expectedOwner = "operationId" in operation ? operation : operation.localSend;
@@ -182,18 +321,20 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
     };
     try {
       assertOwner();
-      const operationTurnKey = [...assistantQueryKeyRoot(operation.scope), "turn", operation.conversationId];
+      const operationRoot = assistantQueryKeyRoot(operation.scope);
+      const operationTurnKey = [...operationRoot, "turn", operation.conversationId];
+      const operationMessagesKey = [...operationRoot, "messages", operation.conversationId];
       const current = client.getQueryData<AssistantTurnState>(operationTurnKey);
       if (current && isAssistantTurnPending(current)) client.setQueryData(operationTurnKey, { ...current, phase: "reconciling" });
       // Una señal nueva permite la relectura después de abortar el lector por Detener.
       const result = await waitForAssistantTerminal(client, assistantConversationQueryKey(operation.scope, operation.conversationId), async (querySignal) => {
         assertOwner();
-        const result = await readDetail(operation.conversationId, querySignal, operation.lifetime, operation.scope);
+        const result = await readDetail(operation.conversationId, querySignal, operation.lifetime, operation.scope, true);
         assertOwner();
         return result;
-      }, reconciliationSignal);
+      }, reconciliationSignal, (data) => isDetailPending(data, client.getQueryData<AssistantMessageResponse[]>(operationMessagesKey)));
       assertOwner();
-      const allMessages = client.getQueryData<AssistantMessageResponse[]>([...assistantQueryKeyRoot(operation.scope), "messages", operation.conversationId]) ?? result.messages.items;
+      const allMessages = client.getQueryData<AssistantMessageResponse[]>(operationMessagesKey) ?? result.messages.items;
       const message = allMessages.find((item) => item.id === current?.start?.assistantMessageId)
         ?? allMessages.findLast((item) => item.role === "assistant");
       if (current && message) client.setQueryData(operationTurnKey, { ...current, text: message.text, phase: message.status === "Generating" ? "reconciling" : message.status });
@@ -336,6 +477,7 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
       request: { ...request, attachmentIds: request.attachmentIds ? [...request.attachmentIds] : request.attachmentIds },
     };
     lastOperation.current = operation;
+    pollAttemptRef.current = 0;
     admissions.current.clear();
     if (onAdmitted) admissions.current.set(operation.operationId, { lifetime, callback: onAdmitted });
     for (const controller of reconciliationControllers.current) controller.abort();
@@ -431,7 +573,7 @@ export function useAssistantRuntime({ scope, conversationId, enabled, ui }: Assi
     runtime.thread.import({ messages: [] });
   }, [runtime, lifetime, enabled]);
 
-  return { runtime, state, detail, turn, messages: active ? durableMessages : [], canSend,
+  return { runtime, state, detail: exposedDetail, turn, messages: active ? durableMessages : [], canSend,
     canStop: active && (!!activeTurnId || isAssistantTurnPending(turn) && (!!turn?.start || turn?.phase === "sending")),
     isPending: active && (pendingMutations > 0 || isAssistantTurnPending(turn) || durablePending),
     error: active ? stopError ?? sendError ?? turn?.error ?? null : null,

@@ -1,6 +1,14 @@
 import { QueryObserver, type QueryClient, type QueryKey } from "@tanstack/react-query";
 import type { AssistantConversationResponse } from "@/modules/assistant/api/types";
 
+/** Espera creciente del sondeo mientras un turno sigue pendiente (KAN-30): 1 s → 2 s → 3 s → 5 s tope. */
+export const assistantPollBackoffMs = [1_000, 2_000, 3_000, 5_000] as const;
+
+export function assistantPollDelay(attempt: number): number {
+  const index = Math.min(Math.max(0, attempt), assistantPollBackoffMs.length - 1);
+  return assistantPollBackoffMs[index]!;
+}
+
 /** Query.clear no cancela MutationCache: cada operación posee una señal del módulo. */
 export class AssistantLifetime {
   private controllers = new Set<AbortController>();
@@ -63,12 +71,22 @@ export function waitForAssistantTerminal(
   queryKey: QueryKey,
   queryFn: (signal: AbortSignal) => Promise<AssistantConversationResponse>,
   signal: AbortSignal,
+  isPending: (conversation: AssistantConversationResponse | undefined) => boolean = isAssistantConversationPending,
 ): Promise<AssistantConversationResponse> {
   signal.throwIfAborted();
+  let attempts = 0;
   return new Promise((resolve, reject) => {
     const observer = new QueryObserver(client, {
-      queryKey, queryFn: ({ signal: querySignal }) => queryFn(querySignal),
-      retry: false, staleTime: 0, refetchInterval: 1_000, refetchIntervalInBackground: true,
+      queryKey,
+      queryFn: async ({ signal: querySignal }) => {
+        const result = await queryFn(querySignal);
+        attempts = isPending(result) ? attempts + 1 : 0;
+        return result;
+      },
+      retry: false,
+      staleTime: 0,
+      refetchInterval: (query) => (isPending(query.state.data) ? assistantPollDelay(attempts - 1) : false),
+      refetchIntervalInBackground: false,
       meta: { silent: true },
     });
     let unsubscribe: (() => void) | undefined;
@@ -82,7 +100,7 @@ export function waitForAssistantTerminal(
     unsubscribe = observer.subscribe((result) => {
       if (signal.aborted) return;
       if (result.isError && !result.isFetching) { cleanup(); reject(result.error); }
-      else if (result.data && !result.isFetching && !isAssistantConversationPending(result.data)) {
+      else if (result.data && !result.isFetching && !isPending(result.data)) {
         cleanup(); resolve(result.data);
       }
     });
