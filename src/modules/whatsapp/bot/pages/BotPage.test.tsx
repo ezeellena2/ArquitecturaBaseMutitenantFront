@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { axe } from "vitest-axe";
@@ -9,6 +9,7 @@ import { asPhone } from "@/test/utils/phone";
 import type { UpdateWhatsAppBotRequest, WhatsAppBotMenuOption, WhatsAppBotResponse, WhatsAppNumberResponse, WhatsAppTeamResponse } from "../../api/types";
 import { mountWhatsApp, whatsappMember, whatsappOwner } from "../../test/support";
 import { choose, pickerName } from "@/test/picker";
+import { botQueryRoot } from "../api/bot";
 
 const central: WhatsAppNumberResponse = { id: "11111111-1111-4111-8111-111111111111", displayNumber: "+5491155550100", verifiedName: "Grupo Delta",
   company: null, status: "Connected", coexistence: false, serviceMessagesThisMonth: 640, freeServiceMessages: 1000, chargedServiceMessagesThisMonth: 0,
@@ -28,13 +29,17 @@ const bot = (patch: Partial<WhatsAppBotResponse> = {}): WhatsAppBotResponse => (
   offerAccountLink: true, employeesTeamId: "t-orders", version: 5, ...patch });
 const paged = <T,>(items: T[]) => ({ items, page: 1, pageSize: 100, totalCount: items.length, totalPages: 1, hasPrevious: false, hasNext: false });
 
-function handlers(numbers = [central], current = bot()) {
+function handlers(numbers = [central], current: WhatsAppBotResponse | (() => WhatsAppBotResponse) = bot()) {
   const reads: string[] = [];
   server.use(
     http.get("/api/organization/whatsapp/untaken", () => HttpResponse.json({ customers: 0, internal: 0 })),
     http.get("/api/organization/whatsapp/numbers", () => HttpResponse.json({ numbers: paged(numbers), paymentMissing: 0, signup: null })),
     http.get("/api/organization/whatsapp/teams", () => HttpResponse.json(paged(teams))),
-    http.get("/api/organization/whatsapp/numbers/:id/bot", ({ params }) => { reads.push(String(params.id)); return HttpResponse.json({ ...current, numberId: String(params.id) }); }),
+    http.get("/api/organization/whatsapp/numbers/:id/bot", ({ params }) => {
+      reads.push(String(params.id));
+      const value = typeof current === "function" ? current() : current;
+      return HttpResponse.json({ ...value, numberId: String(params.id) });
+    }),
   );
   return reads;
 }
@@ -396,5 +401,122 @@ describe("Bot de la organización", () => {
       expect(within(dialog).getAllByText("Cerrado")).toHaveLength(2);
       expect(await axe(page.container)).toHaveNoViolations();
     } finally { restore(); }
+  });
+
+  it("si el bot cambia y se relee con «Bienvenida» abierto, manda la versión original y muestra el 409 sin pisar", async () => {
+    let current = bot();
+    const reads = handlers([central], () => current);
+    const sent = saving((body) => body.version !== current.version
+      ? HttpResponse.json({ code: "General.ConcurrencyConflict", detail: "Alguien cambió esto mientras lo editabas." }, { status: 409 })
+      : HttpResponse.json({ ...current, welcome: body.welcome ?? current.welcome, version: current.version + 1 }));
+
+    const page = mountWhatsApp(whatsappOwner, "/org/whatsapp/bot");
+    await page.user.click(within(await openMenu(page.user, "Bienvenida")).getByRole("menuitem", { name: "Editar" }));
+    const dialog = await screen.findByRole("dialog", { name: "Bienvenida" });
+
+    // Otra persona guardó mientras el diálogo estaba abierto y la pestaña releyó el bot (versión 6).
+    current = bot({ welcome: "Saludo de otra persona.", outOfHours: "Otro fuera de horario.", version: 6 });
+    const beforeRefetch = reads.length;
+    await act(async () => { await page.client.refetchQueries({ queryKey: botQueryRoot }); });
+    expect(reads.length).toBeGreaterThan(beforeRefetch);
+
+    const text = within(dialog).getByRole("textbox", { name: "Texto" });
+    await page.user.clear(text);
+    await page.user.paste("Mi bienvenida");
+    await page.user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
+
+    expect(await within(dialog).findByText("Alguien cambió esto mientras lo editabas.")).toBeVisible();
+    expect(screen.queryByText("Cambios guardados")).not.toBeInTheDocument();
+    expect(sent).toHaveLength(1);
+    expect(sent[0]).toMatchObject({ welcome: "Mi bienvenida", outOfHours: "Ahora estamos cerrados.", version: 5 });
+
+    const beforeClose = reads.length;
+    await page.user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(reads.length).toBeGreaterThan(beforeClose));
+  });
+
+  it("editar opción 3 mientras otro borró la opción 1 y releyó el bot manda la versión original y la opción correcta, y recibe 409", async () => {
+    let current = bot();
+    const reads = handlers([central], () => current);
+    const sent = saving((body) => body.version !== current.version
+      ? HttpResponse.json({ code: "General.ConcurrencyConflict", detail: "Alguien cambió esto mientras lo editabas." }, { status: 409 })
+      : HttpResponse.json({ ...current, version: current.version + 1 }));
+
+    const page = mountWhatsApp(whatsappOwner, "/org/whatsapp/bot");
+    await page.user.click(within(await openMenu(page.user, "Horarios y dirección")).getByRole("menuitem", { name: "Editar" }));
+    const dialog = await screen.findByRole("dialog", { name: "Editar opción 3" });
+
+    // Otra persona borró la opción 1 («Hacer un pedido»): en caché vivo, la posición 2 pasó a ser o4 («Hablar con alguien»).
+    current = bot({ menu: menu.slice(1), version: 6 });
+    const beforeRefetch = reads.length;
+    await act(async () => { await page.client.refetchQueries({ queryKey: botQueryRoot }); });
+    expect(reads.length).toBeGreaterThan(beforeRefetch);
+
+    const label = within(dialog).getByRole("textbox", { name: "Texto de la opción" });
+    await page.user.clear(label);
+    await page.user.paste("Horarios y sucursales");
+    await page.user.click(within(dialog).getByRole("button", { name: "Guardar" }));
+
+    expect(await within(dialog).findByText("Alguien cambió esto mientras lo editabas.")).toBeVisible();
+    expect(sent).toHaveLength(1);
+    expect(sent[0]).toMatchObject({ version: 5 });
+    expect(sent[0].menu).toEqual([
+      { id: "o1", label: "Hacer un pedido", action: "Team", teamId: "t-sales", reply: null },
+      { id: "o2", label: "Consultar un pedido", action: "Team", teamId: "t-support", reply: null },
+      { id: "o3", label: "Horarios y sucursales", action: "Reply", teamId: null, reply: "Estamos en Av. Corrientes 1234, de 9 a 18" },
+      { id: "o4", label: "Hablar con alguien", action: "Team", teamId: "t-general", reply: null },
+    ]);
+
+    const beforeClose = reads.length;
+    await page.user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(reads.length).toBeGreaterThan(beforeClose));
+  });
+
+  it("en el teléfono, quitar la opción 3 después de que otro borró la 1 y releyó manda la versión original y quita la o3 (no la o4)", async () => {
+    const restore = asPhone();
+    try {
+      let current = bot();
+      const reads = handlers([central], () => current);
+      const sent = saving((body) => body.version !== current.version
+        ? HttpResponse.json({ code: "General.ConcurrencyConflict", detail: "Alguien cambió esto mientras lo editabas." }, { status: 409 })
+        : HttpResponse.json({ ...current, version: current.version + 1 }));
+
+      const page = mountWhatsApp(whatsappOwner, "/org/whatsapp/bot");
+      await page.user.click(await screen.findByRole("button", { name: /Horarios y dirección/ }));
+      const dialog = await screen.findByRole("dialog", { name: "Editar opción 3" });
+
+      current = bot({ menu: menu.slice(1), version: 6 });
+      const beforeRefetch = reads.length;
+      await act(async () => { await page.client.refetchQueries({ queryKey: botQueryRoot }); });
+      expect(reads.length).toBeGreaterThan(beforeRefetch);
+
+      const beforeRemove = reads.length;
+      await page.user.click(within(dialog).getByRole("button", { name: "Quitar opción" }));
+      await waitFor(() => expect(sent).toHaveLength(1));
+      expect(sent[0]).toMatchObject({ version: 5 });
+      expect(sent[0].menu?.map((item) => item.id)).toEqual(["o1", "o2", "o4"]);
+      expect(await screen.findByText("Alguien cambió esto mientras lo editabas.")).toBeVisible();
+      await waitFor(() => expect(reads.length).toBeGreaterThan(beforeRemove));
+    } finally { restore(); }
+  });
+
+  it("un interruptor con versión vieja en pantalla recibe 409, avisa del conflicto y relee el bot", async () => {
+    let current = bot();
+    const reads = handlers([central], () => current);
+    const sent = saving((body) => body.version !== current.version
+      ? HttpResponse.json({ code: "General.ConcurrencyConflict", detail: "Alguien cambió esto mientras lo editabas." }, { status: 409 })
+      : HttpResponse.json({ ...current, askPromotions: body.askPromotions ?? current.askPromotions, version: current.version + 1 }));
+
+    const page = mountWhatsApp(whatsappOwner, "/org/whatsapp/bot");
+    const toggle = await screen.findByRole("switch", { name: "Preguntar por promociones" });
+    // Otro usuario guardó en el servidor antes de que el cliente releyera.
+    current = bot({ askPromotions: false, version: 6 });
+    const beforeClick = reads.length;
+
+    await page.user.click(toggle);
+    await waitFor(() => expect(sent).toHaveLength(1));
+    expect(sent[0]).toMatchObject({ askPromotions: false, version: 5 });
+    expect(await screen.findByText("Alguien cambió esto mientras lo editabas.")).toBeVisible();
+    await waitFor(() => expect(reads.length).toBeGreaterThan(beforeClick));
   });
 });

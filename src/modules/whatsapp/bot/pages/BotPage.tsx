@@ -26,11 +26,11 @@ export function BotPage() {
   if (!numbers.data && numbers.isError) return <LoadErrorPage screen={t("bot.title")} onRetry={() => { void numbers.refetch(); }} />;
   if (!bot.data && bot.isError) return <LoadErrorPage screen={t("bot.title")} onRetry={() => { void bot.refetch(); }} />;
 
-  // El PUT lleva todo el bot con el cambio encima y la versión leída; la respuesta pasa a ser lo leído.
-  async function save(patch: BotPatch): Promise<WhatsAppBotResponse> {
-    if (!selected || !bot.data) throw new Error("No hay un bot para guardar.");
-    const result = await updateNumberBot(selected.id, numberBotRequest(bot.data, patch));
-    queryClient.setQueryData(numberBotQueryKey(selected.id), result);
+  // El PUT lleva la instantánea base con la que se abrió el diálogo o se tocó la acción (nunca el caché vivo),
+  // así una relectura de fondo no pisa un cambio ajeno; la respuesta pasa a ser lo leído.
+  async function save(base: WhatsAppBotResponse, patch: BotPatch): Promise<WhatsAppBotResponse> {
+    const result = await updateNumberBot(base.numberId, numberBotRequest(base, patch));
+    queryClient.setQueryData(numberBotQueryKey(base.numberId), result);
     return result;
   }
 

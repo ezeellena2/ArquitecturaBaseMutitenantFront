@@ -15,7 +15,7 @@ import { Input } from "@/shared/ui/input";
 import { Picker } from "@/shared/ui/Picker";
 import { Textarea } from "@/shared/ui/textarea";
 import type { WhatsAppBotAction, WhatsAppBotMenuOption, WhatsAppTeamResponse } from "../../api/types";
-import type { BotPatch } from "../lib/botModel";
+import { findMenuOption, replaceMenuOption, type BotData, type BotSave, type MenuOptionTarget } from "../lib/botModel";
 import { useBotDialogSave } from "./useBotDialogSave";
 
 const labelLimit = validationConstraints.WhatsAppBotMenuOptionInput.label.maxLength;
@@ -23,20 +23,24 @@ const replyLimit = validationConstraints.WhatsAppBotMenuOptionInput.reply.maxLen
 const actions: readonly WhatsAppBotAction[] = ["Team", "Reply"];
 
 /// «Editar opción 1» (WA-Admin-Editar y M-WA-Editar) y «Agregar opción»: el texto que ve el cliente en la lista, qué hace
-/// (pasa a un equipo o contesta un texto) y el equipo o el texto. Guarda el menú entero con la opción cambiada.
+/// (pasa a un equipo o contesta un texto) y el equipo o el texto. Guarda el menú entero de la instantánea congelada al
+/// abrir con la opción cambiada (identificada por `id`, no por posición viva).
 ///
 /// Ninguna elección se descarta en silencio (162): cambiar lo que hace conserva el texto de la opción y, si se pierde el
 /// texto escrito o el equipo elegido, lo pregunta antes («¿Cambiar a «Pasa a un equipo»? Se quita el texto.»). La pregunta
 /// toma el lugar de la opción, que queda montada y oculta detrás, nunca un diálogo encima de otro; es una confirmación
 /// sin ✕, con el foco en «Cancelar». «Cancelar» o Escape vuelven a la opción tal cual; «Cambiar» cambia la acción y quita
 /// lo que ya no va. Sin nada escrito, cambia sin preguntar.
-export function OptionDialog({ menu, index, teams, onSave, onClose, returnFocusTo, onRemove, removing = false }: {
-  menu: readonly WhatsAppBotMenuOption[];
-  /** La opción que se edita; sin índice, se agrega al final. */
-  index: number | null;
+export function OptionDialog<TBot extends BotData>({ bot, target, number, teams, onSave, onClose, returnFocusTo, onRemove, removing = false }: {
+  /** Instantánea congelada del bot al abrir el diálogo: su menú y su versión no cambian por una relectura de fondo. */
+  bot: TBot;
+  /** La opción que se edita (por su `id`, o por posición en la instantánea si no tiene); sin destino, se agrega al final. */
+  target: MenuOptionTarget | null;
+  /** El número visible en el título («Editar opción 3»), congelado al abrir. */
+  number: number | null;
   /** Los equipos a los que puede pasar (en la organización, los de la bandeja Clientes). */
   teams: readonly WhatsAppTeamResponse[];
-  onSave: (patch: BotPatch) => Promise<unknown>;
+  onSave: BotSave<TBot>;
   onClose: () => void;
   returnFocusTo?: HTMLElement | null;
   /** En el teléfono, quitar la opción que se edita (no la del sistema): un botón de peligro debajo de Guardar. */
@@ -45,7 +49,7 @@ export function OptionDialog({ menu, index, teams, onSave, onClose, returnFocusT
 }) {
   const { t } = useTranslation(["whatsapp", "common"]);
   const format = useFormat();
-  const current = index === null ? null : menu[index] ?? null;
+  const current = target === null ? null : findMenuOption(bot.menu, target);
   const required = t("whatsapp:bot.validation.required");
   const schema = z.object({
     label: z.string().trim().min(1, required).max(labelLimit),
@@ -63,7 +67,7 @@ export function OptionDialog({ menu, index, teams, onSave, onClose, returnFocusT
   const action = useController({ control: form.control, name: "action" });
   const team = useController({ control: form.control, name: "teamId" });
   const chosen = useWatch({ control: form.control, name: "action" });
-  const { failure, clear, close, pending, submit } = useBotDialogSave(onSave, onClose);
+  const { failure, clear, close, pending, submit } = useBotDialogSave(bot, onSave, onClose);
   const errors = form.formState.errors;
   const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
   // La acción a la que se quiere pasar mientras se pregunta si se quita lo que ya no va.
@@ -102,7 +106,7 @@ export function OptionDialog({ menu, index, teams, onSave, onClose, returnFocusT
   const send = form.handleSubmit((values) => {
     const option: WhatsAppBotMenuOption = { id: current?.id ?? null, label: values.label.trim(), action: values.action, isSystem: false,
       teamId: values.action === "Team" ? values.teamId : null, reply: values.action === "Reply" ? values.reply.trim() : null };
-    submit({ menu: index === null ? [...menu, option] : menu.map((item, position) => position === index ? option : item) });
+    submit({ menu: target === null ? [...bot.menu, option] : replaceMenuOption(bot.menu, target, option) });
   });
 
   return <Dialog open onOpenChange={(open) => { if (!open) close(); }}>
@@ -119,7 +123,7 @@ export function OptionDialog({ menu, index, teams, onSave, onClose, returnFocusT
           <Button type="button" variant="outline" autoFocus onClick={() => answer(false)}>{t("common:actions.cancel")}</Button>
           <Button type="button" onClick={() => answer(true)}>{t("whatsapp:bot.option.change.confirm")}</Button>
         </DialogFooter>
-      </> : <DialogHeader><DialogTitle>{index === null ? t("whatsapp:bot.option.addTitle") : t("whatsapp:bot.option.editTitle", { number: index + 1 })}</DialogTitle></DialogHeader>}
+      </> : <DialogHeader><DialogTitle>{number === null ? t("whatsapp:bot.option.addTitle") : t("whatsapp:bot.option.editTitle", { number })}</DialogTitle></DialogHeader>}
       <form noValidate hidden={switching !== null} onSubmit={(event) => { void send(event); }} className="flex min-h-0 flex-col">
         <DialogBody>
           <FormField label={t("whatsapp:bot.option.label")} required error={errors.label?.message}>

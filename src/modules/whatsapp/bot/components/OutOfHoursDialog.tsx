@@ -19,8 +19,7 @@ import { PencilIcon } from "@/shared/ui/icons";
 import { Picker } from "@/shared/ui/Picker";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
 import { Textarea } from "@/shared/ui/textarea";
-import type { WhatsAppBotSchedule } from "../../api/types";
-import { timeOf, weekDays, type BotPatch } from "../lib/botModel";
+import { timeOf, weekDays, type BotData, type BotSave } from "../lib/botModel";
 import { useBotDialogSave } from "./useBotDialogSave";
 
 const textLimit = validationConstraints.UpdateWhatsAppBotHttpRequest.outOfHours.maxLength;
@@ -31,10 +30,9 @@ interface DayValue { open: boolean; from: string | null; to: string | null }
 /// horaria del catálogo y los días en una tabla, «Día» y «Horario», con el lápiz de cada uno. El lápiz abre el día en su
 /// diálogo («La atención de un día»), y lo que se cambia ahí se guarda con «Guardar cambios». Un día sin atención dice
 /// «Cerrado». Sin interruptor: el bot no se apaga (D9).
-export function OutOfHoursDialog({ outOfHours, schedule, onSave, onClose, returnFocusTo }: {
-  outOfHours: string;
-  schedule: WhatsAppBotSchedule;
-  onSave: (patch: BotPatch) => Promise<unknown>;
+export function OutOfHoursDialog<TBot extends BotData>({ bot, onSave, onClose, returnFocusTo }: {
+  bot: TBot;
+  onSave: BotSave<TBot>;
   onClose: () => void;
   returnFocusTo?: HTMLElement | null;
 }) {
@@ -50,15 +48,15 @@ export function OutOfHoursDialog({ outOfHours, schedule, onSave, onClose, return
   });
   type Values = z.infer<typeof schema>;
   const form = useForm<Values>({ resolver: zodResolver(schema), defaultValues: {
-    text: outOfHours, timeZoneId: schedule.timeZoneId,
+    text: bot.outOfHours, timeZoneId: bot.schedule.timeZoneId,
     days: weekDays.map((weekDay): DayValue => {
-      const found = schedule.days.find((item) => item.day === weekDay);
+      const found = bot.schedule.days.find((item) => item.day === weekDay);
       return { open: found !== undefined, from: timeOf(found?.from), to: timeOf(found?.to) };
     }),
   } });
   const zone = useController({ control: form.control, name: "timeZoneId" });
   const days = useWatch({ control: form.control, name: "days" });
-  const { failure, clear, close, pending, submit } = useBotDialogSave(onSave, onClose);
+  const { failure, clear, close, pending, submit } = useBotDialogSave(bot, onSave, onClose);
   const errors = form.formState.errors;
   // El día que se edita y su lápiz, adonde vuelve el foco al cerrar su diálogo.
   const [editing, setEditing] = useState<{ index: number; trigger: HTMLElement } | null>(null);

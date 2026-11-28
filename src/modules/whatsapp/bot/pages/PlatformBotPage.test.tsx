@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from "@testing-library/react";
+import { act, screen, waitFor, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { axe } from "vitest-axe";
@@ -8,6 +8,7 @@ import { server } from "@/test/mocks/server";
 import { asPhone } from "@/test/utils/phone";
 import type { PlatformWhatsAppBotResponse, UpdatePlatformWhatsAppBotRequest } from "../../api/types";
 import { mountWhatsApp, whatsappOperator } from "../../test/support";
+import { botQueryRoot } from "../api/bot";
 
 const bot: PlatformWhatsAppBotResponse = { welcome: "Hola, somos ArquitecturaBase.", outOfHours: "Ahora no atendemos.", version: 2,
   schedule: { timeZoneId: "America/Argentina/Buenos_Aires", days: [{ day: "Monday", from: "09:00:00", to: "18:00:00" }] },
@@ -93,5 +94,101 @@ describe("Bot de Plataforma", () => {
       expect(await screen.findByText("Lo manda el bot")).toBeVisible();
       expect(await axe(page.container)).toHaveNoViolations();
     } finally { restore(); }
+  });
+
+  it("si el bot de Plataforma cambia y se relee con «Bienvenida» abierto, manda la versión original y muestra el 409", async () => {
+    let current: PlatformWhatsAppBotResponse = bot;
+    const reads: number[] = [];
+    const sent: UpdatePlatformWhatsAppBotRequest[] = [];
+    server.use(
+      http.get("/api/platform/whatsapp/conversations", () => HttpResponse.json({
+        conversations: { items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false }, counts: { customers: 0, internal: 0, untaken: 0 } })),
+      http.get("/api/platform/whatsapp/bot", () => { reads.push(current.version); return HttpResponse.json(current); }),
+      http.get("/api/platform/whatsapp/teams", () => HttpResponse.json(teams)),
+      http.put("/api/platform/whatsapp/bot", async ({ request }) => {
+        const body = await request.json() as UpdatePlatformWhatsAppBotRequest;
+        sent.push(body);
+        if (body.version !== current.version) {
+          return HttpResponse.json({ code: "General.ConcurrencyConflict", detail: "Alguien cambió esto mientras lo editabas." }, { status: 409 });
+        }
+        return HttpResponse.json({ ...current, version: current.version + 1 });
+      }),
+    );
+
+    const page = mountWhatsApp(operator, "/plataforma/whatsapp/bot");
+    (await screen.findByRole("button", { name: "Acciones de Bienvenida" })).focus();
+    await page.user.keyboard("{Enter}");
+    await page.user.click(within(await screen.findByRole("menu")).getByRole("menuitem", { name: "Editar" }));
+    const dialog = await screen.findByRole("dialog", { name: "Bienvenida" });
+
+    current = { ...bot, welcome: "Otro saludo de otra persona.", outOfHours: "Otro cierre.", version: 3 };
+    const beforeRefetch = reads.length;
+    await act(async () => { await page.client.refetchQueries({ queryKey: botQueryRoot }); });
+    expect(reads.length).toBeGreaterThan(beforeRefetch);
+
+    const text = within(dialog).getByRole("textbox", { name: "Texto" });
+    await page.user.clear(text);
+    await page.user.paste("Mi nueva bienvenida de Plataforma");
+    await page.user.click(within(dialog).getByRole("button", { name: "Guardar cambios" }));
+
+    expect(await within(dialog).findByText("Alguien cambió esto mientras lo editabas.")).toBeVisible();
+    expect(sent).toHaveLength(1);
+    expect(sent[0]).toMatchObject({ welcome: "Mi nueva bienvenida de Plataforma", outOfHours: "Ahora no atendemos.", version: 2 });
+
+    const beforeClose = reads.length;
+    await page.user.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(reads.length).toBeGreaterThan(beforeClose));
+  });
+
+  it("editar una opción de Plataforma mientras otro borró la anterior y releyó manda la versión original y el id correcto", async () => {
+    const initial: PlatformWhatsAppBotResponse = {
+      ...bot,
+      menu: [
+        ...bot.menu,
+        { id: "o3", label: "Hablar con alguien", action: "Team", teamId: "t-support", isSystem: false },
+      ],
+    };
+    let current: PlatformWhatsAppBotResponse = initial;
+    const reads: number[] = [];
+    const sent: UpdatePlatformWhatsAppBotRequest[] = [];
+    server.use(
+      http.get("/api/platform/whatsapp/conversations", () => HttpResponse.json({
+        conversations: { items: [], page: 1, pageSize: 10, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false }, counts: { customers: 0, internal: 0, untaken: 0 } })),
+      http.get("/api/platform/whatsapp/bot", () => { reads.push(current.version); return HttpResponse.json(current); }),
+      http.get("/api/platform/whatsapp/teams", () => HttpResponse.json(teams)),
+      http.put("/api/platform/whatsapp/bot", async ({ request }) => {
+        const body = await request.json() as UpdatePlatformWhatsAppBotRequest;
+        sent.push(body);
+        if (body.version !== current.version) {
+          return HttpResponse.json({ code: "General.ConcurrencyConflict", detail: "Alguien cambió esto mientras lo editabas." }, { status: 409 });
+        }
+        return HttpResponse.json({ ...current, version: current.version + 1 });
+      }),
+    );
+
+    const page = mountWhatsApp(operator, "/plataforma/whatsapp/bot");
+    (await screen.findByRole("button", { name: "Acciones de Hablar con alguien" })).focus();
+    await page.user.keyboard("{Enter}");
+    await page.user.click(within(await screen.findByRole("menu")).getByRole("menuitem", { name: "Editar" }));
+    const dialog = await screen.findByRole("dialog", { name: "Editar opción 3" });
+
+    // Otra persona borró la opción 2 («No me llega el código») y el bot subió a versión 3.
+    current = { ...initial, menu: [initial.menu[0], initial.menu[2]], version: 3 };
+    const beforeRefetch = reads.length;
+    await act(async () => { await page.client.refetchQueries({ queryKey: botQueryRoot }); });
+    expect(reads.length).toBeGreaterThan(beforeRefetch);
+
+    const label = within(dialog).getByRole("textbox", { name: "Texto de la opción" });
+    await page.user.clear(label);
+    await page.user.paste("Atención general");
+    await page.user.click(within(dialog).getByRole("button", { name: "Guardar" }));
+
+    expect(await within(dialog).findByText("Alguien cambió esto mientras lo editabas.")).toBeVisible();
+    expect(sent).toHaveLength(1);
+    expect(sent[0]).toMatchObject({ version: 2 });
+    expect(sent[0].menu).toEqual([
+      { id: "o2", label: "No me llega el código", action: "Team", teamId: "t-support", reply: null },
+      { id: "o3", label: "Atención general", action: "Team", teamId: "t-support", reply: null },
+    ]);
   });
 });

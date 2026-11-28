@@ -8,7 +8,7 @@ import { Page } from "@/shared/ui/Page";
 import { SegmentedControl } from "@/shared/ui/SegmentedControl";
 import { Surface } from "@/shared/ui/Surface";
 import type { WhatsAppTeamResponse } from "../../api/types";
-import type { BotData, BotPatch } from "../lib/botModel";
+import type { BotData, BotSave } from "../lib/botModel";
 import { BotConfiguration } from "./BotConfiguration";
 import { BotFlow } from "./BotFlow";
 
@@ -17,15 +17,15 @@ const viewKeys = ["vista"] as const;
 /// La pantalla del bot (WA-Respuestas, WA-Bot-Recorrido, Plat-WA-Bot y sus M-*): «Configuración | Recorrido» con el
 /// segmentado arriba, en la compu y en el teléfono (F8); en la organización, además, el número elegido. La vista queda
 /// en la dirección (`?vista=recorrido`).
-export function BotScreen({ variant, bot, teams, picker, empty, onSave }: {
+export function BotScreen<TBot extends BotData>({ variant, bot, teams, picker, empty, onSave }: {
   variant: "organization" | "platform";
-  bot: BotData | undefined;
+  bot: TBot | undefined;
   teams: readonly WhatsAppTeamResponse[];
   /** El número cuyo bot se ve (solo la organización). */
   picker?: ReactNode;
   /** Sin nada que configurar (una organización sin números). */
   empty?: string;
-  onSave: (patch: BotPatch) => Promise<unknown>;
+  onSave: BotSave<TBot>;
 }) {
   const { t } = useTranslation(["whatsapp", "common"]);
   const format = useFormat();

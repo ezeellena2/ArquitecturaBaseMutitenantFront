@@ -11,20 +11,20 @@ import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTi
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { Textarea } from "@/shared/ui/textarea";
-import type { BotPatch } from "../lib/botModel";
+import type { BotData, BotSave } from "../lib/botModel";
 import { useBotDialogSave } from "./useBotDialogSave";
 
 const textLimit = validationConstraints.UpdateWhatsAppBotHttpRequest.welcome.maxLength;
 
 /// «Bienvenida» (WA-Respuestas, «Editar bienvenida», y M-WA-Respuestas): el texto que manda el bot la primera vez que
 /// alguien escribe. No tiene interruptor: el bot no se apaga (D9).
-export function WelcomeDialog({ welcome, onSave, onClose, returnFocusTo }: { welcome: string; onSave: (patch: BotPatch) => Promise<unknown>; onClose: () => void; returnFocusTo?: HTMLElement | null }) {
+export function WelcomeDialog<TBot extends BotData>({ bot, onSave, onClose, returnFocusTo }: { bot: TBot; onSave: BotSave<TBot>; onClose: () => void; returnFocusTo?: HTMLElement | null }) {
   const { t } = useTranslation(["whatsapp", "common"]);
   const { phone } = useAppChrome();
   const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
   const schema = z.object({ text: z.string().trim().min(1, t("whatsapp:bot.validation.required")).max(textLimit) });
-  const form = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema), defaultValues: { text: welcome } });
-  const { failure, clear, close, pending, submit } = useBotDialogSave(onSave, onClose);
+  const form = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema), defaultValues: { text: bot.welcome } });
+  const { failure, clear, close, pending, submit } = useBotDialogSave(bot, onSave, onClose);
   const send = form.handleSubmit((values) => submit({ welcome: values.text.trim() }));
 
   return <Dialog open onOpenChange={(open) => { if (!open) close(); }}>

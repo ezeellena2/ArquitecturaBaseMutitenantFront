@@ -36,6 +36,35 @@ export interface BotData {
 
 export type BotPatch = Partial<Pick<BotData, "welcome" | "outOfHours" | "schedule" | "menu" | "askPromotions" | "offerAccountLink" | "employeesTeamId">>;
 
+/** Guardado del bot: recibe siempre la instantánea base con la que se abrió o tocó la acción, nunca el caché vivo. */
+export type BotSave<TBot extends BotData = BotData> = (base: TBot, patch: BotPatch) => Promise<unknown>;
+
+/** Identifica una opción del menú de forma estable: por su `id` si lo tiene, y si no por su posición en la instantánea. */
+export interface MenuOptionTarget {
+  id: string | null;
+  index: number;
+}
+
+export function optionTarget(option: WhatsAppBotMenuOption, index: number): MenuOptionTarget {
+  return { id: option.id ?? null, index };
+}
+
+function matchesOption(item: WhatsAppBotMenuOption, position: number, target: MenuOptionTarget): boolean {
+  return target.id !== null ? item.id === target.id : position === target.index;
+}
+
+export function findMenuOption(menu: readonly WhatsAppBotMenuOption[], target: MenuOptionTarget): WhatsAppBotMenuOption | null {
+  return menu.find((item, position) => matchesOption(item, position, target)) ?? null;
+}
+
+export function replaceMenuOption(menu: readonly WhatsAppBotMenuOption[], target: MenuOptionTarget, next: WhatsAppBotMenuOption): WhatsAppBotMenuOption[] {
+  return menu.map((item, position) => matchesOption(item, position, target) ? next : item);
+}
+
+export function removeMenuOption(menu: readonly WhatsAppBotMenuOption[], target: MenuOptionTarget): WhatsAppBotMenuOption[] {
+  return menu.filter((item, position) => !matchesOption(item, position, target));
+}
+
 /** Una hora del contrato (`TimeOnly`, «09:00:00») tal como llega, o nada si no es texto. */
 export const timeOf = (value: unknown): string | null => typeof value === "string" ? value : null;
 

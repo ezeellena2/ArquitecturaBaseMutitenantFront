@@ -10,7 +10,7 @@ import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { Picker } from "@/shared/ui/Picker";
 import type { WhatsAppTeamResponse } from "../../api/types";
-import type { BotPatch } from "../lib/botModel";
+import type { BotData, BotSave } from "../lib/botModel";
 import { useBotDialogSave } from "./useBotDialogSave";
 
 const noTeam = "none";
@@ -18,19 +18,19 @@ const schema = z.object({ team: z.string() });
 
 /// «Mensajes de empleados» (WA-Respuestas, «Además»): a qué equipo de la bandeja Internos pasan, sin menú, los mensajes
 /// de los números de cuentas de la organización. Sin equipo, quedan en Internos.
-export function EmployeesTeamDialog({ teamId, teams, onSave, onClose, returnFocusTo }: {
-  teamId: string | null;
+export function EmployeesTeamDialog<TBot extends BotData>({ bot, teams, onSave, onClose, returnFocusTo }: {
+  bot: TBot;
   /** Los equipos de la bandeja Internos. */
   teams: readonly WhatsAppTeamResponse[];
-  onSave: (patch: BotPatch) => Promise<unknown>;
+  onSave: BotSave<TBot>;
   onClose: () => void;
   returnFocusTo?: HTMLElement | null;
 }) {
   const { t } = useTranslation(["whatsapp", "common"]);
   const restoreFocus = useRestoreFocusOnClose(true, returnFocusTo);
-  const form = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema), defaultValues: { team: teamId ?? noTeam } });
+  const form = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema), defaultValues: { team: bot.employeesTeamId ?? noTeam } });
   const team = useController({ control: form.control, name: "team" });
-  const { failure, clear, close, pending, submit } = useBotDialogSave(onSave, onClose);
+  const { failure, clear, close, pending, submit } = useBotDialogSave(bot, onSave, onClose);
   const send = form.handleSubmit((values) => submit({ employeesTeamId: values.team === noTeam ? null : values.team }));
 
   return <Dialog open onOpenChange={(open) => { if (!open) close(); }}>

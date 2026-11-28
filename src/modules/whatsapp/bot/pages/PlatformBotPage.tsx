@@ -15,9 +15,10 @@ export function PlatformBotPage() {
   const teams = useQuery({ queryKey: botTeamsQueryKey("platform"), queryFn: ({ signal }) => fetchBotTeams("platform", signal), meta: { silent: true } });
   if (!bot.data && bot.isError) return <LoadErrorPage screen={t("bot.title")} onRetry={() => { void bot.refetch(); }} />;
 
-  async function save(patch: BotPatch): Promise<PlatformWhatsAppBotResponse> {
-    if (!bot.data) throw new Error("No hay un bot para guardar.");
-    const result = await updatePlatformBot(platformBotRequest(bot.data, patch));
+  // El PUT lleva la instantánea base con la que se abrió el diálogo o se tocó la acción (nunca el caché vivo),
+  // así una relectura de fondo no pisa un cambio ajeno; la respuesta pasa a ser lo leído.
+  async function save(base: PlatformWhatsAppBotResponse, patch: BotPatch): Promise<PlatformWhatsAppBotResponse> {
+    const result = await updatePlatformBot(platformBotRequest(base, patch));
     queryClient.setQueryData(platformBotQueryKey, result);
     return result;
   }
