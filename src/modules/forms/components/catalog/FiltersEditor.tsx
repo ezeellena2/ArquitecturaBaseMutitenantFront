@@ -294,6 +294,8 @@ function ConditionFields({ filters, condition, editable, invalid, labeled = fals
 }
 
 interface ValuesProps {
+  /** El que pone `FormField` en «Editar condición»: la pieza o el texto se llaman con el rótulo «Valor». */
+  id?: string;
   filters: CatalogFilters;
   condition: ConditionDraft;
   type: FormCatalogSourceColumn["type"] | undefined;
@@ -306,26 +308,26 @@ interface ValuesProps {
 /** Los valores: varios roles, empresas o etiquetas del servidor, buscados adentro de la lista; sí o no; o un texto. */
 function ConditionValues(props: ValuesProps) {
   const { t } = useTranslation("forms");
-  const { condition, editable, invalid, labeled, onChange } = props;
+  const { id, condition, editable, invalid, labeled, onChange } = props;
   if (condition.column === "role" || condition.column === "company") return <ReferenceValues {...props} />;
   if (condition.column === "tags") return <TagValues {...props} />;
   const label = labeled ? undefined : valuesLabel(t, condition.column);
   if (props.type === "Boolean" || condition.column === "active") {
-    return <Picker label={label} disabled={!editable} aria-invalid={invalid} value={condition.values[0] ?? null}
+    return <Picker id={id} label={label} disabled={!editable} aria-invalid={invalid} value={condition.values[0] ?? null}
       options={[{ value: "true", label: t("forms:catalog.filters.yes") }, { value: "false", label: t("forms:catalog.filters.no") }]}
       onChange={(value) => onChange([value])} />;
   }
-  return <Input aria-label={label} disabled={!editable} aria-invalid={invalid || undefined} value={condition.values[0] ?? ""} autoComplete="off"
+  return <Input id={id} aria-label={label} disabled={!editable} aria-invalid={invalid || undefined} value={condition.values[0] ?? ""} autoComplete="off"
     onChange={(event) => onChange(event.target.value ? [event.target.value] : [])} />;
 }
 
 /** Roles o empresas de la organización, por su id; uno que ya no existe se ve como «Rol no disponible», en rojo. */
-function ReferenceValues({ filters, condition, editable, invalid, labeled, onChange }: ValuesProps) {
+function ReferenceValues({ id, filters, condition, editable, invalid, labeled, onChange }: ValuesProps) {
   const { t } = useTranslation("forms");
   const [open, setOpen] = useState(false);
   const query = useResourceOptions(condition.column === "role" ? memberRoleOptions : memberCompanyOptions, open && editable);
   const missing = filters.missingValues(condition);
-  return <Picker multiple label={labeled ? undefined : valuesLabel(t, condition.column)} disabled={!editable} aria-invalid={invalid || missing.length > 0}
+  return <Picker id={id} multiple label={labeled ? undefined : valuesLabel(t, condition.column)} disabled={!editable} aria-invalid={invalid || missing.length > 0}
     className={cn(missing.length > 0 && "text-[var(--peligro)]")}
     value={condition.values} remote={query.remote} onOpenChange={setOpen}
     options={query.items.map((reference) => ({ value: reference.id, label: reference.name }))}
@@ -338,11 +340,11 @@ function ReferenceValues({ filters, condition, editable, invalid, labeled, onCha
 }
 
 /** Las etiquetas que usan los contactos de la organización: viajan como texto. */
-function TagValues({ condition, editable, invalid, labeled, onChange }: ValuesProps) {
+function TagValues({ id, condition, editable, invalid, labeled, onChange }: ValuesProps) {
   const { t } = useTranslation("forms");
   const [open, setOpen] = useState(false);
   const query = useResourceOptions(contactTagOptions, open && editable);
-  return <Picker multiple label={labeled ? undefined : valuesLabel(t, condition.column)} disabled={!editable} aria-invalid={invalid}
+  return <Picker id={id} multiple label={labeled ? undefined : valuesLabel(t, condition.column)} disabled={!editable} aria-invalid={invalid}
     value={condition.values} remote={query.remote} onOpenChange={setOpen}
     options={query.items.map((tag) => ({ value: tag.name, label: tag.name }))}
     selectedOptions={condition.values.map((tag) => ({ value: tag, label: tag }))}

@@ -145,6 +145,31 @@ describe("Catálogo con filtros (FRM-Catalogo-Filtros y FRM-Catalogo-Contactos)"
     } finally { restore(); }
   });
 
+  it("en el teléfono, «Editar condición» nombra cada pieza con su rótulo, también la del valor: «Valor» y lo elegido", async () => {
+    const restore = asPhone();
+    try {
+      const { user } = mountForms(formsOwner, "/org/formularios/catalogos/c-sup");
+      await user.click(await screen.findByText("Supervisor, Jefe de obra"));
+      const dialog = await screen.findByRole("dialog", { name: "Editar condición" });
+      expect(within(dialog).getByRole("button", { name: pickerName("Columna") })).toHaveAccessibleName("Columna Rol");
+      expect(within(dialog).getByRole("button", { name: pickerName("Valor") })).toHaveAccessibleName("Valor Supervisor, Jefe de obra");
+      await user.click(within(dialog).getByRole("button", { name: pickerName("Valor") }));
+      expect(await screen.findByRole("option", { name: /Auditor/ })).toBeInTheDocument();
+    } finally { restore(); }
+  });
+
+  it("en el teléfono, la condición de un catálogo de los contactos elige sus etiquetas en «Valor»", async () => {
+    serve({ detail: supervisores({ id: "c-cli", name: "Clientes", source: "Contacts", roles: null, companies: null, sample: null,
+      filters: { sourceVersion: 1, excludeRecipient: false, detail: "tags", sort: { column: "name", descending: false }, conditions: [{ column: "tags", operator: "hasAny", values: ["Mayorista"] }] } }) });
+    const restore = asPhone();
+    try {
+      const { user } = mountForms(formsOwner, "/org/formularios/catalogos/c-cli");
+      await user.click(await screen.findByText("Mayorista"));
+      const dialog = await screen.findByRole("dialog", { name: "Editar condición" });
+      expect(within(dialog).getByRole("button", { name: pickerName("Valor") })).toHaveAccessibleName("Valor Mayorista");
+    } finally { restore(); }
+  });
+
   it("con más de 200, la vista previa termina en «y N opciones más» con su ⓘ", async () => {
     serve({ preview: () => ({ ...three, total: 215, exceedsLimit: true }) });
     mountForms(formsOwner, "/org/formularios/catalogos/c-sup");
