@@ -56,6 +56,8 @@
   },
   "errors": {
     "channelUnavailable": "WhatsApp no puede mandar invitaciones ahora. Probá de nuevo en un rato.",
-    "dailyLimit": "Por ahora no se pueden mandar más invitaciones por WhatsApp, y no se guardó nada. Probá de nuevo más tarde."
+    "dailyLimit": "Por ahora no se pueden mandar más invitaciones por WhatsApp, y no se guardó nada. Probá de nuevo más tarde.",
+    "tooManyInvitations_one": "Por día se puede mandar {{n}} invitación por WhatsApp, y esta carga tiene más. Partila en cargas más chicas; no se guardó nada.",
+    "tooManyInvitations_other": "Por día se pueden mandar hasta {{n}} invitaciones por WhatsApp, y esta carga tiene más. Partila en cargas más chicas; no se guardó nada."
   }
 }

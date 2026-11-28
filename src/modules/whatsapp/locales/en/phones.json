@@ -56,6 +56,8 @@
   },
   "errors": {
     "channelUnavailable": "WhatsApp can't send invitations right now. Try again in a while.",
-    "dailyLimit": "No more WhatsApp invitations can be sent for now, and nothing was saved. Try again later."
+    "dailyLimit": "No more WhatsApp invitations can be sent for now, and nothing was saved. Try again later.",
+    "tooManyInvitations_one": "Only {{n}} WhatsApp invitation can be sent per day, and this upload has more. Split it into smaller uploads; nothing was saved.",
+    "tooManyInvitations_other": "Up to {{n}} WhatsApp invitations can be sent per day, and this upload has more. Split it into smaller uploads; nothing was saved."
   }
 }

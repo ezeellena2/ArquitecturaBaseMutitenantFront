@@ -172,6 +172,52 @@ describe("Cargar teléfonos", () => {
     expect(consent).toBeChecked();
   });
 
+  // B9: la espera del 429 es de esa carga. Si quien carga vuelve, recorta la lista y la revisa de nuevo, «Vincular y mandar»
+  // está prendido otra vez con su texto, y no apagado las 22 h que quedaban.
+  it("al volver a editar la carga después del tope diario, la espera se corta y la lista nueva se puede mandar", async () => {
+    let posts = 0;
+    server.use(http.post("/api/organization/whatsapp/phone-imports", () => {
+      posts++;
+      return posts === 1
+        ? HttpResponse.json({ status: 429, code: "WhatsApp.PhoneImport.DailyLimit", retryAfter: 82345 }, { status: 429, headers: { "Retry-After": "82345" } })
+        : HttpResponse.json({ linked: 1, invited: 1, invalid: 1 });
+    }));
+    const { user } = mountWhatsApp(whatsappOwner, path);
+    await review(user);
+    await user.click(await screen.findByRole("checkbox", { name: "La persona aceptó recibir mensajes por WhatsApp" }));
+    await user.click(screen.getAllByRole("button", { name: "Vincular y mandar 1 invitación" })[0]);
+    for (const button of await screen.findAllByRole("button", { name: "Reintentá en 22 h 53 min" })) expect(button).toBeDisabled();
+
+    await user.click(screen.getByRole("button", { name: "Cancelar" }));
+    const phones = await screen.findByRole("textbox", { name: "Uno por renglón, hasta 200" });
+    await user.clear(phones);
+    await user.paste("11 5555-4521\n+54 9 11 5555-8812");
+    await user.click(screen.getAllByRole("button", { name: "Revisar 2 teléfonos" })[0]);
+    await user.click(await screen.findByRole("checkbox", { name: "La persona aceptó recibir mensajes por WhatsApp" }));
+
+    expect(screen.queryByRole("button", { name: "Reintentá en 22 h 53 min" })).not.toBeInTheDocument();
+    const send = screen.getAllByRole("button", { name: "Vincular y mandar 1 invitación" })[0]!;
+    expect(send).toBeEnabled();
+    await user.click(send);
+    await waitFor(() => expect(posts).toBe(2));
+  });
+
+  // B9: una carga con más invitaciones que el tope diario no entra ni esperando (400, sin espera): la franja dice el máximo
+  // del día con la cifra de la cultura y que hay que partirla, y el botón no se apaga.
+  it("una carga con más invitaciones que el tope diario dice el máximo y que hay que partirla, sin espera", async () => {
+    server.use(http.post("/api/organization/whatsapp/phone-imports", () => HttpResponse.json(
+      { status: 400, code: "WhatsApp.PhoneImport.TooManyInvitations", detail: "Esta carga tiene más invitaciones de las que se pueden mandar por WhatsApp en un día.", dailyLimit: 1500 },
+      { status: 400 })));
+    const { user } = mountWhatsApp(whatsappOwner, path);
+    await review(user);
+    await user.click(await screen.findByRole("checkbox", { name: "La persona aceptó recibir mensajes por WhatsApp" }));
+    await user.click(screen.getAllByRole("button", { name: "Vincular y mandar 1 invitación" })[0]);
+
+    expect(await screen.findByText("Por día se pueden mandar hasta 1.500 invitaciones por WhatsApp, y esta carga tiene más. Partila en cargas más chicas; no se guardó nada.")).toBeVisible();
+    expect(screen.queryByRole("button", { name: /Reintentá/ })).not.toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "Vincular y mandar 1 invitación" })[0]).toBeEnabled();
+  });
+
   it("pide «Invitar usuarios» y el módulo prendido", async () => {
     const first = mountWhatsApp(whatsappMember("whatsapp.manage"), path);
     expect(await screen.findByRole("heading", { name: "No tenés permiso para ver esta página" })).toBeVisible();

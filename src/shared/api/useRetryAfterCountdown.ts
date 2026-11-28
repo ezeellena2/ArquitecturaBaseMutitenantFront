@@ -16,6 +16,11 @@ export function useRetryAfterCountdown() {
     }
   }
 
+  /// Corta la cuenta cuando cambió lo que se iba a mandar: la espera era de ese pedido, no del siguiente.
+  function reset(): void {
+    restart(0);
+  }
+
   const time = formatWait(seconds, t);
 
   return {
@@ -23,6 +28,7 @@ export function useRetryAfterCountdown() {
     isRunning,
     label: isRunning ? t("retryIn", { time }) : null,
     startFromError,
+    reset,
   };
 }
 

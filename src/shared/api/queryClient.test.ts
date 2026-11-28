@@ -207,6 +207,18 @@ describe("avisos de las mutaciones", () => {
     expect(toastError).toHaveBeenCalledWith(`${detail} Reintentá en 22 h 53 min`, expect.anything());
   });
 
+  // B9: reenviar desde Usuarios o desde una empresa una invitación por WhatsApp pasa por su tope diario, que tampoco es
+  // «muchos pedidos seguidos»: el aviso de abajo dice su texto y la espera, como el del correo.
+  it("el tope diario de las invitaciones por WhatsApp avisa con su texto y la espera", async () => {
+    const toastError = vi.spyOn(toast, "error");
+    const detail = "Por ahora no se pueden mandar más invitaciones por WhatsApp, y no se guardó nada. Probá de nuevo más tarde.";
+    const sent = vi.fn().mockRejectedValue(new ApiError(429, { code: "WhatsApp.PhoneImport.DailyLimit", detail, retryAfter: 82345 }));
+    await observe(sent).mutate().catch(() => undefined);
+
+    expect(sent).toHaveBeenCalledTimes(1);
+    expect(toastError).toHaveBeenCalledWith(`${detail} Reintentá en 22 h 53 min`, expect.anything());
+  });
+
   it("el tope diario del correo sin espera dice solo su texto", async () => {
     const toastError = vi.spyOn(toast, "error");
     const detail = "Por ahora no se pueden mandar más correos, y no se guardó nada. Probá de nuevo más tarde.";

@@ -107,7 +107,8 @@ export function LoadPhonesPage() {
   const confirm = useIdempotentMutation((request: WhatsAppPhoneImportRequest, key) => importPhones(request, key), { meta: { handlesError: true }, sameOperation: sameImport });
   const [failure, setFailure] = useState<unknown>();
   // El tope diario de las invitaciones por WhatsApp (429), como el del correo al invitar (ADR 0063 §7): «Vincular y
-  // mandar» cuenta la espera en horas y minutos y se apaga mientras tanto; la carga revisada queda como estaba.
+  // mandar» cuenta la espera en horas y minutos y se apaga mientras tanto; la carga revisada queda como estaba. La espera
+  // es de esa carga: al volver a editarla se corta, y la lista recortada se revisa y se manda de nuevo (B9).
   const limit = useRetryAfterCountdown();
   // Decisión 179: para invitar, quien carga confirma que cada persona aceptó recibir mensajes por WhatsApp. Sin la casilla,
   // el botón sigue habilitado y al tocarlo se marca el campo, sin mandar nada.
@@ -152,7 +153,7 @@ export function LoadPhonesPage() {
   }
 
   function back() {
-    if (reviewed) { preview.reset(); setFailure(undefined); setConsent(false); setConsentError(false); }
+    if (reviewed) { preview.reset(); setFailure(undefined); setConsent(false); setConsentError(false); limit.reset(); }
     else void navigate(usersPath);
   }
 
@@ -166,7 +167,7 @@ export function LoadPhonesPage() {
     </Button>;
   // Un número que el back no entendió no trae teléfono: se muestra lo que se escribió en su renglón (`row`, desde 1).
   const typed = (row: { row: number }) => lines[row.row - 1] ?? "";
-  const message = reviewed ? phoneImportErrorMessage(failure, t) : actionErrorMessage(failure, t);
+  const message = reviewed ? phoneImportErrorMessage(failure, t, format) : actionErrorMessage(failure, t);
 
   return <Page title={t(phone ? "whatsapp:phones.phoneTitle" : "whatsapp:phones.title")} backTo={{ to: usersPath, label: t("whatsapp:phones.back") }}
     summary={reviewed ? previewSummary(reviewed, t, false) : t("whatsapp:phones.step")}

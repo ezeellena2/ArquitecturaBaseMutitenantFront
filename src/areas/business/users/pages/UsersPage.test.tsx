@@ -558,6 +558,28 @@ describe("UsersPage", () => {
     expect(await screen.findByText(`${dailyEmailLimit} Reintentá en 22 h 53 min`)).toBeVisible();
   });
 
+  // B9: reenviar una invitación por WhatsApp (la de «Cargar teléfonos») pasa por su tope diario, y el aviso de abajo dice su
+  // texto y la espera, igual que el del correo, y no «muchos pedidos seguidos».
+  it("reenviar una invitación por WhatsApp con su tope diario avisa abajo su texto y la espera", async () => {
+    const dailyWhatsAppLimit = "Por ahora no se pueden mandar más invitaciones por WhatsApp, y no se guardó nada. Probá de nuevo más tarde.";
+    const invitation = { ...member, memberId: "member-3", userId: null, displayName: "Bruno Díaz", email: null, phone: "+5491155558812", roles: [], state: "Invited" as const,
+      invitationId: "inv-3", invitationIssuedAtUtc: "2026-09-25T12:00:00Z", invitationExpiresAtUtc: "2027-10-02T12:00:00Z", invitationDelivery: "Sent" };
+    server.use(
+      http.get("/api/users/paged", () => HttpResponse.json({ items: [invitation], page: 1, pageSize: 10, totalCount: 1, totalPages: 1, hasPrevious: false, hasNext: false })),
+      http.get("/api/users/filter-counts", () => HttpResponse.json({ all: 1, active: 0, pendingDeletion: 0, invited: 1, expired: 0, inactive: 0 })),
+      http.get("/api/companies/paged", () => HttpResponse.json({ items: [], page: 1, pageSize: 100, totalCount: 0, totalPages: 0, hasPrevious: false, hasNext: false })),
+      http.post("/api/users/invitations/:invitationId/resend", () => HttpResponse.json({ status: 429, code: "WhatsApp.PhoneImport.DailyLimit", detail: dailyWhatsAppLimit, retryAfter: 82345 },
+        { status: 429, headers: { "Retry-After": "82345" } })),
+    );
+    const user = userEvent.setup();
+    renderRouteWithProviders("/org/usuarios", { as: "business-e6-admin" });
+    const trigger = await screen.findByRole("button", { name: "Acciones de Bruno Díaz" });
+    trigger.focus(); await user.keyboard("{Enter}");
+    await user.click(await screen.findByRole("menuitem", { name: "Reenviar invitación" }));
+
+    expect(await screen.findByText(`${dailyWhatsAppLimit} Reintentá en 22 h 53 min`)).toBeVisible();
+  });
+
   // «Criterio · Botones»: «Invitar» no se apaga; sin correo, el campo dice qué corregir (no el aviso del navegador) y no se
   // manda nada. formularios.md (Diálogo): se monta al abrirse, así que al cerrarlo lo escrito se va con él.
   it("«Invitar» sin correo marca el campo y no manda nada; al cerrarlo, lo escrito se va", async () => {

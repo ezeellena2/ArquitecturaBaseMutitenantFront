@@ -17,8 +17,9 @@ export function isRateLimitError(error: unknown): error is ApiError {
 }
 
 /// Los topes de negocio que no son «muchos pedidos seguidos» y dicen su texto, el que ya tradujo el back, también en el
-/// aviso de abajo: el diario del correo (0063), que frena el reenvío de una invitación hasta un día.
-const quotasWithText: ReadonlySet<string> = new Set(["Messaging.Email.DailyLimit"]);
+/// aviso de abajo: el diario del correo (0063) y el de las invitaciones por WhatsApp (B9), que frenan el reenvío de una
+/// invitación desde Usuarios o una empresa hasta un día.
+const quotasWithText: ReadonlySet<string> = new Set(["Messaging.Email.DailyLimit", "WhatsApp.PhoneImport.DailyLimit"]);
 
 /// El texto de un 429 en el aviso de abajo (`queryClient`): el de su tope, si lo tiene, con la espera («Reintentá en
 /// 22 h 53 min», 0063 §7) cuando la trae, porque el aviso no tiene un botón que la cuente; si no, el común.

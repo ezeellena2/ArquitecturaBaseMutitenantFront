@@ -6469,7 +6469,7 @@ export interface paths {
                         "text/json": components["schemas"]["WhatsAppPhoneImportResponse"];
                     };
                 };
-                /** @description Bad Request; WhatsApp.PhoneImport.ConsentRequired */
+                /** @description Bad Request; WhatsApp.PhoneImport.ConsentRequired; WhatsApp.PhoneImport.TooManyInvitations */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -6523,7 +6523,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Security.RateLimit.Exceeded */
+                /** @description Too Many Requests; WhatsApp.PhoneImport.DailyLimit; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -8545,7 +8545,7 @@ export interface paths {
                         "text/json": components["schemas"]["VersionResponse"];
                     };
                 };
-                /** @description Bad Request; Validation.Failed */
+                /** @description Bad Request; Validation.Failed; WhatsApp.Settings.CountriesWithoutRates */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -13148,7 +13148,7 @@ export interface paths {
                         "application/json": components["schemas"]["AssistantAttachmentSummaryResponse"];
                     };
                 };
-                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany; Assistant.Attachment.UploadTimedOut; Validation.Failed; Validation.Failed */
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany; Assistant.Attachment.TooManyPending; Assistant.Attachment.UploadTimedOut; Validation.Failed; Validation.Failed */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -13211,7 +13211,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Assistant.Limit.DailyReached; Assistant.Limit.MonthlyReached; Assistant.Attachment.UploadBusy; Assistant.Attachment.UploadQueueFull; Security.RateLimit.Exceeded */
+                /** @description Too Many Requests; Assistant.Limit.DailyReached; Assistant.Limit.MonthlyReached; Assistant.Attachment.UploadBusy; Assistant.Attachment.UploadQueueFull; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -14801,7 +14801,7 @@ export interface paths {
                         "application/json": components["schemas"]["AssistantAttachmentSummaryResponse"];
                     };
                 };
-                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany; Assistant.Attachment.UploadTimedOut; Validation.Failed; Validation.Failed */
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany; Assistant.Attachment.TooManyPending; Assistant.Attachment.UploadTimedOut; Validation.Failed; Validation.Failed */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -14864,7 +14864,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Assistant.Limit.DailyReached; Assistant.Limit.MonthlyReached; Assistant.Attachment.UploadBusy; Assistant.Attachment.UploadQueueFull; Security.RateLimit.Exceeded */
+                /** @description Too Many Requests; Assistant.Limit.DailyReached; Assistant.Limit.MonthlyReached; Assistant.Attachment.UploadBusy; Assistant.Attachment.UploadQueueFull; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -16735,7 +16735,7 @@ export interface paths {
                         "application/json": components["schemas"]["AssistantAttachmentSummaryResponse"];
                     };
                 };
-                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany; Assistant.Attachment.UploadTimedOut; Validation.Failed; Validation.Failed */
+                /** @description Bad Request; Validation.Failed; Request.IdempotencyKeyRequired; Assistant.Notice.AcceptanceRequired; Assistant.Attachment.UnsupportedType; Assistant.Attachment.TooMany; Assistant.Attachment.TooManyPending; Assistant.Attachment.UploadTimedOut; Validation.Failed; Validation.Failed */
                 400: {
                     headers: {
                         [name: string]: unknown;
@@ -16798,7 +16798,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Assistant.Limit.DailyReached; Assistant.Limit.MonthlyReached; Assistant.Attachment.UploadBusy; Assistant.Attachment.UploadQueueFull; Security.RateLimit.Exceeded */
+                /** @description Too Many Requests; Assistant.Limit.DailyReached; Assistant.Limit.MonthlyReached; Assistant.Attachment.UploadBusy; Assistant.Attachment.UploadQueueFull; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -20575,7 +20575,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description ADR 0061: nadie da ni quita a un operador un permiso que no tiene. Lo que tiene una cuenta son los permisos de sus roles (o los de un operador) más lo que esos incluyen, en cadena (260); se guarda lo pedido más lo incluido, y el GET devuelve eso. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. */
+        /** @description ADR 0061: nadie da ni quita a un operador un permiso que no tiene. Lo que tiene una cuenta son los permisos de sus roles (o los de un operador) más lo que esos incluyen, en cadena (260); se guarda lo pedido más lo incluido, y el GET devuelve eso. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por otro canal no cuenta acá: tiene sus propios topes. */
         post: {
             parameters: {
                 query?: never;
@@ -20677,7 +20677,7 @@ export interface paths {
         put?: never;
         /**
          * «Reenviar invitación»: renueva los 7 días de una invitación sin aceptar y manda el correo de nuevo.
-         * @description Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta.
+         * @description Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por otro canal no cuenta acá: tiene sus propios topes.
          */
         post: {
             parameters: {
@@ -22295,7 +22295,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. */
+        /** @description Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por otro canal no cuenta acá: tiene sus propios topes. */
         post: {
             parameters: {
                 query?: never;
@@ -24090,7 +24090,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. */
+        /** @description Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por otro canal no cuenta acá: tiene sus propios topes. WhatsApp: reenviar una invitación por WhatsApp cuenta en los topes diarios de las invitaciones por WhatsApp (por organización y global, últimas 24 horas, por horas); al llegar, 429 WhatsApp.PhoneImport.DailyLimit con retryAfter y Retry-After, sin revocar la pendiente ni mandar nada. */
         post: {
             parameters: {
                 query?: never;
@@ -24159,7 +24159,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Messaging.Email.DailyLimit; Security.RateLimit.Exceeded */
+                /** @description Messaging.Email.DailyLimit; WhatsApp.PhoneImport.DailyLimit; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -24504,7 +24504,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description ADR 0061: no se da un rol de la empresa con permisos que quien suma no tiene en ella. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. */
+        /** @description ADR 0061: no se da un rol de la empresa con permisos que quien suma no tiene en ella. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por otro canal no cuenta acá: tiene sus propios topes. */
         post: {
             parameters: {
                 query?: never;
@@ -26376,7 +26376,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description ADR 0061: no se da un rol con permisos que quien invita no tiene. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. */
+        /** @description ADR 0061: no se da un rol con permisos que quien invita no tiene. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por otro canal no cuenta acá: tiene sus propios topes. */
         post: {
             parameters: {
                 query?: never;
@@ -26476,7 +26476,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. */
+        /** @description Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por otro canal no cuenta acá: tiene sus propios topes. WhatsApp: reenviar una invitación por WhatsApp cuenta en los topes diarios de las invitaciones por WhatsApp (por organización y global, últimas 24 horas, por horas); al llegar, 429 WhatsApp.PhoneImport.DailyLimit con retryAfter y Retry-After, sin revocar la pendiente ni mandar nada. */
         post: {
             parameters: {
                 query?: never;
@@ -26535,7 +26535,7 @@ export interface paths {
                         "application/problem+json": components["schemas"]["ProblemDetails"];
                     };
                 };
-                /** @description Messaging.Email.DailyLimit; Security.RateLimit.Exceeded */
+                /** @description Messaging.Email.DailyLimit; WhatsApp.PhoneImport.DailyLimit; Security.RateLimit.Exceeded */
                 429: {
                     headers: {
                         /** @description Opcional: segundos iguales a retryAfter cuando la respuesta incluye esa metadata entera. Identity.Account.LockedOut no incluye plazo ni este encabezado. */
@@ -27990,7 +27990,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Invalid informa attemptsLeft sólo ante una prueba activa; sin prueba activa no informa intentos restantes. Los errores del código no incluyen errors.code. Intentos y topes actuales; cuando el error incluye retryAfter, son segundos y coincide con Retry-After. El bloqueo de cuenta no informa un plazo ni ese encabezado. No guardar códigos ni enlaces en logs. Nonce opaco base64url de 43 caracteres, ligado a este pedido. Sin sesión. Nuevo destino no se agrega a la cuenta. Submit: 202 sin body, prueba previa vigente y previousEmail o previousPhone; resolución asistida de Plataforma conserva reason/version/permiso/SecurityEvent. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.Código como string de dígitos ASCII, longitud Authentication:LoginCode (6 por defecto). Invalid informa attemptsLeft sólo ante una prueba activa; sin prueba activa no informa intentos restantes. Los errores del código no incluyen errors.code. Intentos y topes actuales; cuando el error incluye retryAfter, son segundos y coincide con Retry-After. El bloqueo de cuenta no informa un plazo ni ese encabezado. No guardar códigos ni enlaces en logs. Nonce opaco base64url de 43 caracteres, ligado a este pedido. Sin sesión. Nuevo destino no se agrega a la cuenta. Submit: 202 sin body, prueba previa vigente y previousEmail o previousPhone; resolución asistida de Plataforma conserva reason/version/permiso/SecurityEvent. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por otro canal no cuenta acá: tiene sus propios topes. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
@@ -28264,7 +28264,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.BusinessSignup abierto, independiente de ConsumerSignup; identidad nueva o existente. No crea organización ni PhoneTaken personal. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.BusinessSignup abierto, independiente de ConsumerSignup; identidad nueva o existente. No crea organización ni PhoneTaken personal. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por otro canal no cuenta acá: tiene sus propios topes. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
@@ -29035,7 +29035,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. Solo método verificado utilizable; conserva invitación por correo de ADR0047. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. Solo método verificado utilizable; conserva invitación por correo de ADR0047. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por otro canal no cuenta acá: tiene sus propios topes. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. */
         post: {
             parameters: {
                 query?: never;
@@ -29575,7 +29575,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.ConsumerSignup abierto; acepta términos explícitos. Crea Persona, nunca empresa. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164.ConsumerSignup abierto; acepta términos explícitos. Crea Persona, nunca empresa. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por otro canal no cuenta acá: tiene sus propios topes. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
@@ -30070,7 +30070,7 @@ export interface paths {
             };
         };
         put?: never;
-        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. Pendiente propio y OTP al destino nuevo; otro dueño falla antes de pendiente, aviso o OTP. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. WhatsApp: tope por cuenta de las últimas 24 horas, por horas; al llegar, 429 WhatsApp.LoginCode.AccountDailyLimit con retryAfter y Retry-After. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
+        /** @description Exactamente uno de email/phone. Sin channel se conserva correo; email exige channel=email o ausente. Phone exige canal registrado de tipo Phone. País ISO desde referencias; número se interpreta como celular y se normaliza a E.164. Pendiente propio y OTP al destino nuevo; otro dueño falla antes de pendiente, aviso o OTP. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por otro canal no cuenta acá: tiene sus propios topes. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. WhatsApp: tope por cuenta de las últimas 24 horas, por horas; al llegar, 429 WhatsApp.LoginCode.AccountDailyLimit con retryAfter y Retry-After. País habilitado se valida solo para destino nuevo; cambiar AllowedCountries no invalida un Phone ya verificado. */
         post: {
             parameters: {
                 query?: never;
@@ -30182,7 +30182,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** @description Reenvío para pendiente propio; recarga propiedad y disponibilidad, sin body. No prueba posesión del método principal. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por WhatsApp tiene los límites de Meta. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. WhatsApp: tope por cuenta de las últimas 24 horas, por horas; al llegar, 429 WhatsApp.LoginCode.AccountDailyLimit con retryAfter y Retry-After. */
+        /** @description Reenvío para pendiente propio; recarga propiedad y disponibilidad, sin body. No prueba posesión del método principal. Por correo (ADR 0063 y 256): un tope global y los de cada código o invitación cuentan las últimas 24 horas, por horas; al llegar, 429 Messaging.Email.DailyLimit con retryAfter (segundos, con una hora de precisión) y Retry-After, sin mandar ni guardar nada. Lo que va por otro canal no cuenta acá: tiene sus propios topes. WhatsApp: cuota diaria persistente de códigos por UTC, una reserva por operación; replay no vuelve a gastar cuota. Error de entrega posterior a 202 se maneja en outbox. WhatsApp: tope por cuenta de las últimas 24 horas, por horas; al llegar, 429 WhatsApp.LoginCode.AccountDailyLimit con retryAfter y Retry-After. */
         post: {
             parameters: {
                 query?: never;
