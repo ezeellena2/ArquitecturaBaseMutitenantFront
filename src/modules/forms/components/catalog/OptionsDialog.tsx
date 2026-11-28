@@ -13,8 +13,12 @@ import { InfoTip } from "@/shared/ui/InfoTip";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { Picker } from "@/shared/ui/Picker";
+import type { CatalogSourceItem } from "../../hooks/useCatalogFieldSources";
 import { rowHasErrors, type CatalogDraftSnapshot, type CatalogEditor, type CatalogRowView } from "../../hooks/useCatalogEditor";
+import { fieldErrorKey } from "../../lib/catalogDraft";
+import { fieldColumnsOf } from "../../lib/catalogFields";
 import { catalogLimits } from "../../lib/catalogLimits";
+import { FieldValueControl, LockedFieldValue } from "./CatalogCells";
 
 /** Cómo se abre el modal de opciones (117). */
 export interface OptionsDialogOpening {
@@ -69,8 +73,14 @@ export function OptionField({ label, required, help, error, warning, below, chil
  * editor, que se guarda con «Guardar cambios»: «Cancelar», Esc o la ✕ lo devuelven como estaba al abrir, y «Listo» lo
  * conserva, menos una opción nueva sin nada escrito. En el teléfono ocupa la pantalla: la lista y, al tocar una, la opción
  * con «Volver a la lista». Quitar una guardada pregunta en el mismo diálogo (nunca un diálogo sobre otro).
+ *
+ * Desde la E13 (FRM-Catalogo-Opciones-13 y su teléfono), un renglón por campo después del código y antes del detalle, con el
+ * control de su tipo; el de un campo nuevo, grisado hasta guardar el catálogo, con su motivo. `sourceItem` dice el texto de
+ * la opción de otro catálogo que es valor de un campo, también si está dada de baja.
  */
-export function OptionsDialog({ editor, opening, onClose }: { editor: CatalogEditor; opening: OptionsDialogOpening; onClose: () => void }) {
+export function OptionsDialog({ editor, opening, sourceItem, onClose }: {
+  editor: CatalogEditor; opening: OptionsDialogOpening; sourceItem?: CatalogSourceItem; onClose: () => void;
+}) {
   const { t } = useTranslation(["forms", "common"]);
   const format = useFormat();
   const { phone } = useAppChrome();
@@ -86,6 +96,7 @@ export function OptionsDialog({ editor, opening, onClose }: { editor: CatalogEdi
   const selected = list.find((row) => row.key === selectedKey) ?? null;
   const name = editor.name.trim();
   const typed = editor.valueType !== "Text";
+  const fieldColumns = fieldColumnsOf(editor.fields, editor.saved?.fields ?? []);
 
   const textOf = (row: CatalogRowView) => row.draft.text.trim();
   // Una nueva todavía no tiene número: «—» con EmptyValue, tenue y «Sin dato» para el lector (formatos).
@@ -145,7 +156,8 @@ export function OptionsDialog({ editor, opening, onClose }: { editor: CatalogEdi
 
   function done() {
     for (const row of list) {
-      const blank = [row.draft.text, row.draft.code, row.draft.detail, row.draft.value].every((value) => value.trim() === "");
+      const blank = [row.draft.text, row.draft.code, row.draft.detail, row.draft.value].every((value) => value.trim() === "")
+        && Object.values(row.draft.fields ?? {}).every((value) => value === null);
       if (row.isNew && blank) editor.remove(row.key);
     }
     onClose();
@@ -247,6 +259,16 @@ export function OptionsDialog({ editor, opening, onClose }: { editor: CatalogEdi
         {(control) => <Input {...control} value={row.draft.value} autoComplete="off" inputMode={editor.valueType === "Date" ? undefined : "decimal"}
           className={editor.valueType === "Date" ? undefined : "text-right tabular-nums"} onChange={(event) => set({ value: event.target.value })} />}
       </OptionField> : null}
+      {fieldColumns.map(({ field, detail, editable }) => {
+        const errorKey = field.id ? fieldErrorKey(field.id) : null;
+        return <OptionField key={field.localKey} label={field.name || t("forms:catalog.fieldsDialog.noName")} required={editable && detail?.required}
+          error={errorKey ? row.errors[errorKey] : undefined}>
+          {(control) => editable && detail
+            ? <FieldValueControl field={detail} value={row.draft.fields?.[detail.id] ?? null} sourceItem={sourceItem} id={control.id}
+              invalid={control["aria-invalid"]} describedBy={control["aria-describedby"]} onChange={(value) => set({ fields: { [detail.id]: value } })} />
+            : <LockedFieldValue id={control.id} reason={t("forms:catalog.fieldValues.saveFirst")} describedBy={control["aria-describedby"]} />}
+        </OptionField>;
+      })}
       <OptionField label={t("forms:catalog.columns.detail")} help={t("forms:catalog.optionsDialog.help.detail")} error={row.errors.detail}>
         {(control) => <Input {...control} value={row.draft.detail} autoComplete="off" maxLength={catalogLimits.itemDetail}
           onChange={(event) => set({ detail: event.target.value })} />}

@@ -165,7 +165,8 @@
       "code": "Code of {{option}}",
       "value": "Value of {{option}}",
       "detail": "Detail of {{option}}",
-      "active": "Active: {{option}}"
+      "active": "Active: {{option}}",
+      "field": "{{field}} of {{option}}"
     },
     "columns": {
       "text": "Text",
@@ -205,7 +206,10 @@
         "DecimalNumber": "Enter a number.",
         "Date": "Enter a date."
       },
-      "sampleRequired": "Choose a person."
+      "sampleRequired": "Choose a person.",
+      "itemInUseBy": {
+        "options": "It can't be deleted: another option uses it. You can deactivate it."
+      }
     },
     "preview": {
       "title": "How the recipient sees it",
@@ -493,6 +497,22 @@
       "count_one": "{{n}} catalog",
       "count_other": "{{n}} catalogs",
       "noMatches": "No catalog matches “{{search}}”."
+    },
+    "fieldsButton": {
+      "add": "Add fields",
+      "addLabel": "Add fields · {{n}}",
+      "read": "Fields",
+      "readLabel": "Fields · {{n}}"
+    },
+    "fieldValues": {
+      "saveFirst": "Save the catalog to load this field's values.",
+      "none": "No value",
+      "choose": "Choose an option"
+    },
+    "fieldIssue": {
+      "withPart": "“{{field}}” · {{part}}: {{message}}",
+      "plain": "“{{field}}”: {{message}}",
+      "review": "Review"
     }
   }
 }

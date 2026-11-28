@@ -159,6 +159,27 @@ export function sortOrderKey(kind: SortKind, descending: boolean, inSentence = f
   return kind === "text" ? `forms:catalog.sort.${word}` : `forms:catalog.sort.byKind.${kind}.${word}`;
 }
 
+/**
+ * La columna de un campo en la tabla de opciones, y su fila en el modal (F3): una por campo activo del borrador, en su orden.
+ * Sus valores se cargan con el tipo guardado (`detail`): un campo nuevo, o uno guardado al que el borrador le cambió el tipo o
+ * el catálogo, queda grisado hasta guardar el catálogo (la columna de un campo nuevo, decisiones de la spec).
+ */
+export interface CatalogFieldColumn {
+  readonly field: CatalogFieldDraft;
+  /** El campo guardado, con el tipo con que se escriben y se leen sus valores; `null` en uno nuevo. */
+  readonly detail: FormCatalogFieldDetail | null;
+  /** Si sus valores se cargan: guardado, y con el mismo tipo y catálogo que en el borrador. */
+  readonly editable: boolean;
+}
+
+export function fieldColumnsOf(draft: CatalogFieldsDraft, saved: readonly FormCatalogFieldDetail[]): CatalogFieldColumn[] {
+  return draft.fields.map((field) => {
+    const detail = field.id ? saved.find((item) => item.id === field.id && item.isActive) ?? null : null;
+    const editable = detail !== null && detail.type === field.type && (detail.sourceCatalogId ?? null) === field.sourceCatalogId;
+    return { field, detail, editable };
+  });
+}
+
 const comparable = (draft: CatalogFieldsDraft) => JSON.stringify([
   draft.fields.map(({ id, key, name, type, sourceCatalogId, required, unique, maxLength, min, max }) => [id, key, name, type, sourceCatalogId, required, unique, maxLength, min, max]),
   draft.confirmedRemovals,

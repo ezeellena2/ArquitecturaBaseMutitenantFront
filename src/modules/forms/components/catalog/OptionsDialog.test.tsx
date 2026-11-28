@@ -3,9 +3,9 @@ import { http, HttpResponse } from "msw";
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { axe } from "vitest-axe";
 import { server } from "@/test/mocks/server";
-import { choose } from "@/test/picker";
+import { choose, pickerName } from "@/test/picker";
 import { asPhone } from "@/test/utils/phone";
-import type { FormCatalogItemRow, FormCatalogResponse, UpdateFormCatalogRequest } from "../../api/types";
+import type { FormCatalogFieldDetail, FormCatalogItemRow, FormCatalogResponse, UpdateFormCatalogRequest } from "../../api/types";
 import { catalogLimits } from "../../lib/catalogLimits";
 import { formsOwner, mountForms, withoutFields } from "../../test/support";
 
@@ -249,5 +249,175 @@ describe("OptionsDialog (FRM-Catalogo-Opciones)", () => {
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
       expect(screen.getByText("Venta nueva al interior")).toBeInTheDocument();
     } finally { restore(); }
+  });
+});
+
+// E13 · F3 (FRM-Catalogo-13, FRM-Catalogo-Opciones-13 y sus teléfonos): «Proveedores» con CUIT (texto, obligatorio), Zona (de
+// «Zonas», obligatorio) y Plazo de pago (número entero); «Aislantes Norte» apunta a «Cuyo», que en «Zonas» está dada de baja.
+describe("Una columna por campo (E13)", () => {
+  const provPath = "/org/formularios/catalogos/c-proveedores";
+  const field = (id: string, name: string, type: FormCatalogFieldDetail["type"], extra: Partial<FormCatalogFieldDetail> = {}): FormCatalogFieldDetail =>
+    ({ id, key: name.toLowerCase().replace(/ /g, "_"), name, type, required: false, unique: false, isActive: true, valuesCount: 4, ...extra });
+  const fields = [
+    field("f-cuit", "CUIT", "Text", { required: true, maxLength: 13 }),
+    field("f-zona", "Zona", "Catalog", { required: true, sourceCatalogId: "c-zonas", sourceCatalogName: "Zonas" }),
+    field("f-plazo", "Plazo de pago", "WholeNumber", { valuesCount: 1 }),
+  ];
+  const proveedores: FormCatalogResponse = { ...catalog, id: "c-proveedores", name: "Proveedores", description: null, itemCounts: { total: 4, active: 3 },
+    ...withoutFields(), fields, presentation: { title: ["text"], description: ["field:f-cuit", "field:f-zona"] } };
+  const rows = [
+    item("i-abr", 1, "Abrasivos del Sur", "PRV-0001", { fields: { "f-cuit": "30-71234567-1", "f-zona": "z-cap", "f-plazo": "30" } }),
+    item("i-ace", 2, "Aceros Rosario", "PRV-0002", { fields: { "f-cuit": "30-70988123-4", "f-zona": "z-gba" } }),
+    item("i-ais", 3, "Aislantes Norte", "PRV-0003", { fields: { "f-cuit": "33-71011223-9", "f-zona": "z-cuyo" } }),
+    item("i-alu", 4, "Aluminios Cuyo", "PRV-0005", { isActive: false, fields: { "f-cuit": "30-71455890-7", "f-zona": "z-cap" } }),
+  ];
+  const zonas = [item("z-cap", 1, "Capital", "CAP"), item("z-gba", 2, "Gran Buenos Aires", "GBA"), item("z-cuyo", 3, "Cuyo", "CUY", { isActive: false })];
+  const page = (items: FormCatalogItemRow[]) => HttpResponse.json({ items, page: 1, pageSize: 10, totalCount: items.length, totalPages: 1, hasPrevious: false, hasNext: false });
+
+  let provPuts: UpdateFormCatalogRequest[] = [];
+  function serveProveedores(put: () => Response = () => HttpResponse.json({ version: 8, itemIdentityMap: [], fieldIdentityMap: [] })) {
+    provPuts = [];
+    server.use(
+      http.get(`${base}/c-proveedores`, () => HttpResponse.json(proveedores)),
+      http.get(`${base}/c-proveedores/items`, () => page(rows)),
+      // Las de un campo «De un catálogo»: por su identidad, también las de baja, o las activas para elegir (111).
+      http.get(`${base}/c-zonas/items`, ({ request }) => {
+        const ids = new URL(request.url).searchParams.getAll("ids");
+        return page(ids.length ? zonas.filter((zona) => ids.includes(zona.id)) : zonas.filter((zona) => zona.isActive));
+      }),
+      http.put(`${base}/c-proveedores`, async ({ request }) => { provPuts.push(await request.json() as UpdateFormCatalogRequest); return put(); }),
+    );
+  }
+  async function openProveedores() {
+    const mounted = mountForms(formsOwner, provPath);
+    await screen.findByRole("textbox", { name: "Texto de Abrasivos del Sur" });
+    return mounted;
+  }
+  const saveReason = "Guardá el catálogo para cargar los valores de este campo.";
+  const headers = () => screen.getAllByRole("columnheader").map((header) => header.textContent);
+
+  beforeEach(() => serveProveedores());
+
+  it("cada campo es una columna después del código y antes del detalle, con el control de su tipo, y «Columnas» las oculta con lo elegido en la URL", async () => {
+    const { user, router } = await openProveedores();
+    expect(headers()).toEqual(["", "#", "Texto", "Código", "CUIT", "Zona", "Plazo de pago", "Detalle", "Estado", "Acciones"]);
+    expect(textbox("CUIT de Abrasivos del Sur")).toHaveValue("30-71234567-1");
+    expect(textbox("CUIT de Abrasivos del Sur")).toHaveAttribute("maxlength", "13");
+    expect(textbox("Plazo de pago de Abrasivos del Sur")).toHaveValue("30");
+    expect(await screen.findByRole("button", { name: "Zona de Abrasivos del Sur Capital" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Agregar campos · 3" })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Columnas" }));
+    await user.click(await screen.findByRole("option", { name: "CUIT" }));
+    await user.keyboard("{Escape}");
+    expect(headers()).toEqual(["", "#", "Texto", "Código", "Zona", "Plazo de pago", "Detalle", "Estado", "Acciones"]);
+    expect(new URLSearchParams(router.state.location.search).get("hiddenColumns")).toBe("f-cuit");
+    expect(await axe(screen.getByRole("region", { name: "Opciones" }))).toHaveNoViolations();
+  });
+
+  it("un campo nuevo deja su columna y su fila del modal grisadas hasta guardar, con su motivo", async () => {
+    const { user } = await openProveedores();
+    await user.click(screen.getByRole("button", { name: "Agregar campos · 3" }));
+    const fieldsDialog = await screen.findByRole("dialog", { name: "Campos de «Proveedores»" });
+    await user.click(within(fieldsDialog).getByRole("button", { name: "Agregar campo" }));
+    await user.paste("Rubro");
+    await user.click(within(fieldsDialog).getByRole("button", { name: "Listo" }));
+    expect(screen.getByRole("button", { name: "Agregar campos · 4" })).toBeInTheDocument();
+
+    const header = screen.getAllByRole("columnheader").find((cell) => within(cell).queryByText("Rubro"))!;
+    expect(within(header).getByText("Rubro")).toHaveAttribute("aria-disabled", "true");
+    expect(within(header).getByText("Rubro")).toHaveAccessibleDescription(saveReason);
+    const cell = textbox("Rubro de Abrasivos del Sur");
+    expect(cell).toHaveAttribute("aria-disabled", "true");
+    expect(cell).toHaveAccessibleDescription(saveReason);
+
+    await user.click(screen.getByRole("button", { name: "Editar Abrasivos del Sur" }));
+    const dialog = await screen.findByRole("dialog", { name: "Opciones de «Proveedores»" });
+    expect(within(dialog).getByRole("textbox", { name: "Rubro" })).toHaveAttribute("aria-disabled", "true");
+    expect(within(dialog).getByRole("textbox", { name: "Rubro" })).toHaveAccessibleDescription(saveReason);
+    expect(within(dialog).getByRole("textbox", { name: "CUIT" })).toHaveValue("30-71234567-1");
+  });
+
+  it("el valor que apunta a una opción dada de baja se ve con «De baja», se conserva y no impide guardar (lección 1)", async () => {
+    const { user } = await openProveedores();
+    const zona = await screen.findByRole("button", { name: "Zona de Aislantes Norte Cuyo" });
+    await user.click(zona);
+    const chosen = await screen.findByRole("option", { name: /^Cuyo/ });
+    expect(chosen).toHaveAttribute("aria-selected", "true");
+    expect(chosen).toHaveTextContent("De baja");
+    expect(await screen.findByRole("option", { name: /^Gran Buenos Aires/ })).toBeInTheDocument();
+    await user.keyboard("{Escape}");
+
+    await user.clear(textbox("CUIT de Aislantes Norte"));
+    await user.paste("33-71011223-0");
+    await user.click(saveButton());
+    await waitFor(() => expect(provPuts).toHaveLength(1));
+    // El delta: solo el campo que cambió; la zona dada de baja queda como estaba.
+    expect(provPuts[0].items).toEqual([expect.objectContaining({ itemId: "i-ais", fields: { "f-cuit": "33-71011223-0" } })]);
+  });
+
+  it("«1.500» en un número da numberAmbiguous (207) sin mandar, y uno de 18 dígitos llega entero", async () => {
+    const { user } = await openProveedores();
+    await user.click(textbox("Plazo de pago de Aceros Rosario"));
+    await user.paste("1.500");
+    await user.click(saveButton());
+    const dialog = await screen.findByRole("dialog", { name: "Opciones de «Proveedores»" });
+    expect(provPuts).toHaveLength(0);
+    const plazo = within(dialog).getByRole("textbox", { name: "Plazo de pago" });
+    expect(plazo).toHaveAccessibleDescription(/Se puede leer de dos maneras/);
+    await user.clear(plazo);
+    await user.paste("123456789012345678");
+    await user.click(within(dialog).getByRole("button", { name: "Listo" }));
+    await user.click(saveButton());
+    await waitFor(() => expect(provPuts).toHaveLength(1));
+    expect(provPuts[0].items).toEqual([expect.objectContaining({ itemId: "i-ace", fields: { "f-plazo": "123456789012345678" } })]);
+  });
+
+  it("borrar una opción que es valor de otro catálogo dice «No se puede borrar: la usa otra opción.», en lugar del texto genérico", async () => {
+    serveProveedores(() => HttpResponse.json({ status: 409, code: "Forms.Catalog.ItemInUse", traceId: "t",
+      errors: { "deleteItems.0": ["No se puede borrar porque se usa. Podés darla de baja."] }, uses: ["options"] }, { status: 409 }));
+    const { user } = await openProveedores();
+    await user.click(screen.getByRole("button", { name: "Borrar Aceros Rosario" }));
+    await user.click(await screen.findByRole("button", { name: "Borrar opción" }));
+    await user.click(saveButton());
+    expect((await screen.findAllByText("No se puede borrar: la usa otra opción. Podés darla de baja.")).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/No se puede borrar porque se usa/)).not.toBeInTheDocument();
+  });
+
+  it("cambiar el tipo manda sin frenar y muestra los errores del servidor arriba de la tabla y en cada fila; «Revisar» abre el campo (lección 4)", async () => {
+    serveProveedores(() => HttpResponse.json({ status: 400, code: "Forms.Catalog.FieldTypeNotConvertible", traceId: "t",
+      errors: { "fields.0.type": ["3 opciones tienen un valor que no es un número entero."] }, invalidCount: 3,
+      invalidRows: [{ position: 1, itemId: "i-abr", text: "Abrasivos del Sur", reason: "invalid" }, { position: 2, itemId: "i-ace", text: "Aceros Rosario", reason: "invalid" },
+        { position: 3, itemId: "i-ais", text: "Aislantes Norte", reason: "invalid" }] }, { status: 400 }));
+    const { user } = await openProveedores();
+    await user.click(screen.getByRole("button", { name: "Agregar campos · 3" }));
+    const fieldsDialog = await screen.findByRole("dialog", { name: "Campos de «Proveedores»" });
+    await user.click(within(fieldsDialog).getByRole("button", { name: pickerName("Tipo") }));
+    await user.click(await screen.findByRole("option", { name: "Número entero" }));
+    await user.click(within(fieldsDialog).getByRole("button", { name: "Listo" }));
+    await user.click(saveButton());
+    await waitFor(() => expect(provPuts).toHaveLength(1));
+
+    expect(await screen.findByText("«CUIT» · Tipo: 3 opciones tienen un valor que no es un número entero.")).toBeInTheDocument();
+    expect(textbox("CUIT de Abrasivos del Sur")).toHaveAccessibleDescription(/No es un valor válido\./);
+    expect(textbox("CUIT de Aceros Rosario")).toHaveAccessibleDescription(/No es un valor válido\./);
+    // La pantalla no tapa al servidor: se vuelve a mandar y él decide.
+    await user.click(saveButton());
+    await waitFor(() => expect(provPuts).toHaveLength(2));
+
+    await user.click(screen.getByRole("button", { name: "Revisar" }));
+    const review = await screen.findByRole("dialog", { name: "Campos de «Proveedores»" });
+    expect(within(review).getByRole("textbox", { name: "Nombre" })).toHaveValue("CUIT");
+    expect(within(review).getByText("3 opciones tienen un valor que no es un número entero.")).toBeInTheDocument();
+  });
+
+  it("«Reactivar» va en el ⋮ de la fila de una dada de baja (261)", async () => {
+    const { user } = await openProveedores();
+    expect(screen.getByRole("checkbox", { name: "Activa: Aluminios Cuyo" })).not.toBeChecked();
+    // Los ⋮ (Radix) se abren con el teclado en jsdom, como en RowActions.test.
+    screen.getByRole("button", { name: "Acciones de Aluminios Cuyo" }).focus();
+    await user.keyboard("{Enter}");
+    await user.click(await screen.findByRole("menuitem", { name: /Reactivar/ }));
+    expect(screen.getByRole("checkbox", { name: "Activa: Aluminios Cuyo" })).toBeChecked();
   });
 });

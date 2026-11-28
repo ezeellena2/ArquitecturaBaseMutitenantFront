@@ -11,11 +11,11 @@ import type {
   FormCatalogValueType,
   UpdateFormCatalogRequest,
 } from "../api/types";
-import { catalogFieldErrors } from "../errors";
-import { fieldDraftsOf, sameFieldsDraft, sortAfterFields, type CatalogFieldsDraft } from "../lib/catalogFields";
+import { catalogFieldErrors, catalogInvalidRows } from "../errors";
+import { fieldDraftsOf, sameFieldsDraft, sortAfterFields, type CatalogFieldErrors, type CatalogFieldsDraft } from "../lib/catalogFields";
 import {
-  catalogRows, changedFieldsOf, cleanEdits, itemInputOf, positionOf, savedDraft, savedRowOf,
-  type CatalogDraftState, type CatalogMove, type CatalogRowView, type ItemDraft, type ItemEdits, type ItemField, type NewItem, type RowError,
+  catalogRows, changedFieldsOf, cleanEdits, fieldErrorKey, itemInputOf, positionOf, savedDraft, savedRowOf,
+  type CatalogDraftState, type CatalogMove, type CatalogRowView, type ItemDraft, type ItemEdits, type NewItem, type RowError,
 } from "../lib/catalogDraft";
 import { catalogLimits } from "../lib/catalogLimits";
 import { codeFromText, editableValue, uniqueCode } from "../lib/catalogValues";
@@ -32,6 +32,22 @@ export interface CatalogDraftSnapshot {
 
 const emptyEdits: Readonly<Record<string, ItemEdits>> = {};
 const itemFields = { code: 1, text: 1, detail: 1, value: 1 } as const;
+const fieldParts: readonly (keyof CatalogFieldErrors)[] = ["name", "key", "type", "required"];
+
+/**
+ * Lo que el servidor rechazó de un campo al guardar (E13): el campo del modal, la parte (`type`, `required`…) y su texto, y, si
+ * cambiar el tipo o una regla no entra en las opciones, cuántas son y las primeras (`invalidRows`). Se dice arriba de la tabla,
+ * con «Revisar», que abre el modal en ese campo.
+ */
+export interface CatalogFieldIssue {
+  readonly localKey: string;
+  readonly part: string | null;
+  readonly message: string;
+  readonly invalid: ReturnType<typeof catalogInvalidRows>;
+}
+
+/** Lo que frena guardar sin preguntarle al servidor: una columna de la opción o el valor de un campo. */
+const isScreenCheck = (field: string) => field in itemFields || field.startsWith("field:");
 
 /**
  * El borrador del editor de un catálogo (C3): el nombre, la descripción y las opciones cambiadas, las nuevas, las que se
@@ -58,6 +74,7 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
   const [sort, setSort] = useState<FormCatalogItemSortInput | null>(null);
   // Los campos (E13), cuando «Listo» del modal «Campos de …» los cambió; si no, los guardados.
   const [fieldsDraft, setFieldsDraft] = useState<CatalogFieldsDraft | null>(null);
+  const [fieldIssue, setFieldIssue] = useState<CatalogFieldIssue | null>(null);
   const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
   const [serverErrors, setServerErrors] = useState<Readonly<Record<string, RowError>>>({});
   // Las guardadas que el borrador cambió o borra, como se leyeron: desde otra página o con otra búsqueda siguen a la vista,
@@ -69,17 +86,20 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
   // Sube cada vez que guardar encuentra un error en las opciones: el modal se abre en la primera con problemas (117).
   const [errorRound, setErrorRound] = useState(0);
   // Lo que se mandó: el índice de un error de `items[i]` o `deleteItems[i]` es el del pedido, no el de la tabla.
-  const sent = useRef<{ items: string[]; deleteItems: string[] }>({ items: [], deleteItems: [] });
+  // Desde la E13, también el orden de los campos que se mandaron: `fields.{i}` es el índice de esa lista.
+  const sent = useRef<{ items: string[]; deleteItems: string[]; fields: string[] }>({ items: [], deleteItems: [], fields: [] });
 
+  const savedFieldDetails = saved?.fields ?? [];
+  const savedFields = fieldDraftsOf(savedFieldDetails, format);
+  const fields = fieldsDraft ?? savedFields;
   const state: CatalogDraftState = { edits, added, deletes, moves, positions, sort, serverErrors };
   const otherRows = [...extraRows, ...Object.values(touched).filter((row) => !extraRows.some((item) => item.id === row.id))];
-  const rows = catalogRows({ pageRows, extraRows: otherRows, state, valueType, showErrors: attempted, format, t });
+  const invalidValues = invalidValuesOf(fieldIssue);
+  const rows = catalogRows({ pageRows, extraRows: otherRows, state, valueType, showErrors: attempted, format, t, fields: savedFieldDetails, invalidValues });
   const byPosition = new Map(pageRows.map((row) => [positionOf(state, row), row]));
   const savedRow = (key: string | undefined) => savedRowOf({ pageRows, extraRows: otherRows }, key);
   const remember = (row: FormCatalogItemRow) => setTouched((current) => current[row.id] === row ? current : { ...current, [row.id]: row });
 
-  const savedFields = fieldDraftsOf(saved?.fields ?? [], format);
-  const fields = fieldsDraft ?? savedFields;
   const fieldsDirty = fieldsDraft !== null;
   const currentName = name ?? saved?.name ?? "";
   const currentDescription = description ?? saved?.description ?? "";
@@ -87,21 +107,32 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
   const isDirty = itemsDirty || fieldsDirty || (saved ? currentName !== saved.name || currentDescription !== (saved.description ?? "") : false);
   const total = (saved?.itemCounts.total ?? 0) + added.length - deletes.size;
 
+  /** Las opciones de `invalidRows` que se ven, con su motivo en la celda del campo; un campo nuevo no tiene valores. */
+  function invalidValuesOf(issue: CatalogFieldIssue | null): Readonly<Record<string, RowError>> | undefined {
+    const fieldId = issue ? fields.fields.find((field) => field.localKey === issue.localKey)?.id : undefined;
+    if (!issue?.invalid || !fieldId) return undefined;
+    return Object.fromEntries(issue.invalid.rows.filter((row) => row.itemId)
+      .map((row) => [row.itemId, { [fieldErrorKey(fieldId)]: format.formatEnum("FormCatalogInvalidRowReason", row.reason) }]));
+  }
+
   function edit(key: string, patch: ItemEdits) {
+    // Cambiar un dato borra lo que el servidor dijo de él: vuelve a mandarse y el servidor decide.
+    const cleared: string[] = [...Object.keys(patch).filter((field) => field !== "fields"), ...Object.keys(patch.fields ?? {}).map(fieldErrorKey)];
     setServerErrors((current) => {
       if (!current[key]) return current;
-      const fields = Object.keys(patch) as (keyof RowError)[];
-      return { ...current, [key]: Object.fromEntries(Object.entries(current[key]).filter(([field]) => !fields.includes(field as keyof RowError))) };
+      return { ...current, [key]: Object.fromEntries(Object.entries(current[key]).filter(([field]) => !cleared.includes(field))) };
     });
+    const merged = (base: ItemEdits | undefined): ItemEdits =>
+      ({ ...base, ...patch, ...(patch.fields ? { fields: { ...base?.fields, ...patch.fields } } : {}) });
     if (added.some((item) => item.localId === key)) {
-      setAdded((current) => current.map((item) => item.localId === key ? { ...item, ...patch } : item));
+      setAdded((current) => current.map((item) => item.localId === key ? { ...item, ...merged(item) } : item));
       return;
     }
     const row = savedRow(key);
     if (!row) return;
     remember(row);
     setEdits((current) => {
-      const clean = cleanEdits({ ...current[key], ...patch }, savedDraft(row, valueType, format));
+      const clean = cleanEdits(merged(current[key]), savedDraft(row, valueType, format, savedFieldDetails));
       const rest = { ...current };
       delete rest[key];
       return Object.keys(clean).length ? { ...rest, [key]: clean } : rest;
@@ -110,7 +141,7 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
 
   function add(): string {
     const localId = `local-${crypto.randomUUID()}`;
-    setAdded((current) => [...current, { localId, code: "", text: "", detail: "", value: "", isActive: true }]);
+    setAdded((current) => [...current, { localId, code: "", text: "", detail: "", value: "", isActive: true, fields: {} }]);
     return localId;
   }
 
@@ -145,6 +176,8 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
   function setFields(next: CatalogFieldsDraft) {
     setFieldsDraft(sameFieldsDraft(next, savedFields) ? null : next);
     setSort((current) => sortAfterFields(current, next.fields));
+    // Lo que el servidor dijo de los campos vale para los que se mandaron: cambiarlos vuelve a dejarlo en sus manos.
+    setFieldIssue(null);
   }
 
   function discardMoves() {
@@ -233,6 +266,7 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
     setPositions({});
     setSort(null);
     setFieldsDraft(null);
+    setFieldIssue(null);
     setSelected(new Set());
     setServerErrors({});
     setNameError(undefined);
@@ -242,7 +276,7 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
   }
 
   const itemInput = (row: CatalogRowView): FormCatalogItemInput =>
-    itemInputOf(row, savedRow(row.itemId), edits[row.key]?.value !== undefined, valueType, format, t);
+    itemInputOf(row, savedRow(row.itemId), edits[row.key]?.value !== undefined, valueType, format, t, edits[row.key]?.fields, savedFieldDetails);
 
   /** Un intento de guardar: desde acá se ven los errores de la pantalla. `false` si falta el nombre. */
   function attempt(): boolean {
@@ -260,8 +294,8 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
    * que su tope, o un valor que no se puede leer. Queda marcado en su campo y el modal se abre en la primera con problemas. El
    * texto repetido avisa sin frenar, y lo que rechazó el servidor no frena: se vuelve a mandar y él decide.
    */
-  const blocked = (list: readonly (typeof rows)[number][]) =>
-    list.some((row) => (Object.keys(itemFields) as ItemField[]).some((field) => row.problems[field] && !serverErrors[row.key]?.[field]));
+  const blocked = (list: readonly (typeof rows)[number][]) => list.some((row) => (Object.keys(row.problems) as (keyof RowError)[])
+    .some((field) => isScreenCheck(field) && row.problems[field] && !serverErrors[row.key]?.[field] && !invalidValues?.[row.key]?.[field]));
 
   /**
    * El `PUT` con solo lo que cambió (C3), siempre con el nombre, la versión e `isActive`, que el contrato exige: «Guardar
@@ -274,7 +308,7 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
       setErrorRound((round) => round + 1);
       return null;
     }
-    sent.current = { items: changed.map((row) => row.key), deleteItems: [...deletes] };
+    sent.current = { items: changed.map((row) => row.key), deleteItems: [...deletes], fields: fields.fields.map((field) => field.localKey) };
     return {
       version,
       isActive,
@@ -295,28 +329,49 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
       setErrorRound((round) => round + 1);
       return null;
     }
-    sent.current = { items: rows.map((row) => row.key), deleteItems: [] };
+    sent.current = { items: rows.map((row) => row.key), deleteItems: [], fields: fields.fields.map((field) => field.localKey) };
     return rows.map(itemInput);
   }
 
   // Cada etapa suma su motivo, con su texto en `enums.json` (FormCatalogItemUse); uno que todavía no tiene texto se ve como llega.
   const reasonLabel = (use: string) => i18n.exists(`enums:FormCatalogItemUse.${use}`) ? format.formatEnum("FormCatalogItemUse", use) : use;
 
+  // Un uso con su oración entera («No se puede borrar: la usa otra opción. Podés darla de baja.», E13) va en lugar del texto
+  // genérico, no pegado a él.
+  const inUseSentence = (uses: readonly string[]) => uses.find((use) => i18n.exists(`forms:catalog.errors.itemInUseBy.${use}`));
+
   /** Un rechazo del servidor: cada error en su campo, con el índice de lo que se mandó. */
   function applyServerErrors(error: unknown) {
     const next: Record<string, RowError> = {};
+    const fieldErrors: Record<string, CatalogFieldErrors> = {};
+    let issue: CatalogFieldIssue | null = null;
     const uses = error instanceof ApiError && Array.isArray(error.problem.uses) ? (error.problem.uses as unknown[]).filter((use): use is string => typeof use === "string") : [];
     for (const fieldError of catalogFieldErrors(error)) {
       if (fieldError.list === null && fieldError.field === "name") setNameError(fieldError.message);
       if (fieldError.index === null) continue;
+      // Un campo del modal «Campos de …» (E13): su error va en su parte, y el primero se dice arriba de la tabla.
+      if (fieldError.list === "fields") {
+        const localKey = sent.current.fields[fieldError.index];
+        if (!localKey) continue;
+        const part = fieldParts.find((item) => item === fieldError.part) ?? "row";
+        fieldErrors[localKey] = { ...fieldErrors[localKey], [part]: fieldError.message };
+        issue ??= { localKey, part: fieldError.part ?? null, message: fieldError.message, invalid: catalogInvalidRows(error) };
+        continue;
+      }
       const key = fieldError.list === "items" ? sent.current.items[fieldError.index]
         : fieldError.list === "deleteItems" ? sent.current.deleteItems[fieldError.index] : undefined;
       if (!key) continue;
       // `ItemInUse`: «uses» dice qué la usa; se ve el primero (los motivos vienen en el orden de su enum).
-      const message = fieldError.list === "deleteItems" && uses.length ? `${fieldError.message} ${reasonLabel(uses[0])}` : fieldError.message;
-      next[key] = { ...next[key], [fieldError.field in itemFields ? fieldError.field : "row"]: message };
+      const sentence = fieldError.list === "deleteItems" ? inUseSentence(uses) : undefined;
+      const message = sentence ? t(`forms:catalog.errors.itemInUseBy.${sentence}`)
+        : fieldError.list === "deleteItems" && uses.length ? `${fieldError.message} ${reasonLabel(uses[0])}` : fieldError.message;
+      const target = fieldError.field === "fieldValue" && fieldError.fieldId ? fieldErrorKey(fieldError.fieldId)
+        : fieldError.field in itemFields ? fieldError.field : "row";
+      next[key] = { ...next[key], [target]: message };
     }
     setServerErrors(next);
+    setFieldIssue(issue);
+    setFieldsDraft((current) => current && { ...current, fields: current.fields.map((field) => ({ ...field, errors: fieldErrors[field.localKey] })) });
     if (Object.keys(next).length) setErrorRound((round) => round + 1);
   }
 
@@ -342,6 +397,7 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
     fields,
     fieldsDirty,
     setFields,
+    fieldIssue,
     /** Las claves de los campos quitados: una nueva que choca con ellas suma un número. */
     removedFieldKeys: (saved?.fields ?? []).filter((field) => !field.isActive).map((field) => field.key),
     selected,

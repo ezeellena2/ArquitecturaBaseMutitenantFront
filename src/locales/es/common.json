@@ -279,6 +279,9 @@
       "pending": "Reenviando…"
     }
   },
+  "columnsMenu": {
+    "title": "Columnas"
+  },
   "picker": {
     "count_one": "{{count}} opción",
     "count_other": "{{count}} opciones",

@@ -165,7 +165,8 @@
       "code": "Código de {{option}}",
       "value": "Valor de {{option}}",
       "detail": "Detalle de {{option}}",
-      "active": "Activa: {{option}}"
+      "active": "Activa: {{option}}",
+      "field": "{{field}} de {{option}}"
     },
     "columns": {
       "text": "Texto",
@@ -205,7 +206,10 @@
         "DecimalNumber": "Escribí un número.",
         "Date": "Escribí una fecha."
       },
-      "sampleRequired": "Elegí una persona."
+      "sampleRequired": "Elegí una persona.",
+      "itemInUseBy": {
+        "options": "No se puede borrar: la usa otra opción. Podés darla de baja."
+      }
     },
     "preview": {
       "title": "Así lo ve quien lo recibe",
@@ -493,6 +497,22 @@
       "count_one": "{{n}} catálogo",
       "count_other": "{{n}} catálogos",
       "noMatches": "Ningún catálogo coincide con «{{search}}»."
+    },
+    "fieldsButton": {
+      "add": "Agregar campos",
+      "addLabel": "Agregar campos · {{n}}",
+      "read": "Campos",
+      "readLabel": "Campos · {{n}}"
+    },
+    "fieldValues": {
+      "saveFirst": "Guardá el catálogo para cargar los valores de este campo.",
+      "none": "Sin valor",
+      "choose": "Elegí una opción"
+    },
+    "fieldIssue": {
+      "withPart": "«{{field}}» · {{part}}: {{message}}",
+      "plain": "«{{field}}»: {{message}}",
+      "review": "Revisar"
     }
   }
 }

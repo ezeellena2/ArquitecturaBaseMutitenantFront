@@ -1,5 +1,6 @@
 import type { FormatState } from "@/shared/format/useFormat";
 import type {
+  FormCatalogFieldDetail,
   FormCatalogItemInput,
   FormCatalogItemRow,
   FormCatalogItemSortInput,
@@ -7,7 +8,7 @@ import type {
   FormCatalogValueType,
 } from "../api/types";
 import { catalogLimits } from "./catalogLimits";
-import { displayValue, readValue, sameText } from "./catalogValues";
+import { displayValue, fieldDraftValue, readFieldValue, readValue, sameText, type FieldValue } from "./catalogValues";
 
 // El borrador de un catálogo a mano como dato (C3): lo que se cambió de cada opción guardada, las nuevas, las que se borran
 // al guardar, los movimientos y el orden pendientes. De acá salen las filas de la tabla, con sus errores, y lo que viaja en
@@ -21,10 +22,16 @@ export interface ItemDraft {
   /** Lo que se ve y se escribe: en un catálogo tipado, con la región del idioma (207); se manda canónico. */
   readonly value: string;
   readonly isActive: boolean;
+  /** El valor de cada campo (E13), por su id, como se ve y se escribe; ausente o `null`, sin valor. */
+  readonly fields?: Readonly<Record<string, FieldValue>>;
 }
 export interface NewItem extends ItemDraft { readonly localId: string }
+/** Lo cambiado de una opción; de los campos, solo los que cambiaron (el delta de `items[i].fields`). */
 export type ItemEdits = Partial<ItemDraft>;
-export type RowError = Partial<Record<ItemField | "row", string>>;
+/** El error del valor de un campo en una opción va en `field:<id del campo>`. */
+export type FieldErrorKey = `field:${string}`;
+export type RowError = Partial<Record<ItemField | "row" | FieldErrorKey, string>>;
+export const fieldErrorKey = (fieldId: string): FieldErrorKey => `field:${fieldId}`;
 export type CatalogMove = { readonly itemId: string; readonly direction: FormCatalogMoveDirection };
 
 /** Una fila de la tabla de opciones: guardada (con lo que se cambió encima) o nueva. */
@@ -58,15 +65,28 @@ export interface CatalogDraftState {
 /** Una opción con algún error (no el aviso de texto repetido, que no frena): la lista del modal la marca con un triángulo. */
 export const rowHasErrors = (row: Pick<CatalogRowView, "errors">) => Object.values(row.errors).some(Boolean);
 
-/** Lo que se ve de una guardada que no se tocó: lo leído, con el valor en la región del idioma. */
-export function savedDraft(row: FormCatalogItemRow, valueType: FormCatalogValueType, format: FormatState): ItemDraft {
-  return { code: row.code, text: row.text, detail: row.detail ?? "", value: displayValue(row.value, valueType, format), isActive: row.isActive };
+/**
+ * Lo que se ve de una guardada que no se tocó: lo leído, con el valor en la región del idioma, y el de cada campo como se
+ * escribe en su celda, según su tipo guardado (`fields`).
+ */
+export function savedDraft(row: FormCatalogItemRow, valueType: FormCatalogValueType, format: FormatState,
+  fields: readonly Pick<FormCatalogFieldDetail, "id" | "type">[] = []): ItemDraft {
+  const values = Object.entries(row.fields ?? {}).map(([id, raw]) => [id, fieldDraftValue(raw, fields.find((field) => field.id === id)?.type, format)]);
+  return { code: row.code, text: row.text, detail: row.detail ?? "", value: displayValue(row.value, valueType, format), isActive: row.isActive,
+    fields: Object.fromEntries(values) };
 }
 
-/** Lo cambiado de una guardada sin lo que volvió a lo leído: una opción sin cambios no viaja (C3). */
+/** Lo cambiado de una guardada sin lo que volvió a lo leído: una opción sin cambios no viaja (C3), tampoco un campo. */
 export function cleanEdits(edit: ItemEdits, base: ItemDraft): ItemEdits {
-  return Object.fromEntries(Object.entries(edit).filter(([field, value]) => base[field as keyof ItemDraft] !== value)) as ItemEdits;
+  const { fields, ...rest } = edit;
+  const clean = Object.fromEntries(Object.entries(rest).filter(([field, value]) => base[field as keyof ItemDraft] !== value)) as ItemEdits;
+  const changed = Object.entries(fields ?? {}).filter(([id, value]) => (base.fields?.[id] ?? null) !== value);
+  return changed.length ? { ...clean, fields: Object.fromEntries(changed) } : clean;
 }
+
+/** Lo cambiado encima de una guardada; los campos, sumados a los suyos. */
+export const withEdits = (base: ItemDraft, edit: ItemEdits | undefined): ItemDraft =>
+  edit ? { ...base, ...edit, fields: { ...base.fields, ...edit.fields } } : base;
 
 /** Lo que se cambió de una opción guardada, en el orden de la tabla: «Lo que cambia» de la propuesta lo nombra. */
 export function changedFieldsOf(state: CatalogDraftState, key: string): (keyof ItemDraft)[] {
@@ -83,6 +103,13 @@ interface RowsInput {
   readonly valueType: FormCatalogValueType;
   /** Ya se intentó guardar: los errores de la pantalla se ven. */
   readonly showErrors: boolean;
+  /** Los campos guardados (E13): con su tipo se lee y se valida el valor de cada uno. */
+  readonly fields?: readonly FormCatalogFieldDetail[];
+  /**
+   * Las opciones que no cumplen el tipo o la regla nueva de un campo, como las dijo el servidor (`invalidRows`): se ven en su
+   * celda, como un error del servidor, y no frenan el próximo guardado (lección 4).
+   */
+  readonly invalidValues?: Readonly<Record<string, RowError>>;
   readonly format: FormatState;
   readonly t: (key: string, options?: Record<string, unknown>) => string;
 }
@@ -101,9 +128,10 @@ export function savedRowOf(input: Pick<RowsInput, "pageRows" | "extraRows">, key
  */
 export function catalogRows(input: RowsInput): (CatalogRowView & { readonly problems: RowError })[] {
   const { pageRows, extraRows, state, valueType, format, t } = input;
+  const fields = input.fields ?? [];
   const ordered = [...pageRows].sort((a, b) => positionOf(state, a) - positionOf(state, b));
   const byPosition = new Map(ordered.map((row) => [positionOf(state, row), row]));
-  const draftOf = (row: FormCatalogItemRow): ItemDraft => ({ ...savedDraft(row, valueType, format), ...state.edits[row.id] });
+  const draftOf = (row: FormCatalogItemRow): ItemDraft => withEdits(savedDraft(row, valueType, format, fields), state.edits[row.id]);
   const elsewhere = extraRows.filter((row) => !pageRows.some((item) => item.id === row.id) && (state.edits[row.id] || state.deletes.has(row.id)));
   const visible = [
     ...ordered.map((row) => ({ key: row.id, row, draft: draftOf(row) })),
@@ -128,6 +156,13 @@ export function catalogRows(input: RowsInput): (CatalogRowView & { readonly prob
       const read = readValue(draft.value, valueType, format, t);
       if (read.error) errors.value = read.error;
     }
+    // El valor de un campo se lee si se escribió (una nueva, o cambiado): uno guardado que no se tocó ya es canónico.
+    const written = row ? Object.keys(state.edits[key]?.fields ?? {}) : Object.keys(draft.fields ?? {});
+    for (const id of written) {
+      const field = fields.find((item) => item.id === id);
+      const read = field ? readFieldValue(draft.fields?.[id] ?? null, field.type, format, t) : null;
+      if (read?.error) errors[fieldErrorKey(id)] = read.error;
+    }
     return errors;
   }
 
@@ -138,7 +173,7 @@ export function catalogRows(input: RowsInput): (CatalogRowView & { readonly prob
     const neighbor = (offset: number) => row ? byPosition.get(positionOf(state, row) + offset) : undefined;
     // Una de otra página se mueve en la suya.
     const movable = row !== undefined && pageRows.includes(row) && !pendingDelete && state.deletes.size === 0;
-    const server = state.serverErrors[key] ?? {};
+    const server = { ...input.invalidValues?.[key], ...state.serverErrors[key] };
     const problems = { ...problemsOf(key, row, draft), ...server };
     return {
       key,
@@ -157,9 +192,18 @@ export function catalogRows(input: RowsInput): (CatalogRowView & { readonly prob
   });
 }
 
-/** Una opción como viaja en el `PUT` o en el `POST`: una guardada sin tocar el valor manda el canónico que leyó. */
+/**
+ * Una opción como viaja en el `PUT` o en el `POST`: una guardada sin tocar el valor manda el canónico que leyó. De los campos
+ * (E13), el delta: en una guardada, solo los que cambiaron (`null` limpia); en una nueva, los que tienen valor.
+ */
 export function itemInputOf(row: CatalogRowView, original: FormCatalogItemRow | undefined, valueEdited: boolean,
-  valueType: FormCatalogValueType, format: FormatState, t: (key: string) => string): FormCatalogItemInput {
+  valueType: FormCatalogValueType, format: FormatState, t: (key: string) => string,
+  fieldEdits?: Readonly<Record<string, FieldValue>>, fields: readonly FormCatalogFieldDetail[] = []): FormCatalogItemInput {
+  const written = Object.entries(row.isNew ? row.draft.fields ?? {} : fieldEdits ?? {}).flatMap(([id, written]) => {
+    const field = fields.find((item) => item.id === id);
+    if (!field || (row.isNew && written === null)) return [];
+    return [[id, readFieldValue(written, field.type, format, t).canonical] as const];
+  });
   const value = valueType === "Text"
     ? row.draft.value.trim() === "" ? null : row.draft.value
     : original && !valueEdited ? original.value ?? null : readValue(row.draft.value, valueType, format, t).canonical;
@@ -170,5 +214,6 @@ export function itemInputOf(row: CatalogRowView, original: FormCatalogItemRow | 
     detail: row.draft.detail.trim() === "" ? null : row.draft.detail,
     value,
     isActive: row.draft.isActive,
+    ...(written.length ? { fields: Object.fromEntries(written) } : {}),
   };
 }
