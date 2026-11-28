@@ -157,4 +157,15 @@ describe("Pagination", () => {
     expect(onPageSizeChange).toHaveBeenCalledWith(20);
     expect(onPageChange).not.toHaveBeenCalled();
   });
+
+  it("cuando está deshabilitado, apaga el selector de tamaño y las flechas (KAN-157)", async () => {
+    await changeCulture("es-AR");
+    const { onPageChange, onPageSizeChange } = renderPagination({ page: 2, hasPrevious: true, hasNext: true, disabled: true });
+    expect(screen.getByRole("button", { name: "Página anterior" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Página siguiente" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: pickerName("Filas por página") })).toBeDisabled();
+    await userEvent.click(screen.getByRole("button", { name: "Página siguiente" }));
+    expect(onPageChange).not.toHaveBeenCalled();
+    expect(onPageSizeChange).not.toHaveBeenCalled();
+  });
 });

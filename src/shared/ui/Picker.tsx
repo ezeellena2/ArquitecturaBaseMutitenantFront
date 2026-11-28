@@ -292,7 +292,7 @@ function PickerSheet({ open, title, triggerId, multiple, pickedCount, onClose, o
       onBlur={onBlur} onCloseAutoFocus={onCloseAutoFocus}
       className="max-md:inset-0 max-md:flex max-md:h-dvh max-md:max-h-none max-md:flex-col max-md:rounded-none [&>[data-slot=dialog-handle]]:hidden">
       <header className="flex min-h-14 shrink-0 items-center gap-2 border-b border-[var(--borde)] pt-[env(safe-area-inset-top)] pr-2 pl-4">
-        <DialogTitle className="min-w-0 flex-1 truncate text-[1.125rem] font-bold text-[var(--t1)]">{title}</DialogTitle>
+        <DialogTitle className="min-w-0 flex-1 wrap-break-word py-2 text-[1.125rem] leading-[1.3] font-bold text-[var(--t1)]">{title}</DialogTitle>
         <button type="button" aria-label={t("actions.close")} title={t("actions.close")} onClick={onClose}
           className="inline-flex size-11 shrink-0 items-center justify-center rounded-full text-[var(--t1)] focus-visible:outline-2 focus-visible:outline-[var(--foco)]">
           <CloseIcon className="size-5.5" />

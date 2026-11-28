@@ -6,7 +6,7 @@ import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage, apiErrorMessage, isGenericApiError, toastActionError } from "@/shared/api/errorMessage";
 import { pageSizes } from "@/shared/api/pageSizes";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
-import { saveBlobAs } from "@/shared/lib/saveFile";
+import { saveResponseAs } from "@/shared/lib/saveFile";
 import { catalogQueryKey, catalogsQueryRoot, fetchCatalogTemplate, importCatalog, previewCatalogImport, type CatalogImportInput } from "../api/catalogs";
 import type { FormCatalogImportMode, FormCatalogImportPreviewResponse, FormCatalogResponse } from "../api/types";
 import { catalogErrorField, catalogFieldErrors, isCatalogConflict } from "../errors";
@@ -38,12 +38,6 @@ function firstTab(preview: FormCatalogImportPreviewResponse): ImportListTab {
 const sameApply = (previous: CatalogImportInput, next: CatalogImportInput) => previous.file === next.file && previous.sha256 === next.sha256
   && previous.version === next.version && previous.skipErrorRows === next.skipErrorRows && previous.confirmedDeactivations === next.confirmedDeactivations;
 
-async function saveResponse(response: Response, fallback: string) {
-  const disposition = response.headers.get("content-disposition") ?? "";
-  const match = /filename\*=UTF-8''([^;]+)|filename="?([^";]+)"?/i.exec(disposition);
-  saveBlobAs(await response.blob(), match ? decodeURIComponent(match[1] ?? match[2]) : fallback);
-}
-
 /**
  * Lo que hace «Importar opciones» (120 y C7), sin la pantalla: el origen (un archivo, que reemplaza, o lo pegado, que agrega),
  * la revisión sin guardar con sus cuatro listas de a páginas, las dos confirmaciones y aplicar el mismo archivo con su SHA-256
@@ -74,14 +68,14 @@ export function useCatalogImport(catalog: FormCatalogResponse, { onClose, onCata
   // La plantilla de este catálogo, con las columnas de sus campos activos (E13). Red, 5xx y 429 los avisa el MutationCache; un
   // rechazo de negocio (sin permiso, el módulo apagado), un aviso (errores).
   const downloadTemplate = useMutation({
-    mutationFn: async () => saveResponse(await fetchCatalogTemplate(catalog.valueType, catalog.id), `${t("forms:catalog.templateFile")}.xlsx`),
+    mutationFn: async () => saveResponseAs(await fetchCatalogTemplate(catalog.valueType, catalog.id), `${t("forms:catalog.templateFile")}.xlsx`),
     onError: (error) => toastActionError(error, t),
   });
   const preview = useMutation({ mutationFn: (input: Parameters<typeof previewCatalogImport>[1]) => previewCatalogImport(catalog.id, input) });
   const apply = useIdempotentMutation((input: CatalogImportInput, key) => importCatalog(catalog.id, input, key), { sameOperation: sameApply });
   const conflict = isCatalogConflict(failure?.error) || (failure?.error instanceof ApiError && failure.error.code === "Forms.CatalogImport.FileChanged");
 
-  function rejected(error: unknown) {
+  function rejected(error: unknown, lockOnBusy = true) {
     if (catalogErrorField(error) === "file") {
       // El archivo no se pudo leer: se puede elegir otro.
       setOriginError(catalogFieldErrors(error).find((item) => item.field === "file")?.message ?? actionErrorMessage(error, t) ?? "");
@@ -90,7 +84,7 @@ export function useCatalogImport(catalog: FormCatalogResponse, { onClose, onCata
       return;
     }
     if (isCatalogConflict(error)) stale.current = true;
-    if (error instanceof ApiError && error.code === "Forms.CatalogImport.Busy") setBusy(true);
+    if (lockOnBusy && error instanceof ApiError && error.code === "Forms.CatalogImport.Busy") setBusy(true);
     // Sin conexión, 5xx y 429 ya los avisó el MutationCache.
     if (!isGenericApiError(error)) setFailure({ error, text: isCatalogConflict(error) ? t("forms:catalog.import.conflict") : actionErrorMessage(error, t) });
   }
@@ -106,7 +100,7 @@ export function useCatalogImport(catalog: FormCatalogResponse, { onClose, onCata
           setConfirmErrors(false);
         }
       },
-      onError: rejected,
+      onError: (error) => rejected(error, first),
     });
   }
 
@@ -143,12 +137,15 @@ export function useCatalogImport(catalog: FormCatalogResponse, { onClose, onCata
   }
 
   function changePage(page: number, pageSize: number) {
-    if (subject) run(subject, version, page, pageSize, false);
+    if (!subject || preview.isPending) return;
+    run(subject, version, page, pageSize, false);
   }
 
   function chooseTab(next: ImportListTab) {
+    if (preview.isPending) return;
     setTab(next);
-    if (review && review.errors.page !== 1) changePage(1, review.errors.pageSize);
+    const current = review ? importListOf(review, tab) : null;
+    if (current && current.page !== 1) changePage(1, current.pageSize);
   }
 
   function submitApply() {
@@ -168,7 +165,7 @@ export function useCatalogImport(catalog: FormCatalogResponse, { onClose, onCata
         onCatalogChanged();
         onClose();
       },
-      onError: rejected,
+      onError: (error) => rejected(error, true),
     });
   }
 

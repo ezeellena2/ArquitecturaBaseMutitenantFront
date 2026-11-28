@@ -414,4 +414,16 @@ describe("Picker en el teléfono", () => {
     await user.click(screen.getByRole("option", { name: "Crear «VIP»" }));
     expect(screen.getByRole("button", { name: "Etiqueta para todos VIP" })).toBeInTheDocument();
   });
+
+  it("en el teléfono, un título largo como «De dónde salen las opciones» envuelve sin truncarse (KAN-140)", async () => {
+    renderWithProviders(<AppChromeProvider value={phone}>
+      <Picker label="De dónde salen las opciones" options={roles} value="sales" onChange={() => {}} />
+    </AppChromeProvider>);
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("button", { name: /^De dónde salen las opciones/ }));
+    const dialog = await screen.findByRole("dialog", { name: "De dónde salen las opciones" });
+    const title = within(dialog).getByRole("heading", { name: "De dónde salen las opciones" });
+    expect(title).not.toHaveClass("truncate");
+    expect(title).toHaveClass("wrap-break-word");
+  });
 });

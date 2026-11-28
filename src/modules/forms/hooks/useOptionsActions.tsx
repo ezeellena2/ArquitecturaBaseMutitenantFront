@@ -3,19 +3,12 @@ import { ArrowUpDown, Code, Download, FileText } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toastActionError } from "@/shared/api/errorMessage";
-import { saveBlobAs } from "@/shared/lib/saveFile";
+import { saveResponseAs } from "@/shared/lib/saveFile";
 import type { PageOverflowAction } from "@/shared/ui/Page";
 import type { RowAction } from "@/shared/ui/RowActions";
 import { exportCatalog, fetchCatalogTemplate } from "../api/catalogs";
 import { SortDialog } from "../components/catalog/SortDialog";
 import type { CatalogEditor } from "./useCatalogEditor";
-
-async function saveResponse(response: Response, fallback: string) {
-  const disposition = response.headers.get("content-disposition") ?? "";
-  const match = /filename\*=UTF-8''([^;]+)|filename="?([^";]+)"?/i.exec(disposition);
-  const name = match ? decodeURIComponent(match[1] ?? match[2]) : fallback;
-  saveBlobAs(await response.blob(), name);
-}
 
 /**
  * «Exportar», la plantilla, «Ordenar por…» y los códigos que faltan, con el diálogo de ordenar. En la compu van en el
@@ -27,15 +20,17 @@ export function useOptionsActions(editor: CatalogEditor, { editable, isNew }: { 
   const [sortOpen, setSortOpen] = useState(false);
   const [sortTrigger, setSortTrigger] = useState<HTMLElement | null>(null);
   const { saved, valueType } = editor;
-  const sortReason = isNew ? t("forms:catalog.reasons.saveFirst") : editor.moves.length ? t("forms:catalog.reasons.discardMovesFirst") : undefined;
+  const sortReason = isNew ? t("forms:catalog.reasons.saveFirst")
+    : editor.deletes.size ? t("forms:catalog.reasons.deletePendingSort")
+    : editor.moves.length ? t("forms:catalog.reasons.discardMovesFirst") : undefined;
   const exportReason = isNew ? t("forms:catalog.reasons.saveFirst") : undefined;
 
   // Exportar y la plantilla: red, 5xx y 429 los avisa el MutationCache; un rechazo de negocio (sin permiso, el módulo
   // apagado), un aviso (errores).
   const download = useMutation({
     mutationFn: async (kind: "export" | "template") => {
-      if (kind === "export" && saved) await saveResponse(await exportCatalog(saved.id), `${saved.name}.xlsx`);
-      else await saveResponse(await fetchCatalogTemplate(valueType), `${t("forms:catalog.templateFile")}.xlsx`);
+      if (kind === "export" && saved) await saveResponseAs(await exportCatalog(saved.id), `${saved.name}.xlsx`);
+      else await saveResponseAs(await fetchCatalogTemplate(valueType), `${t("forms:catalog.templateFile")}.xlsx`);
     },
     onError: (error) => toastActionError(error, t),
   });

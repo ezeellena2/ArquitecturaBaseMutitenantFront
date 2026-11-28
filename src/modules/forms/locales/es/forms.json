@@ -108,8 +108,10 @@
       "discardMovesFirst": "Primero descartá los cambios de posición.",
       "orderPending": "Guardá o descartá el orden pendiente para borrar opciones.",
       "deletePending": "Guardá o descartá el borrado pendiente para mover opciones.",
+      "deletePendingSort": "Guardá o descartá el borrado pendiente para ordenar opciones.",
       "saveToMove": "Guardá la opción para poder moverla.",
-      "sortPending": "Guardá o cancelá el orden pendiente para mover opciones."
+      "sortPending": "Guardá o cancelá el orden pendiente para mover opciones.",
+      "waitSaving": "Esperá a que termine de guardar."
     },
     "pending": {
       "moves_one": "{{n}} movimiento pendiente. Se aplica al guardar.",

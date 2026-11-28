@@ -10,7 +10,17 @@ import type { FormCatalogFieldDetail, FormCatalogImportErrorRow, FormCatalogImpo
 import { formsOwner, mountForms, withoutFields } from "../../test/support";
 
 // La plantilla se guarda en el disco: acá solo se mira con qué nombre.
-vi.mock("@/shared/lib/saveFile", () => ({ saveBlobAs: vi.fn() }));
+vi.mock("@/shared/lib/saveFile", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/shared/lib/saveFile")>();
+  const saveBlobAs = vi.fn();
+  return {
+    ...actual,
+    saveBlobAs,
+    saveResponseAs: async (response: Response, fallback: string) => {
+      saveBlobAs(await response.blob(), actual.contentDispositionFileName(response.headers.get("content-disposition"), fallback));
+    },
+  };
+});
 
 const base = "/api/organization/forms/catalogs";
 const catalog: FormCatalogResponse = {
@@ -275,6 +285,49 @@ describe("ImportDialog (FRM-Catalogo-Importar)", () => {
     const mounted = await openImport();
     await reviewFile(mounted);
     expect(within(mounted.dialog).getByRole("row", { name: "3 Valor «1.500» se lee de dos formas. Escribí 1500 o 1,5." })).toBeVisible();
+  });
+
+  it("mientras cambia de página en la revisión, deshabilita pestañas y paginador sin mandar otro preview (KAN-157)", async () => {
+    let resolvePage2 = (_response: Response) => {};
+    let calls = 0;
+    serve({
+      preview: (page) => {
+        calls++;
+        if (calls === 1) return HttpResponse.json(previewOf(page));
+        return new Promise<Response>((resolve) => { resolvePage2 = resolve; }) as unknown as Response;
+      },
+    });
+    const mounted = await openImport();
+    const { user, dialog } = mounted;
+    await reviewFile(mounted);
+
+    await user.click(within(dialog).getByRole("button", { name: "Página siguiente" }));
+    await waitFor(() => expect(within(dialog).getByRole("button", { name: "Página siguiente" })).toBeDisabled());
+    expect(within(dialog).getByRole("button", { name: "Página anterior" })).toBeDisabled();
+    expect(within(dialog).getByRole("button", { name: pickerName("Filas por página") })).toBeDisabled();
+    expect(within(dialog).getByRole("tab", { name: "Altas 1" })).toBeDisabled();
+    await user.click(within(dialog).getByRole("tab", { name: "Altas 1" }));
+    expect(previews).toHaveLength(2);
+
+    resolvePage2(HttpResponse.json(previewOf(2)));
+    await waitFor(() => expect(within(dialog).getByText("Página 2 de 2")).toBeVisible());
+    expect(within(dialog).getByRole("tab", { name: "Altas 1" })).toBeEnabled();
+  });
+
+  it("si cambiar de página en la revisión responde Busy (409), avisa en la franja pero conserva «Aplicar» (KAN-157)", async () => {
+    let calls = 0;
+    serve({
+      preview: (page) => ++calls === 1
+        ? HttpResponse.json(previewOf(page))
+        : problem(409, "Forms.CatalogImport.Busy", "Ya tenés una importación o una exportación en curso. Probá en un momento."),
+    });
+    const mounted = await openImport();
+    const { user, dialog } = mounted;
+    await reviewFile(mounted);
+
+    await user.click(within(dialog).getByRole("button", { name: "Página siguiente" }));
+    expect(await within(dialog).findByRole("alert")).toHaveTextContent("Ya tenés una importación o una exportación en curso. Probá en un momento.");
+    expect(within(dialog).getByRole("button", { name: "Aplicar sin las 12 filas con errores" })).toBeVisible();
   });
 });
 

@@ -19,11 +19,13 @@ export type PaginationProps = Required<Pick<
   variant?: "app" | "web";
   /** La pantalla web, fuera de PrivateLayoutFrame, declara si está en el teléfono. */
   mobile?: boolean;
+  /** Apaga los controles mientras se carga otra página (por ejemplo, en la revisión de importar). */
+  disabled?: boolean;
 };
 
 // El rango y la navegación quedan en la misma superficie que la tabla.
 export function Pagination({
-  page, pageSize, totalCount, totalPages, hasPrevious, hasNext, onPageChange, onPageSizeChange, variant = "app", mobile = false,
+  page, pageSize, totalCount, totalPages, hasPrevious, hasNext, onPageChange, onPageSizeChange, variant = "app", mobile = false, disabled = false,
 }: PaginationProps) {
   const { t } = useTranslation();
   const { formatInteger } = useFormat();
@@ -34,7 +36,7 @@ export function Pagination({
   // sigue. Pasado el tamaño mayor, avanza de página.
   if (phone && !web) {
     const larger = pageSizes.find((size) => size > pageSize);
-    return <LoadMore hasMore={hasNext} onLoadMore={() => (larger ? onPageSizeChange(larger) : onPageChange(page + 1))} />;
+    return <LoadMore hasMore={hasNext} isLoading={disabled} onLoadMore={() => (larger ? onPageSizeChange(larger) : onPageChange(page + 1))} />;
   }
   const from = totalCount === 0 ? 0 : (page - 1) * pageSize + 1;
   const to = Math.min(page * pageSize, totalCount);
@@ -53,7 +55,7 @@ export function Pagination({
       </p>
       <div className="flex flex-wrap items-center gap-2">
         {/* 262: las filas por página se eligen en la pieza, del tamaño de la barra de la página. */}
-        {!webPhone ? <Picker label={t("pagination.rowsPerPage")} value={String(pageSize)}
+        {!webPhone ? <Picker label={t("pagination.rowsPerPage")} value={String(pageSize)} disabled={disabled}
           onChange={(value) => { if (Number(value) !== pageSize) onPageSizeChange(Number(value)); }}
           options={pageSizes.map((size) => ({ value: String(size), label: t("pagination.perPage", { size }) }))}
           className="h-7 w-auto rounded-[0.5rem] border-[var(--borde)] px-2.5 text-[0.75rem] text-[var(--t2)] max-md:h-7 max-md:rounded-[0.5rem] max-md:px-2.5 max-md:text-[0.75rem]" /> : null}
@@ -67,7 +69,7 @@ export function Pagination({
           variant="icon"
           size="icon"
           aria-label={t("pagination.previous")}
-          disabled={!hasPrevious}
+          disabled={disabled || !hasPrevious}
           onClick={() => onPageChange(page - 1)}
           className={cn("text-[var(--t3)] hover:bg-[var(--marca-t)] hover:text-[var(--marca-tx)] disabled:opacity-40", web ? "size-7 rounded-[0.4375rem]" : "")}
         >
@@ -78,7 +80,7 @@ export function Pagination({
           variant="icon"
           size="icon"
           aria-label={t("pagination.next")}
-          disabled={!hasNext}
+          disabled={disabled || !hasNext}
           onClick={() => onPageChange(page + 1)}
           className={cn("text-[var(--t3)] hover:bg-[var(--marca-t)] hover:text-[var(--marca-tx)] disabled:opacity-40", web ? "size-7 rounded-[0.4375rem]" : "")}
         >

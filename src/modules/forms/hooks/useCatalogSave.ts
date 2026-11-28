@@ -93,7 +93,7 @@ export function useCatalogSave(id: string | undefined, data: CatalogData, draft:
    */
   function send(mutation: typeof update, isActive: boolean, extra: CatalogSaveExtra | undefined, onSaved?: (version: number) => void,
     onSettled?: () => void): boolean {
-    if (!saved) return false;
+    if (!saved || update.isPending || activation.isPending) return false;
     setSaveError(undefined);
     if (!draft.attempt()) return false;
     const request = draft.buildRequest(version, isActive, extra?.request);
@@ -140,9 +140,16 @@ export function useCatalogSave(id: string | undefined, data: CatalogData, draft:
     draft.applyServerErrors(error);
   }
 
-  function discard() {
+  function resetDraft(nextVersion?: number) {
     draft.reset();
     setSaveError(undefined);
+    const target = nextVersion ?? saved?.version;
+    if (target !== undefined) setVersion(target);
+  }
+
+  function discard() {
+    if (update.isPending || activation.isPending) return;
+    resetDraft();
   }
 
   /** «Ver lo nuevo»: relee el catálogo y su página y suelta lo escrito, con la versión nueva; devuelve lo leído. */
@@ -151,8 +158,7 @@ export function useCatalogSave(id: string | undefined, data: CatalogData, draft:
     setConflictOpen(false);
     await queryClient.invalidateQueries({ queryKey: catalogQueryKey(id) });
     const fresh = await queryClient.fetchQuery({ queryKey: catalogQueryKey(id), queryFn: ({ signal }) => fetchCatalog(id, signal) });
-    setVersion(fresh.version);
-    discard();
+    resetDraft(fresh.version);
     return fresh;
   }
 

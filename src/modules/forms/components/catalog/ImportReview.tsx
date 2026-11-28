@@ -171,7 +171,7 @@ export function ImportReview({ imp, valueType }: { imp: CatalogImport; valueType
         ]} /></div>
         <Tabs value={imp.tab} onValueChange={(next) => imp.chooseTab(next as ImportListTab)} className="gap-2.5">
           <TabsList aria-label={t("forms:catalog.import.lists")} className="h-9 gap-1 border-b border-[var(--borde)]">
-            {importListTabs.map((key) => <TabsTrigger key={key} value={key} className="h-9 px-3 text-[0.8125rem]">
+            {importListTabs.map((key) => <TabsTrigger key={key} value={key} disabled={refreshing} className="h-9 px-3 text-[0.8125rem]">
               {t(`forms:catalog.import.tabs.${key}`)}<TabCount>{importListOf(review, key).totalCount}</TabCount>
             </TabsTrigger>)}
           </TabsList>
@@ -181,7 +181,7 @@ export function ImportReview({ imp, valueType }: { imp: CatalogImport; valueType
             return <TabsContent key={key} value={key} className="flex flex-col gap-2">
               {lists[key]}
               {list.totalCount > pageSizes[0] ? <Pagination page={list.page} pageSize={list.pageSize} totalCount={list.totalCount} totalPages={totalPages}
-                hasPrevious={list.hasPrevious ?? list.page > 1} hasNext={list.hasNext ?? list.page < totalPages}
+                hasPrevious={list.hasPrevious ?? list.page > 1} hasNext={list.hasNext ?? list.page < totalPages} disabled={refreshing}
                 onPageChange={(page) => imp.changePage(page, list.pageSize)} onPageSizeChange={(pageSize) => imp.changePage(1, pageSize)} /> : null}
             </TabsContent>;
           })}

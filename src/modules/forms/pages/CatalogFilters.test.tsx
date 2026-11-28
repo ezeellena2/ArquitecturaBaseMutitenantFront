@@ -353,4 +353,23 @@ describe("Catálogo con filtros, las piezas y las condiciones (FRM-Catalogo-Filt
       expect(tip).toHaveAccessibleDescription("Ese rol ya no existe. Elegí otro.");
     } finally { restore(); }
   });
+
+  it("en el teléfono no repite «De los miembros» ni «De los contactos» debajo de «El catálogo» (KAN-139)", async () => {
+    const desktop = mountForms(formsOwner, "/org/formularios/catalogos/c-sup");
+    expect(await screen.findByText("De los miembros")).toBeInTheDocument();
+    desktop.unmount();
+
+    const restore = asPhone();
+    try {
+      const members = mountForms(formsOwner, "/org/formularios/catalogos/c-sup");
+      await screen.findByRole("textbox", { name: /^Nombre/ });
+      expect(screen.queryByText("De los miembros")).not.toBeInTheDocument();
+      members.unmount();
+
+      serve({ detail: clientes() });
+      mountForms(formsOwner, "/org/formularios/catalogos/c-cli");
+      await screen.findByRole("textbox", { name: /^Nombre/ });
+      expect(screen.queryByText("De los contactos")).not.toBeInTheDocument();
+    } finally { restore(); }
+  });
 });

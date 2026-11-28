@@ -5,6 +5,7 @@ import { axe } from "vitest-axe";
 import { server } from "@/test/mocks/server";
 import { choose, pickerName } from "@/test/picker";
 import { asPhone } from "@/test/utils/phone";
+import { catalogQueryKey } from "../api/catalogs";
 import type { FormCatalogFieldDetail, FormCatalogItemRow, FormCatalogResponse, UpdateFormCatalogRequest } from "../api/types";
 import { formsOwner, formsReader, mountForms, withoutFields } from "../test/support";
 
@@ -936,5 +937,116 @@ describe("CatalogEditorPage, los campos (E13)", () => {
     expect(screen.queryByRole("textbox", { name: "Plazo de Seguimiento" })).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: pickerName("Título · hasta 30 caracteres") })).toBeDisabled();
     expect(screen.getByRole("button", { name: pickerName("Descripción · hasta 300") })).toBeDisabled();
+  });
+});
+
+describe("CatalogEditorPage, quick wins Tanda 2 (KAN-137, KAN-153, KAN-154, KAN-155)", () => {
+  it("«Guardar cambios» y «Dar de baja» no se pueden pedir a la vez (KAN-137)", async () => {
+    let resolvePut = (_response: Response) => {};
+    serve({ put: () => new Promise<Response>((resolve) => { resolvePut = resolve; }) as unknown as Response });
+    const { user } = await openEditor();
+    await user.clear(textbox("Texto de Seguimiento"));
+    await user.paste("Seguimiento actualizado");
+    await user.click(saveButton());
+    await waitFor(() => expect(puts).toHaveLength(1));
+
+    expect(screen.getByRole("button", { name: "Descartar" })).toBeDisabled();
+    await openMenu(user, "Acciones de Motivos de visita");
+    expect(await screen.findByRole("menuitem", { name: /Dar de baja/ })).toHaveAttribute("aria-disabled", "true");
+    await user.keyboard("{Escape}");
+
+    resolvePut(HttpResponse.json({ version: 8, itemIdentityMap: [] }));
+    expect(await screen.findByText("Guardamos el catálogo.")).toBeVisible();
+
+    await user.clear(textbox("Texto de Seguimiento"));
+    await user.paste("Seguimiento con baja");
+    await openMenu(user, "Acciones de Motivos de visita");
+    await user.click(await screen.findByRole("menuitem", { name: /Dar de baja/ }));
+    await user.click(within(await screen.findByRole("dialog", { name: "¿Dar de baja «Motivos de visita»?" })).getByRole("button", { name: "Dar de baja" }));
+    await waitFor(() => expect(puts).toHaveLength(2));
+
+    expect(screen.getByRole("button", { name: "Guardar cambios", hidden: true })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Descartar", hidden: true })).toBeDisabled();
+    resolvePut(HttpResponse.json({ version: 9, itemIdentityMap: [] }));
+    expect(await screen.findByText("Dimos de baja el catálogo.")).toBeVisible();
+  });
+
+  it("después de «Descartar» cuando otra persona guardó en el medio, el siguiente guardado usa la versión nueva (KAN-153)", async () => {
+    let currentVersion = 7;
+    serve({ detail: catalog({ version: 7 }) });
+    server.use(http.get(`${base}/c-motivos`, () => HttpResponse.json(catalog({ version: currentVersion }))));
+    const { user, client } = await openEditor();
+
+    // Otra persona guarda en el servidor y la ficha en pantalla se relee en segundo plano.
+    currentVersion = 8;
+    await client.refetchQueries({ queryKey: catalogQueryKey("c-motivos") });
+
+    await user.click(screen.getByRole("button", { name: "Descartar" }));
+    await user.clear(textbox("Texto de Seguimiento"));
+    await user.paste("Seguimiento ajustado");
+    await user.click(saveButton());
+
+    await waitFor(() => expect(puts).toHaveLength(1));
+    expect(puts[0].version).toBe(8);
+  });
+
+  it("con una opción guardada marcada para borrar, «Ordenar por…» queda apagado con su motivo en compu y en teléfono (KAN-154)", async () => {
+    const reason = "Guardá o descartá el borrado pendiente para ordenar opciones.";
+    const { user, unmount } = await openEditor();
+    await user.click(screen.getByRole("button", { name: "Borrar Reclamo" }));
+    await user.click(within(await screen.findByRole("dialog", { name: "¿Borrar «Reclamo»?" })).getByRole("button", { name: "Borrar opción" }));
+    await openMenu(user, "Más acciones de las opciones");
+    const desktopSort = await screen.findByRole("menuitem", { name: /Ordenar por…/ });
+    expect(desktopSort).toHaveAttribute("aria-disabled", "true");
+    expect(desktopSort).toHaveAccessibleDescription(reason);
+    await user.keyboard("{Escape}");
+
+    await user.click(screen.getByRole("button", { name: "Descartar" }));
+    await openMenu(user, "Más acciones de las opciones");
+    expect(await screen.findByRole("menuitem", { name: /Ordenar por…/ })).not.toHaveAttribute("aria-disabled", "true");
+    unmount();
+
+    const restore = asPhone();
+    try {
+      const mobile = mountForms(formsOwner, path);
+      await screen.findByText("Reclamo");
+      await mobile.user.click(screen.getByRole("button", { name: "Borrar Reclamo" }));
+      await mobile.user.click(within(await screen.findByRole("dialog", { name: "¿Borrar «Reclamo»?" })).getByRole("button", { name: "Borrar opción" }));
+      await mobile.user.click(screen.getByRole("button", { name: "Acciones de Motivos de visita" }));
+      const menu = await screen.findByRole("menu", { name: "Acciones de Motivos de visita" });
+      const mobileSort = within(menu).getByRole("menuitem", { name: /Ordenar por…/ });
+      expect(mobileSort).toHaveAttribute("aria-disabled", "true");
+      expect(mobileSort).toHaveAccessibleDescription(reason);
+    } finally { restore(); }
+  });
+
+  it("«Exportar» usa filename*=UTF-8'' cuando el nombre tiene «%» o acentos sin fallar (KAN-155)", async () => {
+    const downloaded: string[] = [];
+    const originalCreate = URL.createObjectURL;
+    const originalRevoke = URL.revokeObjectURL;
+    URL.createObjectURL = vi.fn(() => "blob:test");
+    URL.revokeObjectURL = vi.fn();
+    const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (this: HTMLAnchorElement) {
+      downloaded.push(this.download);
+    });
+    try {
+      let call = 0;
+      server.use(http.get(`${base}/c-motivos/export`, () => new HttpResponse(new Blob(["xlsx"]), {
+        headers: {
+          "Content-Disposition": ++call === 1
+            ? 'attachment; filename="Descuentos 10%.xlsx"; filename*=UTF-8\'\'Descuentos%2010%25.xlsx'
+            : "attachment; filename=Categor_as.xlsx; filename*=UTF-8''Categor%C3%ADas.xlsx",
+        },
+      })));
+      const { user } = await openEditor();
+      await user.click(screen.getByRole("button", { name: "Exportar" }));
+      await waitFor(() => expect(downloaded).toEqual(["Descuentos 10%.xlsx"]));
+      await user.click(screen.getByRole("button", { name: "Exportar" }));
+      await waitFor(() => expect(downloaded).toEqual(["Descuentos 10%.xlsx", "Categorías.xlsx"]));
+    } finally {
+      clickSpy.mockRestore();
+      URL.createObjectURL = originalCreate;
+      URL.revokeObjectURL = originalRevoke;
+    }
   });
 });

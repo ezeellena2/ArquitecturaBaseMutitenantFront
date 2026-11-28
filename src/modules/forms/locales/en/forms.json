@@ -108,8 +108,10 @@
       "discardMovesFirst": "Discard the position changes first.",
       "orderPending": "Save or discard the pending order to delete options.",
       "deletePending": "Save or discard the pending deletion to move options.",
+      "deletePendingSort": "Save or discard the pending deletion to sort options.",
       "saveToMove": "Save the option to move it.",
-      "sortPending": "Save or cancel the pending sort to move options."
+      "sortPending": "Save or cancel the pending sort to move options.",
+      "waitSaving": "Wait for saving to finish."
     },
     "pending": {
       "moves_one": "{{n}} pending move. It's applied on save.",

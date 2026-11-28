@@ -226,9 +226,11 @@ function SavedCatalogEditor({ id }: { id: string }) {
   };
   // El ⋮ de la banda: «Dar de baja» o «Reactivar», una opción común (el rojo va en su confirmación, FRM-Catalogo). En el
   // teléfono suma, antes, lo de «Opciones»: «Exportar», la plantilla, «Ordenar por…» y los códigos (M-FRM-Catalogo).
+  const savingAny = editor.saving || editor.activating;
+  const statusDisabledReason = editor.saving ? t("forms:catalog.reasons.waitSaving") : undefined;
   const statusItem = saved.isActive
-    ? { label: t(phone ? "forms:catalog.actions.deactivateCatalog" : "forms:catalog.actions.deactivate"), icon: Ban, onSelect: () => setConfirmDeactivate(true) }
-    : { label: t("forms:catalog.actions.reactivateCatalog"), icon: RotateCcw, onSelect: () => { setActive(true); } };
+    ? { label: t(phone ? "forms:catalog.actions.deactivateCatalog" : "forms:catalog.actions.deactivate"), icon: Ban, disabledReason: statusDisabledReason, onSelect: () => setConfirmDeactivate(true) }
+    : { label: t("forms:catalog.actions.reactivateCatalog"), icon: RotateCcw, disabledReason: statusDisabledReason, onSelect: () => { setActive(true); } };
   const bandItems = [...(phone && manual ? optionsActions.bandItems : []), ...(saved.canManage ? [statusItem] : [])];
   const activeCount = saved.itemCounts.active
     + editor.rows.filter((row) => row.isNew && row.draft.isActive).length
@@ -241,8 +243,8 @@ function SavedCatalogEditor({ id }: { id: string }) {
       backTo={back(t)}
       status={<CatalogBandStatus catalog={saved} phone={phone} />}
       actions={editable ? <>
-        <Button type="button" variant="outline" onClick={discard}>{t("forms:catalog.discard")}</Button>
-        <Button type="button" disabled={!isDirty} pending={editor.saving} pendingLabel={t("common:states.saving")} onClick={save}>{t("forms:catalog.save")}</Button>
+        <Button type="button" variant="outline" disabled={savingAny} onClick={discard}>{t("forms:catalog.discard")}</Button>
+        <Button type="button" disabled={!isDirty || editor.activating} pending={editor.saving} pendingLabel={t("common:states.saving")} onClick={save}>{t("forms:catalog.save")}</Button>
       </> : undefined}
       moreActions={bandItems.length ? { label: t("forms:catalog.actions.catalogMore", { name: saved.name }), pending: editor.activating, items: bandItems } : undefined}
     >
@@ -256,8 +258,10 @@ function SavedCatalogEditor({ id }: { id: string }) {
         below={manual ? <CatalogPresentation editor={editor} editable={editable} issues={saved.presentationIssues ?? noIssues} example={presentationView.example} /> : undefined}>
         <Section title={t("forms:catalog.section")} phone="loose">
           <SectionFields className="grid gap-3.5">
-            {/* Uno con filtros es siempre de texto: dice solo de dónde salen (FRM-Catalogo-Filtros). */}
-            <p className="text-[0.8125rem] text-[var(--t2)]">{manual ? `${format.formatEnum("FormCatalogSource", saved.source)} · ${format.formatEnum("FormCatalogValueType", saved.valueType)}` : format.formatEnum("FormCatalogSource", saved.source)}</p>
+            {/* Uno con filtros es siempre de texto: dice solo de dónde salen en la compu (FRM-Catalogo-Filtros); en el teléfono no va (M-FRM-Catalogo-Filtros y M-FRM-Catalogo-Contactos). */}
+            {manual || !phone
+              ? <p className="text-[0.8125rem] text-[var(--t2)]">{manual ? `${format.formatEnum("FormCatalogSource", saved.source)} · ${format.formatEnum("FormCatalogValueType", saved.valueType)}` : format.formatEnum("FormCatalogSource", saved.source)}</p>
+              : null}
             {editable ? <>
               <FormField label={t("forms:catalog.fields.name")} required error={editor.nameError}>
                 <Input value={editor.name} maxLength={catalogLimits.name} onChange={(event) => editor.setName(event.target.value)} autoComplete="off" />
@@ -283,7 +287,7 @@ function SavedCatalogEditor({ id }: { id: string }) {
     <ConfirmDialog open={confirmDeactivate} onOpenChange={setConfirmDeactivate}
       title={t("forms:catalog.deactivateDialog.title", { name: saved.name })} description={t("forms:catalog.deactivateDialog.description")}
       confirmLabel={t("forms:catalog.actions.deactivate")} destructive pending={editor.activating} pendingLabel={t("forms:catalog.deactivating")}
-      onConfirm={() => { if (!setActive(false, () => setConfirmDeactivate(false))) setConfirmDeactivate(false); }} />
+      onConfirm={() => { if (editor.saving) return; if (!setActive(false, () => setConfirmDeactivate(false))) setConfirmDeactivate(false); }} />
   </>;
 }
 
