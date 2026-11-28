@@ -3,6 +3,7 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { MemoryRouter, useLocation, useNavigate } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { createQueryClient } from "@/shared/api/queryClient";
 import type { ResourceOptions } from "@/shared/api/resourceOptions";
 import { usePagedQuery } from "./usePagedQuery";
 
@@ -92,5 +93,52 @@ describe("usePagedQuery", () => {
     expect(result.current.location.search).toBe("?page=2");
     act(() => result.current.list.paginationProps!.onPageSizeChange(20));
     expect(result.current.location.search).toBe("?pageSize=20");
+  });
+
+  it("sin staleTime respeta los 30 s de caché global al remontar, y con staleTime explícito vuelve a pedir", async () => {
+    const client = createQueryClient();
+    function Wrapper({ children }: { children: ReactNode }) {
+      return <QueryClientProvider client={client}>
+        <MemoryRouter initialEntries={["/lista"]}>{children}</MemoryRouter>
+      </QueryClientProvider>;
+    }
+    const fetchCached = vi.fn(async (query: ListQuery) => paged([{ id: "uno" }], query.page, 1));
+    const options = {
+      filterKeys: ["status"] as const,
+      defaultSort: "name",
+      toQuery: (page: { page: number; pageSize: number; sort?: string; search?: string }, filters: Readonly<Record<"status", string | undefined>>): ListQuery => ({
+        ...page, status: filters.status === "Active" ? "Active" : undefined,
+      }),
+      queryKey: (query: ListQuery) => ["lista-cache", query],
+      queryFn: fetchCached,
+    };
+    const first = renderHook(() => usePagedQuery(options), { wrapper: Wrapper });
+    await waitFor(() => expect(first.result.current.result.data?.items).toEqual([{ id: "uno" }]));
+    expect(fetchCached).toHaveBeenCalledTimes(1);
+    first.unmount();
+
+    const remounted = renderHook(() => usePagedQuery(options), { wrapper: Wrapper });
+    await waitFor(() => expect(remounted.result.current.result.data?.items).toEqual([{ id: "uno" }]));
+    await act(async () => { await Promise.resolve(); });
+    expect(remounted.result.current.result.isStale).toBe(false);
+    expect(fetchCached).toHaveBeenCalledTimes(1);
+    remounted.unmount();
+
+    const fetchAlwaysFresh = vi.fn(async (query: ListQuery) => paged([{ id: "dos" }], query.page, 1));
+    const freshOptions = {
+      ...options,
+      queryKey: (query: ListQuery) => ["lista-stale-0", query],
+      queryFn: fetchAlwaysFresh,
+      staleTime: 0,
+    };
+    const freshFirst = renderHook(() => usePagedQuery(freshOptions), { wrapper: Wrapper });
+    await waitFor(() => expect(freshFirst.result.current.result.data?.items).toEqual([{ id: "dos" }]));
+    expect(fetchAlwaysFresh).toHaveBeenCalledTimes(1);
+    freshFirst.unmount();
+
+    const freshRemounted = renderHook(() => usePagedQuery(freshOptions), { wrapper: Wrapper });
+    await waitFor(() => expect(fetchAlwaysFresh).toHaveBeenCalledTimes(2));
+    freshRemounted.unmount();
+    client.clear();
   });
 });

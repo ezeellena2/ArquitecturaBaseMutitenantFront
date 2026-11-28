@@ -33,7 +33,14 @@ export function usePagedQuery<K extends string, TQuery, TPage extends PagedRespo
   const pagination = usePagination({ defaultSort, prefix });
   const search = useDebouncedValue(pagination.search ?? "");
   const query = toQuery({ page: pagination.page, pageSize: pagination.pageSize, sort: pagination.sort, search: search || undefined }, filters.values);
-  const result = useQuery({ queryKey: queryKey(query), queryFn: () => queryFn(query), enabled, staleTime, placeholderData: keepPreviousData, meta });
+  const result = useQuery({
+    queryKey: queryKey(query),
+    queryFn: () => queryFn(query),
+    placeholderData: keepPreviousData,
+    ...(enabled !== undefined ? { enabled } : {}),
+    ...(staleTime !== undefined ? { staleTime } : {}),
+    ...(meta !== undefined ? { meta } : {}),
+  });
 
   // Solo con la respuesta de esta página: la anterior, que se muestra mientras llega, no dice nada de esta.
   const settled = result.isPlaceholderData ? undefined : result.data;
