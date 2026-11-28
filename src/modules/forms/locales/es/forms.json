@@ -129,7 +129,27 @@
       "descending": "De la Z a la A",
       "ascendingInSentence": "de la A a la Z",
       "descendingInSentence": "de la Z a la A",
-      "apply": "Ordenar"
+      "apply": "Ordenar",
+      "byKind": {
+        "number": {
+          "ascending": "De menor a mayor",
+          "descending": "De mayor a menor",
+          "ascendingInSentence": "de menor a mayor",
+          "descendingInSentence": "de mayor a menor"
+        },
+        "date": {
+          "ascending": "De la más antigua a la más reciente",
+          "descending": "De la más reciente a la más antigua",
+          "ascendingInSentence": "de la más antigua a la más reciente",
+          "descendingInSentence": "de la más reciente a la más antigua"
+        },
+        "yesNo": {
+          "ascending": "Primero «No»",
+          "descending": "Primero «Sí»",
+          "ascendingInSentence": "primero «No»",
+          "descendingInSentence": "primero «Sí»"
+        }
+      }
     },
     "selection": {
       "count_one": "{{n}} elegida",
@@ -411,6 +431,68 @@
       "memberPlaceholder": "Elegí a quién",
       "contact": "Cliente",
       "noContact": "Sin cliente"
+    },
+    "fieldsDialog": {
+      "title": "Campos de «{{name}}»",
+      "list": "Campos",
+      "count": "{{n}} de {{max}}",
+      "phoneList": "Campos · {{summary}}",
+      "position": "Campo {{n}} de {{total}}",
+      "newField": "Nuevo campo",
+      "newBadge": "Nuevo",
+      "noName": "Sin texto",
+      "add": "Agregar campo",
+      "remove": "Quitar campo",
+      "up": "Subir {{name}}",
+      "down": "Bajar {{name}}",
+      "full": "Llegó a {{max}} campos, el máximo de un catálogo.",
+      "labels": {
+        "name": "Nombre",
+        "key": "Clave",
+        "type": "Tipo",
+        "length": "Largo",
+        "range": "Rango",
+        "catalog": "Catálogo",
+        "rules": "Reglas"
+      },
+      "namePlaceholder": "Nombre del campo",
+      "keyPlaceholder": "clave",
+      "keyHelp": "La usan la plantilla, la importación y lo guardado. No cambia después de guardar.",
+      "keyLocked": "No cambia: el campo ya está guardado",
+      "keyDuplicate": "Ya la usa «{{name}}».",
+      "keyStart": "Tiene que empezar con una letra.",
+      "upTo": "Hasta",
+      "characters": "caracteres",
+      "lengthPlaceholder": "N",
+      "lengthRange": "Puede ir de {{min}} a {{max}}.",
+      "lengthRead": "Hasta {{n}} caracteres",
+      "from": "De",
+      "to": "a",
+      "min": "Desde",
+      "max": "Hasta",
+      "rangeRead": "De {{min}} a {{max}}",
+      "required": "Obligatorio",
+      "unique": "Único",
+      "requiredNew": "Un campo nuevo nace opcional: para hacerlo obligatorio, todas las opciones activas necesitan un valor.",
+      "sameCatalog": "Es este catálogo: un campo toma los valores de otro.",
+      "saveToLoadValues": "Guardá el catálogo para cargar los valores de los campos nuevos.",
+      "removeDialog": {
+        "title": "Quitar «{{name}}»",
+        "description": "Se quita de la tabla, de la plantilla y del Excel.",
+        "inPresentation": "También se saca de «En WhatsApp» de este catálogo.",
+        "confirmValues_one": "Sí, quitar el campo y su valor",
+        "confirmValues_other": "Sí, quitar el campo y sus {{n}} valores",
+        "confirmReason": "Marcá la confirmación para quitarlo.",
+        "confirm": "Quitar el campo"
+      }
+    },
+    "combo": {
+      "placeholder": "Elegí un catálogo",
+      "options_one": "{{n}} opción",
+      "options_other": "{{n}} opciones",
+      "count_one": "{{n}} catálogo",
+      "count_other": "{{n}} catálogos",
+      "noMatches": "Ningún catálogo coincide con «{{search}}»."
     }
   }
 }

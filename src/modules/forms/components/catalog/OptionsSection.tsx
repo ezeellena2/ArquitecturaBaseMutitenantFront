@@ -23,6 +23,7 @@ import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions, type RowAction } from "@/shared/ui/RowActions";
 import { exportCatalog, fetchCatalogTemplate } from "../../api/catalogs";
 import { rowHasErrors, type CatalogEditor, type CatalogRowView, type ItemField } from "../../hooks/useCatalogEditor";
+import { isFixedSortColumn, sortKindOf, sortOrderKey } from "../../lib/catalogFields";
 import { catalogLimits } from "../../lib/catalogLimits";
 import { OptionsDialog, type OptionsDialogOpening } from "./OptionsDialog";
 import { SortDialog } from "./SortDialog";
@@ -81,6 +82,10 @@ export function OptionsSection({ editor, editable, isNew, onImport, rowReview }:
       : editor.isDirty ? t("forms:catalog.reasons.saveBeforeImport") : undefined;
   const sortReason = isNew ? t("forms:catalog.reasons.saveFirst") : editor.moves.length ? t("forms:catalog.reasons.discardMovesFirst") : undefined;
   const deleteReason = editor.moves.length || editor.sort ? t("forms:catalog.reasons.orderPending") : undefined;
+  // «Ordenar por…» un campo (224): «Texto», «Código» o el nombre de un campo guardado, con el sentido de su tipo.
+  const savedFields = editor.saved?.fields ?? [];
+  const sortColumnLabel = (column: string | null | undefined) => !column ? "" : isFixedSortColumn(column)
+    ? t(`forms:catalog.sort.columns.${column.toLowerCase() === "code" ? "Code" : "Text"}`) : savedFields.find((field) => field.id === column)?.name ?? column;
   const moveReason = editor.deletes.size ? t("forms:catalog.reasons.deletePending") : undefined;
 
   // Exportar y la plantilla: red, 5xx y 429 los avisa el MutationCache; un rechazo de negocio (sin permiso, el módulo
@@ -116,7 +121,7 @@ export function OptionsSection({ editor, editable, isNew, onImport, rowReview }:
       {t("forms:catalog.pending.moves", { count: editor.moves.length, n: format.formatInteger(editor.moves.length) })}
     </Banner> : null}
     {editor.sort ? <Banner role="status" tone="info" className="mx-4 mt-3" action={<Button type="button" size="sm" variant="outline" onClick={editor.cancelSort}>{t("forms:catalog.pending.cancelSort")}</Button>}>
-      {t("forms:catalog.pending.sort", { column: t(`forms:catalog.sort.columns.${editor.sort.column}`), order: t(editor.sort.descending ? "forms:catalog.sort.descendingInSentence" : "forms:catalog.sort.ascendingInSentence") })}
+      {t("forms:catalog.pending.sort", { column: sortColumnLabel(editor.sort.column), order: t(sortOrderKey(sortKindOf(editor.sort.column ?? "", savedFields), editor.sort.descending === true, true)) })}
     </Banner> : null}
   </>;
 
@@ -254,7 +259,7 @@ export function OptionsSection({ editor, editable, isNew, onImport, rowReview }:
     {pageData && pageData.totalCount > 0 ? <Pagination page={pageData.page} pageSize={pageData.pageSize} totalCount={pageData.totalCount} totalPages={pageData.totalPages ?? 1}
       hasPrevious={pageData.hasPrevious ?? false} hasNext={pageData.hasNext ?? false} onPageChange={editor.setPage} onPageSizeChange={editor.setPageSize} /> : null}
     {dialog ? <OptionsDialog editor={editor} opening={dialog} onClose={() => setDialog(null)} /> : null}
-    <SortDialog open={sortOpen} initial={editor.sort} returnFocusTo={sortTrigger} onOpenChange={setSortOpen} onSort={editor.setSort} />
+    <SortDialog open={sortOpen} initial={editor.sort} fields={savedFields} returnFocusTo={sortTrigger} onOpenChange={setSortOpen} onSort={editor.setSort} />
     <ConfirmDialog open={deleting !== null} onOpenChange={(open) => { if (!open) setDeleting(null); }}
       title={t("forms:catalog.deleteDialog.title", { option: deleting ? label(deleting) : "" })} description={t("forms:catalog.deleteDialog.description")}
       confirmLabel={t("forms:catalog.deleteDialog.confirm")} destructive onConfirm={() => { if (deleting) editor.remove(deleting.key); setDeleting(null); }} />

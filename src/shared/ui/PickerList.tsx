@@ -32,6 +32,7 @@ export interface PickerListProps {
   readonly total?: number;
   readonly pageSize?: number;
   readonly countLabel?: (count: number) => string;
+  readonly noMatchesLabel?: (search: string) => string;
   readonly remote?: RemoteOptions;
   readonly listRef: RefObject<HTMLUListElement | null>;
   readonly searchRef: RefObject<HTMLInputElement | null>;
@@ -46,7 +47,7 @@ export interface PickerListProps {
  * las filas, lo que dice cuando no hay ninguna (busca, falló o no responde nada) y «Mostrar N más» del servidor.
  */
 export function PickerList({ uid, listboxId, nameId, title, list, multiple, searchable, search, open, current, phone, optionCount, chosenCount,
-  max, total, pageSize, countLabel, remote, listRef, searchRef, onSearch, onListKeyDown, onHover, onChoose }: PickerListProps) {
+  max, total, pageSize, countLabel, noMatchesLabel, remote, listRef, searchRef, onSearch, onListKeyDown, onHover, onChoose }: PickerListProps) {
   const { t } = useTranslation();
   const { rows, shown, create, searching, full } = list;
   const optionId = (index: number) => pickerOptionId(uid, index);
@@ -94,7 +95,7 @@ export function PickerList({ uid, listboxId, nameId, title, list, multiple, sear
         <Button type="button" variant="link" {...keepFocus} onClick={remote.onRetry}>{t("actions.retry")}</Button>
       </div>
         : <p role="status" className={cn("text-[var(--t2)]", phone ? "px-4 py-4 text-[0.9375rem]" : "px-3 py-2.5")}>
-          {searching ? t("picker.noMatches", { search: search.trim() }) : t("picker.empty")}
+          {searching ? noMatchesLabel?.(search.trim()) ?? t("picker.noMatches", { search: search.trim() }) : t("picker.empty")}
         </p>;
   const more = remote?.hasMore
     ? <button type="button" {...keepFocus} onClick={remote.onLoadMore} disabled={remote.loading}

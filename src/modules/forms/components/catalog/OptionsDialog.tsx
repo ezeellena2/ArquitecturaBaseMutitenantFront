@@ -28,21 +28,25 @@ export interface OptionsDialogOpening {
   readonly startOnList?: boolean;
 }
 
-type FieldControl = { id: string; "aria-invalid"?: true; "aria-describedby"?: string; "aria-required"?: true };
+export type FieldControl = { id: string; "aria-invalid"?: true; "aria-describedby"?: string; "aria-required"?: true };
 
 /**
  * Un renglón de la opción (FRM-Catalogo-Opciones, .md-f): en la compu, el rótulo a la izquierda y el campo a la derecha;
  * en el teléfono (M-FRM-Catalogo-Opciones, .ap-cmp), uno debajo del otro. La ayuda va en la (i) y debajo, solo el error o
  * el aviso. Atado como `FormField`: la etiqueta nombra al campo (y a la pieza, por `<id>-label`) y el mensaje lo describe.
+ * Lo usa también el modal de los campos (FRM-Catalogo-Campos), igual al de opciones.
  */
-function OptionField({ label, required, help, error, warning, children }: {
-  label: string; required?: boolean; help?: string; error?: string; warning?: string; children: (control: FieldControl) => ReactNode;
+export function OptionField({ label, required, help, error, warning, below, children }: {
+  label: string; required?: boolean; help?: string; error?: string; warning?: string;
+  /** El renglón que sigue al de arriba sin la línea entre los dos, como el largo debajo del tipo (FRM-Catalogo-Campos, .md-f.junto). */
+  below?: boolean;
+  children: (control: FieldControl) => ReactNode;
 }) {
   const id = useId();
   const messageId = `${id}-message`, helpId = `${id}-help`;
   const message = error ?? warning;
   const describedBy = [help ? helpId : undefined, message ? messageId : undefined].filter(Boolean).join(" ") || undefined;
-  return <div className="flex flex-col gap-1.5 md:grid md:grid-cols-[6.875rem_minmax(0,1fr)] md:gap-3 md:border-t md:border-[var(--borde)] md:px-5 md:py-2.5">
+  return <div className={cn("flex flex-col gap-1.5 md:grid md:grid-cols-[6.875rem_minmax(0,1fr)] md:gap-3 md:px-5 md:py-2.5", below ? "md:pt-0" : "md:border-t md:border-[var(--borde)]")}>
     <span className="flex items-center gap-1 md:min-h-9">
       <Label id={`${id}-label`} htmlFor={id} className="gap-1! text-[0.78125rem] font-semibold text-[var(--t2)] max-md:text-[0.84375rem] max-md:leading-[normal]">
         {label}

@@ -32,5 +32,13 @@
     "TitleEmpty": "El título queda vacío.",
     "TitleTooLong": "No entra en el título de WhatsApp.",
     "DescriptionTooLong": "No entra en la descripción de WhatsApp."
+  },
+  "FormCatalogFieldType": {
+    "Text": "Texto",
+    "WholeNumber": "Número entero",
+    "DecimalNumber": "Número con decimales",
+    "Date": "Fecha",
+    "YesNo": "Sí/No",
+    "Catalog": "De un catálogo"
   }
 }

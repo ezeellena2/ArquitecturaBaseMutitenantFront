@@ -12,6 +12,7 @@ import type {
   UpdateFormCatalogRequest,
 } from "../api/types";
 import { catalogFieldErrors } from "../errors";
+import { fieldDraftsOf, sameFieldsDraft, sortAfterFields, type CatalogFieldsDraft } from "../lib/catalogFields";
 import {
   catalogRows, changedFieldsOf, cleanEdits, itemInputOf, positionOf, savedDraft, savedRowOf,
   type CatalogDraftState, type CatalogMove, type CatalogRowView, type ItemDraft, type ItemEdits, type ItemField, type NewItem, type RowError,
@@ -55,6 +56,8 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
   const [moves, setMoves] = useState<readonly CatalogMove[]>([]);
   const [positions, setPositions] = useState<Readonly<Record<string, number>>>({});
   const [sort, setSort] = useState<FormCatalogItemSortInput | null>(null);
+  // Los campos (E13), cuando «Listo» del modal «Campos de …» los cambió; si no, los guardados.
+  const [fieldsDraft, setFieldsDraft] = useState<CatalogFieldsDraft | null>(null);
   const [selected, setSelected] = useState<ReadonlySet<string>>(new Set());
   const [serverErrors, setServerErrors] = useState<Readonly<Record<string, RowError>>>({});
   // Las guardadas que el borrador cambió o borra, como se leyeron: desde otra página o con otra búsqueda siguen a la vista,
@@ -75,10 +78,13 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
   const savedRow = (key: string | undefined) => savedRowOf({ pageRows, extraRows: otherRows }, key);
   const remember = (row: FormCatalogItemRow) => setTouched((current) => current[row.id] === row ? current : { ...current, [row.id]: row });
 
+  const savedFields = fieldDraftsOf(saved?.fields ?? [], format);
+  const fields = fieldsDraft ?? savedFields;
+  const fieldsDirty = fieldsDraft !== null;
   const currentName = name ?? saved?.name ?? "";
   const currentDescription = description ?? saved?.description ?? "";
   const itemsDirty = Object.keys(edits).length > 0 || added.length > 0 || deletes.size > 0 || moves.length > 0 || sort !== null;
-  const isDirty = itemsDirty || (saved ? currentName !== saved.name || currentDescription !== (saved.description ?? "") : false);
+  const isDirty = itemsDirty || fieldsDirty || (saved ? currentName !== saved.name || currentDescription !== (saved.description ?? "") : false);
   const total = (saved?.itemCounts.total ?? 0) + added.length - deletes.size;
 
   function edit(key: string, patch: ItemEdits) {
@@ -133,6 +139,12 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
     if (!neighbor) return;
     setPositions((current) => ({ ...current, [row.id]: positionOf(state, neighbor), [neighbor.id]: positionOf(state, row) }));
     setMoves((current) => [...current, { itemId: row.id, direction }]);
+  }
+
+  /** «Listo» del modal de los campos: quedan en el borrador, y si se quitó el campo del orden pendiente, el orden se cancela (224). */
+  function setFields(next: CatalogFieldsDraft) {
+    setFieldsDraft(sameFieldsDraft(next, savedFields) ? null : next);
+    setSort((current) => sortAfterFields(current, next.fields));
   }
 
   function discardMoves() {
@@ -220,6 +232,7 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
     setMoves([]);
     setPositions({});
     setSort(null);
+    setFieldsDraft(null);
     setSelected(new Set());
     setServerErrors({});
     setNameError(undefined);
@@ -326,6 +339,11 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
     sort,
     setSort,
     cancelSort: () => setSort(null),
+    fields,
+    fieldsDirty,
+    setFields,
+    /** Las claves de los campos quitados: una nueva que choca con ellas suma un número. */
+    removedFieldKeys: (saved?.fields ?? []).filter((field) => !field.isActive).map((field) => field.key),
     selected,
     toggleSelected,
     selectPage,

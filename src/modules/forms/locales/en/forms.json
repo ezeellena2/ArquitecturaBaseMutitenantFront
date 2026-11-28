@@ -129,7 +129,27 @@
       "descending": "From Z to A",
       "ascendingInSentence": "from A to Z",
       "descendingInSentence": "from Z to A",
-      "apply": "Sort"
+      "apply": "Sort",
+      "byKind": {
+        "number": {
+          "ascending": "From lowest to highest",
+          "descending": "From highest to lowest",
+          "ascendingInSentence": "from lowest to highest",
+          "descendingInSentence": "from highest to lowest"
+        },
+        "date": {
+          "ascending": "From oldest to newest",
+          "descending": "From newest to oldest",
+          "ascendingInSentence": "from oldest to newest",
+          "descendingInSentence": "from newest to oldest"
+        },
+        "yesNo": {
+          "ascending": "“No” first",
+          "descending": "“Yes” first",
+          "ascendingInSentence": "“no” first",
+          "descendingInSentence": "“yes” first"
+        }
+      }
     },
     "selection": {
       "count_one": "{{n}} selected",
@@ -411,6 +431,68 @@
       "memberPlaceholder": "Choose who",
       "contact": "Customer",
       "noContact": "No customer"
+    },
+    "fieldsDialog": {
+      "title": "Fields of “{{name}}”",
+      "list": "Fields",
+      "count": "{{n}} of {{max}}",
+      "phoneList": "Fields · {{summary}}",
+      "position": "Field {{n}} of {{total}}",
+      "newField": "New field",
+      "newBadge": "New",
+      "noName": "No text",
+      "add": "Add field",
+      "remove": "Remove field",
+      "up": "Move {{name}} up",
+      "down": "Move {{name}} down",
+      "full": "It reached {{max}} fields, the maximum for a catalog.",
+      "labels": {
+        "name": "Name",
+        "key": "Key",
+        "type": "Type",
+        "length": "Length",
+        "range": "Range",
+        "catalog": "Catalog",
+        "rules": "Rules"
+      },
+      "namePlaceholder": "Field name",
+      "keyPlaceholder": "key",
+      "keyHelp": "The template, imports and saved data use it. It doesn't change after saving.",
+      "keyLocked": "It doesn't change: the field is already saved",
+      "keyDuplicate": "“{{name}}” already uses it.",
+      "keyStart": "It must start with a letter.",
+      "upTo": "Up to",
+      "characters": "characters",
+      "lengthPlaceholder": "N",
+      "lengthRange": "It can go from {{min}} to {{max}}.",
+      "lengthRead": "Up to {{n}} characters",
+      "from": "From",
+      "to": "to",
+      "min": "From",
+      "max": "To",
+      "rangeRead": "From {{min}} to {{max}}",
+      "required": "Required",
+      "unique": "Unique",
+      "requiredNew": "A new field starts optional: to make it required, every active option needs a value.",
+      "sameCatalog": "It's this catalog: a field takes its values from another one.",
+      "saveToLoadValues": "Save the catalog to fill in the values of the new fields.",
+      "removeDialog": {
+        "title": "Remove “{{name}}”",
+        "description": "It's removed from the table, the template and the Excel file.",
+        "inPresentation": "It's also taken out of “In WhatsApp” for this catalog.",
+        "confirmValues_one": "Yes, remove the field and its value",
+        "confirmValues_other": "Yes, remove the field and its {{n}} values",
+        "confirmReason": "Check the confirmation to remove it.",
+        "confirm": "Remove the field"
+      }
+    },
+    "combo": {
+      "placeholder": "Choose a catalog",
+      "options_one": "{{n}} option",
+      "options_other": "{{n}} options",
+      "count_one": "{{n}} catalog",
+      "count_other": "{{n}} catalogs",
+      "noMatches": "No catalog matches “{{search}}”."
     }
   }
 }

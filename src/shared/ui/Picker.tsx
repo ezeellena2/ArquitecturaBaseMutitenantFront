@@ -40,6 +40,8 @@ interface PickerBase {
   describeChosen?: boolean;
   /** Cuántas son, con el nombre de lo que son («418 zonas»); por defecto, «38 opciones». */
   countLabel?: (count: number) => string;
+  /** Lo que dice una búsqueda sin coincidencias, con el nombre de lo que son («Ningún catálogo coincide con «zo».»). */
+  noMatchesLabel?: (search: string) => string;
   id?: string;
   className?: string;
   disabled?: boolean;
@@ -160,7 +162,7 @@ export function Picker(props: PickerProps) {
     loading: remote?.loading, show });
   const content = <PickerList uid={uid} listboxId={listboxId} nameId={nameId} title={title} list={list} multiple={multiple} searchable={searchable}
     search={search} open={open} current={current} phone={phone} optionCount={props.options.length} chosenCount={chosen.size} max={props.max}
-    total={props.total ?? remote?.total} pageSize={props.pageSize} countLabel={props.countLabel} remote={remote}
+    total={props.total ?? remote?.total} pageSize={props.pageSize} countLabel={props.countLabel} noMatchesLabel={props.noMatchesLabel} remote={remote}
     listRef={focus.listRef} searchRef={focus.searchRef} onListKeyDown={onListKeyDown}
     onSearch={(text) => { setActive(0); if (remote) remote.onSearch(text); else setLocalSearch(text); }}
     onHover={(index) => { if (index !== current) setActive(index); }} onChoose={choose} />;
