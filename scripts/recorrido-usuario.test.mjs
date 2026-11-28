@@ -7,7 +7,8 @@ import { baseUrl } from "./recorrido-usuario-entorno.mjs";
 import { execFileSync } from "node:child_process";
 import { e8Definitions, e8ManualChecks, e8SourceRevision, requireE8Control } from "./recorrido-usuario-whatsapp.mjs";
 import * as whatsappJourney from "./recorrido-usuario-whatsapp.mjs";
-import { botOption, e11Definitions, e11ManualChecks, enterPersonalHome, nationalPhone, outboundCount, runE11Journey } from "./recorrido-usuario-e11.mjs";
+import { botOption, chatsInboxEndpoints, e11Definitions, e11ManualChecks, enterPersonalHome, nationalPhone, outboundCount, runE11Journey,
+  untakenInInbox } from "./recorrido-usuario-e11.mjs";
 import { e9Definitions, e9ManualChecks, factorSecretMasks, newcomerOf, operatorNameOf, runE9Journey, waitForAuditList } from "./recorrido-usuario-e9.mjs";
 import { awaitHomePastNotice, base12Definitions, base12ManualChecks, bellLabel, importedPhoneOf, invitationLinkFrom, isFullDateTime, runBase12Journey,
   whileHeld, workingButtonProblems, workingButtonState } from "./recorrido-usuario-base12.mjs";
@@ -349,6 +350,15 @@ test("el recorrido E11 tiene sus pasos en orden, declara los del canal privado y
   assert.deepEqual(e11Definitions.filter((step) => step.controlled).map((step) => step.id), ["E11-02", "E11-05", "E11-06", "E11-07", "E11-08", "E11-10", "E11-11"]);
   for (const external of ["Meta real", "WhatsApp real"]) assert.ok(e11ManualChecks.some((item) => item.startsWith(external)), external);
   assert.ok(e11ManualChecks.some((item) => /Cargar teléfonos/.test(item)));
+});
+
+test("E11-09 abre Chats esperando solo la bandeja y lee «Chats N» de su cuenta: adentro de Chats, UntakenBadge no pide /untaken (KAN-30)", () => {
+  const badge = readFileSync(new URL("../src/modules/whatsapp/components/UntakenBadge.tsx", import.meta.url), "utf8");
+  assert.match(badge, /useMatch\("\/org\/whatsapp\/chats"\)/);
+  assert.match(badge, /enabled: !inChats/);
+  assert.deepEqual(chatsInboxEndpoints("/api/organization/whatsapp"), ["/api/organization/whatsapp/customers/conversations"]);
+  assert.equal(untakenInInbox({ conversations: { items: [] }, counts: { customers: 3, internal: 0, untaken: 1 } }), 1);
+  assert.throws(() => untakenInInbox({ customers: 1, internal: null }), /sin tomar/);
 });
 
 test("E11 toca la fila del menú por su título y cuenta lo que salió sin aceptar una nota", () => {

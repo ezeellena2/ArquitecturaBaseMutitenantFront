@@ -52,6 +52,19 @@ export function outboundCount(rows) {
   return rows.length;
 }
 
+/**
+ * Lo que pide Chats al abrir: solo la bandeja de clientes. Adentro de Chats, UntakenBadge no pide `/untaken` (KAN-30): el
+ * contador sale de la cuenta de la bandeja (`counts.untaken`), así que el recorrido lo lee de ahí.
+ */
+export const chatsInboxEndpoints = (organizationApi) => [`${organizationApi}/customers/conversations`];
+
+/** Las sin tomar de la bandeja que se ve, como las cuenta «Chats N». */
+export function untakenInInbox(list) {
+  const untaken = list?.counts?.untaken;
+  assert.ok(Number.isInteger(untaken), "La bandeja trae cuántas hay sin tomar.");
+  return untaken;
+}
+
 /** Un teléfono argentino E.164 como lo escribe la Dueña en «Cargar teléfonos»: 11 3456-7884. */
 export function nationalPhone(e164) {
   const match = /^\+549(11)(\d{4})(\d{4})$/.exec(e164);
@@ -216,8 +229,8 @@ export async function runE11Journey({ page, platformPage, width, env, base, reco
   await step("09", async () => {
     phase = "owner"; await loginBusiness();
     phase = "chats";
-    const [untaken, list] = await visit("/org/whatsapp/chats", [`${organizationApi}/untaken`, `${organizationApi}/customers/conversations`]);
-    assert.equal(untaken.customers, 1);
+    const [list] = await visit("/org/whatsapp/chats", chatsInboxEndpoints(organizationApi));
+    assert.equal(untakenInInbox(list), 1);
     conversation = list.conversations.items.find((item) => item.displayNumber === customer);
     assert.ok(conversation, "La conversación del cliente está en la bandeja.");
     assert.equal(conversation.team?.name, "Ventas"); assert.equal(conversation.assignee ?? null, null); assert.equal(conversation.linkedToAccount, true);
