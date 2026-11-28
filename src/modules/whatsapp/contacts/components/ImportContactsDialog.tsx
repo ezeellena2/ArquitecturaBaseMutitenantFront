@@ -2,11 +2,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Download } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useFormat } from "@/shared/format/useFormat";
+import { saveBlobAs } from "@/shared/lib/saveFile";
 import { countOf } from "../../lib/values";
 import { useDialogFailure } from "@/shared/hooks/useDialogFailure";
 import { useResourceOptions } from "@/shared/hooks/useResourceOptions";
@@ -18,10 +18,10 @@ import { Dialog, DialogBody, DialogContent, DialogFooter, DialogHeader, DialogTi
 import { FormError } from "@/shared/ui/FormError";
 import { FormField } from "@/shared/ui/FormField";
 import { Picker } from "@/shared/ui/Picker";
+import { toastSuccess } from "@/shared/ui/sonner";
 import type { WhatsAppImportPreviewResponse } from "../../api/types";
 import { contactsQueryRoot, contactTagOptions, fetchImportSample, importContacts, previewImport, tagMaxLength, type ImportContactsInput } from "../api/contacts";
 import { importErrorField } from "../errors";
-import { saveResponseAs } from "../lib/saveFile";
 import { FileInput } from "./FileInput";
 
 /** El ejemplo y lo que se importa: decisión técnica 10 (ClosedXML lee los dos). */
@@ -50,7 +50,7 @@ export function ImportContactsDialog({ onClose, returnFocusTo }: { onClose: () =
   const [tagError, setTagError] = useState<string>();
   const tagOptions = useResourceOptions(contactTagOptions);
   const { failure, clear, fail, close } = useDialogFailure(onClose, contactsQueryRoot);
-  const sample = useMutation({ mutationFn: async () => saveResponseAs(await fetchImportSample(), t("whatsapp:contacts.import.sampleFileName")) });
+  const sample = useMutation({ mutationFn: async () => saveBlobAs(await (await fetchImportSample()).blob(), t("whatsapp:contacts.import.sampleFileName")) });
   const preview = useMutation({ mutationFn: previewImport });
   const importer = useIdempotentMutation((input: ImportContactsInput, key) => importContacts(input, key), { sameOperation: sameImport });
 
@@ -74,7 +74,7 @@ export function ImportContactsDialog({ onClose, returnFocusTo }: { onClose: () =
     if (tag.length > tagMaxLength) { setTagError(t("whatsapp:contacts.import.tagTooLong", { count: tagMaxLength })); return; }
     importer.mutate({ file, tag: tag || null }, {
       onSuccess: async (result) => {
-        toast.success(t("whatsapp:contacts.import.done", countOf(format, result.imported)));
+        toastSuccess(t("whatsapp:contacts.import.done", countOf(format, result.imported)));
         onClose();
         await queryClient.invalidateQueries({ queryKey: contactsQueryRoot });
       },

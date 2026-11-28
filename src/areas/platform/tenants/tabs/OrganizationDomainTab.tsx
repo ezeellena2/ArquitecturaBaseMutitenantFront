@@ -2,7 +2,7 @@ import { useMountedRef } from "@/shared/hooks/useMountedRef";
 import { useQueryClient, type UseQueryResult } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { usePermissions } from "@/auth/usePermissions";
 import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage, toastActionError } from "@/shared/api/errorMessage";
@@ -54,7 +54,7 @@ export function OrganizationDomainTab({ organization, query, paginationProps, so
     }} onSuccess={() => {
       onWrite(confirmation.domain.domain, { version: confirmation.domain.version, status: "Removed" });
       client.setQueriesData<OrganizationDomainPageResponse>({ queryKey: tenantDomainsQueryKey(organization.id) }, (data) => data ? { ...data, items: data.items.filter((row) => row.domain !== confirmation.domain.domain) } : data);
-      toast.success(t("platformTenants:domains.removed", { domain: confirmation.domain.domain })); void client.invalidateQueries({ queryKey: tenantsQueryRoot });
+      toastSuccess(t("platformTenants:domains.removed", { domain: confirmation.domain.domain })); void client.invalidateQueries({ queryKey: tenantsQueryRoot });
     }} /> : null}
   </>;
 }
@@ -75,7 +75,7 @@ function DomainActions({ organizationId, domain, editable, onWrite, onConflict, 
       // MutationCache puede ejecutar un retry después de que otro envío retiró su observer.
       onWrite(operation.domain, { version: response.version, status: "Verified" });
       client.setQueriesData<OrganizationDomainPageResponse>({ queryKey: tenantDomainsQueryKey(operation.id) }, (data) => data ? { ...data, items: data.items.map((item) => item.domain === operation.domain ? { ...item, version: response.version, status: "Verified", txtRecordName: null, txtRecordValue: null } : item) } : data);
-      toast.success(t("domains.verified", { domain: operation.domain })); void client.invalidateQueries({ queryKey: tenantsQueryRoot });
+      toastSuccess(t("domains.verified", { domain: operation.domain })); void client.invalidateQueries({ queryKey: tenantsQueryRoot });
     }), {
     meta: action.meta,
     sameOperation: (previous, next) => previous.id === next.id && previous.domain === next.domain && previous.version === next.version && previous.reason === next.reason,

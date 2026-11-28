@@ -4,7 +4,7 @@ import { ChevronRight } from "lucide-react";
 import { useMemo, useRef, useState, type ReactNode } from "react";
 import { Controller, useWatch, type FieldErrors, type FieldPath } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage } from "@/shared/api/errorMessage";
 import { applyApiErrorToForm } from "@/shared/api/formErrors";
@@ -85,7 +85,7 @@ export function ModelEditorDialog({ scope, cancellationSignal, model, currency, 
     execute: (body, key, signal) => model ? updateAssistantModel(model.id, body, signal) : createAssistantModel(body, key, signal),
     success: (body, response) => {
       if (model) wrote((body as UpdateAssistantModelRequest).version!, response.version, undefined);
-      toast.success(t("assistant:settings.modelSaved")); onClose(); void client.invalidateQueries({ queryKey: assistantModelsRoot(scope) });
+      toastSuccess(t("assistant:settings.modelSaved")); onClose(); void client.invalidateQueries({ queryKey: assistantModelsRoot(scope) });
       // El Inicio nombra los modelos que se pueden elegir: un nombre nuevo se ve al volver.
       void client.invalidateQueries({ queryKey: assistantStateQueryKey(scope) });
     },

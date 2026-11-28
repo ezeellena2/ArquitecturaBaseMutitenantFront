@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { KeyRound } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
 import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
@@ -97,7 +97,7 @@ function PolicyReasonDialog(props: ModuleOrganizationUiProps & { confirmation: C
       if (!eligible(operationOwner)) throw new DOMException("", "AbortError");
       acceptedOwner.current = operationOwner;
       live.current.onWrite(write);
-      toast.success(t(`policy.messages.${action}`, { organization: live.current.organization.name }));
+      toastSuccess(t(`policy.messages.${action}`, { organization: live.current.organization.name }));
       void client.invalidateQueries({ queryKey: assistantPolicyQueryKey(scope, organizationId) });
     }} />;
 }

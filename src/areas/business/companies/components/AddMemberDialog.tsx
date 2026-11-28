@@ -4,7 +4,7 @@ import type { TFunction } from "i18next";
 import { useMemo } from "react";
 import { useController, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { z } from "zod";
 import { ApiError } from "@/shared/api/ApiError";
 import { rateLimitedActionMessage } from "@/shared/api/errorMessage";
@@ -82,7 +82,7 @@ export function AddMemberDialog({ companyId, companyName, roles, onClose }: {
   // conserva la suya (R05). El aviso y el cierre salen del intento original, también desde «Reintentar».
   const action = useResourceAction<AddMemberOperation>({ onError: rejected });
   const addMember = useIdempotentMutation(action.guarded(({ memberId, roleIds }, key: string) => addCompanyMember(companyId, { memberId, roleIds }, key), (_response, operation) => {
-    toast.success(t("companies:messages.memberAdded", { name: operation.name }));
+    toastSuccess(t("companies:messages.memberAdded", { name: operation.name }));
     onClose();
     void Promise.all([queryClient.invalidateQueries({ queryKey: companiesQueryRoot }), queryClient.invalidateQueries({ queryKey: companyCandidateOptions(companyId).queryKeyRoot })]);
   }), { meta: { ...action.meta, handlesRateLimit: true }, sameOperation: (previous, next) => previous.memberId === next.memberId && sameList(previous.roleIds, next.roleIds) });

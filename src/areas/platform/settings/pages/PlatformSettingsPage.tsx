@@ -5,7 +5,7 @@ import type { TFunction } from "i18next";
 import { Suspense, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useController, useWatch, type Control } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { z } from "zod";
 import { currentUserQueryKey } from "@/auth/useCurrentUser";
 import { usePermissions } from "@/auth/usePermissions";
@@ -139,7 +139,7 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
     setBusy(true);
     try {
       for (const part of dirtyParts()) if (!(await part.save())) return;
-      if (active.current) toast.success(t("platformSettings:saved"));
+      if (active.current) toastSuccess(t("platformSettings:saved"));
     } catch (error) { if (active.current) setFailure(error); }
     finally { if (active.current) setBusy(false); }
   }
@@ -172,7 +172,7 @@ function SettingsEditor({ settings, loadError, reload }: { settings: PlatformSet
         loginAuditRetentionMonths: sent.values.loginAuditRetentionMonths!, loginCodeRetentionDays: sent.values.loginCodeRetentionDays!, closedInvitationRetentionDays: sent.values.closedInvitationRetentionDays!,
         rateLimits: rateLimitsInput(rateLimits), version: response.version } };
       const pendingParts = dirtyParts().length > 0;
-      setFailure(undefined); if (!pendingParts) toast.success(t("platformSettings:saved")); abandon();
+      setFailure(undefined); if (!pendingParts) toastSuccess(t("platformSettings:saved")); abandon();
       void client.invalidateQueries({ queryKey: platformSettingsKey });
       // Después del núcleo, las partes con cambios, cada una con su versión.
       if (pendingParts) void saveParts();

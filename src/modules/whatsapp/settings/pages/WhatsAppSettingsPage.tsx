@@ -4,7 +4,7 @@ import type { TFunction } from "i18next";
 import { useMemo, useState } from "react";
 import { useController } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { z } from "zod";
 import { usePermissions } from "@/auth/usePermissions";
 import { ApiError } from "@/shared/api/ApiError";
@@ -74,7 +74,7 @@ function SettingsEditor({ settings, reload }: { settings: WhatsAppOrganizationSe
     const sentVersion = version;
     save.mutate({ chatRetentionDays: values.chatRetentionDays, version: sentVersion }, {
       onSuccess: async (result) => {
-        form.reset(values); toast.success(t("settings.saved"));
+        form.reset(values); toastSuccess(t("settings.saved"));
         await client.invalidateQueries({ queryKey: organizationWhatsAppSettingsKey });
         wrote(sentVersion, result.version, client.getQueryData<WhatsAppOrganizationSettingsResponse>(organizationWhatsAppSettingsKey));
       },

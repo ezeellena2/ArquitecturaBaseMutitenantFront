@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { toastActionError } from "@/shared/api/errorMessage";
 import { useFormat } from "@/shared/format/useFormat";
 import { ConfirmDialog } from "@/shared/ui/ConfirmDialog";
@@ -36,7 +36,7 @@ export function useBroadcastActions() {
       pending={cancel.isPending} pendingLabel={t("whatsapp:broadcasts.cancel.cancelling")}
       // La confirmación espera la respuesta y se cierra con ella, sea cual sea («Criterio · Diálogos»).
       onConfirm={() => cancel.mutate(cancelling.broadcast, {
-        onSuccess: async () => { toast.success(t("whatsapp:broadcasts.cancel.done", { name: cancelling.broadcast.name })); await invalidate(); },
+        onSuccess: async () => { toastSuccess(t("whatsapp:broadcasts.cancel.done", { name: cancelling.broadcast.name })); await invalidate(); },
         onError: async (error) => { toastActionError(error, t); await invalidate(); },
         onSettled: () => setCancelling(null),
       })} /> : null,

@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import { useParams } from "react-router";
 import { Power, RotateCw, Trash2 } from "lucide-react";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { usePermissions } from "@/auth/usePermissions";
 import { invalidateNotifications } from "@/layouts/notifications/api";
 import { isNotFoundError, toastActionError } from "@/shared/api/errorMessage";
@@ -102,7 +102,7 @@ function OrganizationDetail({ id }: { id: string }) {
   const written = ownWrites.get(id);
   const data = written ? { ...organization.data, ...written, lastStateChange: organization.data.status === written.status ? organization.data.lastStateChange : null } : organization.data;
   const open = (action: TenantAction, trigger: HTMLElement | null) => setConfirmation({ organization: data, action, trigger });
-  const retryProvisioning = () => retry.mutate(data, { onSuccess: (response) => { wrote(response.version, "Active"); toast.success(t("platformTenants:messages.retried", { name: data.name })); void invalidate(); }, onError: (error) => toastActionError(error, t) });
+  const retryProvisioning = () => retry.mutate(data, { onSuccess: (response) => { wrote(response.version, "Active"); toastSuccess(t("platformTenants:messages.retried", { name: data.name })); void invalidate(); }, onError: (error) => toastActionError(error, t) });
   // 209 («Criterio · Botones» y «Criterio · Menús»): a la vista, lo que espera una decisión (rechazar y aprobar) y reintentar el
   // alta; suspender, reactivar y cerrar van en el ⋮ de la banda, con lo destructivo al final y en rojo. En el teléfono, todo en el ⋮.
   const decisions = canManage && data.status === "PendingApproval" ? ["reject", "approve"] as const : [];
@@ -142,7 +142,7 @@ function OrganizationDetail({ id }: { id: string }) {
       setConfirmation((current) => current === confirmation ? null : current);
     }} onSuccess={(response) => {
       wrote(response.version, nextStatus[confirmation.action]);
-      toast.success(t(confirmation.action === "approve" && confirmation.organization.owners.length > 1 ? "platformTenants:messages.approveOwners" : `platformTenants:messages.${confirmation.action}`, { name: confirmation.organization.name, email: maskEmail(confirmation.organization.ownerEmail ?? "") }));
+      toastSuccess(t(confirmation.action === "approve" && confirmation.organization.owners.length > 1 ? "platformTenants:messages.approveOwners" : `platformTenants:messages.${confirmation.action}`, { name: confirmation.organization.name, email: maskEmail(confirmation.organization.ownerEmail ?? "") }));
       void invalidate();
     }} /> : null}
   </>;

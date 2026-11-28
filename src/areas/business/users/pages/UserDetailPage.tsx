@@ -8,7 +8,7 @@ import { useMemo, useRef, useState } from "react";
 import { useController } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
 import { useNavigate, useParams, useSearchParams } from "react-router";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { z } from "zod";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { usePermissions } from "@/auth/usePermissions";
@@ -205,7 +205,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
       setDialogFailure(undefined);
       if (access) form.reset(access);
       setCompanyDialog(null);
-      toast.success(sentence(message));
+      toastSuccess(sentence(message));
       await refresh();
       if (request.version != null) wrote(request.version, result.version, client.getQueryData<OrganizationUserResponse>(userQueryKey(memberId)));
     },
@@ -220,13 +220,13 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
     // Ya no hay nada que perder: la salida al listado no pregunta. Con la propuesta, la tarjeta pasa a aplicada antes de irse.
     onSuccess: async (_result, { message, markApplied }) => {
       if (markApplied) void markApplied();
-      toast.success(sentence(message)); await client.invalidateQueries({ queryKey: usersQueryRoot }); edit.allowNextNavigation(); void navigate("/org/usuarios");
+      toastSuccess(sentence(message)); await client.invalidateQueries({ queryKey: usersQueryRoot }); edit.allowNextNavigation(); void navigate("/org/usuarios");
     },
     onError: (error) => setFailure({ error, action: "remove" }),
   });
   const revoke = useMutation({
     mutationFn: (invitationId: string) => revokeUserInvitation(invitationId),
-    onSuccess: async () => { toast.success(sentence(t("users:detail.messages.revoked", { email: userContactText(member, format) }))); await refresh(); },
+    onSuccess: async () => { toastSuccess(sentence(t("users:detail.messages.revoked", { email: userContactText(member, format) }))); await refresh(); },
     onError: (error) => toastActionError(error, t),
   });
   const resend = useIdempotentMutation((invitationId: string, key) => resendUserInvitation(invitationId, key));
@@ -313,7 +313,7 @@ function UserDetail({ memberId, member, reload }: { memberId: string; member: Or
     if (!member.invitationId) return;
     resend.mutate(member.invitationId, {
       onSuccess: async () => {
-        toast.success(sentence(t("users:detail.messages.resent", { email: userContactText(member, format) })));
+        toastSuccess(sentence(t("users:detail.messages.resent", { email: userContactText(member, format) })));
         await client.invalidateQueries({ queryKey: userQueryKey(memberId) });
       },
       onError: (error) => toastActionError(error, t),

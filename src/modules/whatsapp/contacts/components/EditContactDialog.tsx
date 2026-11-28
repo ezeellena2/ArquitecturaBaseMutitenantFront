@@ -4,7 +4,7 @@ import type { TFunction } from "i18next";
 import { useMemo } from "react";
 import { useController } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { z } from "zod";
 import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage } from "@/shared/api/errorMessage";
@@ -90,7 +90,7 @@ export function EditContactDialog({ contact, onClose, returnFocusTo }: {
     const request = { name: values.name === "" ? null : values.name, tags: values.tags, consent: values.consent === contact.consent ? null : values.consent, version };
     update.mutate(request, {
       onSuccess: async () => {
-        toast.success(t("whatsapp:contacts.edit.saved"));
+        toastSuccess(t("whatsapp:contacts.edit.saved"));
         onClose();
         await queryClient.invalidateQueries({ queryKey: contactsQueryRoot });
       },

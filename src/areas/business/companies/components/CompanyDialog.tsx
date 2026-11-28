@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { z } from "zod";
 import { ApiError } from "@/shared/api/ApiError";
 import { actionErrorMessage } from "@/shared/api/errorMessage";
@@ -104,7 +104,7 @@ export function CompanyDialog({ company, inDetail = false, onClose, returnFocusT
   }
 
   async function saved(message: string) {
-    toast.success(message);
+    toastSuccess(message);
     onClose();
     await queryClient.invalidateQueries({ queryKey: companiesQueryRoot });
   }

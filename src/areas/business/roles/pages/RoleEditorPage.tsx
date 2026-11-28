@@ -9,7 +9,7 @@ import { useController, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useFormat } from "@/shared/format/useFormat";
 import { useNavigate, useParams, useSearchParams } from "react-router";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { z } from "zod";
 import { usePermissions } from "@/auth/usePermissions";
 import { ApiError } from "@/shared/api/ApiError";
@@ -286,7 +286,7 @@ function RoleEditor({ role, groups, reload }: { role?: RoleResponse; groups?: re
 
   async function created(id: string, request: CreateRoleRequest) {
     setFailure(undefined);
-    toast.success(t("roles:created", { name: request.name }));
+    toastSuccess(t("roles:created", { name: request.name }));
     edit.allowNextNavigation();
     void navigate(`/org/roles/${encodeURIComponent(id)}`, { replace: true });
     await queryClient.invalidateQueries({ queryKey: rolesQueryKeyRoot });
@@ -297,7 +297,7 @@ function RoleEditor({ role, groups, reload }: { role?: RoleResponse; groups?: re
   function leaveToSaved(location: string | null | undefined) {
     if (leftToSaved.current) return;
     leftToSaved.current = true;
-    toast.success(t("common:assistantProposal.alreadySaved"));
+    toastSuccess(t("common:assistantProposal.alreadySaved"));
     edit.allowNextNavigation();
     void navigate(createdRolePath(location), { replace: true });
   }
@@ -311,7 +311,7 @@ function RoleEditor({ role, groups, reload }: { role?: RoleResponse; groups?: re
   // Al editar, la ficha queda limpia con lo guardado y la base es la versión que respondió el guardado (`useEditForm`).
   async function saved(id: string, values: RoleFormValues, write: { sent: number; saved: number }) {
     setFailure(undefined);
-    toast.success(t("roles:updated", { name: values.name }));
+    toastSuccess(t("roles:updated", { name: values.name }));
     form.reset(values);
     await queryClient.invalidateQueries({ queryKey: rolesQueryKeyRoot });
     wrote(write.sent, write.saved, queryClient.getQueryData<RoleResponse>(roleQueryKey(id)));

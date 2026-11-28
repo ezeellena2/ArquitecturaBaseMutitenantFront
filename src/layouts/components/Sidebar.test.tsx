@@ -57,7 +57,7 @@ describe("Sidebar", () => {
     const { container } = render(<MemoryRouter initialEntries={["/org"]}>
       <Sidebar navigation={businessNavigation} account={accountIdentity({ displayName: "Ana", email: "ana@example.com" })} context={{ title: "Empresa A", detail: "Organización" }} collapsed={false} administrationOpen={false} onToggleAdministration={onToggleAdministration} onToggleCollapsed={onToggleCollapsed} />
     </MemoryRouter>);
-    expect(screen.getByRole("complementary", { name: "Navegación principal" })).toHaveClass("w-58");
+    expect(screen.getByRole("complementary", { name: "Navegación principal" })).toHaveClass("w-58", "print:hidden");
     expect(screen.getByRole("link", { name: "Inicio" })).toHaveAttribute("aria-current", "page");
     // 173 («Criterio · Menús»): el activo lleva una barra de 2 en la marca y la letra en 600, sin la pastilla blanca.
     expect(screen.getByRole("link", { name: "Inicio" })).toHaveClass("bg-[var(--lado-hover)]", "font-semibold", "text-[var(--marca-tx)]", "shadow-[inset_2px_0_0_var(--marca)]");

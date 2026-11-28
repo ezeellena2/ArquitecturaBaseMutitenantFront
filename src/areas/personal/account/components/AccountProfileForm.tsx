@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
 import { useController } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { z } from "zod";
 import { currentUserQueryKey, fetchCurrentUser } from "@/auth/useCurrentUser";
 import { ApiError } from "@/shared/api/ApiError";
@@ -74,7 +74,7 @@ export function AccountProfileForm({ account, children }: { account: MeResponse;
     onSuccess: async (result, { version: sentVersion, ...values }) => {
       form.reset(values);
       const adopt = (fresh?: MeResponse) => { if (sentVersion !== undefined) wrote(sentVersion, result.version, fresh); };
-      if (await reload(adopt)) toast.success(t("saved"));
+      if (await reload(adopt)) toastSuccess(t("saved"));
       else adopt();
     },
   });

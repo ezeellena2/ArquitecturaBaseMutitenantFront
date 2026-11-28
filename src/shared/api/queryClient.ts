@@ -1,7 +1,7 @@
 import { MutationCache, QueryCache, QueryClient, type DefaultOptions } from "@tanstack/react-query";
 import i18n from "@/shared/i18n";
-import { toastError, toastErrorWithCode } from "@/shared/ui/sonner";
-import { toast } from "sonner";
+import { copyToClipboard } from "@/shared/lib/clipboard";
+import { toastError, toastErrorWithCode, toastSuccess } from "@/shared/ui/sonner";
 import { ApiError } from "./ApiError";
 import { publishAccessError } from "./accessErrorStore";
 import { apiErrorMessage, isGenericApiError, rateLimitMessage } from "./errorMessage";
@@ -32,12 +32,8 @@ declare module "@tanstack/react-query" {
 const legalAcceptanceRequired = "Legal.AcceptanceRequired";
 
 async function copyTraceId(traceId: string): Promise<void> {
-  try {
-    await navigator.clipboard.writeText(traceId);
-    toast.success(i18n.t("codeCopied", { ns: "errors" }));
-  } catch {
-    toastError(i18n.t("codeCopyFailed", { ns: "errors" }));
-  }
+  if (await copyToClipboard(traceId)) toastSuccess(i18n.t("codeCopied", { ns: "errors" }));
+  else toastError(i18n.t("codeCopyFailed", { ns: "errors" }));
 }
 
 /// Red, 5xx y 429, iguales para consultas y mutaciones («Criterio · Avisos»): sin conexión, «Reintentar» vuelve a

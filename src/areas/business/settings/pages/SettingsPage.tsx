@@ -5,7 +5,6 @@ import { Globe, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useController } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 import { z } from "zod";
 import { currentUserQueryKey, useCurrentUser } from "@/auth/useCurrentUser";
 import { useReferenceData } from "@/shared/referenceData/useReferenceData";
@@ -36,13 +35,14 @@ import { Page } from "@/shared/ui/Page";
 import { RowActions } from "@/shared/ui/RowActions";
 import { Section, SectionFields } from "@/shared/ui/Section";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
+import { copyToClipboard } from "@/shared/lib/clipboard";
 import { cn } from "@/shared/lib/utils";
 import { List, ListItem } from "@/shared/ui/List";
 import { ReadOnlyField } from "@/shared/ui/ReadOnlyField";
 import { CultureText } from "@/shared/ui/format/CultureText";
 import { CurrencyText } from "@/shared/ui/format/CurrencyText";
 import { TimeZoneText } from "@/shared/ui/format/TimeZoneText";
-import { toastError } from "@/shared/ui/sonner";
+import { toastError, toastSuccess } from "@/shared/ui/sonner";
 import {
   fetchOrganizationDomainsPage, organizationDomainsPageKey, fetchOrganizationSettings, organizationDomainsKey, organizationSettingsKey,
   removeOrganizationDomain, updateOrganizationSettings, verifyOrganizationDomain,
@@ -118,12 +118,12 @@ function SettingsEditor({ settings, loadError, reload }: {
   const save = useMutation({ mutationFn: (request: UpdateOrganizationSettingsRequest) => updateOrganizationSettings(request) });
   const verifyDomain = useMutation({
     mutationFn: (domain: OrganizationDomainResponse) => verifyOrganizationDomain(domain.id),
-    onSuccess: async (_result, domain) => { closeVerify(); toast.success(t("settings:domains.verified", { domain: domain.domain })); await client.invalidateQueries({ queryKey: organizationDomainsKey }); },
+    onSuccess: async (_result, domain) => { closeVerify(); toastSuccess(t("settings:domains.verified", { domain: domain.domain })); await client.invalidateQueries({ queryKey: organizationDomainsKey }); },
     onError: (error) => setVerifyFailure(actionErrorMessage(error, t)),
   });
   const removeDomain = useMutation({
     mutationFn: (domain: OrganizationDomainResponse) => removeOrganizationDomain(domain.id, domain.version),
-    onSuccess: async (_result, domain) => { setDomainToRemove(null); toast.success(t("settings:domains.removed", { domain: domain.domain })); await client.invalidateQueries({ queryKey: organizationDomainsKey }); },
+    onSuccess: async (_result, domain) => { setDomainToRemove(null); toastSuccess(t("settings:domains.removed", { domain: domain.domain })); await client.invalidateQueries({ queryKey: organizationDomainsKey }); },
     // La confirmación espera la respuesta y se cierra con ella, sea cual sea («Criterio · Diálogos»).
     onError: (error) => { setDomainToRemove(null); toastActionError(error, t); },
   });
@@ -138,7 +138,7 @@ function SettingsEditor({ settings, loadError, reload }: {
   async function saved(values: SettingsForm, sentVersion: number, savedVersion: number) {
     setFailure(undefined);
     form.reset(values);
-    toast.success(t("settings:saved"));
+    toastSuccess(t("settings:saved"));
     await client.invalidateQueries({ queryKey: organizationSettingsKey });
     const country = referenceData?.cultures.find((entry) => entry.code === values.defaultCulture)?.countryCode;
     if (country && country !== currentUser?.organizationCountryCode)
@@ -176,7 +176,10 @@ function SettingsEditor({ settings, loadError, reload }: {
   }
 
   function copyTxt(value: string) {
-    void navigator.clipboard.writeText(value).then(() => setCopied(true)).catch(() => toastError(t("common:states.error")));
+    void copyToClipboard(value).then((ok) => {
+      if (ok) setCopied(true);
+      else toastError(t("common:states.error"));
+    });
   }
 
   const error = loadError ?? domains.error;

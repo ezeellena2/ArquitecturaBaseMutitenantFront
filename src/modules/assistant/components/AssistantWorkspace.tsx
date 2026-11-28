@@ -51,7 +51,7 @@ export function AssistantWorkspace({ props, session, state }: { props: Assistant
     onRetentionInfo={() => { setHistoryOpen(false); setRetentionOpen(true); }}
     onActions={phone ? (conversation) => { setHistoryOpen(false); setPhoneActions({ title: assistantConversationTitle(conversation, t), items: actions(conversation) }); } : undefined} />;
   // Con una propuesta en el hilo (Asistente-Org-Acciones), el campo invita a pedir un cambio; en el teléfono sigue corto.
-  const proposing = !!selectedId && (runtime.detail.data?.messages.items.some((message) => message.proposal?.kind === "action") ?? false);
+  const proposing = !!selectedId && runtime.messages.some((message) => message.proposal?.kind === "action");
   const placeholder = phone ? t("composer.phonePlaceholder") : proposing ? t("composer.proposalPlaceholder")
     : t(`composer.${scope.access}Placeholder`, { organization: props.organizationName ?? t("composer.organization") });
   const composer = <><AttachmentComposer key={generation} limits={state} files={files} errorId={hasAttachmentError ? fileErrorId : undefined} placeholder={placeholder} unavailable={!configured || limited || notice || !!selectedId && !runtime.canSend && !runtime.isPending} sendBlocked={limit.isRunning} pending={busy} canStop={runtime.canStop} uploadingId={uploadingId}

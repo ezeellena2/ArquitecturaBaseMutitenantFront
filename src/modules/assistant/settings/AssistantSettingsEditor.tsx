@@ -5,8 +5,8 @@ import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
 import { Plus } from "lucide-react";
 import { Controller, useWatch } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
-import { useNavigation, useSearchParams } from "react-router";
-import { toast } from "sonner";
+import { useSearchParams } from "react-router";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { ApiError } from "@/shared/api/ApiError";
 import { AddLoginMethodDialog } from "@/shared/account/AddLoginMethodDialog";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
@@ -61,7 +61,6 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
   const platform = "defaultModelId" in settings;
   const scope = { access: me.access, tenantId: me.activeTenantId ?? null, userId: me.id };
   const settingsKey = assistantSettingsKey(scope);
-  const navigation = useNavigation();
   const [navigationOwner, setNavigationOwner] = useState(() => new AbortController());
   const [params] = useSearchParams();
   const updateQuery = useQueryUpdate(); const tab = platform && params.get("tab") === "catalog" ? "catalog" : "general";
@@ -81,17 +80,17 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
   const [info, setInfo] = useState<"ownKey" | "limits" | "budget" | null>(null);
   // Version es xmin: token opaco. Sólo guardamos tokens sustituidos, no lecturas históricas.
   const [ownRead, setOwnRead] = useState<{ replacedVersions: ReadonlySet<SettingsRead["version"]>; saved: SettingsRead } | null>(null);
-  if (ownRead && settings.version === ownRead.saved.version && settings !== ownRead.saved) {
-    setOwnRead({ ...ownRead, saved: settings });
-  }
+  const effectiveOwnSaved = ownRead
+    ? settings.version === ownRead.saved.version ? settings : ownRead.saved
+    : null;
   const confirmOwnRead = useEffectEvent(() => {
-    if (ownRead?.saved !== settings) return;
+    if (!ownRead || settings.version !== ownRead.saved.version) return;
     // El mismo token confirma valores efectivos del servidor, conservando cualquier edición nueva.
     wrote(settings.version, settings.version, settings);
   });
   useEffect(() => { confirmOwnRead(); }, [settings, ownRead?.saved.version]);
   const revision = useRef(0);
-  const keyRead = ownRead?.saved ?? settings;
+  const keyRead = effectiveOwnSaved ?? settings;
   const savedHasKey = keyRead.hasKey;
   const modeChanged = !platform && "mode" in keyRead && values.mode !== keyRead.mode;
   // Un proveedor guardado que esta versión no conoce deja la conexión en pausa: se elige otro, con su clave y su modelo.
@@ -122,7 +121,7 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
       if (sent.request.keyAction !== "keep") { saved.hasKey = sent.request.keyAction === "replace"; saved.maskedKeySuffix = null; }
       setOwnRead((previous) => ({ replacedVersions: new Set([...(previous?.replacedVersions ?? []), sent.request.version!]), saved }));
       setChangingKey(false); setFailure(undefined);
-      toast.success(t("assistant:settings.saved"));
+      toastSuccess(t("assistant:settings.saved"));
       void client.invalidateQueries({ queryKey: settingsKey });
       // El Inicio muestra los modelos, el cupo y el plazo que se acaban de guardar.
       void client.invalidateQueries({ queryKey: assistantStateQueryKey(scope) });
@@ -145,7 +144,7 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
   function adoptRead(read: SettingsRead) {
     // Un GET intercalado puede traer cualquiera de las versiones que ya reemplazamos.
     if (ownRead && ownRead.saved.version === read.version) { setOwnRead({ ...ownRead, saved: read }); resetTo(read); }
-    else if (ownRead?.replacedVersions.has(read.version)) resetTo(ownRead.saved);
+    else if (ownRead?.replacedVersions.has(read.version)) resetTo(effectiveOwnSaved ?? ownRead.saved);
     else { setOwnRead(null); resetTo(read); }
   }
   function discard() {
@@ -153,7 +152,10 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
     setChangingKey(false); resetFields();
   }
   const previousTab = useRef(tab);
-  const discardForTab = useEffectEvent(discard);
+  const discardForTab = useEffectEvent(() => {
+    discard();
+    if (navigationOwner.signal.aborted) setNavigationOwner(new AbortController());
+  });
   useEffect(() => {
     if (previousTab.current !== tab) { previousTab.current = tab; discardForTab(); }
   }, [tab]);
@@ -165,10 +167,8 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
   }
   const edit = useEditPage({ isDirty: form.formState.isDirty, error: failure, searchKeys: tabKeys, onSeeNew: () => { void seeNew(); }, onContinueEditing: () => { changed(); },
     onNavigationAttempt: () => { revision.current++; navigationOwner.abort(); },
+    onStay: () => { if (navigationOwner.signal.aborted) setNavigationOwner(new AbortController()); },
   });
-  if (!edit.isBlocked && navigation.state === "idle" && navigationOwner.signal.aborted) {
-    setNavigationOwner(new AbortController());
-  }
   function submit(event: React.FormEvent<HTMLFormElement>) {
     const at = revision.current;
     void form.handleSubmit((sent) => {
@@ -192,7 +192,7 @@ export function AssistantSettingsEditor({ me, settings, loadError, reload }: {
         ? { defaultModelId: sent.modelId, allowedModelIds: [...sent.allowedModelIds], effort: sent.effort, dailyMessageLimit: sent.dailyMessageLimit, monthlyOrganizationBudget: sent.monthlyBudget, personalEnabled: sent.personalEnabled, retentionDays: sent.retentionDays, keyAction, apiKey, version }
         : { mode: sent.mode, modelId: sent.modelId, effort: sent.effort, ...(sent.mode === "OwnKey" ? { dailyMessageLimit: sent.dailyMessageLimit, monthlyBudget: sent.monthlyBudget } : {}), keyAction, apiKey, version };
       // Congela también la metadata confirmada (hasKey/suffix) de la versión editada.
-      sendSettings({ request, values: sent, read: ownRead && ownRead.saved.version === version ? ownRead.saved : settings });
+      sendSettings({ request, values: sent, read: effectiveOwnSaved && effectiveOwnSaved.version === version ? effectiveOwnSaved : settings });
     })(event);
   }
   const errors = form.formState.errors;

@@ -21,7 +21,7 @@ import { Pagination } from "@/shared/ui/Pagination";
 import { RowActions, type RowAction } from "@/shared/ui/RowActions";
 import { useResourceAction } from "@/shared/hooks/useResourceAction";
 import { Surface } from "@/shared/ui/Surface";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { changeUserStatus, fetchUserCounts, fetchUsers, removeUser, resendUserInvitation, revokeUserInvitation, userCountsQueryKey, usersQueryKey, usersQueryRoot, type UsersQuery } from "../api/users";
 import { createUserColumns, userContactText, userInvitationChannel, userPhoneRow } from "../columns";
 import { InviteUserDialog } from "../components/InviteUserDialog";
@@ -47,7 +47,7 @@ function UserRowActions({ member, label, title, actions, pending }: { member: Or
   const client = useQueryClient();
   const action = useResourceAction<{ invitationId: string; email: string }>({ onError: (error) => toastActionError(error, t) });
   const resend = useIdempotentMutation(action.guarded((operation, key: string) => resendUserInvitation(operation.invitationId, key),
-    (_response, operation) => { toast.success(t("users:messages.resent", { email: operation.email })); void client.invalidateQueries({ queryKey: usersQueryRoot }); }),
+    (_response, operation) => { toastSuccess(t("users:messages.resent", { email: operation.email })); void client.invalidateQueries({ queryKey: usersQueryRoot }); }),
     { meta: action.meta, sameOperation: (previous, next) => previous.invitationId === next.invitationId });
   const format = useFormat();
   const send = (settled?: () => void) => {
@@ -105,17 +105,17 @@ export function UsersPage() {
   const closeConfirmation = () => { setTarget(null); setConfirmAction(null); };
   const revoke = useMutation({
     mutationFn: (user: OrganizationUserResponse) => revokeUserInvitation(user.invitationId!),
-    onSuccess: async (_result, user) => { toast.success(t("users:messages.revoked", { email: userContactText(user, format) })); setTarget(null); setConfirmAction(null); await invalidate(); },
+    onSuccess: async (_result, user) => { toastSuccess(t("users:messages.revoked", { email: userContactText(user, format) })); setTarget(null); setConfirmAction(null); await invalidate(); },
     onError: (error) => { closeConfirmation(); toastActionError(error, t); },
   });
   const changeStatus = useMutation({
     mutationFn: (user: OrganizationUserResponse & { isActive: boolean }) => changeUserStatus(user.memberId, { isActive: user.isActive, version: user.version }),
-    onSuccess: async (_result, user) => { toast.success(t(user.isActive ? "users:messages.enabled" : "users:messages.disabled", { name: user.displayName || userContactText(user, format) })); setTarget(null); setConfirmAction(null); await invalidate(); },
+    onSuccess: async (_result, user) => { toastSuccess(t(user.isActive ? "users:messages.enabled" : "users:messages.disabled", { name: user.displayName || userContactText(user, format) })); setTarget(null); setConfirmAction(null); await invalidate(); },
     onError: (error) => { closeConfirmation(); toastActionError(error, t); },
   });
   const remove = useMutation({
     mutationFn: (user: OrganizationUserResponse) => removeUser(user.memberId, user.version),
-    onSuccess: async (_result, user) => { toast.success(t("users:messages.removed", { name: user.displayName || userContactText(user, format), organization: organizationName })); setTarget(null); setConfirmAction(null); await invalidate(); },
+    onSuccess: async (_result, user) => { toastSuccess(t("users:messages.removed", { name: user.displayName || userContactText(user, format), organization: organizationName })); setTarget(null); setConfirmAction(null); await invalidate(); },
     onError: (error) => { closeConfirmation(); toastActionError(error, t); },
   });
 

@@ -5,7 +5,7 @@ import { useMemo, useRef, useState } from "react";
 import { useController, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useSearchParams } from "react-router";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { z } from "zod";
 import { ApiError } from "@/shared/api/ApiError";
 import { isNotFoundError } from "@/shared/api/errorMessage";
@@ -186,7 +186,7 @@ function BroadcastEditor({ initial, initialTemplate }: { initial: BroadcastForm;
     setFailure(undefined);
     create.mutate(request, {
       onSuccess: async (created) => {
-        toast.success(t(request.scheduledAtUtc ? "whatsapp:broadcasts.form.scheduled" : "whatsapp:broadcasts.form.sent", { name: created.name }));
+        toastSuccess(t(request.scheduledAtUtc ? "whatsapp:broadcasts.form.scheduled" : "whatsapp:broadcasts.form.sent", { name: created.name }));
         edit.allowNextNavigation();
         void navigate(broadcastPath(created.id), { replace: true });
         await queryClient.invalidateQueries({ queryKey: broadcastsQueryRoot });

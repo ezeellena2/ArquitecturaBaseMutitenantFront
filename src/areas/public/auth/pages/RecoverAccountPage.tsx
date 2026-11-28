@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { Trans, useTranslation } from "react-i18next";
 import { Link } from "react-router";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { z } from "zod";
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { useLoginChannels } from "@/shared/account/useLoginChannels";
@@ -88,7 +88,7 @@ export function RecoverAccountPage() {
       const response = await request.mutateAsync({ destination: target, nonce, revision: current });
       if (current !== revision.current) return;
       revision.current++; setDestination(target); setCode(""); setVerified(false); resendTimer.restart(response.resendAfterSeconds); setStep("code");
-      if (resend) toast.success(t("recovery.codeResent"));
+      if (resend) toastSuccess(t("recovery.codeResent"));
     } catch (caught) {
       if (typeof caught === "object" && caught !== null && "name" in caught && caught.name === "AbortError") return;
       if (!(caught instanceof ApiError)) throw caught;

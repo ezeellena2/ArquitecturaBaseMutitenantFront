@@ -21,8 +21,7 @@ import { useHasLoginChannel } from "@/shared/account/useLoginChannels";
 import { VerifyLoginMethodDialog } from "../components/VerifyLoginMethodDialog";
 import { ChangeLoginMethodDialog } from "@/shared/account/ChangeLoginMethodDialog";
 import { useSearchParams } from "react-router";
-import { toast } from "sonner";
-import { toastError } from "@/shared/ui/sonner";
+import { toastError, toastSuccess } from "@/shared/ui/sonner";
 import { useAuth } from "react-oidc-context";
 import { showDeletionRequested } from "@/auth/deletionRequestStatus";
 import { useFormat } from "@/shared/format/useFormat";
@@ -60,7 +59,7 @@ export function AccountPage() {
   useEffect(() => {
     if (handledGoogle.current || (!params.has("google") && !params.has("error"))) return;
     handledGoogle.current = true;
-    if (params.get("google") === "linked") { toast.success(t("account:googleLinked")); refresh(); }
+    if (params.get("google") === "linked") { toastSuccess(t("account:googleLinked")); refresh(); }
     else if (params.has("error")) {
       const key = params.get("error") === "Identity.Google.AlreadyUsed" ? "googleAlreadyUsed" : params.get("error") === "Auth.ExternalLogin.EmailNotVerified" ? "googleEmailNotVerified" : "googleFailed";
       toastError(t(`account:${key}`));

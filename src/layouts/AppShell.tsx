@@ -2,7 +2,7 @@ import { useCallback, useContext, useEffect, useMemo, useRef, useState, type Rea
 import { useTranslation } from "react-i18next";
 import { AuthContext } from "react-oidc-context";
 import { Outlet, useLocation } from "react-router";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { takeArrivalNotice, type ArrivalNotice } from "@/auth/arrivalNotice";
 import { authCallbackPath } from "@/auth/authConfig";
 import { ForbiddenPage } from "@/areas/public/errors/pages/ForbiddenPage";
@@ -59,7 +59,7 @@ export function AppShell({ children, onReload = reloadPage }: AppShellProps) {
   useEffect(() => {
     if (pathname === authCallbackPath) return;
     const notice = takeArrivalNotice();
-    if (notice) toast.success(<ArrivalNoticeText notice={notice} />);
+    if (notice) toastSuccess(<ArrivalNoticeText notice={notice} />);
   }, [pathname]);
 
   useEffect(() => {

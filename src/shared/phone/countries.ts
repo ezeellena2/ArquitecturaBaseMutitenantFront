@@ -1,8 +1,9 @@
 import { getCountryCallingCode, type CountryCode } from "libphonenumber-js";
+import { foldText } from "@/shared/lib/text";
 import type { CountryReference } from "@/shared/referenceData/referenceData";
 
 function searchable(value: string): string {
-  return value.normalize("NFD").replace(/\p{M}/gu, "").trim().toLowerCase();
+  return foldText(value.trim());
 }
 
 function validCallingCode(country: CountryReference): boolean {

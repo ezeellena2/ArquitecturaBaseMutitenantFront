@@ -21,6 +21,7 @@ export type AssistantLinkQueryResponse = ApiSchemas["AssistantLinkQueryResponse"
 export type AssistantLinkResponse = ApiSchemas["AssistantLinkResponse"];
 export type AssistantLinkStatus = ApiSchemas["AssistantLinkStatus"];
 export type AssistantMaskedLoginMethodResponse = ApiSchemas["AssistantMaskedLoginMethodResponse"];
+export type AssistantMessageProposalResponse = ApiSchemas["AssistantMessageProposalResponse"];
 export type AssistantMessageResponse = ApiSchemas["AssistantMessageResponse"];
 export type AssistantMessageRole = ApiSchemas["AssistantMessageRole"];
 export type AssistantMessageStatus = ApiSchemas["AssistantMessageStatus"];

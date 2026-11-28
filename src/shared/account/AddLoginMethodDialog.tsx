@@ -4,7 +4,7 @@ import type { TFunction } from "i18next";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useController, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { z } from "zod";
 import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
@@ -158,7 +158,7 @@ function AddLoginMethodFlow({ onOpenChange, onComplete, method }: Props) {
       onSuccess: () => {
         if (!current(operation)) return;
         const value = phone ? maskPhone(destination) : destination;
-        toast.success(t(method ? "account:verifiedToast" : phone ? "account:phoneAdded" : "account:added", { value }));
+        toastSuccess(t(method ? "account:verifiedToast" : phone ? "account:phoneAdded" : "account:added", { value }));
         onComplete(); close();
       },
       onError: (error) => {

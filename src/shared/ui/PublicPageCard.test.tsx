@@ -76,4 +76,21 @@ describe("PublicPageCard (tableros Pagina-Publica y M-Pagina-Publica)", () => {
     expect(screen.getByRole("link", { name: "delta.ejemplo.com" })).toHaveAttribute("href", "https://delta.ejemplo.com");
     expect(screen.getByRole("link", { name: "Ingresá para continuar" })).toHaveAttribute("href", "/login");
   });
+
+  it.each([
+    "javascript:alert(1)",
+    "data:text/html,<script>alert(1)</script>",
+    "delta.ejemplo.com",
+  ])("no genera enlace para sitios web con esquema inválido (%s)", (website) => {
+    renderWithProviders(<PublicPageCard page={{ ...delta, website }} links />);
+
+    expect(screen.getByText(website)).toBeVisible();
+    expect(screen.queryByRole("link", { name: website })).not.toBeInTheDocument();
+  });
+
+  it("acepta http y https válidos como enlace del sitio web", () => {
+    renderWithProviders(<PublicPageCard page={{ ...delta, website: "http://acme.example/" }} links />);
+
+    expect(screen.getByRole("link", { name: "acme.example" })).toHaveAttribute("href", "http://acme.example/");
+  });
 });

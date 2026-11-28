@@ -2,12 +2,12 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
 import { useId, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 import { ApiError } from "@/shared/api/ApiError";
 import { apiErrorMessage } from "@/shared/api/errorMessage";
 import type { TwoFactorMethod, VerifyPlatformFactorResponse } from "@/shared/api/types";
 import { useIdempotentMutation } from "@/shared/api/useIdempotentMutation";
 import { useRetryAfterCountdown } from "@/shared/api/useRetryAfterCountdown";
+import { copyToClipboard } from "@/shared/lib/clipboard";
 import { saveBlobAs } from "@/shared/lib/saveFile";
 import { Button } from "@/shared/ui/button";
 import { CheckboxField } from "@/shared/ui/CheckboxField";
@@ -15,7 +15,7 @@ import { Input } from "@/shared/ui/input";
 import { LockIcon } from "@/shared/ui/icons";
 import { OtpInput } from "@/shared/ui/OtpInput";
 import { QrCode } from "@/shared/ui/QrCode";
-import { toastError } from "@/shared/ui/sonner";
+import { toastError, toastSuccess } from "@/shared/ui/sonner";
 import { completePlatformFactor, fetchPlatformFactor, platformFactorQueryKey, verifyPlatformFactor } from "../api/platformFactor";
 import { AuthMessage, type AuthMessageContent } from "./AuthMessage";
 
@@ -202,12 +202,8 @@ function FactorRecoveryCodes({ codes, onFailure, onCompleted }: { codes: readonl
     }
   }
   async function copy() {
-    try {
-      await navigator.clipboard.writeText(text);
-      toast.success(t("platformFactor.copied"));
-    } catch {
-      toastError(t("platformFactor.copyFailed"));
-    }
+    if (await copyToClipboard(text)) toastSuccess(t("platformFactor.copied"));
+    else toastError(t("platformFactor.copyFailed"));
   }
 
   return <div className="flex flex-col gap-5.5">
@@ -219,7 +215,7 @@ function FactorRecoveryCodes({ codes, onFailure, onCompleted }: { codes: readonl
       {codes.map((code) => <li key={code}>{code}</li>)}
     </ul>
     <div className="flex gap-2.5">
-      <Button type="button" variant="outline" className="flex-1" onClick={() => { saveBlobAs(new Blob([text], { type: "text/plain;charset=utf-8" }), t("platformFactor.fileName")); toast.success(t("platformFactor.downloaded")); }}>
+      <Button type="button" variant="outline" className="flex-1" onClick={() => { saveBlobAs(new Blob([text], { type: "text/plain;charset=utf-8" }), t("platformFactor.fileName")); toastSuccess(t("platformFactor.downloaded")); }}>
         {t("platformFactor.download")}
       </Button>
       <Button type="button" variant="outline" className="flex-1" onClick={() => { void copy(); }}>{t("platformFactor.copy")}</Button>

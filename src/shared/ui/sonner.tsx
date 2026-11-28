@@ -6,11 +6,39 @@ import { useMediaQuery } from "@/shared/hooks/useMediaQuery"
 import { AlertTriangleIcon, CircleCheckIcon, ErrorIcon, InfoIcon } from "@/shared/ui/icons"
 import { Toaster as Sonner, toast, type ToasterProps } from "sonner"
 
+type ToastMessage = Parameters<typeof toast.success>[0]
+type ToastOptions = Parameters<typeof toast.success>[1]
 type ToastErrorOptions = Parameters<typeof toast.error>[1]
 
 /// 210 («Criterio · Avisos»): todo aviso pasajero se va solo; el que salió bien, a los 4 s, y el de error, a los 10. El
 /// que trae una acción, sea del tipo que sea, queda hasta cerrarlo.
 export const toastDurations = { passing: 4000, error: 10_000 } as const
+
+function passingOptions(options?: ToastOptions): ToastOptions | undefined {
+  if (!options) return undefined
+  return options.action ? { ...options, duration: Number.POSITIVE_INFINITY, closeButton: true } : options
+}
+
+/// Aviso de confirmación pasajero (4 s; si trae una acción, queda hasta cerrarlo).
+export function toastSuccess(message: ToastMessage, options?: ToastOptions): void {
+  const resolved = passingOptions(options)
+  if (resolved === undefined) toast.success(message)
+  else toast.success(message, resolved)
+}
+
+/// Aviso informativo pasajero (4 s; si trae una acción, queda hasta cerrarlo).
+export function toastInfo(message: ToastMessage, options?: ToastOptions): void {
+  const resolved = passingOptions(options)
+  if (resolved === undefined) toast.info(message)
+  else toast.info(message, resolved)
+}
+
+/// Aviso de advertencia pasajero (4 s; si trae una acción, queda hasta cerrarlo).
+export function toastWarning(message: ToastMessage, options?: ToastOptions): void {
+  const resolved = passingOptions(options)
+  if (resolved === undefined) toast.warning(message)
+  else toast.warning(message, resolved)
+}
 
 /// Lo que acaba de fallar, abajo, con la ✕: se va a los 10 s; con una acción («Reintentar», «Copiar código»), queda.
 export function toastError(message: string, options?: ToastErrorOptions): void {

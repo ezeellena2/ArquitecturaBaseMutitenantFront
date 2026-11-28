@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastInfo, toastSuccess } from "@/shared/ui/sonner";
 import { toastActionError } from "@/shared/api/errorMessage";
 import { useFormat } from "@/shared/format/useFormat";
 import { useAppChrome } from "@/shared/ui/app/AppChrome";
@@ -43,8 +43,8 @@ export function PlatformNumberPage() {
     mutationFn: (number: WhatsAppNumberResponse) => checkPlatformNumber({ version: number.version }),
     onSuccess: (result) => {
       written(result);
-      if (result.number?.status === "PaymentMissing") toast.info(t("whatsapp:numbers.payment.stillMissing"));
-      else toast.success(t("whatsapp:numbers.payment.ok"));
+      if (result.number?.status === "PaymentMissing") toastInfo(t("whatsapp:numbers.payment.stillMissing"));
+      else toastSuccess(t("whatsapp:numbers.payment.ok"));
       setPayment(null);
     },
     onError: (error) => toastActionError(error, t),
@@ -53,7 +53,7 @@ export function PlatformNumberPage() {
     mutationFn: ({ enabled, number }: { enabled: boolean; number: WhatsAppNumberResponse }) => updatePlatformNumber({ consultationsEnabled: enabled, version: number.version }),
     onSuccess: (result) => {
       written(result);
-      toast.success(t(result.consultationsEnabled ? "whatsapp:numbers.platform.consultationsOn" : "whatsapp:numbers.platform.consultationsOff"));
+      toastSuccess(t(result.consultationsEnabled ? "whatsapp:numbers.platform.consultationsOn" : "whatsapp:numbers.platform.consultationsOff"));
     },
     onError: async (error) => {
       toastActionError(error, t);

@@ -24,6 +24,15 @@ export const publicPageBackdropClass = "bg-[var(--fondo)] bg-[radial-gradient(el
 const filled = (value: string | null | undefined): value is string => Boolean(value?.trim());
 // El sitio web se lee sin «https://» ni la barra del final, como en los tableros («delta.ejemplo.com»).
 const websiteText = (website: string) => website.trim().replace(/^https?:\/\//i, "").replace(/\/$/, "");
+function safeWebUrl(value: string): string | null {
+  const trimmed = value.trim();
+  try {
+    const parsed = new URL(trimmed);
+    return parsed.protocol === "http:" || parsed.protocol === "https:" ? trimmed : null;
+  } catch {
+    return null;
+  }
+}
 const valueClass = "text-[0.9375rem] font-medium [overflow-wrap:anywhere]";
 const linkClass = cn(valueClass, "text-[var(--marca-tx)] no-underline");
 
@@ -56,6 +65,7 @@ export function PublicPageCard({ page, links = false, signInHref, onSignIn, show
   const { name, description, logoDataUri, address, contactPhone, contactEmail, website } = page;
   const signIn = cn(buttonVariants({ size: "lg" }), "mt-4.5 w-full max-md:h-12 max-md:rounded-[0.75rem]");
   const hasContact = filled(address) || filled(contactPhone) || filled(contactEmail) || filled(website);
+  const websiteHref = links && filled(website) ? safeWebUrl(website) : null;
 
   return <div className="flex w-full max-w-140 flex-col items-center gap-1.5 rounded-[1.25rem] border border-[var(--borde)] bg-[var(--superficie)] p-8 text-center text-[0.9375rem] leading-[1.6] text-[var(--t1)] max-md:rounded-[1.125rem] max-md:px-4.5 max-md:pt-6 max-md:pb-5">
     {/* El logo va decorativo: el nombre está debajo. Sin logo, las iniciales en el verde claro. */}
@@ -75,7 +85,7 @@ export function PublicPageCard({ page, links = false, signInHref, onSignIn, show
         {links ? <a href={`mailto:${contactEmail.trim()}`} className={linkClass}>{contactEmail.trim()}</a> : <span className={linkClass}>{contactEmail.trim()}</span>}
       </ContactRow> : null}
       {filled(website) ? <ContactRow icon={GlobeIcon} label={t("publicPageCard.website")}>
-        {links ? <a href={website.trim()} className={linkClass}>{websiteText(website)}</a> : <span className={linkClass}>{websiteText(website)}</span>}
+        {websiteHref ? <a href={websiteHref} className={linkClass}>{websiteText(website)}</a> : <span className={linkClass}>{websiteText(website)}</span>}
       </ContactRow> : null}
     </ul> : null}
     {showSignIn ? onSignIn ? <button type="button" onClick={onSignIn} className={signIn}>{t("publicPageCard.signIn")}</button>

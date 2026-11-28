@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import type { AccountLoginMethod } from "@/shared/api/types";
 import { useRestoreFocusOnClose } from "@/shared/hooks/useRestoreFocusOnClose";
 import { Button } from "@/shared/ui/button";
@@ -45,7 +45,7 @@ export function ChangeLoginMethodDialog({ action, method, onClose, onComplete, r
       // Quitar el último método propio vuelve a pedirlo en la campana.
       void invalidateNotifications(queryClient);
       if (!alive.current) return;
-      toast.success(t(action === "primary" ? "primaryChanged" : google ? "googleUnlinked" : "removed", { value }));
+      toastSuccess(t(action === "primary" ? "primaryChanged" : google ? "googleUnlinked" : "removed", { value }));
       onComplete?.(); close();
     } catch (error) { if (alive.current) { retry.startFromError(error); setFailure(apiErrorMessage(error, t)); } }
     finally { if (alive.current) setSaving(false); }

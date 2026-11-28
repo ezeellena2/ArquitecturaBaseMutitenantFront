@@ -14,7 +14,7 @@ describe("Topbar", () => {
   it("lleva las migas y el menú de perfiles, sin ☰", () => {
     render(<Topbar breadcrumbs={<span>{"Inicio"}</span>} />);
 
-    expect(screen.getByRole("banner")).toHaveClass("h-13");
+    expect(screen.getByRole("banner")).toHaveClass("h-13", "print:hidden");
     expect(screen.getByRole("banner")).not.toHaveClass("md:h-16");
     expect(screen.getByText("Inicio")).toBeVisible();
     expect(screen.getByRole("button", { name: "Cuenta" })).toBeVisible();

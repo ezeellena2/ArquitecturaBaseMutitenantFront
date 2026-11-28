@@ -37,7 +37,7 @@ export function Sidebar({ navigation, account, context, collapsed, managementOpe
   const anyPanelOpen = administrationOpen || managementOpen || openModulePanel !== null;
   const ManagementIcon = navigation.management?.icon;
 
-  return <aside aria-label={t("layout.sidebar.navigation")} className={`relative flex h-full shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--lado)] ${collapsed ? "w-16" : "w-58"}`}>
+  return <aside aria-label={t("layout.sidebar.navigation")} className={`relative flex h-full shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--lado)] print:hidden ${collapsed ? "w-16" : "w-58"}`}>
     <div className="flex h-13 shrink-0 items-center gap-2.5 border-b border-[var(--lado-borde)] px-3 text-sm font-bold text-[var(--t1)]">
       {showLabels ? <span>{t("app.name")}</span> : null}
     </div>

@@ -4,7 +4,7 @@ import type { TFunction } from "i18next";
 import { useMemo, useState } from "react";
 import { useController, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { z } from "zod";
 import { useCurrentUser } from "@/auth/useCurrentUser";
 import { ApiError } from "@/shared/api/ApiError";
@@ -71,7 +71,7 @@ export function CreateOrganizationDialog({ onClose, onCreated }: { onClose: () =
   const submit = form.handleSubmit((values) => {
     clearFailure();
     create.mutate(values, {
-      onSuccess: async (created) => { toast.success(t("platformTenants:messages.created", { name: created.name, email: maskEmail(values.ownerEmail) })); onClose(); await onCreated(); },
+      onSuccess: async (created) => { toastSuccess(t("platformTenants:messages.created", { name: created.name, email: maskEmail(values.ownerEmail) })); onClose(); await onCreated(); },
       onError: rejected,
     });
   });

@@ -43,7 +43,7 @@ export function AdminPanel({ panel, open, onClose, currentLink }: { panel: Navig
         </li>;
       };
 
-  return <nav aria-label={t(panel.labelKey)} className="relative flex h-full w-58 shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--panel)]">
+  return <nav aria-label={t(panel.labelKey)} className="relative flex h-full w-58 shrink-0 flex-col border-r border-[var(--lado-borde)] bg-[var(--panel)] print:hidden">
     <div className="flex h-13 items-center border-b border-[var(--lado-borde)] px-3.5 text-[0.875rem] font-bold text-[var(--t1)]">{t(panel.labelKey)}</div>
     <button type="button" aria-label={t("layout.sidebar.closePanel", { name: t(panel.labelKey) })} onClick={onClose} className={panelEdgeButtonClass}>
       <ChevronLeft className="size-4.5" strokeWidth={1.75} aria-hidden="true" />

@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { useController, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router";
-import { toast } from "sonner";
+import { toastSuccess } from "@/shared/ui/sonner";
 import { z } from "zod";
 import { ApiError } from "@/shared/api/ApiError";
 import { rateLimitedActionMessage } from "@/shared/api/errorMessage";
@@ -135,7 +135,7 @@ export function InviteUserDialog({ onClose, onInvited }: {
   // (R05). El aviso y el cierre salen del intento original, también desde «Reintentar».
   const action = useResourceAction<InviteOrganizationUserRequest>({ onError: rejected });
   function invited(issued: OrganizationInvitationIssuedResponse, request: InviteOrganizationUserRequest) {
-    toast.success(t("users:messages.invited", { email: request.email, date: format.formatDate(issued.expiresAtUtc) }));
+    toastSuccess(t("users:messages.invited", { email: request.email, date: format.formatDate(issued.expiresAtUtc) }));
     onClose();
     void onInvited();
   }

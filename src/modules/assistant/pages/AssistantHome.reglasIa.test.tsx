@@ -81,6 +81,50 @@ describe("las reglas de toda la IA en el Inicio", () => {
     await waitFor(() => expect(screen.getByRole("textbox", { name: "Tu consulta" })).toHaveAttribute("placeholder", phone ? "Preguntá algo" : "Pedí un cambio o hacé otra consulta…"));
   });
 
+  it("muestra la propuesta en vivo al llegar done del stream sin esperar al GET de reconciliación", async () => {
+    let releaseReconcile!: () => void;
+    const reconcileGate = new Promise<void>((resolve) => { releaseReconcile = resolve; });
+    let posted = false;
+    const proposalMessage = {
+      id: "m-2", role: "assistant" as const, text: "Te preparé la invitación.", status: "Complete" as const,
+      version: 1, createdAtUtc: "2026-10-10T12:00:00Z", attachments: [], links: [],
+      proposal: { id: "p-live", kind: "action" as const, action: "users.invite", version: 1, state: "new" as const },
+    };
+    const app = setup(false, [chat().conversation]);
+    server.use(
+      http.get("/api/organization/assistant/conversations/chat", async () => {
+        if (posted) await reconcileGate;
+        return HttpResponse.json(posted
+          ? { ...chat(), messages: { items: [{ id: "m-1", role: "user", text: "Invitá a Ana", status: "Complete", version: 1, createdAtUtc: "2026-10-10T12:00:00Z", attachments: [], links: [] }, proposalMessage], hasMore: false } }
+          : chat());
+      }),
+      http.post("/api/organization/assistant/conversations/chat/messages", () => {
+        posted = true;
+        const sse = [
+          `event: start\ndata: ${JSON.stringify({ turnId: "t-1", userMessageId: "m-1", assistantMessageId: "m-2", conversationVersion: 2 })}\n\n`,
+          `event: done\ndata: ${JSON.stringify({ turnId: "t-1", message: proposalMessage, conversationVersion: 2, usage: { inputTokens: 1, outputTokens: 1, cacheWriteTokens: 0, cacheReadTokens: 0, cost: { amount: 0, currency: "USD" }, remainingMessages: 39, monthlyUsedCost: null } })}\n\n`,
+        ].join("");
+        return new HttpResponse(sse, { headers: { "Content-Type": "text/event-stream" } });
+      }),
+      http.get("/api/organization/assistant/proposals/p-live", () => HttpResponse.json({
+        id: "p-live", conversationId: "chat", kind: "action", action: "users.invite", version: 1,
+        state: "new", values: [{ field: "email", value: "ana@delta.ejemplo.com" }],
+      })),
+    );
+    await app.user.click(await screen.findByRole("button", { name: "Mi consulta" }));
+    const box = await screen.findByRole("textbox", { name: "Tu consulta" });
+    await waitFor(() => expect(box).toBeEnabled());
+    await app.user.type(box, "Invitá a Ana");
+    const send = screen.getByRole("button", { name: "Enviar" });
+    await waitFor(() => expect(send).toBeEnabled());
+    await app.user.click(send);
+
+    const card = await screen.findByRole("group", { name: "Invitación de usuario" });
+    await waitFor(() => expect(card).toHaveTextContent("ana@delta.ejemplo.com"));
+    expect(screen.getByRole("textbox", { name: "Tu consulta" })).toHaveAttribute("placeholder", "Pedí un cambio o hacé otra consulta…");
+    releaseReconcile();
+  });
+
   it("borrar una conversación que se puede leer también avisa que se van sus archivos", async () => {
     const app = setup(false, [chat().conversation]);
     (await screen.findByRole("button", { name: "Acciones de Mi consulta" })).focus(); await app.user.keyboard("{Enter}");
