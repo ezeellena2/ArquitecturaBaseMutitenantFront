@@ -35,7 +35,7 @@ import type { CreateFormCatalogRequest, FormCatalogRow } from "../api/types";
 import { CatalogBandStatus } from "../components/catalog/CatalogCells";
 import { CatalogConflictDialog } from "../components/catalog/CatalogConflictDialog";
 import { CatalogOriginFields, type CatalogOrigin } from "../components/catalog/CatalogOriginFields";
-import { CatalogPreviewPhone } from "../components/catalog/CatalogPreviewPhone";
+import { CatalogPreviewPhone, PreviewOptionsCard } from "../components/catalog/CatalogPreviewPhone";
 import { FiltersEditor } from "../components/catalog/FiltersEditor";
 import { FiltersPreview } from "../components/catalog/FiltersPreview";
 import { ImportDialog } from "../components/catalog/ImportDialog";
@@ -76,8 +76,9 @@ function PreviewAside({ editor }: { editor: CatalogEditor }) {
   </section>;
 }
 
-/** En el teléfono, «Así lo ve quien lo recibe» se abre desde la barra: a mano, con «Una opción | Varias»; con filtros, con la
- * persona o el cliente de ejemplo arriba (M-FRM-Catalogo-Filtros y M-FRM-Catalogo-Contactos). */
+/** En el teléfono, «Así lo ve quien lo recibe» se abre desde el ojo de la barra: la lista de opciones en una tarjeta, sin el
+ * marco del teléfono (M-FRM-Catalogo); con filtros, con la persona o el cliente de ejemplo arriba (M-FRM-Catalogo-Filtros y
+ * M-FRM-Catalogo-Contactos). */
 function PhonePreviewDialog({ editor, filters, open, onOpenChange }: { editor: CatalogEditor; filters: CatalogFilters; open: boolean; onOpenChange: (open: boolean) => void }) {
   const { t } = useTranslation("forms");
   // Se abre desde la barra, no desde un DialogTrigger: al cerrar, el foco vuelve a ese botón (formularios).
@@ -85,7 +86,7 @@ function PhonePreviewDialog({ editor, filters, open, onOpenChange }: { editor: C
   return <Dialog open={open} onOpenChange={onOpenChange}>
     <DialogContent aria-describedby={undefined} onCloseAutoFocus={restoreFocus}>
       <DialogHeader><DialogTitle>{t("forms:catalog.preview.title")}</DialogTitle></DialogHeader>
-      <DialogBody>{filters.filtered ? <FiltersPreview filters={filters} bare /> : <CatalogPreviewPhone options={previewOptions(editor)} />}</DialogBody>
+      <DialogBody>{filters.filtered ? <FiltersPreview filters={filters} bare /> : <PreviewOptionsCard options={previewOptions(editor)} />}</DialogBody>
     </DialogContent>
   </Dialog>;
 }

@@ -279,3 +279,25 @@ describe("Catálogo con filtros (FRM-Catalogo-Filtros y FRM-Catalogo-Contactos)"
     await waitFor(() => expect(previews.at(-1)?.filters?.conditions?.[0]?.values).toEqual(["Mayorista", "Minorista"]));
   });
 });
+
+describe("Catálogo con filtros, la vista previa (FRM-Catalogo-Filtros y M-FRM-Catalogo-Filtros, verificación de la E12)", () => {
+  it("en la compu va suelta, sin caja, con la pieza arriba y el teléfono con su franja", async () => {
+    mountForms(formsOwner, "/org/formularios/catalogos/c-sup");
+    expect(await within(await screen.findByRole("group", { name: "Así lo ve quien lo recibe" })).findByText("Martín Paz")).toBeInTheDocument();
+    const aside = screen.getByRole("region", { name: "Así lo ve quien lo recibe" });
+    expect(aside).not.toHaveClass("border");
+    expect(phone().querySelector("[data-slot=preview-phone-band]")).not.toBeNull();
+  });
+
+  it("en el teléfono, las opciones van en una tarjeta, sin el marco del teléfono", async () => {
+    const restore = asPhone();
+    try {
+      const { user } = mountForms(formsOwner, "/org/formularios/catalogos/c-sup");
+      await user.click(await screen.findByRole("button", { name: "Así lo ve quien lo recibe" }));
+      const preview = await screen.findByRole("dialog", { name: "Así lo ve quien lo recibe" });
+      expect(await within(preview).findByText("Martín Paz")).toBeInTheDocument();
+      expect(preview.querySelector("[data-slot=preview-phone]")).toBeNull();
+      expect(preview.querySelector("[data-slot=preview-card]")).not.toBeNull();
+    } finally { restore(); }
+  });
+});

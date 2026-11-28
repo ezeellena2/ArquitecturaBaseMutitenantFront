@@ -1,18 +1,18 @@
 import { useTranslation } from "react-i18next";
-import { cn } from "@/shared/lib/utils";
 import type { CatalogFilters } from "../../hooks/useCatalogFilters";
-import { CatalogListPhone } from "./CatalogPreviewPhone";
+import { CatalogListCard, CatalogListPhone } from "./CatalogPreviewPhone";
 import { SamplePicker } from "./SamplePicker";
 
 /**
- * «Así lo ve quien lo recibe» de un catálogo con filtros: solo la pieza «Persona» o «Cliente» (262) arriba y el teléfono, que
- * se actualiza solo (§10, sin «Probar»). Al costado en la compu; en el teléfono, adentro de su diálogo (`bare`).
+ * «Así lo ve quien lo recibe» de un catálogo con filtros: solo la pieza «Persona» o «Cliente» (262) arriba y las opciones, que
+ * se actualizan solas (§10, sin «Probar»). En la compu, al costado y sin caja, con el teléfono (FRM-Catalogo-Filtros); en el
+ * teléfono, adentro de su diálogo (`bare`), en una tarjeta sin marco (M-FRM-Catalogo-Filtros).
  */
 export function FiltersPreview({ filters, bare = false }: { filters: CatalogFilters; bare?: boolean }) {
   const { t } = useTranslation("forms");
-  return <section aria-label={t("forms:catalog.preview.title")}
-    className={cn("flex flex-col gap-3", !bare && "self-start rounded-lg border border-[var(--borde)] bg-[var(--superficie)] p-4")}>
+  const list = { preview: filters.preview.data, updating: filters.preview.updating, error: filters.preview.error, onRetry: filters.preview.retry };
+  return <section aria-label={t("forms:catalog.preview.title")} className="flex flex-col gap-3 self-start">
     <SamplePicker filters={filters} />
-    <CatalogListPhone preview={filters.preview.data} updating={filters.preview.updating} error={filters.preview.error} onRetry={filters.preview.retry} />
+    {bare ? <CatalogListCard {...list} /> : <CatalogListPhone {...list} />}
   </section>;
 }

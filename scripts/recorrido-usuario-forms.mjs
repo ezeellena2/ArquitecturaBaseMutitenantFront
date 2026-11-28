@@ -202,8 +202,15 @@ export async function previewOptions(page, { phone = false } = {}) {
     scope = page.getByRole("dialog", { name: "Así lo ve quien lo recibe", exact: true });
   }
   const preview = scope.getByRole("group", { name: "Así lo ve quien lo recibe", exact: true }).first();
-  await preview.getByRole("button", { name: /Elegí una opción/u }).click();
-  const options = await preview.getByRole("radio").evaluateAll((radios) => radios.map((radio) => radio.closest("label")?.innerText.split("\n")[0].trim() ?? ""));
+  let options;
+  if (phone) {
+    // M-FRM-Catalogo: en el teléfono, las opciones van en una tarjeta, sin el marco del teléfono ni los radios.
+    await preview.getByRole("listitem").first().waitFor();
+    options = await preview.getByRole("listitem").evaluateAll((items) => items.map((item) => item.innerText.split("\n")[0].trim()));
+  } else {
+    await preview.getByRole("button", { name: /Elegí una opción/u }).click();
+    options = await preview.getByRole("radio").evaluateAll((radios) => radios.map((radio) => radio.closest("label")?.innerText.split("\n")[0].trim() ?? ""));
+  }
   if (phone) {
     await page.keyboard.press("Escape");
     await scope.waitFor({ state: "hidden" });

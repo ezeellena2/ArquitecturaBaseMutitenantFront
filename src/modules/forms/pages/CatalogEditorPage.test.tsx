@@ -754,3 +754,47 @@ describe("CatalogEditorPage, «Opciones» (FRM-Catalogo y M-FRM-Catalogo, verifi
     } finally { restore(); }
   });
 });
+
+describe("CatalogEditorPage, «Así lo ve quien lo recibe» (FRM-Catalogo y M-FRM-Catalogo, verificación de la E12)", () => {
+  it("en la compu va suelto: el segmentado chico y centrado, y el teléfono con su franja, «⌄» y «Enviar» apagado hasta elegir", async () => {
+    const { user } = await openEditor();
+    const aside = screen.getByRole("region", { name: "Así lo ve quien lo recibe" });
+    expect(aside).not.toHaveClass("border");
+    expect(within(aside).getByRole("group", { name: "Cómo se elige" }).parentElement).toHaveClass("justify-center");
+    const phone = within(aside).getByRole("group", { name: "Así lo ve quien lo recibe" });
+    expect(phone.querySelector("[data-slot=preview-phone-band]")).not.toBeNull();
+    const choose = within(phone).getByRole("button", { name: /Elegí una opción/ });
+    expect(choose).toHaveTextContent("⌄");
+    expect(within(phone).getByText("Enviar")).toHaveAttribute("aria-disabled", "true");
+    await user.click(choose);
+    expect(within(phone).getByRole("button", { name: /Pregunta/ })).toBeInTheDocument();
+    await user.click(within(phone).getByRole("radio", { name: /Venta nueva/ }));
+    await user.click(within(phone).getByRole("button", { name: /Pregunta/ }));
+    expect(within(phone).getByRole("button", { name: /Venta nueva/ })).toBeInTheDocument();
+    expect(within(phone).getByText("Enviar")).not.toHaveAttribute("aria-disabled");
+  });
+
+  it("con «Varias», «Elegí hasta 3» va debajo de «× Formulario», con las casillas en la hoja", async () => {
+    const { user } = await openEditor();
+    const aside = screen.getByRole("region", { name: "Así lo ve quien lo recibe" });
+    await user.click(within(aside).getByRole("button", { name: "Varias" }));
+    const phone = within(aside).getByRole("group", { name: "Así lo ve quien lo recibe" });
+    expect(within(phone).getByText("Formulario")).toBeInTheDocument();
+    expect(within(phone).getByText("Elegí hasta 3")).toBeInTheDocument();
+    expect(within(phone).getAllByRole("checkbox").length).toBe(3);
+  });
+
+  it("en el teléfono, el ojo abre la lista de opciones en una tarjeta, sin el marco del teléfono", async () => {
+    const restore = asPhone();
+    try {
+      const { user } = mountForms(formsOwner, path);
+      await user.click(await screen.findByRole("button", { name: "Así lo ve quien lo recibe" }));
+      const dialog = await screen.findByRole("dialog", { name: "Así lo ve quien lo recibe" });
+      expect(dialog.querySelector("[data-slot=preview-phone]")).toBeNull();
+      expect(dialog.querySelector("[data-slot=preview-card]")).not.toBeNull();
+      expect(within(dialog).getByText("Seguimiento")).toBeInTheDocument();
+      expect(within(dialog).getByText("Visita programada a un cliente actual")).toBeInTheDocument();
+      expect(within(dialog).queryByRole("group", { name: "Cómo se elige" })).not.toBeInTheDocument();
+    } finally { restore(); }
+  });
+});
