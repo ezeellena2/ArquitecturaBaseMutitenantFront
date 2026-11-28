@@ -364,6 +364,24 @@ describe("CatalogEditorPage (FRM-Catalogo)", () => {
     expect(screen.queryByText("Otra persona cambió esto mientras lo editabas.")).not.toBeInTheDocument();
   });
 
+  it("si otra persona guardó al dar de baja, «Seguir editando» cierra la revisión sin dejar el cartel del 409 y conserva lo escrito", async () => {
+    let calls = 0;
+    serve({ put: () => HttpResponse.json({ code: "General.ConcurrencyConflict", status: 409, title: "Conflict" }, { status: 409 }) });
+    server.use(http.get(`${base}/c-motivos`, () => HttpResponse.json(catalog(calls++ === 0 ? {} : { modifiedBy: "Laura Ríos", version: 8 }))));
+    const { user } = await openEditor();
+    const field = textbox("Texto de Seguimiento");
+    await user.clear(field);
+    await user.paste("Seguimiento programado");
+    await openMenu(user, "Acciones de Motivos de visita");
+    await user.click(await screen.findByRole("menuitem", { name: /Dar de baja/ }));
+    await user.click(within(await screen.findByRole("dialog", { name: "¿Dar de baja «Motivos de visita»?" })).getByRole("button", { name: "Dar de baja" }));
+    const review = await screen.findByRole("dialog", { name: "Otra persona guardó el catálogo" });
+    await user.click(within(review).getByRole("button", { name: "Seguir editando" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    expect(screen.queryByText("Otra persona cambió esto mientras lo editabas.")).not.toBeInTheDocument();
+    expect(field).toHaveValue("Seguimiento programado");
+  });
+
   it("con solo formcatalogs.read: la tabla de lectura, sin casillas ni guardar, con Exportar", async () => {
     serve({ detail: catalog({ canManage: false }) });
     mountForms(formsReader, path);
@@ -448,6 +466,19 @@ describe("CatalogEditorPage: los errores (errores.md)", () => {
     expect(await screen.findByText("No tenés permiso para exportar este catálogo.")).toBeVisible();
   });
 
+  it("si «Exportar» o «Descargar la plantilla» responden 500, avisan el error sin fallar en silencio", async () => {
+    server.use(
+      http.get(`${base}/c-motivos/export`, () => HttpResponse.json({ status: 500, title: "Server Error" }, { status: 500 })),
+      http.get(`${base}/template`, () => HttpResponse.json({ status: 500, title: "Server Error" }, { status: 500 })),
+    );
+    const { user } = await openEditor();
+    await user.click(screen.getByRole("button", { name: "Exportar" }));
+    expect(await screen.findByText("Algo salió mal. Probá de nuevo en un rato.")).toBeVisible();
+    await openMenu(user, "Más acciones de las opciones");
+    await user.click(await screen.findByRole("menuitem", { name: /Descargar la plantilla/ }));
+    await waitFor(() => expect(screen.getAllByText("Algo salió mal. Probá de nuevo en un rato.").length).toBeGreaterThanOrEqual(2));
+  });
+
   it("si se corta la red al guardar, «Reintentar» del aviso termina el guardado: «Guardamos el catálogo.» y el siguiente va con la versión nueva", async () => {
     serve({ put: () => puts.length === 1 ? HttpResponse.error() : HttpResponse.json({ version: puts.length === 2 ? 8 : 9, itemIdentityMap: [] }) });
     const { user } = await openEditor();
@@ -469,7 +500,7 @@ describe("CatalogEditorPage: los errores (errores.md)", () => {
     expect(puts.map((put) => put.version)).toEqual([7, 7, 8]);
   });
 
-  it("si después de un 409 lo guardado ahora no se puede leer, el 409 se ve en su cartel, con «Ver lo nuevo»", async () => {
+  it("si después de un 409 lo guardado ahora no se puede leer, el 409 se ve en su cartel, con «Ver lo nuevo» y «Seguir editando»", async () => {
     let reads = 0;
     serve({ put: () => HttpResponse.json({ code: "General.ConcurrencyConflict", status: 409, title: "Conflict" }, { status: 409 }) });
     server.use(http.get(`${base}/c-motivos`, () => reads++ === 0 ? HttpResponse.json(catalog()) : HttpResponse.error()));
@@ -482,6 +513,9 @@ describe("CatalogEditorPage: los errores (errores.md)", () => {
     expect(await screen.findByText("Otra persona cambió esto mientras lo editabas.")).toBeVisible();
     expect(screen.getByRole("button", { name: "Ver lo nuevo" })).toBeVisible();
     expect(screen.queryByRole("dialog", { name: "Otra persona guardó el catálogo" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Seguir editando" }));
+    expect(screen.queryByText("Otra persona cambió esto mientras lo editabas.")).not.toBeInTheDocument();
+    expect(field).toHaveValue("Seguimiento programado");
   });
 
   it("sin permiso, la ficha es la pantalla de permiso: su consulta bloquea la vista", async () => {

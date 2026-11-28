@@ -154,8 +154,11 @@ export function useCatalogSave(id: string | undefined, data: CatalogData, draft:
     /** Lo guardado ahora no se pudo leer: el 409 va en el cartel de siempre, con «Ver lo nuevo» y «Seguir editando». */
     conflictUnreadable: conflictOpen && conflictQuery.isError,
     seeNew,
-    /** «Seguir editando»: cierra la revisión y conserva lo escrito y la versión de la que partió. */
-    continueEditing: () => setConflictOpen(false),
+    /** «Seguir editando»: cierra la revisión y limpia el conflicto, conservando lo escrito y la versión de la que partió. */
+    continueEditing: () => {
+      setConflictOpen(false);
+      setSaveError(undefined);
+    },
     setCatalogActive,
     activating: activation.isPending,
   };
