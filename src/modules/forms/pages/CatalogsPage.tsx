@@ -7,6 +7,7 @@ import { countOf } from "@/shared/format/countOf";
 import { useFormat } from "@/shared/format/useFormat";
 import { usePagedQuery } from "@/shared/hooks/usePagedQuery";
 import type { ModuleContentProps } from "@/shared/modules/types";
+import { useAppChrome } from "@/shared/ui/app/AppChrome";
 import { Button } from "@/shared/ui/button";
 import { DataTable } from "@/shared/ui/DataTable";
 import { FilterBar } from "@/shared/ui/FilterBar";
@@ -34,6 +35,7 @@ const newCatalogPath = `${catalogsPath}/nuevo`;
 export function CatalogsPage({ me }: ModuleContentProps) {
   const { t } = useTranslation(["forms", "common"]);
   const format = useFormat();
+  const { phone } = useAppChrome();
   const canManage = me.effectivePermissions.organization.includes("formcatalogs.manage");
   const { filters, pagination, query, result: catalogs, paginationProps } = usePagedQuery({
     filterKeys: catalogFilterKeys, defaultSort: "name",
@@ -46,6 +48,9 @@ export function CatalogsPage({ me }: ModuleContentProps) {
   const columns = createCatalogColumns(t);
   const filtered = Boolean(query.source || query.status || pagination.search);
   const totals = counts.data;
+  // Sin ningún catálogo no hay nada que buscar, filtrar ni ordenar: en la compu no va la barra (FRM-Catalogos «Vacío»); en el
+  // teléfono quedan la lupa y «Filtros» arriba, sin «Ordenar por» (M-FRM-Catalogos «Vacío»).
+  const emptyList = !filtered && (totals ? totals.all === 0 : catalogs.data?.totalCount === 0);
   // «7 catálogos · 6 activos» (262); sin ninguno, «Sin catálogos».
   const summary = totals ? totals.all === 0 ? t("forms:catalogs.summaryEmpty") : <>
     <span>{t("forms:catalogs.summaryTotal", countOf(format, totals.all))}</span><SublineSeparator />
@@ -56,7 +61,7 @@ export function CatalogsPage({ me }: ModuleContentProps) {
     fab={canManage ? { label: t("forms:catalogs.new"), to: newCatalogPath } : undefined}
     actions={canManage ? <Button asChild><Link to={newCatalogPath}><Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />{t("forms:catalogs.new")}</Link></Button> : undefined}>
     <div className="flex flex-col gap-3 md:gap-3.5">
-      <FilterBar sort={{ columns, value: pagination.sort, onChange: pagination.setSort }} screen={t("forms:nav.catalogs")}
+      {emptyList && !phone ? null : <FilterBar sort={emptyList ? undefined : { columns, value: pagination.sort, onChange: pagination.setSort }} screen={t("forms:nav.catalogs")}
         label={t("forms:catalogs.filters.label")} searchLabel={t("forms:catalogs.filters.search")}
         searchValue={pagination.search ?? ""} onSearchChange={pagination.setSearch}
         filters={[
@@ -71,7 +76,7 @@ export function CatalogsPage({ me }: ModuleContentProps) {
             options: [{ value: allValue, label: t("forms:catalogs.filters.allStatuses") },
               { value: "Active", label: t("forms:catalogs.filters.active") }, { value: "Inactive", label: t("forms:catalogs.filters.inactive") }] },
         ]}
-        clearLabel={t("common:actions.clearFilters")} onClear={filters.clear} />
+        clearLabel={t("common:actions.clearFilters")} onClear={filters.clear} />}
       <Surface className="overflow-hidden" phoneFlush>
         <DataTable columns={columns} rows={catalogs.data?.items ?? []} rowKey={(catalog) => catalog.id} sort={pagination.sort} onSortChange={pagination.setSort}
           mobileRow={(catalog) => catalogPhoneRow(catalog, t)}
@@ -81,7 +86,7 @@ export function CatalogsPage({ me }: ModuleContentProps) {
           failure={catalogs.error} onRetry={() => { void catalogs.refetch(); }}
           emptyTitle={filtered ? t("forms:catalogs.empty.filtered") : t("forms:catalogs.empty.all")}
           emptyAction={filtered ? <Button type="button" variant="outline" onClick={filters.clear}>{t("common:actions.clearFilters")}</Button> : undefined} />
-        {paginationProps ? <Pagination {...paginationProps} /> : null}
+        {paginationProps && paginationProps.totalCount > 0 ? <Pagination {...paginationProps} /> : null}
       </Surface>
     </div>
   </Page>;
