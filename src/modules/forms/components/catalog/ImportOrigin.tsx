@@ -1,4 +1,4 @@
-import { Download } from "lucide-react";
+import { FileText } from "lucide-react";
 import { useId, useRef, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { countOf } from "@/shared/format/countOf";
@@ -48,7 +48,7 @@ export function ImportOrigin({ imp, valueType, columnLabel }: {
   const fromId = `${id}-from`, fileId = `${id}-file`, originErrorId = `${id}-origin-error`, pasteNoteId = `${id}-paste-note`;
 
   const template = <Button type="button" size="sm" variant="link" onClick={imp.downloadTemplate}>
-    <Download aria-hidden="true" className="size-3.5" />{t("forms:catalog.import.template")}
+    <FileText aria-hidden="true" className="size-3.5" />{t("forms:catalog.import.template")}
   </Button>;
 
   const fromRow = <OriginRow labelId={`${fromId}-label`} htmlFor={fromId} label={t("forms:catalog.import.from")} help={t("forms:catalog.import.fromHelp")}

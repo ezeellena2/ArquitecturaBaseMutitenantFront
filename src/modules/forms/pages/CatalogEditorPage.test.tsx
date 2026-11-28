@@ -610,3 +610,147 @@ describe("CatalogEditorPage, la banda y lo que la rodea (FRM-Catalogo y M-FRM-Ca
     } finally { restore(); }
   });
 });
+
+describe("CatalogEditorPage, «Opciones» (FRM-Catalogo y M-FRM-Catalogo, verificación de la E12)", () => {
+  const options = () => screen.getByRole("region", { name: "Opciones" });
+
+  it("un catálogo nuevo dice «Todavía no hay opciones.», sin la tabla ni el buscador", async () => {
+    mountForms(formsOwner, "/org/formularios/catalogos/nuevo");
+    expect(await screen.findByText("Todavía no hay opciones.")).toBeVisible();
+    expect(within(options()).queryByRole("columnheader")).not.toBeInTheDocument();
+    expect(screen.queryByText("No hay nada para mostrar")).not.toBeInTheDocument();
+    expect(screen.queryByRole("searchbox", { name: "Buscar opción" })).not.toBeInTheDocument();
+  });
+
+  it("uno guardado sin opciones no muestra el buscador", async () => {
+    serve({ detail: catalog({ usable: false, unusableReason: "NoActiveOptions", itemCounts: { total: 0, active: 0 } }), items: [] });
+    mountForms(formsOwner, path);
+    expect(await screen.findByText("Todavía no hay opciones.")).toBeVisible();
+    expect(screen.queryByRole("searchbox", { name: "Buscar opción" })).not.toBeInTheDocument();
+  });
+
+  it("el encabezado es arena, «Agregar opción» es de contorno y los íconos del ⋮ son los del lienzo", async () => {
+    const { user } = await openEditor();
+    const heading = within(options()).getByRole("heading", { name: "Opciones" });
+    expect(heading.parentElement).toHaveClass("bg-[var(--cab)]");
+    expect(within(options()).getByRole("button", { name: "Agregar opción" })).toHaveClass("bg-[var(--superficie)]");
+    expect(within(options()).getByRole("button", { name: "Agregar opción" })).not.toHaveClass("bg-[var(--marca)]");
+    await openMenu(user, "Más acciones de las opciones");
+    expect((await screen.findByRole("menuitem", { name: /Descargar la plantilla/ })).querySelector("svg")).toHaveClass("lucide-file-text");
+    expect(screen.getByRole("menuitem", { name: /Generar los códigos que faltan/ }).querySelector("svg")).toHaveClass("lucide-code");
+  });
+
+  it("una opción de baja va atenuada, y el contador va adentro del campo de texto", async () => {
+    await openEditor();
+    expect(textbox("Texto de Cobranza")).toHaveClass("text-[var(--t3)]");
+    expect(textbox("Detalle de Cobranza")).toHaveClass("text-[var(--t3)]");
+    expect(textbox("Texto de Seguimiento")).not.toHaveClass("text-[var(--t3)]");
+    const counter = screen.getAllByText("11/30", { selector: "small" })[0];
+    expect(counter.closest("div.relative")).toContainElement(textbox("Texto de Seguimiento"));
+    expect(textbox("Texto de Seguimiento")).toHaveClass("pr-12");
+  });
+
+  it("una opción por borrar conserva sus casillas apagadas y dice «Se borra al guardar» en Acciones, junto al ⋮", async () => {
+    const { user } = await openEditor();
+    await user.click(screen.getByRole("button", { name: "Borrar Reclamo" }));
+    await user.click(within(await screen.findByRole("dialog", { name: "¿Borrar «Reclamo»?" })).getByRole("button", { name: "Borrar opción" }));
+    const row = screen.getByRole("textbox", { name: "Texto de Reclamo" }).closest("tr")!;
+    expect(within(row).getByRole("checkbox", { name: "Elegir Reclamo" })).toBeDisabled();
+    expect(within(row).getByRole("checkbox", { name: "Activa: Reclamo" })).toBeDisabled();
+    const deleteText = within(row).getByText("Se borra al guardar");
+    expect(deleteText.closest("td")).toContainElement(within(row).getByRole("button", { name: "Acciones de Reclamo" }));
+    expect(within(row).queryByRole("button", { name: "Subir Reclamo" })).not.toBeInTheDocument();
+    expect(within(row).queryByRole("button", { name: "Editar Reclamo" })).not.toBeInTheDocument();
+  });
+
+  it("un movimiento pendiente es una franja suelta, arriba de «Opciones», y las elegidas van debajo del buscador con el tinte de la marca", async () => {
+    const { user } = await openEditor();
+    await user.click(screen.getByRole("button", { name: "Bajar Seguimiento" }));
+    const strip = screen.getByText("1 movimiento pendiente. Se aplica al guardar.").closest("[role=status]") as HTMLElement;
+    expect(options()).not.toContainElement(strip);
+    expect(strip.querySelector("svg")).toBeNull();
+    await user.click(screen.getByRole("button", { name: "Descartar movimientos" }));
+    await user.click(screen.getByRole("checkbox", { name: "Elegir Venta nueva" }));
+    const bar = screen.getByText("1 elegida").parentElement as HTMLElement;
+    expect(bar).toHaveClass("bg-[var(--marca-t)]");
+    expect(screen.getByRole("searchbox", { name: "Buscar opción" }).compareDocumentPosition(bar) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("con un orden pendiente, ↑ ↓ quedan apagados en todas las filas", async () => {
+    const { user } = await openEditor();
+    await openMenu(user, "Más acciones de las opciones");
+    await user.click(await screen.findByRole("menuitem", { name: /Ordenar por…/ }));
+    const dialog = await screen.findByRole("dialog", { name: "Ordenar las opciones" });
+    await user.click(within(dialog).getByRole("button", { name: "Ordenar" }));
+    expect(await screen.findByText(/Se ordenará por/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Bajar Seguimiento" })).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByRole("button", { name: "Subir Venta nueva" })).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getAllByText("Guardá o cancelá el orden pendiente para mover opciones.").length).toBeGreaterThan(0);
+  });
+
+  it("el pie cuenta también las opciones nuevas que se ven", async () => {
+    const { user } = await openEditor();
+    expect(screen.getByText("1–4 de 4")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Agregar opción" }));
+    const dialog = await screen.findByRole("dialog", { name: "Opciones nuevas de «Motivos de visita»" });
+    await user.type(within(dialog).getByRole("textbox", { name: "Texto" }), "Garantía");
+    await user.click(within(dialog).getByRole("button", { name: "Listo" }));
+    expect(await screen.findByText("1–5 de 5")).toBeInTheDocument();
+  });
+
+  it("en solo lectura, el Estado de cada opción lleva su punto", async () => {
+    serve({ detail: catalog({ canManage: false }) });
+    mountForms(formsReader, path);
+    const inactive = await screen.findByText("De baja");
+    expect(inactive.parentElement?.querySelector("[data-slot=status-dot]")).toHaveClass("bg-[var(--punto-apagado)]");
+    expect(screen.getAllByText("Activa")[0].parentElement?.querySelector("[data-slot=status-dot]")).toHaveClass("bg-[var(--punto-ok)]");
+  });
+
+  it("en el teléfono: el enlace «Agregar opción», la lista en una tarjeta con el número en un círculo y lo demás en el ⋮ de la banda", async () => {
+    const restore = asPhone();
+    try {
+      const { user } = mountForms(formsOwner, path);
+      const name = await screen.findByText("Seguimiento");
+      const region = options();
+      expect(within(region).getByRole("button", { name: "Agregar opción" })).not.toHaveClass("bg-[var(--marca)]");
+      expect(within(region).queryByRole("button", { name: "Exportar" })).not.toBeInTheDocument();
+      expect(within(region).queryByRole("button", { name: "Más acciones de las opciones" })).not.toBeInTheDocument();
+      const item = name.closest("li") as HTMLElement;
+      expect(within(item).getByText("1")).toHaveClass("rounded-full");
+      const code = within(item).getByText("Código");
+      expect(code.tagName).toBe("DT");
+      expect(code.nextElementSibling).toHaveTextContent("SEG");
+      expect(item.closest("ul")).toHaveClass("rounded-[0.875rem]");
+      const cobranza = screen.getByText("Cobranza");
+      expect(cobranza).toHaveClass("text-[var(--t3)]");
+      expect(within(cobranza.closest("li") as HTMLElement).getByText("De baja").parentElement?.querySelector("[data-slot=status-dot]")).not.toBeNull();
+      expect(screen.getByRole("searchbox", { name: "Buscar opción" })).toHaveClass("max-md:pl-10");
+      await user.click(screen.getByRole("button", { name: "Acciones de Motivos de visita" }));
+      const menu = await screen.findByRole("menu", { name: "Acciones de Motivos de visita" });
+      expect(within(menu).getAllByRole("menuitem").map((entry) => entry.textContent)).toEqual(
+        ["Exportar", "Descargar la plantilla", "Ordenar por…", "Generar los códigos que faltan", "Dar de baja el catálogo"]);
+    } finally { restore(); }
+  });
+
+  it("en el teléfono, una opción por borrar lleva solo el ⋮ y su Estado con el punto rojo", async () => {
+    const restore = asPhone();
+    try {
+      const { user } = mountForms(formsOwner, path);
+      await screen.findByText("Reclamo");
+      await user.click(screen.getByRole("button", { name: "Borrar Reclamo" }));
+      await user.click(within(await screen.findByRole("dialog", { name: "¿Borrar «Reclamo»?" })).getByRole("button", { name: "Borrar opción" }));
+      const item = screen.getByText("Reclamo").closest("li") as HTMLElement;
+      expect(within(item).queryByRole("button", { name: "Subir Reclamo" })).not.toBeInTheDocument();
+      expect(within(item).getByRole("button", { name: "Acciones de Reclamo" })).toBeInTheDocument();
+      expect(within(item).getByText("Se borra al guardar").parentElement?.querySelector("[data-slot=status-dot]")).toHaveClass("bg-[var(--peligro)]");
+    } finally { restore(); }
+  });
+
+  it("en el teléfono, un catálogo nuevo dice «Todavía no hay opciones.» en su tarjeta", async () => {
+    const restore = asPhone();
+    try {
+      mountForms(formsOwner, "/org/formularios/catalogos/nuevo");
+      expect(await screen.findByText("Todavía no hay opciones.")).toHaveClass("font-semibold");
+    } finally { restore(); }
+  });
+});

@@ -273,3 +273,17 @@ describe("ImportDialog (FRM-Catalogo-Importar)", () => {
     expect(within(mounted.dialog).getByRole("row", { name: "3 Valor «1.500» se lee de dos formas. Escribí 1500 o 1,5." })).toBeVisible();
   });
 });
+
+describe("ImportDialog, lo que se ve (FRM-Catalogo-Importar, verificación de la E12)", () => {
+  it("«Descargar la plantilla» lleva el documento del lienzo y «Revisando» dibuja en gris la forma de la revisión", async () => {
+    serve({ preview: () => new Promise<Response>(() => {}) as unknown as Response });
+    const mounted = await openImport();
+    const { user, dialog } = mounted;
+    expect(within(dialog).getByRole("button", { name: "Descargar la plantilla" }).querySelector("svg")).toHaveClass("lucide-file-text");
+    fireEvent.change(within(dialog).getByLabelText("Archivo"), { target: { files: [new FetchFile(["xlsx"], "proveedores.xlsx")] } });
+    await user.click(within(dialog).getByRole("button", { name: "Revisar" }));
+    const shape = await waitFor(() => { const found = dialog.querySelector("[data-slot=import-reviewing]"); expect(found).not.toBeNull(); return found as HTMLElement; });
+    expect(shape.querySelector("[data-slot=skeleton]")).toBeNull();
+    expect(shape.querySelector(".bg-\\[var\\(--cab\\)\\]")).not.toBeNull();
+  });
+});

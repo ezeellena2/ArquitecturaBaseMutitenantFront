@@ -1,12 +1,12 @@
-import { useId, type ReactNode } from "react";
+import { Fragment, useId, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { pageSizes } from "@/shared/api/pageSizes";
 import { useFormat } from "@/shared/format/useFormat";
 import { cn } from "@/shared/lib/utils";
 import { Banner } from "@/shared/ui/Banner";
 import { DetailGrid } from "@/shared/ui/DetailGrid";
+import { loadingBlock } from "@/shared/ui/PageLoading";
 import { Pagination } from "@/shared/ui/Pagination";
-import { Skeleton } from "@/shared/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
 import { TabCount, Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import type { FormCatalogImportErrorRow, FormCatalogValueType } from "../../api/types";
@@ -144,10 +144,23 @@ export function ImportReview({ imp, valueType }: { imp: CatalogImport; valueType
     <ImportBand id={`${id}-revision`}>{t("forms:catalog.import.revision")}</ImportBand>
     <ImportZone dimmed={imp.applying}>
       {failureText ? <Banner tone="danger" role="alert">{failureText}</Banner> : null}
-      {reviewing ? <div aria-hidden="true" className="flex flex-col gap-2.5">
-        {["w-3/5", "w-2/5", "w-1/2", "w-1/3"].map((width) => <Skeleton key={width} className={cn("h-3.5", width)} />)}
-        <Skeleton className="h-8 w-full" />
-        {["w-full", "w-11/12"].map((width) => <Skeleton key={width} className={cn("h-3.5", width)} />)}
+      {/* FRM-Catalogo-Importar, «Revisando»: en gris, la forma de lo que viene (los datos del archivo, las pestañas y la tabla). */}
+      {reviewing ? <div aria-hidden="true" data-slot="import-reviewing" className="flex flex-col gap-3">
+        <div className="grid grid-cols-[7.5rem_minmax(0,1fr)] overflow-hidden rounded-[0.5rem] border border-[var(--borde)]">
+          {["w-3/5", "w-2/5", "w-1/3", "w-1/4"].map((width) => <Fragment key={width}>
+            <span className="border-b border-[var(--borde)] bg-[var(--s2)] px-3 py-3 last:border-b-0"><span className={cn(loadingBlock, "h-2.5 w-14")} /></span>
+            <span className="border-b border-[var(--borde)] px-3 py-3"><span className={cn(loadingBlock, "h-2.5", width)} /></span>
+          </Fragment>)}
+        </div>
+        <div className="flex gap-4 border-b border-[var(--borde)] pb-2.5">
+          {["w-14", "w-10", "w-14", "w-12"].map((width, index) => <span key={index} className={cn(loadingBlock, "h-2.5", width)} />)}
+        </div>
+        <div className="overflow-hidden rounded-[0.5rem] border border-[var(--borde)]">
+          <div className="h-8 bg-[var(--cab)]" />
+          {["w-2/5", "w-1/3"].map((width) => <div key={width} className="flex items-center gap-4 border-t border-[var(--borde)] px-3 py-3">
+            <span className={cn(loadingBlock, "h-2.5 w-6")} /><span className={cn(loadingBlock, "h-2.5 w-16")} /><span className={cn(loadingBlock, "h-2.5", width)} />
+          </div>)}
+        </div>
       </div> : null}
       {review && lists ? <>
         <div className="-mx-5 -mt-4 -mb-5"><DetailGrid items={[

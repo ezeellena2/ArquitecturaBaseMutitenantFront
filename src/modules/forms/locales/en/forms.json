@@ -72,6 +72,7 @@
     "actions": {
       "catalogMore": "{{name}} actions",
       "deactivate": "Deactivate",
+      "deactivateCatalog": "Deactivate the catalog",
       "reactivateCatalog": "Reactivate",
       "add": "Add option",
       "import": "Import",
@@ -107,7 +108,8 @@
       "discardMovesFirst": "Discard the position changes first.",
       "orderPending": "Save or discard the pending order to delete options.",
       "deletePending": "Save or discard the pending deletion to move options.",
-      "saveToMove": "Save the option to move it."
+      "saveToMove": "Save the option to move it.",
+      "sortPending": "Save or cancel the pending sort to move options."
     },
     "pending": {
       "moves_one": "{{n}} pending move. It's applied on save.",

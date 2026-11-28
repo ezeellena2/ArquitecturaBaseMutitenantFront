@@ -44,6 +44,7 @@ import { catalogFieldErrors, isCatalogConflict } from "../errors";
 import { useCatalogEditor, type CatalogEditor, type CatalogSaveExtra } from "../hooks/useCatalogEditor";
 import { useCatalogFilters, type CatalogFilters } from "../hooks/useCatalogFilters";
 import { useCatalogProposal, useCatalogProposalTargets } from "../hooks/useCatalogProposal";
+import { useOptionsActions } from "../hooks/useOptionsActions";
 import { catalogLimits } from "../lib/catalogLimits";
 import { catalogsPath } from "../registration";
 
@@ -137,6 +138,7 @@ function SavedCatalogEditor({ id }: { id: string }) {
   const filters = useCatalogFilters({ source: saved?.source ?? "Manual", saved, canManage: saved?.canManage ?? false, error: editor.saveError,
     sampleRequiredMessage: t("forms:catalog.errors.sampleRequired") });
   const editableNow = Boolean(saved?.canManage && saved.isActive);
+  const optionsActions = useOptionsActions(editor, { editable: editableNow, isNew: false });
   const proposal = useCatalogProposal(editor, targets);
   const isDirty = editor.isDirty || (editableNow && filters.isDirty);
   // El 409 se lee en la revisión lado a lado; si lo guardado ahora no se pudo leer, en el cartel de siempre.
@@ -190,6 +192,12 @@ function SavedCatalogEditor({ id }: { id: string }) {
     return extra !== false && editor.setCatalogActive(isActive, extra,
       savedWith(t(isActive ? "forms:catalog.reactivated" : "forms:catalog.deactivated")), onSettled);
   };
+  // El ⋮ de la banda: «Dar de baja» o «Reactivar», una opción común (el rojo va en su confirmación, FRM-Catalogo). En el
+  // teléfono suma, antes, lo de «Opciones»: «Exportar», la plantilla, «Ordenar por…» y los códigos (M-FRM-Catalogo).
+  const statusItem = saved.isActive
+    ? { label: t(phone ? "forms:catalog.actions.deactivateCatalog" : "forms:catalog.actions.deactivate"), icon: Ban, onSelect: () => setConfirmDeactivate(true) }
+    : { label: t("forms:catalog.actions.reactivateCatalog"), icon: RotateCcw, onSelect: () => { setActive(true); } };
+  const bandItems = [...(phone && manual ? optionsActions.bandItems : []), ...(saved.canManage ? [statusItem] : [])];
   const activeCount = saved.itemCounts.active
     + editor.rows.filter((row) => row.isNew && row.draft.isActive).length
     - editor.rows.filter((row) => !row.isNew && row.pendingDelete && row.draft.isActive).length;
@@ -204,12 +212,7 @@ function SavedCatalogEditor({ id }: { id: string }) {
         <Button type="button" variant="outline" onClick={discard}>{t("forms:catalog.discard")}</Button>
         <Button type="button" disabled={!isDirty} pending={editor.saving} pendingLabel={t("common:states.saving")} onClick={save}>{t("forms:catalog.save")}</Button>
       </> : undefined}
-      moreActions={saved.canManage ? { label: t("forms:catalog.actions.catalogMore", { name: saved.name }), pending: editor.activating, items: [
-        saved.isActive
-          // Una opción común del ⋮; el rojo va en su confirmación, que es la que da de baja (FRM-Catalogo).
-          ? { label: t("forms:catalog.actions.deactivate"), icon: Ban, onSelect: () => setConfirmDeactivate(true) }
-          : { label: t("forms:catalog.actions.reactivateCatalog"), icon: RotateCcw, onSelect: () => { setActive(true); } },
-      ] } : undefined}
+      moreActions={bandItems.length ? { label: t("forms:catalog.actions.catalogMore", { name: saved.name }), pending: editor.activating, items: bandItems } : undefined}
     >
       {phone ? <PreviewBarButton onOpen={() => setPreviewOpen(true)} /> : null}
       {edit.formError}
@@ -236,7 +239,7 @@ function SavedCatalogEditor({ id }: { id: string }) {
           </SectionFields>
         </Section>
       </CatalogColumns>
-      {manual ? <OptionsSection editor={editor} editable={editable} isNew={false} onImport={() => setImporting(true)} rowReview={proposal.rowReview} /> : null}
+      {manual ? <OptionsSection editor={editor} editable={editable} isNew={false} actions={optionsActions} onImport={() => setImporting(true)} rowReview={proposal.rowReview} /> : null}
     </Page>
     {edit.leaveDialog}
     {phone ? <PhonePreviewDialog editor={editor} filters={filters} open={previewOpen} onOpenChange={setPreviewOpen} /> : null}
@@ -260,6 +263,7 @@ function NewCatalogEditor() {
   const [pendingOrigin, setPendingOrigin] = useState<CatalogOrigin | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const editor = useCatalogEditor(undefined, { newValueType: origin.valueType });
+  const optionsActions = useOptionsActions(editor, { editable: true, isNew: true });
   const filters = useCatalogFilters({ source: origin.source, canManage: true, error: editor.saveError, sampleRequiredMessage: t("forms:catalog.errors.sampleRequired") });
   // Ninguna elección se descarta en silencio (162): otro origen o tipo pregunta antes, con lo que se va.
   const lostBy = (next: CatalogOrigin) => ({
@@ -333,7 +337,7 @@ function NewCatalogEditor() {
           </SectionFields>
         </Section>
       </CatalogColumns>
-      {manual ? <OptionsSection editor={editor} editable isNew /> : null}
+      {manual ? <OptionsSection editor={editor} editable isNew actions={optionsActions} /> : null}
     </Page>
     {edit.leaveDialog}
     {phone ? <PhonePreviewDialog editor={editor} filters={filters} open={previewOpen} onOpenChange={setPreviewOpen} /> : null}

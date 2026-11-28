@@ -72,6 +72,7 @@
     "actions": {
       "catalogMore": "Acciones de {{name}}",
       "deactivate": "Dar de baja",
+      "deactivateCatalog": "Dar de baja el catálogo",
       "reactivateCatalog": "Reactivar",
       "add": "Agregar opción",
       "import": "Importar",
@@ -107,7 +108,8 @@
       "discardMovesFirst": "Primero descartá los cambios de posición.",
       "orderPending": "Guardá o descartá el orden pendiente para borrar opciones.",
       "deletePending": "Guardá o descartá el borrado pendiente para mover opciones.",
-      "saveToMove": "Guardá la opción para poder moverla."
+      "saveToMove": "Guardá la opción para poder moverla.",
+      "sortPending": "Guardá o cancelá el orden pendiente para mover opciones."
     },
     "pending": {
       "moves_one": "{{n}} movimiento pendiente. Se aplica al guardar.",

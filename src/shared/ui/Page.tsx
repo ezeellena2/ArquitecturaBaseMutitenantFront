@@ -30,6 +30,8 @@ export interface PageOverflowAction {
   onSelect: (trigger: HTMLButtonElement | null) => void;
   destructive?: boolean;
   hidden?: boolean;
+  /** Por qué no se puede usar ahora: la opción va apagada, con el motivo en un tooltip, como en RowActions (116 y 211). */
+  disabledReason?: string;
 }
 
 /** Una opción del ⋮ de la banda, con su ícono a la izquierda si lo tiene (como RowActions). */
@@ -42,7 +44,7 @@ function OverflowLabel({ action }: { action: PageOverflowAction }): ReactNode {
 
 /** Una opción del ⋮ como la pide la hoja del teléfono. */
 function sheetAction(action: PageOverflowAction) {
-  return { label: action.label, accessibleName: action.label, run: action.onSelect };
+  return { label: action.label, accessibleName: action.label, run: action.onSelect, disabledReason: action.disabledReason };
 }
 
 /** Un grupo de datos de una ficha: su pestaña y su contenido. */
@@ -181,7 +183,7 @@ export function Page({
   const destructiveActions = visibleMoreActions.filter((action) => action.destructive);
   const moreMenuItems = <>
     {regularActions.map((action) => (
-      <DropdownMenuItem key={action.label} onSelect={() => action.onSelect(moreTrigger.current)}>
+      <DropdownMenuItem key={action.label} disabled={action.disabledReason !== undefined} title={action.disabledReason} onSelect={() => action.onSelect(moreTrigger.current)}>
         <OverflowLabel action={action} />
       </DropdownMenuItem>
     ))}
