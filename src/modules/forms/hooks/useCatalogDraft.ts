@@ -13,7 +13,7 @@ import type {
   UpdateFormCatalogRequest,
 } from "../api/types";
 import { catalogFieldErrors, catalogInvalidRows } from "../errors";
-import { fieldDraftsOf, fieldInputsOf, sameFieldsDraft, sortAfterFields, type CatalogFieldErrors, type CatalogFieldsDraft } from "../lib/catalogFields";
+import { fieldColumnsOf, fieldDraftsOf, fieldInputsOf, sameFieldsDraft, sortAfterFields, type CatalogFieldErrors, type CatalogFieldsDraft } from "../lib/catalogFields";
 import { normalizePresentation, placeKeys } from "../lib/catalogPresentation";
 import {
   catalogRows, changedFieldsOf, cleanEdits, fieldErrorKey, itemInputOf, positionOf, savedDraft, savedRowOf,
@@ -99,6 +99,9 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
   const savedFieldDetails = saved?.fields ?? [];
   const savedFields = fieldDraftsOf(savedFieldDetails, format);
   const fields = fieldsDraft ?? savedFields;
+  // Los campos cuyos valores se cargan, se validan y viajan: guardados, activos en el borrador y con el mismo tipo y catálogo.
+  // El valor pendiente de uno que se quitó o cambió de tipo no viaja ni frena, y vuelve si el campo queda como estaba.
+  const writableFields = fieldColumnsOf(fields, savedFieldDetails).flatMap((column) => column.editable && column.detail ? [column.detail] : []);
   // Lo que puede ir a WhatsApp: los campos activos guardados que siguen en el borrador (uno nuevo todavía no tiene identidad).
   const presentationFields = fields.fields.flatMap((field) => field.id ? [{ id: field.id, name: field.name, type: field.type }] : []);
   const presentationKeys = placeKeys({ valueType, fields: presentationFields });
@@ -107,7 +110,7 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
   const state: CatalogDraftState = { edits, added, deletes, moves, positions, sort, serverErrors };
   const otherRows = [...extraRows, ...Object.values(touched).filter((row) => !extraRows.some((item) => item.id === row.id))];
   const invalidValues = invalidValuesOf(fieldIssue);
-  const rows = catalogRows({ pageRows, extraRows: otherRows, state, valueType, showErrors: attempted, format, t, fields: savedFieldDetails, invalidValues });
+  const rows = catalogRows({ pageRows, extraRows: otherRows, state, valueType, showErrors: attempted, format, t, fields: savedFieldDetails, writableFields, invalidValues });
   const byPosition = new Map(pageRows.map((row) => [positionOf(state, row), row]));
   const savedRow = (key: string | undefined) => savedRowOf({ pageRows, extraRows: otherRows }, key);
   const remember = (row: FormCatalogItemRow) => setTouched((current) => current[row.id] === row ? current : { ...current, [row.id]: row });
@@ -304,7 +307,7 @@ export function useCatalogDraft({ pageRows, extraRows, saved, valueType }: {
   }
 
   const itemInput = (row: CatalogRowView): FormCatalogItemInput =>
-    itemInputOf(row, savedRow(row.itemId), edits[row.key]?.value !== undefined, valueType, format, t, edits[row.key]?.fields, savedFieldDetails);
+    itemInputOf(row, savedRow(row.itemId), edits[row.key]?.value !== undefined, valueType, format, t, edits[row.key]?.fields, writableFields);
 
   /** Un intento de guardar: desde acá se ven los errores de la pantalla. `false` si falta el nombre. */
   function attempt(): boolean {

@@ -105,6 +105,8 @@ interface RowsInput {
   readonly showErrors: boolean;
   /** Los campos guardados (E13): con su tipo se lee y se valida el valor de cada uno. */
   readonly fields?: readonly FormCatalogFieldDetail[];
+  /** Los que se validan (los que viajan): sin los que el borrador quitó o les cambió el tipo. Si falta, todos los guardados. */
+  readonly writableFields?: readonly FormCatalogFieldDetail[];
   /**
    * Las opciones que no cumplen el tipo o la regla nueva de un campo, como las dijo el servidor (`invalidRows`): se ven en su
    * celda, como un error del servidor, y no frenan el próximo guardado (lección 4).
@@ -129,6 +131,7 @@ export function savedRowOf(input: Pick<RowsInput, "pageRows" | "extraRows">, key
 export function catalogRows(input: RowsInput): (CatalogRowView & { readonly problems: RowError })[] {
   const { pageRows, extraRows, state, valueType, format, t } = input;
   const fields = input.fields ?? [];
+  const writable = input.writableFields ?? fields;
   const ordered = [...pageRows].sort((a, b) => positionOf(state, a) - positionOf(state, b));
   const byPosition = new Map(ordered.map((row) => [positionOf(state, row), row]));
   const draftOf = (row: FormCatalogItemRow): ItemDraft => withEdits(savedDraft(row, valueType, format, fields), state.edits[row.id]);
@@ -159,7 +162,7 @@ export function catalogRows(input: RowsInput): (CatalogRowView & { readonly prob
     // El valor de un campo se lee si se escribió (una nueva, o cambiado): uno guardado que no se tocó ya es canónico.
     const written = row ? Object.keys(state.edits[key]?.fields ?? {}) : Object.keys(draft.fields ?? {});
     for (const id of written) {
-      const field = fields.find((item) => item.id === id);
+      const field = writable.find((item) => item.id === id);
       const read = field ? readFieldValue(draft.fields?.[id] ?? null, field.type, format, t) : null;
       if (read?.error) errors[fieldErrorKey(id)] = read.error;
     }

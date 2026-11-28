@@ -839,6 +839,40 @@ describe("CatalogEditorPage, los campos (E13)", () => {
     expect(await screen.findByRole("textbox", { name: "CUIT de Seguimiento" })).toBeEnabled();
   });
 
+  it("el valor pendiente de un campo que se quita no viaja: el guardado sale", async () => {
+    serve({ detail: conPlazo(), items: conValor("1500") });
+    const { user } = await openEditor();
+    await user.clear(textbox("Plazo de Seguimiento"));
+    await user.paste("30");
+    await user.click(screen.getByRole("button", { name: /^Agregar campos/ }));
+    const dialog = await screen.findByRole("dialog", { name: "Campos de «Motivos de visita»" });
+    await user.click(within(dialog).getByRole("button", { name: "Quitar campo" }));
+    const question = await screen.findByRole("alertdialog", { name: "Quitar «Plazo»" });
+    await user.click(within(question).getByRole("checkbox", { name: "Sí, quitar el campo y su valor" }));
+    await user.click(within(question).getByRole("button", { name: "Quitar el campo" }));
+    await user.click(within(await screen.findByRole("dialog", { name: "Campos de «Motivos de visita»" })).getByRole("button", { name: "Listo" }));
+    await user.click(saveButton());
+    await waitFor(() => expect(puts).toHaveLength(1));
+    expect(puts[0].confirmedFieldRemovals).toEqual(["f-plazo"]);
+    expect(puts[0].items?.map((item) => item.fields)).toEqual([undefined]);
+  });
+
+  it("el valor pendiente de un campo al que se le cambia el tipo no viaja", async () => {
+    serve({ detail: conPlazo(), items: conValor("1500") });
+    const { user } = await openEditor();
+    await user.clear(textbox("Plazo de Seguimiento"));
+    await user.paste("30");
+    await user.click(screen.getByRole("button", { name: /^Agregar campos/ }));
+    const dialog = await screen.findByRole("dialog", { name: "Campos de «Motivos de visita»" });
+    await user.click(within(dialog).getByRole("button", { name: pickerName("Tipo") }));
+    await user.click(await screen.findByRole("option", { name: "Texto" }));
+    await user.click(within(dialog).getByRole("button", { name: "Listo" }));
+    await user.click(saveButton());
+    await waitFor(() => expect(puts).toHaveLength(1));
+    expect(puts[0].fields?.map((field) => field.type)).toEqual(["Text"]);
+    expect(puts[0].items?.map((item) => item.fields)).toEqual([undefined]);
+  });
+
   it("si otra persona guardó, la revisión dice también los campos y el valor de un campo en cada opción (O15)", async () => {
     serve({ detail: conPlazo(), items: () => paged(conValor(puts.length ? "30" : "1500")),
       put: () => HttpResponse.json({ code: "General.ConcurrencyConflict", status: 409, title: "Conflict" }, { status: 409 }) });
